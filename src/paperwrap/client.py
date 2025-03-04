@@ -199,8 +199,8 @@ class PaperlessClient:
             'settings': {
                 'TestDataCollector': {
                     'test_dir': str(Path(__file__).parent.parent.parent / "tests/sample_data")
-                }
-            }
+                },
+            },
         }
         config = plugin_config or default_config
         self.plugin_manager.configure(config)
@@ -233,7 +233,7 @@ class PaperlessClient:
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
-        files: dict[str, Any] | None = None
+        files: dict[str, Any] | None = None,
     ) -> requests.Response | None:
         """
         Make a request to the Paperless-NgX API.
@@ -305,18 +305,26 @@ class PaperlessClient:
             raise PaperlessException(f"Request failed: {str(e)}") from e
 
     @overload
-    def _handle_response(self, response: requests.Response, *, json_response: Literal[True] = True) -> dict[str, Any]: ...
+    def _handle_response(
+        self, response: requests.Response, *, json_response: Literal[True] = True
+    ) -> dict[str, Any]: ...
 
     @overload
     def _handle_response(self, response: None, *, json_response: bool = True) -> None: ...
 
     @overload
-    def _handle_response(self, response: requests.Response | None, *, json_response: Literal[False]) -> bytes | None: ...
+    def _handle_response(
+        self, response: requests.Response | None, *, json_response: Literal[False]
+    ) -> bytes | None: ...
 
     @overload
-    def _handle_response(self, response: requests.Response | None, *, json_response: bool = True) -> dict[str, Any] | bytes | None: ...
+    def _handle_response(
+        self, response: requests.Response | None, *, json_response: bool = True
+    ) -> dict[str, Any] | bytes | None: ...
 
-    def _handle_response(self, response: requests.Response | None, *, json_response: bool = True) -> dict[str, Any] | bytes | None:
+    def _handle_response(
+        self, response: requests.Response | None, *, json_response: bool = True
+    ) -> dict[str, Any] | bytes | None:
         """Handle the response based on the content type."""
         if not response:
             return None

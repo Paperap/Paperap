@@ -158,7 +158,7 @@ post_update = Signal[dict[str, Any]]("post_update", "Emitted after updating a re
 pre_delete = Signal[dict[str, Any]]("pre_delete", "Emitted before deleting a resource")
 post_delete = Signal[None]("post_delete", "Emitted after deleting a resource")
 
-resource_signals : list[Signal] = [
+resource_signals: list[Signal] = [
     pre_list,
     post_list_response,
     post_list_item,

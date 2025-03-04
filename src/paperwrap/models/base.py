@@ -147,7 +147,9 @@ class PaperlessModel(BaseModel, ABC, metaclass=PaperlessModelMeta):
         """
         return cls.model_validate({**data, "resource": resource})
 
-    def to_dict(self, *, include_read_only: bool = True, exclude_none: bool = True, exclude_unset: bool = True) -> dict[str, Any]:
+    def to_dict(
+        self, *, include_read_only: bool = True, exclude_none: bool = True, exclude_unset: bool = True
+    ) -> dict[str, Any]:
         """
         Convert the model to a dictionary for API requests.
 

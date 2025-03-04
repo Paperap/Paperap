@@ -55,8 +55,8 @@ class PluginManager:
         self.plugins = {}
         self.instances = {}
         self.config = {
-            'enabled_plugins': [],
-            'settings': {},
+            "enabled_plugins": [],
+            "settings": {},
         }
         self.dependencies = {}
 

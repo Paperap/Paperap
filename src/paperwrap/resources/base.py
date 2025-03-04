@@ -31,7 +31,20 @@ import logging
 from paperwrap.const import URLS, Endpoints
 from paperwrap.parser import Parser
 from paperwrap.exceptions import ObjectNotFoundError, ResourceNotFoundError
-from paperwrap.signals import pre_list, post_list_response, post_list_item, post_list, pre_get, post_get, pre_create, post_create, pre_update, post_update, pre_delete, post_delete
+from paperwrap.signals import (
+    pre_list,
+    post_list_response,
+    post_list_item,
+    post_list,
+    pre_get,
+    post_get,
+    pre_create,
+    post_create,
+    pre_update,
+    post_update,
+    pre_delete,
+    post_delete,
+)
 from paperwrap.models.queryset import QuerySet
 
 if TYPE_CHECKING:

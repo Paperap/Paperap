@@ -30,7 +30,20 @@ from typing import Any, Generic, Iterable, Iterator, Optional, TypeVar, Union, T
 import logging
 from yarl import URL
 from paperwrap.exceptions import MultipleObjectsFoundError, ObjectNotFoundError
-from paperwrap.signals import pre_list, post_list_response, post_list_item, post_list, pre_get, post_get, pre_create, post_create, pre_update, post_update, pre_delete, post_delete
+from paperwrap.signals import (
+    pre_list,
+    post_list_response,
+    post_list_item,
+    post_list,
+    pre_get,
+    post_get,
+    pre_create,
+    post_create,
+    pre_update,
+    post_update,
+    pre_delete,
+    post_delete,
+)
 
 if TYPE_CHECKING:
     from paperwrap.models.base import PaperlessModel
@@ -346,7 +359,9 @@ class QuerySet(Iterable[_PaperlessModel]):
 
         self._fetch_all = True
 
-    def _request_iter(self, url: str | URL | Template | None = None, params: Optional[dict[str, Any]] = None) -> Iterator[_PaperlessModel]:
+    def _request_iter(
+        self, url: str | URL | Template | None = None, params: Optional[dict[str, Any]] = None
+    ) -> Iterator[_PaperlessModel]:
         """
         Get an iterator of resources.
 
@@ -476,11 +491,13 @@ class QuerySet(Iterable[_PaperlessModel]):
 
             if start > 0 and stop is not None:
                 # Limit with offset
-                clone = self._chain(filters={
-                    **self.filters,
-                    'limit': stop - start,
-                    'offset': start,
-                })
+                clone = self._chain(
+                    filters={
+                        **self.filters,
+                        "limit": stop - start,
+                        "offset": start,
+                    }
+                )
                 results = list(clone)
                 return results
 

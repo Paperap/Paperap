@@ -107,12 +107,14 @@ class DocumentResource(PaperlessResource[Document]):
 
         files = {"document": (filename, fileobj, "application/octet-stream")}
 
-        if not (response := self.client.request(
-            "POST",
-            "documents/post_document/",
-            data=data,
-            files=files,
-        )):
+        if not (
+            response := self.client.request(
+                "POST",
+                "documents/post_document/",
+                data=data,
+                files=files,
+            )
+        ):
             raise APIError("Failed to upload document")
 
         return Document.from_dict(response, self)
