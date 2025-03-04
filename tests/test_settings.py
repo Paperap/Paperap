@@ -26,7 +26,7 @@ from typing import Any, Iterable
 import unittest
 from unittest.mock import patch
 from yarl import URL
-from paperwrap.settings import Settings
+from paperap.settings import Settings
 
 TOKEN_DATA = {
     'token': 'abc123',

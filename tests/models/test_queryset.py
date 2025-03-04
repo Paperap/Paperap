@@ -1,3 +1,27 @@
+"""*****************************************************************************
+*                                                                                                                      *
+*                                                                                                                      *
+*                                                                                                                      *
+*                                                                                                                      *
+* ----------------------------------------------------------------------------                                         *
+*                                                                                                                      *
+*    METADATA:                                                                                                         *
+*                                                                                                                      *
+*        File:    test_queryset.py                                                                                     *
+*        Project: paperap                                                                                              *
+*        Created: 2025-03-04                                                                                           *
+*        Version: <<version>>                                                                                          *
+*        Author:  Jess Mann                                                                                            *
+*        Email:   jess@jmann.me                                                                                        *
+*        Copyright (c) 2025 Jess Mann                                                                                  *
+*                                                                                                                      *
+* ----------------------------------------------------------------------------                                         *
+*                                                                                                                      *
+*    LAST MODIFIED:                                                                                                    *
+*                                                                                                                      *
+*        2025-03-04     By Jess Mann                                                                                   *
+*                                                                                                                      *
+*****************************************************************************"""
 """*********************************************************************************************************************
 *                                                                                                                      *
 *                                                                                                                      *
@@ -27,13 +51,13 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 # Import the exceptions used by QuerySet.
-from paperwrap.exceptions import ObjectNotFoundError, MultipleObjectsFoundError
-from paperwrap.models import PaperlessModel, QuerySet
-from paperwrap.models.document import Document
-from paperwrap.resources import PaperlessResource
-from paperwrap.client import PaperlessClient
-from paperwrap.resources.documents import DocumentResource
-from paperwrap.tests import load_sample_data, TestCase
+from paperap.exceptions import ObjectNotFoundError, MultipleObjectsFoundError
+from paperap.models import PaperlessModel, QuerySet
+from paperap.models.document import Document
+from paperap.resources import PaperlessResource
+from paperap.client import PaperlessClient
+from paperap.resources.documents import DocumentResource
+from paperap.tests import load_sample_data, TestCase
 
 MockClient = MagicMock(PaperlessClient)
 
@@ -56,7 +80,7 @@ class DummyResource(PaperlessResource[DummyModel]):
         self.name = "dummy"
 
 class TestQuerySetFilter(unittest.TestCase):
-    @patch("paperwrap.client.PaperlessClient.request")
+    @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
         self.mock_request = mock_request
         self.mock_request.return_value = sample_document_list
@@ -77,7 +101,7 @@ class TestQuerySetFilter(unittest.TestCase):
         self.assertEqual(qs2.filters, expected)
 
 class TestQuerySetGetNoCache(unittest.TestCase):
-    @patch("paperwrap.client.PaperlessClient.request")
+    @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
         mock_request.return_value = sample_document
         self.resource = DocumentResource(MockClient)
@@ -97,14 +121,14 @@ class TestQuerySetGetNoCacheFailure(unittest.TestCase):
         self.resource = DocumentResource(self.client)
         self.qs = QuerySet(self.resource)
 
-    @patch("paperwrap.client.PaperlessClient.request")
+    @patch("paperap.client.PaperlessClient.request")
     def test_get_with_id(self, mock_request):
         mock_request.return_value = sample_document_item_404
         with self.assertRaises(ObjectNotFoundError):
             self.qs.get(999999)
 
 class TestQuerySetGetCache(unittest.TestCase):
-    @patch("paperwrap.client.PaperlessClient.request")
+    @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
         mock_request.return_value = sample_document
         self.resource = DocumentResource(MockClient)
@@ -112,7 +136,7 @@ class TestQuerySetGetCache(unittest.TestCase):
         self.qs = QuerySet(self.resource)
 
         self.modified_doc_id = 1337
-        self.modified_doc_title = "Paperwrap Unit Test - Modified Title"
+        self.modified_doc_title = "Paperap Unit Test - Modified Title"
         self.modified_document = MagicMock(spec=Document)
         self.modified_document.id = self.modified_doc_id
         self.modified_document.title = self.modified_doc_title
@@ -131,20 +155,20 @@ class TestQuerySetGetCacheFailure(unittest.TestCase):
         self.qs = QuerySet(self.resource)
 
         self.modified_doc_id = 1337
-        self.modified_doc_title = "Paperwrap Unit Test - Modified Title"
+        self.modified_doc_title = "Paperap Unit Test - Modified Title"
         self.modified_document = MagicMock(spec=Document)
         self.modified_document.id = self.modified_doc_id
         self.modified_document.title = self.modified_doc_title
         self.qs._result_cache = [self.modified_document]
 
-    @patch("paperwrap.client.PaperlessClient.request")
+    @patch("paperap.client.PaperlessClient.request")
     def test_get_with_id(self, mock_request):
         mock_request.return_value = sample_document_item_404
         with self.assertRaises(ObjectNotFoundError):
             self.qs.get(999999)
 
 class TestQuerySetAll(unittest.TestCase):
-    @patch("paperwrap.client.PaperlessClient.request")
+    @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
         self.mock_request = mock_request
         self.mock_request.return_value = sample_document_list
@@ -160,7 +184,7 @@ class TestQuerySetAll(unittest.TestCase):
 
 
 class TestQuerySetOrderBy(unittest.TestCase):
-    @patch("paperwrap.client.PaperlessClient.request")
+    @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
         self.mock_request = mock_request
         self.mock_request.return_value = sample_document_list
@@ -175,7 +199,7 @@ class TestQuerySetOrderBy(unittest.TestCase):
         self.assertEqual(qs_ordered.filters.get("ordering"), expected_order)
 
 class TestQuerySetFirst(unittest.TestCase):
-    @patch("paperwrap.client.PaperlessClient.request")
+    @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
         self.mock_request = mock_request
         self.mock_request.return_value = sample_document_list
@@ -197,7 +221,7 @@ class TestQuerySetFirst(unittest.TestCase):
             mock_chain.assert_called_once()
 
 class TestQuerySetLast(unittest.TestCase):
-    @patch("paperwrap.client.PaperlessClient.request")
+    @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
         self.mock_request = mock_request
         self.mock_request.return_value = sample_document_list
@@ -214,7 +238,7 @@ class TestQuerySetLast(unittest.TestCase):
         self.assertIsNone(self.qs.last())
 
 class TestQuerySetExists(unittest.TestCase):
-    @patch("paperwrap.client.PaperlessClient.request")
+    @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
         self.mock_request = mock_request
         self.mock_request.return_value = sample_document_list
@@ -231,7 +255,7 @@ class TestQuerySetExists(unittest.TestCase):
         self.assertFalse(self.qs.exists())
 
 class TestQuerySetIter(unittest.TestCase):
-    @patch("paperwrap.client.PaperlessClient.request")
+    @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
         self.mock_request = mock_request
         self.mock_request.return_value = sample_document_list

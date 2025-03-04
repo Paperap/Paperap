@@ -1,10 +1,10 @@
-# Paperwrap
+# Paperap
 
 **Python library for interacting with the Paperless NGX REST API**
 
 ## Overview
 
-Paperwrap is a Python client library for interacting with the [Paperless-NGX](https://github.com/paperless-ngx/paperless-ngx) REST API. It provides an object-oriented interface for managing documents, tags, correspondents, and other resources within Paperless-NGX.
+Paperap (pronounced like "paperwrap") is a Python client library for interacting with the [Paperless-NGX](https://github.com/paperless-ngx/paperless-ngx) REST API. It provides an object-oriented interface for managing documents, tags, correspondents, and other resources within Paperless-NGX.
 
 ## Status
 
