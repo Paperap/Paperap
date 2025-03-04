@@ -30,31 +30,27 @@ pip install paperwrap
 
 #### Using API Token:
 ```python
-from paperwrap import PaperlessClient, Settings
+from paperwrap import PaperlessClient
 
 client = PaperlessClient(
-    Settings(
-        base_url="https://paperless.example.com",
-        token="your-token"
-    )
+    base_url="https://paperless.example.com",
+    token="your-token"
 )
 ```
 
 #### Using Username and Password:
 ```python
 client = PaperlessClient(
-    Settings(
-        base_url="https://paperless.example.com",
-        username="user",
-        password="pass"
-    )
+    base_url="https://paperless.example.com",
+    username="user",
+    password="pass"
 )
 ```
 
 #### Loading Settings from Environment Variables:
 Set the following environment variables:
 - `PAPERLESS_BASE_URL`
-- `PAPERLESS_TOKEN` or `PAPERLESS_USERNAME` and `PAPERLESS_PASSWORD`
+- `PAPERLESS_TOKEN` or both `PAPERLESS_USERNAME` and `PAPERLESS_PASSWORD`
 
 Then create a client without arguments:
 ```python
@@ -111,6 +107,11 @@ except ObjectNotFoundError as e:
 ## Contributing
 
 I welcome contributions! Please open an issue or submit a pull request on GitHub.
+
+Run tests:
+```sh
+python -m unittest discover -s tests
+```
 
 ## License
 

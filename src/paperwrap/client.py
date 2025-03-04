@@ -23,7 +23,7 @@
 *********************************************************************************************************************"""
 import logging
 from pathlib import Path
-from typing import Any, Iterator, Literal, overload
+from typing import Any, Iterator, Literal, Unpack, overload
 import requests
 from yarl import URL
 from string import Template
@@ -33,7 +33,7 @@ from paperwrap.exceptions import (APIError, AuthenticationError,
                                       ResourceNotFoundError)
 from paperwrap.plugin_manager import PluginConfig
 from paperwrap.plugins.base import Plugin
-from paperwrap.settings import Settings
+from paperwrap.settings import Settings, SettingsArgs
 from paperwrap.resources import (
     CorrespondentResource,
     CustomFieldResource,
@@ -123,11 +123,13 @@ class PaperlessClient:
     def __init__(
         self,
         settings : Settings | None = None,
+        **kwargs : Unpack[SettingsArgs]
     ):
-        # If not provided, will load all settings from the env
-        # Settings.base_url is required, but can be set via env var. TODO: Fix typing
-        self.settings = settings or Settings() # type: ignore
+        if not settings:
+            # Any params not provided in kwargs will be loaded from env vars
+            settings = Settings(**kwargs) # type: ignore # base_url is a URL, but accepts str | URL
 
+        self.settings = settings
         if self.settings.token:
             self.auth = TokenAuth(token=self.settings.token)
         elif self.settings.username and self.settings.password:

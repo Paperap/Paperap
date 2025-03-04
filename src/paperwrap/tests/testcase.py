@@ -36,7 +36,7 @@ class TestCase(unittest.TestCase):
 
 def load_sample_data(filename : str) -> dict[str, Any]:
 	# Load sample response from tests/sample_data/documents_list.json
-	sample_data_filepath = Path(__file__).parent.parent.parent.parent.parent / "tests" / "sample_data" / filename
+	sample_data_filepath = Path(__file__).parent.parent.parent.parent / "tests" / "sample_data" / filename
 	with open(sample_data_filepath, "r") as f:
 		text = f.read()
 		sample_data = json.loads(text)

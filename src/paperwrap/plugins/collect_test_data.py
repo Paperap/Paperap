@@ -3,7 +3,7 @@
 *                                                                                                                      *
 
 	Usage example:
-	test_dir = Path(__file__).parent.parent / "tests/sample_data"
+	test_dir = Path(__file__).parent.parent.parent.parent / "tests/sample_data"
 	collector = TestDataCollector(test_dir)
 *                                                                                                                      *
 *                                                                                                                      *
@@ -26,6 +26,8 @@
 *                                                                                                                      *
 *********************************************************************************************************************"""
 from __future__ import annotations
+import datetime
+from decimal import Decimal
 import json
 from pathlib import Path
 from typing import Any, TYPE_CHECKING
@@ -68,13 +70,24 @@ class TestDataCollector(Plugin):
         post_list_response.disconnect(self.save_list_response)
         post_list_item.disconnect(self.save_first_item)
 
+    @staticmethod
+    def _json_serializer(obj: Any) -> Any:
+        """Custom JSON serializer for objects that are not natively serializable."""
+        if isinstance(obj, datetime.datetime):
+            return obj.isoformat()
+        if isinstance(obj, Path):
+            return str(obj)
+        if isinstance(obj, Decimal):
+            return float(obj)
+        raise TypeError(f"Type {type(obj).__name__} is not JSON serializable")
+
     def save_list_response(self, sender, response: dict[str, Any], **kwargs) -> dict[str, Any]:
         """Save the list response to a JSON file."""
         if not response or not (resource_name := kwargs.get("resource")):
             return response
 
         try:
-            if not (content := json.dumps(response)):
+            if not (content := json.dumps(response, default=self._json_serializer)):
                 return response
 
             filepath = self.test_dir / f'{resource_name}_list.json'

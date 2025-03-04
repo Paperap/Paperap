@@ -24,8 +24,16 @@
 from abc import ABC, abstractmethod
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Any, Optional, Self
+from typing import Annotated, Any, Optional, Self, TypedDict
 from yarl import URL
+
+class SettingsArgs(TypedDict, total=False):
+    base_url: str | URL
+    token: str | None
+    username: str | None
+    password: str | None
+    timeout: int
+    require_ssl: bool
 
 class Settings(BaseSettings):
     """
