@@ -8,12 +8,12 @@
    METADATA:
 
        File:    base.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.1
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -91,10 +91,8 @@ class PaperlessResource(ABC, Generic[_PaperlessModel]):
             self.name = f"{self.model_class._meta.name.lower()}s"
 
         # Allow templating
-        key: str
-        value: Template
-        for key, value in self.endpoints.items():  # type: ignore # Endpoints is dict[str, Template]
-            self.endpoints[key] = Template(value.safe_substitute(resource=self.name))
+        for key, value in self.endpoints.items():
+            self.endpoints[key] = Template(value.safe_substitute(resource=self.name))  # type: ignore # endpoints is always dict[str, Template]
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
