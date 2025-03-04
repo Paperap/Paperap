@@ -1,0 +1,114 @@
+
+output-format: grouped
+
+strictness: high
+test-warnings: true
+doc-warnings: false
+member-warnings: true
+
+common-ignored-rules: &common-ignored
+  - D100 # missing docstring in public module
+  - D105 # missing docstring in magic method
+  - D205 # 1 blank line required between summary line and description
+  - D400 # first line should end with a period
+  - F401 # imported but unused
+  - W292 # no newline at end of file
+  - W391 # blank line at end of file
+  - E126 # continuation line over-indented for hanging indent
+  - E201 # whitespace after '('
+  - E202 # whitespace before ')'
+  - E203 # whitespace before ':'
+  - E241 # multiple spaces after ','
+  - E251 # unexpected spaces around keyword / parameter equals
+  - E305 # expected 2 blank lines after class or function definition, found 1
+  - D101 # missing docstring in public class
+  - D102 # missing docstring in public method
+  - D103 # missing docstring in public function
+  - E128 # continuation line under-indented for visual indent
+  - E221 # multiple spaces before operator
+  - E222 # multiple spaces after operator
+  - E225 # missing whitespace around operator
+  - E231 # missing whitespace after ','
+  - E261 # at least two spaces before inline comment
+  - E303 # too many blank lines (3)
+  - E301 # expected 1 blank line, found 0
+  - E302 # expected 2 blank lines, found 1
+  - E304 # blank lines found after function decorator
+  - E306 # expected 1 blank line before a nested definition
+  - E265 # block comment should start with '# '
+  - E401 # multiple imports on one line
+  - E303 # too many blank lines (3)
+  - E131 # continuation line unaligned for hanging indent
+  - E262 # inline comment should start with '# '
+  - E127 # over-indented for visual indent
+  - E124 # closing bracket does not match visual indent
+  - E293 # blank line contains whitespace
+
+pep8:
+  full: true
+  disable: *common-ignored
+
+  options:
+    max-line-length: 500
+    indent-size: 4
+    indent-style: spaces
+
+pyflakes:
+  disable: *common-ignored
+
+pylint:
+  run: false
+  options:
+    max-line-length: 500
+    indent-size: 4
+    indent-style: spaces
+  disable:
+    - missing-function-docstring
+    - redundant-returns-doc
+    - pointless-string-statement
+    - multiple-imports
+    - missing-final-newline
+    - trailing-newlines
+    - unnecessary-pass
+    - too-many-locals
+    - missing-module-docstring
+    - missing-class-docstring
+    - missing-function-docstring
+    - missing-final-newline
+    - ungrouped-imports
+    - consider-using-from-import
+    # Temporarily disabled
+    - missing-docstring
+    - trailing-whitespace
+    - bad-whitespace             # Exactly one space required around assignment
+    - bad-continuation           # Wrong hanging indentation (add 4 spaces).
+    - unused-import
+
+dodgy:
+  run: true
+
+# Disable mccabe temporarily
+mccabe:
+  run: false
+  options:
+    complexity-threshold: 100
+
+# Disable some rules for pycodestyle
+pycodestyle:
+  max-line-length: 500
+  ignore: *common-ignored
+
+ignore-paths:
+  - node_modules/
+  - .venv/
+  - .vscode/
+  - .direnv/
+  - .git/
+  - .env
+  - docs/
+  - logs/
+  - tests/
+  
+ignore-patterns:
+  - \..*$
+  - .*[\\/]__pycache__(/|\\|$)

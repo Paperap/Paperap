@@ -1,0 +1,12 @@
+{
+	"id": 32,
+	"name": "example-name",
+	"data_type": "string",
+	"extra_data": {
+		"select_options": [
+			null
+		],
+		"default_currency": null
+	},
+	"document_count": 6442
+}
