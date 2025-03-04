@@ -97,7 +97,7 @@ for tag in client.tags.all():
 
 ## Error Handling
 
-Paperwrap raises exceptions for API errors:
+Paperap raises exceptions for API errors:
 
 - `PaperlessError` - Base exception
 - `APIError` - Error when contacting the Paperless NGX API
@@ -118,15 +118,36 @@ except ObjectNotFoundError as e:
 
 I welcome contributions! Please open an issue or submit a pull request on GitHub.
 
-Run tests:
+Run tests with either of the following cli commands:
 
 ```sh
-python -m unittest discover -s tests
+bun run test
+uv run python -m unittest discover -s tests
+```
+
+Setup dev environment:
+
+```sh
+uv venv
+source .venv/bin/activate
+uv sync --all-groups
+```
+
+Setup env vars:
+
+```sh
+cp env-sample .env
+```
+
+Run pre-commit:
+
+```sh
+pre-commit run --all-files
 ```
 
 ## License
 
-Paperwrap is released under the MIT License.
+Paperap is released under the MIT License.
 
 ## Author
 
@@ -135,4 +156,4 @@ Paperwrap is released under the MIT License.
 ## Related Projects
 
 - [Paperless-NGX](https://github.com/paperless-ngx/paperless-ngx)
-- [Pypaperless](https://github.com/tb1337/paperless-api) - async client that is more mature
+- [pypaperless](https://github.com/tb1337/paperless-api) - async client that is more mature

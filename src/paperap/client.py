@@ -1,26 +1,29 @@
-"""*********************************************************************************************************************
-*                                                                                                                      *
-*                                                                                                                      *
-*                                                                                                                      *
-*                                                                                                                      *
-* -------------------------------------------------------------------------------------------------------------------- *
-*                                                                                                                      *
-*    METADATA:                                                                                                         *
-*                                                                                                                      *
-*        File:    client.py                                                                                            *
-*        Project: paperap                                                                                            *
-*        Created: 2025-03-01                                                                                           *
-*        Author:  Jess Mann                                                                                            *
-*        Email:   jess@jmann.me                                                                                        *
-*        Copyright (c) 2025 Jess Mann                                                                                  *
-*                                                                                                                      *
-* -------------------------------------------------------------------------------------------------------------------- *
-*                                                                                                                      *
-*    LAST MODIFIED:                                                                                                    *
-*                                                                                                                      *
-*        2025-03-01     By Jess Mann                                                                                   *
-*                                                                                                                      *
-*********************************************************************************************************************"""
+"""
+
+
+
+
+----------------------------------------------------------------------------
+
+   METADATA:
+
+       File:    client.py
+       Project: paperap
+       Created: 2025-03-04
+       Version: 0.0.1
+       Author:  Jess Mann
+       Email:   jess@jmann.me
+       Copyright (c) 2025 Jess Mann
+
+----------------------------------------------------------------------------
+
+   LAST MODIFIED:
+
+       2025-03-04     By Jess Mann
+
+"""
+
+from __future__ import annotations
 
 import logging
 from pathlib import Path
@@ -347,7 +350,6 @@ class PaperlessClient:
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
         files: dict[str, Any] | None = None,
-        json_response: Literal[True] = True,
     ) -> dict[str, Any] | None: ...
 
     @overload
@@ -359,7 +361,7 @@ class PaperlessClient:
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
         files: dict[str, Any] | None = None,
-        json_response: Literal[False] = False,
+        json_response: Literal[False],
     ) -> bytes | None: ...
 
     @overload

@@ -1,26 +1,27 @@
-"""*********************************************************************************************************************
-*                                                                                                                      *
-*                                                                                                                      *
-*                                                                                                                      *
-*                                                                                                                      *
-* -------------------------------------------------------------------------------------------------------------------- *
-*                                                                                                                      *
-*    METADATA:                                                                                                         *
-*                                                                                                                      *
-*        File:    base.py                                                                                              *
-*        Project: models                                                                                               *
-*        Created: 2025-03-01                                                                                           *
-*        Author:  Jess Mann                                                                                            *
-*        Email:   jess@jmann.me                                                                                        *
-*        Copyright (c) 2025 Jess Mann                                                                                  *
-*                                                                                                                      *
-* -------------------------------------------------------------------------------------------------------------------- *
-*                                                                                                                      *
-*    LAST MODIFIED:                                                                                                    *
-*                                                                                                                      *
-*        2025-03-01     By Jess Mann                                                                                   *
-*                                                                                                                      *
-*********************************************************************************************************************"""
+"""
+
+
+
+
+----------------------------------------------------------------------------
+
+   METADATA:
+
+       File:    base.py
+       Project: paperap
+       Created: 2025-03-04
+       Version: 0.0.1
+       Author:  Jess Mann
+       Email:   jess@jmann.me
+       Copyright (c) 2025 Jess Mann
+
+----------------------------------------------------------------------------
+
+   LAST MODIFIED:
+
+       2025-03-04     By Jess Mann
+
+"""
 
 from __future__ import annotations
 
@@ -38,48 +39,7 @@ if TYPE_CHECKING:
     from paperap.resources.base import PaperlessResource
 
 
-class PaperlessModelMeta(BaseModel.__class__, ABC):
-    """
-    Metaclass for PaperlessModel.
-
-    This metaclass ensures that all subclasses of PaperlessModel have a parser attribute,
-    and sets default values for name and name_verbose if they are not provided.
-    It also enforces that an api_endpoint is defined for each subclass.
-    """
-
-    def __new__(cls, name, bases, dct):
-        """
-        Create a new class with a parser attribute and default metadata.
-        Ensure that all PaperlessModel subclasses have a parser attribute.
-
-        Args:
-            name: The name of the new class.
-            bases: The base classes of the new class.
-            dct: The class dictionary.
-
-        Returns:
-            The newly created class.
-        """
-        new_class: type["PaperlessModel"] = super().__new__(cls, name, bases, dct)
-
-        # Instantiate _meta
-        new_class._meta = new_class.Meta()
-
-        # Set name defaults
-        if not hasattr(new_class._meta, "name"):
-            new_class._meta.name = new_class.__name__.lower()
-
-        # Append read_only_fields from all parents to _meta
-        read_only_fields = (new_class._meta.read_only_fields or set()).copy()
-        for base in bases:
-            if hasattr(base, "_meta") and hasattr(base._meta, "read_only_fields"):
-                read_only_fields.update(base._meta.read_only_fields)
-        new_class._meta.read_only_fields = read_only_fields
-
-        return new_class
-
-
-class PaperlessModel(BaseModel, ABC, metaclass=PaperlessModelMeta):
+class PaperlessModel(BaseModel, ABC):
     """
     Base model for all Paperless-ngx API objects.
 
@@ -107,7 +67,7 @@ class PaperlessModel(BaseModel, ABC, metaclass=PaperlessModelMeta):
         # It will default to the classname
         name: str
         # Fields that should not be modified
-        read_only_fields: ClassVar[set[str]] = {"id", "created", "updated"}
+        read_only_fields: set[str] = {"id", "created", "updated"}
         # the type of parser, which parses api data into appropriate types
         # this will usually not need to be overridden
         parser: type[Parser] = Parser
@@ -133,6 +93,25 @@ class PaperlessModel(BaseModel, ABC, metaclass=PaperlessModelMeta):
             raise ValueError("Resource is required for PaperlessModel")
         super().__init__(**data)
         self._meta.resource = resource
+
+    @classmethod
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        # Instantiate _meta
+        cls._meta = cls.Meta()
+
+        # Set name defaults
+        if not hasattr(cls._meta, "name"):
+            cls._meta.name = cls.__name__.lower()
+
+        # Append read_only_fields from all parents to _meta
+        read_only_fields = (cls._meta.read_only_fields or set()).copy()
+        for base in cls.__bases__:
+            if hasattr(base, "_meta") and hasattr(base._meta, "read_only_fields"):
+                read_only_fields.update(base._meta.read_only_fields)
+
+        cls._meta.read_only_fields = read_only_fields
 
     @classmethod
     def from_dict(cls, data: dict[str, Any], resource: "PaperlessResource") -> Self:

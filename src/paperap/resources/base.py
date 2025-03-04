@@ -1,28 +1,31 @@
-"""*********************************************************************************************************************
-*                                                                                                                      *
-*                                                                                                                      *
-*                                                                                                                      *
-*                                                                                                                      *
-* -------------------------------------------------------------------------------------------------------------------- *
-*                                                                                                                      *
-*    METADATA:                                                                                                         *
-*                                                                                                                      *
-*        File:    base.py                                                                                              *
-*        Project: resources                                                                                            *
-*        Created: 2025-03-02                                                                                           *
-*        Author:  Jess Mann                                                                                            *
-*        Email:   jess@jmann.me                                                                                        *
-*        Copyright (c) 2025 Jess Mann                                                                                  *
-*                                                                                                                      *
-* -------------------------------------------------------------------------------------------------------------------- *
-*                                                                                                                      *
-*    LAST MODIFIED:                                                                                                    *
-*                                                                                                                      *
-*        2025-03-02     By Jess Mann                                                                                   *
-*                                                                                                                      *
-*********************************************************************************************************************"""
+"""
 
-from abc import ABC
+
+
+
+----------------------------------------------------------------------------
+
+   METADATA:
+
+       File:    base.py
+        Project: paperap
+       Created: 2025-03-04
+        Version: 0.0.1
+       Author:  Jess Mann
+       Email:   jess@jmann.me
+        Copyright (c) 2025 Jess Mann
+
+----------------------------------------------------------------------------
+
+   LAST MODIFIED:
+
+       2025-03-04     By Jess Mann
+
+"""
+
+from __future__ import annotations
+
+from abc import ABC, ABCMeta
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, Iterator, Optional
 from typing_extensions import TypeVar
 from yarl import URL
@@ -56,57 +59,7 @@ _PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel", covariant=T
 logger = logging.getLogger(__name__)
 
 
-class PaperlessResourceMeta(ABC.__class__, Generic[_PaperlessModel]):
-    """
-    Metaclass for PaperlessResource.
-
-    This metaclass ensures that all subclasses of PaperlessModel have a parser attribute,
-    and sets default values for name and name_verbose if they are not provided.
-    It also enforces that an api_endpoint is defined for each subclass.
-    """
-
-    def __new__(cls, name, bases, dct):
-        """
-        Create a new class with a parser attribute and default metadata.
-        Ensure that all PaperlessModel subclasses have a parser attribute.
-
-        Args:
-            name: The name of the new class.
-            bases: The base classes of the new class.
-            dct: The class dictionary.
-
-        Returns:
-            The newly created class.
-        """
-        # Not sure why pyright is complaining about this
-        new_class: type["PaperlessResource[_PaperlessModel]"] = super().__new__(cls, name, bases, dct)  # type: ignore
-
-        # if classname is PaperlessResource, don't do anything
-        if name == "PaperlessResource":
-            return new_class
-
-        # model_class is required
-        if not (model_class := getattr(new_class, "model_class")):
-            raise ValueError(f"model_class must be defined in {new_class.__name__}")
-
-        # Set parser
-        parser_type = model_class._meta.parser
-        new_class.parser = parser_type(model_class)
-
-        # API Endpoint must be defined
-        if not hasattr(new_class, "endpoints"):
-            new_class.endpoints = {
-                "list": URLS.list,
-                "detail": URLS.detail,
-                "create": URLS.create,
-                "update": URLS.update,
-                "delete": URLS.delete,
-            }
-
-        return new_class
-
-
-class PaperlessResource(ABC, Generic[_PaperlessModel], metaclass=PaperlessResourceMeta):
+class PaperlessResource(ABC, Generic[_PaperlessModel]):
     """
     Base class for API resources.
 
@@ -138,10 +91,34 @@ class PaperlessResource(ABC, Generic[_PaperlessModel], metaclass=PaperlessResour
             self.name = f"{self.model_class._meta.name.lower()}s"
 
         # Allow templating
-        key: str
-        value: Template
-        for key, value in self.endpoints.items():  # type: ignore # Endpoints is dict[str, Template]
-            self.endpoints[key] = Template(value.safe_substitute(resource=self.name))
+        for key, value in self.endpoints.items():
+            self.endpoints[key] = Template(value.safe_substitute(resource=self.name))  # type: ignore # endpoints is always dict[str, Template]
+
+    @classmethod
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        # Skip processing for the base class itself
+        if cls.__name__ == "PaperlessResource":
+            return
+
+        # model_class is required
+        if not (model_class := getattr(cls, "model_class", None)):
+            raise ValueError(f"model_class must be defined in {cls.__name__}")
+
+        # Set parser
+        parser_type = model_class._meta.parser
+        cls.parser = parser_type(model_class)
+
+        # API Endpoint must be defined
+        if not hasattr(cls, "endpoints"):
+            cls.endpoints = {
+                "list": URLS.list,
+                "detail": URLS.detail,
+                "create": URLS.create,
+                "update": URLS.update,
+                "delete": URLS.delete,
+            }
 
     def all(self) -> QuerySet[_PaperlessModel]:
         """

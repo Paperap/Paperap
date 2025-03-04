@@ -1,28 +1,33 @@
-"""*********************************************************************************************************************
-*                                                                                                                      *
-*                                                                                                                      *
-*                                                                                                                      *
-*                                                                                                                      *
-* -------------------------------------------------------------------------------------------------------------------- *
-*                                                                                                                      *
-*    METADATA:                                                                                                         *
-*                                                                                                                      *
-*        File:    test_base.py                                                                                         *
-*        Project: models                                                                                               *
-*        Created: 2025-03-01                                                                                           *
-*        Author:  Jess Mann                                                                                            *
-*        Email:   jess@jmann.me                                                                                        *
-*        Copyright (c) 2025 Jess Mann                                                                                  *
-*                                                                                                                      *
-* -------------------------------------------------------------------------------------------------------------------- *
-*                                                                                                                      *
-*    LAST MODIFIED:                                                                                                    *
-*                                                                                                                      *
-*        2025-03-01     By Jess Mann                                                                                   *
-*                                                                                                                      *
-*********************************************************************************************************************"""
+"""
+
+
+
+
+ ----------------------------------------------------------------------------
+
+    METADATA:
+
+        File:    test_base.py
+        Project: paperap
+        Created: 2025-03-04
+        Version: 0.0.1
+        Author:  Jess Mann
+        Email:   jess@jmann.me
+        Copyright (c) 2025 Jess Mann
+
+ ----------------------------------------------------------------------------
+
+    LAST MODIFIED:
+
+        2025-03-04     By Jess Mann
+
+"""
+from __future__ import annotations
+import os
 import unittest
 from datetime import datetime, timezone
+from unittest.mock import patch
+from paperap.tests import TestCase
 from paperap.models import PaperlessModel
 from paperap.client import PaperlessClient
 from paperap.resources.base import PaperlessResource
@@ -44,10 +49,12 @@ class ExampleResource(PaperlessResource):
     name = "example"
     model_class = ExampleModel
 
-class TestModel(unittest.TestCase):
+class TestModel(TestCase):
     def setUp(self):
         # Setup a sample model instance
-        self.client = PaperlessClient()
+        env_data = {f'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        with patch.dict(os.environ, env_data, clear=True):
+            self.client = PaperlessClient()
         self.resource = ExampleResource(self.client)
         self.model_data = {
             "id": 1,

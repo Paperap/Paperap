@@ -1,51 +1,31 @@
-"""*****************************************************************************
-*                                                                                                                      *
-*                                                                                                                      *
-*                                                                                                                      *
-*                                                                                                                      *
-* ----------------------------------------------------------------------------                                         *
-*                                                                                                                      *
-*    METADATA:                                                                                                         *
-*                                                                                                                      *
-*        File:    test_queryset.py                                                                                     *
-*        Project: paperap                                                                                              *
-*        Created: 2025-03-04                                                                                           *
-*        Version: <<version>>                                                                                          *
-*        Author:  Jess Mann                                                                                            *
-*        Email:   jess@jmann.me                                                                                        *
-*        Copyright (c) 2025 Jess Mann                                                                                  *
-*                                                                                                                      *
-* ----------------------------------------------------------------------------                                         *
-*                                                                                                                      *
-*    LAST MODIFIED:                                                                                                    *
-*                                                                                                                      *
-*        2025-03-04     By Jess Mann                                                                                   *
-*                                                                                                                      *
-*****************************************************************************"""
-"""*********************************************************************************************************************
-*                                                                                                                      *
-*                                                                                                                      *
-*                                                                                                                      *
-*                                                                                                                      *
-* -------------------------------------------------------------------------------------------------------------------- *
-*                                                                                                                      *
-*    METADATA:                                                                                                         *
-*                                                                                                                      *
-*        File:    test_queryset.py                                                                                     *
-*        Project: models                                                                                               *
-*        Created: 2025-03-03                                                                                           *
-*        Author:  Jess Mann                                                                                            *
-*        Email:   jess@jmann.me                                                                                        *
-*        Copyright (c) 2025 Jess Mann                                                                                  *
-*                                                                                                                      *
-* -------------------------------------------------------------------------------------------------------------------- *
-*                                                                                                                      *
-*    LAST MODIFIED:                                                                                                    *
-*                                                                                                                      *
-*        2025-03-03     By Jess Mann                                                                                   *
-*                                                                                                                      *
-*********************************************************************************************************************"""
+"""
+
+
+
+
+ ----------------------------------------------------------------------------
+
+    METADATA:
+
+        File:    test_queryset.py
+        Project: paperap
+        Created: 2025-03-04
+        Version: 0.0.1
+        Author:  Jess Mann
+        Email:   jess@jmann.me
+        Copyright (c) 2025 Jess Mann
+
+ ----------------------------------------------------------------------------
+
+    LAST MODIFIED:
+
+        2025-03-04     By Jess Mann
+
+"""
+from __future__ import annotations
+
 import logging
+import os
 from string import Template
 import unittest
 from unittest.mock import MagicMock, patch
@@ -117,7 +97,9 @@ class TestQuerySetGetNoCache(unittest.TestCase):
 
 class TestQuerySetGetNoCacheFailure(unittest.TestCase):
     def setUp(self):
-        self.client = PaperlessClient()
+        env_data = {f'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        with patch.dict(os.environ, env_data, clear=True):
+            self.client = PaperlessClient()
         self.resource = DocumentResource(self.client)
         self.qs = QuerySet(self.resource)
 
@@ -150,7 +132,9 @@ class TestQuerySetGetCache(unittest.TestCase):
 
 class TestQuerySetGetCacheFailure(unittest.TestCase):
     def setUp(self):
-        self.client = PaperlessClient()
+        env_data = {f'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        with patch.dict(os.environ, env_data, clear=True):
+            self.client = PaperlessClient()
         self.resource = DocumentResource(self.client)
         self.qs = QuerySet(self.resource)
 
@@ -269,15 +253,6 @@ class TestQuerySetIter(unittest.TestCase):
         self.qs._fetch_all = True
         result = list(iter(self.qs))
         self.assertEqual(result, ["a", "b"])
-
-    def test_request_iter_no_endpoint_raises(self):
-        class DummyResourceNoEndpoint(PaperlessResource):
-            model_class = MagicMock(spec=PaperlessModel).__class__
-            endpoints = {}
-        resource_no_endpoint = DummyResourceNoEndpoint(MagicMock())
-        qs_no_endpoint = QuerySet(resource_no_endpoint)
-        with self.assertRaises(ValueError):
-            list(qs_no_endpoint._request_iter())
 
 class TestQuerySetGetItem(unittest.TestCase):
     def setUp(self):

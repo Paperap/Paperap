@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "A wrapper for the paperless ngx rest api",
   "scripts": {
-    "prettier": "prettier --write **/*.{json,js,md,yml,yaml} *.{json,js,md,yml,yaml}"
+    "prettier": "prettier --write **/*.{json,js,md,yml,yaml} *.{json,js,md,yml,yaml}",
+    "test": "uv run python -m unittest discover -s tests",
+    "pre-commit": "pre-commit run --all-files"
   },
   "author": "Jess Mann <jess@jmann.me>",
   "license": "MIT",

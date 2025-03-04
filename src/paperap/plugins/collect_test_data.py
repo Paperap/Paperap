@@ -1,30 +1,30 @@
-"""*********************************************************************************************************************
-*                                                                                                                      *
-*                                                                                                                      *
+"""
 
-        Usage example:
-        test_dir = Path(__file__).parent.parent.parent.parent / "tests/sample_data"
-        collector = TestDataCollector(test_dir)
-*                                                                                                                      *
-*                                                                                                                      *
-* -------------------------------------------------------------------------------------------------------------------- *
-*                                                                                                                      *
-*    METADATA:                                                                                                         *
-*                                                                                                                      *
-*        File:    collect_test_data.py                                                                                 *
-*        Project: plugins                                                                                              *
-*        Created: 2025-03-02                                                                                           *
-*        Author:  Jess Mann                                                                                            *
-*        Email:   jess@jmann.me                                                                                        *
-*        Copyright (c) 2025 Jess Mann                                                                                  *
-*                                                                                                                      *
-* -------------------------------------------------------------------------------------------------------------------- *
-*                                                                                                                      *
-*    LAST MODIFIED:                                                                                                    *
-*                                                                                                                      *
-*        2025-03-02     By Jess Mann                                                                                   *
-*                                                                                                                      *
-*********************************************************************************************************************"""
+
+       Usage example:
+       test_dir = Path(__file__).parent.parent.parent.parent / "tests/sample_data"
+       collector = TestDataCollector(test_dir)
+
+
+----------------------------------------------------------------------------
+
+   METADATA:
+
+       File:    collect_test_data.py
+       Project: paperap
+       Created: 2025-03-04
+       Version: 0.0.1
+       Author:  Jess Mann
+       Email:   jess@jmann.me
+       Copyright (c) 2025 Jess Mann
+
+----------------------------------------------------------------------------
+
+   LAST MODIFIED:
+
+       2025-03-04     By Jess Mann
+
+"""
 
 from __future__ import annotations
 import datetime

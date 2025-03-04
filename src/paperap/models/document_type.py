@@ -1,29 +1,30 @@
-"""*********************************************************************************************************************
-*                                                                                                                      *
-*                                                                                                                      *
-*                                                                                                                      *
-*                                                                                                                      *
-* -------------------------------------------------------------------------------------------------------------------- *
-*                                                                                                                      *
-*    METADATA:                                                                                                         *
-*                                                                                                                      *
-*        File:    document_type.py                                                                                     *
-*        Project: models                                                                                               *
-*        Created: 2025-03-01                                                                                           *
-*        Author:  Jess Mann                                                                                            *
-*        Email:   jess@jmann.me                                                                                        *
-*        Copyright (c) 2025 Jess Mann                                                                                  *
-*                                                                                                                      *
-* -------------------------------------------------------------------------------------------------------------------- *
-*                                                                                                                      *
-*    LAST MODIFIED:                                                                                                    *
-*                                                                                                                      *
-*        2025-03-01     By Jess Mann                                                                                   *
-*                                                                                                                      *
-*********************************************************************************************************************"""
+"""
+
+
+
+
+----------------------------------------------------------------------------
+
+   METADATA:
+
+       File:    document_type.py
+       Project: paperap
+       Created: 2025-03-04
+       Version: 0.0.1
+       Author:  Jess Mann
+       Email:   jess@jmann.me
+       Copyright (c) 2025 Jess Mann
+
+----------------------------------------------------------------------------
+
+   LAST MODIFIED:
+
+       2025-03-04     By Jess Mann
+
+"""
 
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
