@@ -8,12 +8,12 @@
    METADATA:
 
        File:    base.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.1
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -144,7 +144,6 @@ class PaperlessModel(BaseModel, ABC):
 
         return self.model_dump(
             exclude=exclude,
-            by_alias=True,
             exclude_none=exclude_none,
             exclude_unset=exclude_unset,
         )

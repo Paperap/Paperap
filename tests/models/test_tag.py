@@ -115,8 +115,8 @@ class TestTag(unittest.TestCase):
         # Test if the model can be converted back to a dictionary
         model_dict = self.model.to_dict()
 
-        self.assertEqual(model_dict["created_on"], datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc))
-        self.assertEqual(model_dict["updated_on"], datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc))
+        self.assertEqual(model_dict["created"], datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc))
+        self.assertEqual(model_dict["updated"], datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc))
         self.assertEqual(model_dict["name"], self.model_data["name"])
         self.assertEqual(model_dict["slug"], self.model_data["slug"])
         self.assertEqual(model_dict["color"], self.model_data["color"])

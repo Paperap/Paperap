@@ -24,7 +24,7 @@
 """
 from __future__ import annotations
 import json
-from typing import Any, Iterator
+from typing import Any, Callable, Iterator
 import unittest
 from unittest.mock import MagicMock, patch
 from pathlib import Path
@@ -37,9 +37,17 @@ class TestCase(unittest.TestCase):
     pass
 
 def load_sample_data(filename : str) -> dict[str, Any]:
-	# Load sample response from tests/sample_data/documents_list.json
+	# Load sample response from tests/sample_data/{model}_{endpoint}.json
 	sample_data_filepath = Path(__file__).parent.parent.parent.parent / "tests" / "sample_data" / filename
 	with open(sample_data_filepath, "r") as f:
 		text = f.read()
 		sample_data = json.loads(text)
 	return sample_data
+
+def request_or_load_data(filename : str, request_fn : Callable[..., dict[str, Any] | None], *args : Any, **kwargs : Any) -> dict[str, Any] | None:
+    try:
+        sample_data = load_sample_data(filename)
+    except FileNotFoundError:
+        sample_data = request_fn(*args, **kwargs)
+        
+    return sample_data
