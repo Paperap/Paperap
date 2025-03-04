@@ -21,15 +21,18 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from typing import Any, Dict
 
 from pydantic import BaseModel, Field
 
 from paperwrap.models.base import PaperlessModel
 
+
 class UISettings(PaperlessModel):
     """
     Represents UI settings in Paperless-NgX.
     """
+
     user: int
     settings: dict[str, Any]

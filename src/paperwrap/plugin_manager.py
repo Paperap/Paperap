@@ -21,6 +21,7 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 import importlib
 import inspect
 import logging
@@ -32,38 +33,42 @@ from paperwrap.plugins.base import Plugin
 
 logger = logging.getLogger(__name__)
 
+
 class PluginConfig(TypedDict):
     """
     Configuration settings for a plugin.
     """
+
     enabled_plugins: list[str]
     settings: dict[str, Any]
 
+
 class PluginManager:
     """Manages the discovery, configuration and initialization of plugins."""
-    plugins : dict[str, type[Plugin]]
-    instances : dict[str, Plugin]
-    config : PluginConfig
-    dependencies : dict[str, Set[str]]
+
+    plugins: dict[str, type[Plugin]]
+    instances: dict[str, Plugin]
+    config: PluginConfig
+    dependencies: dict[str, Set[str]]
 
     def __init__(self):
         self.plugins = {}
         self.instances = {}
         self.config = {
             'enabled_plugins': [],
-            'settings': {}
+            'settings': {},
         }
         self.dependencies = {}
 
     @property
     def enabled_plugins(self) -> list[str]:
         # TODO: There's a bug here... disabling every plugin will then enable every plugin
-        if enabled := self.config.get('enabled_plugins'):
+        if enabled := self.config.get("enabled_plugins"):
             return enabled
 
         return list(self.plugins.keys())
 
-    def discover_plugins(self, package_name: str = 'paperwrap.plugins') -> None:
+    def discover_plugins(self, package_name: str = "paperwrap.plugins") -> None:
         """
         Discover available plugins in the specified package.
 
@@ -77,7 +82,7 @@ class PluginManager:
             return
 
         # Find all modules in the package
-        for _, module_name, is_pkg in pkgutil.iter_modules(package.__path__, package.__name__ + '.'):
+        for _, module_name, is_pkg in pkgutil.iter_modules(package.__path__, package.__name__ + "."):
             if is_pkg:
                 # Recursively discover plugins in subpackages
                 self.discover_plugins(module_name)
@@ -88,9 +93,7 @@ class PluginManager:
 
                 # Find plugin classes in the module
                 for name, obj in inspect.getmembers(module, inspect.isclass):
-                    if (issubclass(obj, Plugin) and
-                        obj is not Plugin and
-                        obj.__module__ == module_name):
+                    if issubclass(obj, Plugin) and obj is not Plugin and obj.__module__ == module_name:
                         plugin_name = obj.__name__
                         self.plugins[plugin_name] = obj
                         logger.debug(f"Discovered plugin: {plugin_name}")
@@ -108,7 +111,7 @@ class PluginManager:
 
     def get_plugin_config(self, plugin_name: str) -> dict[str, Any]:
         """Get the configuration for a specific plugin."""
-        return self.config['settings'].get(plugin_name, {})
+        return self.config["settings"].get(plugin_name, {})
 
     def initialize_plugin(self, plugin_name: str, client: Any) -> Plugin | None:
         """

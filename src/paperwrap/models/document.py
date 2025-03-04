@@ -21,6 +21,7 @@
 *        2025-03-01     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -43,6 +44,7 @@ class Document(PaperlessModel):
     """
     Represents a Paperless-NgX document.
     """
+
     title: str
     content: str | None = None
     added: datetime | None = None

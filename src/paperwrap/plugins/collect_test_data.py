@@ -2,9 +2,9 @@
 *                                                                                                                      *
 *                                                                                                                      *
 
-	Usage example:
-	test_dir = Path(__file__).parent.parent.parent.parent / "tests/sample_data"
-	collector = TestDataCollector(test_dir)
+        Usage example:
+        test_dir = Path(__file__).parent.parent.parent.parent / "tests/sample_data"
+        collector = TestDataCollector(test_dir)
 *                                                                                                                      *
 *                                                                                                                      *
 * -------------------------------------------------------------------------------------------------------------------- *
@@ -25,6 +25,7 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from __future__ import annotations
 import datetime
 from decimal import Decimal
@@ -42,6 +43,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+
 class TestDataCollector(Plugin):
     """
     Plugin to collect test data from API responses.
@@ -51,12 +53,12 @@ class TestDataCollector(Plugin):
     description = "Collects sample data from API responses for testing purposes"
     version = "0.0.1"
 
-    def __init__(self, client : "PaperlessClient", test_dir=None, **kwargs):
+    def __init__(self, client: "PaperlessClient", test_dir=None, **kwargs):
         # Convert string path to Path object if needed
         if test_dir and isinstance(test_dir, str):
             test_dir = Path(test_dir)
 
-        self.test_dir = test_dir or Path(self.config.get('test_dir', "tests/sample_data"))
+        self.test_dir = test_dir or Path(self.config.get("test_dir", "tests/sample_data"))
         self.test_dir.mkdir(parents=True, exist_ok=True)
         super().__init__(client, **kwargs)
 
@@ -90,7 +92,7 @@ class TestDataCollector(Plugin):
             if not (content := json.dumps(response, default=self._json_serializer)):
                 return response
 
-            filepath = self.test_dir / f'{resource_name}_list.json'
+            filepath = self.test_dir / f"{resource_name}_list.json"
             if not filepath.exists():
                 with filepath.open("w") as f:
                     f.write(content)
@@ -108,7 +110,7 @@ class TestDataCollector(Plugin):
 
         try:
             # Only save the first item we encounter
-            filepath = self.test_dir / f'{resource_name}_item.json'
+            filepath = self.test_dir / f"{resource_name}_item.json"
             if not filepath.exists():
                 with filepath.open("w") as f:
                     f.write(json.dumps(item))
@@ -127,6 +129,6 @@ class TestDataCollector(Plugin):
             "test_dir": {
                 "type": "string",
                 "description": "Directory to save test data files",
-                "required": False
+                "required": False,
             }
         }

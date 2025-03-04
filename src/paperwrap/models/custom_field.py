@@ -21,6 +21,7 @@
 *        2025-03-01     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from datetime import datetime
 from typing import Any, Dict, Optional
 
@@ -28,10 +29,12 @@ from pydantic import BaseModel, Field
 
 from paperwrap.models.base import PaperlessModel
 
+
 class CustomField(PaperlessModel):
     """
     Represents a custom field in Paperless-NgX.
     """
+
     name: str
     slug: str
     data_type: int  # 0=text, 1=integer, 2=float, 3=boolean, 4=monetary, 5=date

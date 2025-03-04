@@ -21,16 +21,19 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from datetime import datetime
 from typing import Any, Dict, Optional
 from pydantic import BaseModel, Field
 
 from paperwrap.models.base import PaperlessModel
 
+
 class Tag(PaperlessModel):
     """
     Represents a tag in Paperless-NgX.
     """
+
     name: str
     slug: str
     color: str

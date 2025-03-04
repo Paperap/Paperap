@@ -21,12 +21,8 @@
 *        2025-03-01     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
-from paperwrap.exceptions import (
-    APIError,
-    AuthenticationError,
-	PaperlessException,
-	ResourceNotFoundError
-)
+
+from paperwrap.exceptions import APIError, AuthenticationError, PaperlessException, ResourceNotFoundError
 from paperwrap import models
 from paperwrap.client import PaperlessClient
 

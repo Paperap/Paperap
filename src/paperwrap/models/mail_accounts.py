@@ -21,8 +21,10 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from __future__ import annotations
 from paperwrap.models.base import PaperlessModel
+
 
 class MailAccounts(PaperlessModel):
     pass

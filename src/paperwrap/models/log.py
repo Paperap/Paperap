@@ -21,15 +21,19 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, Field
 
 from paperwrap.models.base import PaperlessModel
+
+
 class Log(PaperlessModel):
     """
     Represents a log entry in Paperless-NgX.
     """
+
     level: str
     message: str
     group: str | None = Field(default=None)

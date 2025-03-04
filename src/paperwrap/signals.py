@@ -21,19 +21,23 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from collections import defaultdict
 from enum import Enum, auto
 from typing import Any, Callable, Optional, TypeVar, Generic, Set
 
-T = TypeVar('T')
+T = TypeVar("T")
+
 
 class SignalPriority(Enum):
     """Priority levels for signal handlers."""
+
     FIRST = auto()
     HIGH = auto()
     NORMAL = auto()
     LOW = auto()
     LAST = auto()
+
 
 class Signal(Generic[T]):
     """
@@ -41,10 +45,11 @@ class Signal(Generic[T]):
 
     Handlers can be registered with a priority to control execution order.
     """
-    name : str
-    description : str
-    _handlers : dict[SignalPriority, list[Callable[..., T]]]
-    _disabled_handlers : Set[Callable[..., T]]
+
+    name: str
+    description: str
+    _handlers: dict[SignalPriority, list[Callable[..., T]]]
+    _disabled_handlers: Set[Callable[..., T]]
 
     def __init__(self, name: str, description: str = ""):
         self.name = name
@@ -92,7 +97,7 @@ class Signal(Generic[T]):
             SignalPriority.HIGH,
             SignalPriority.NORMAL,
             SignalPriority.LOW,
-            SignalPriority.LAST
+            SignalPriority.LAST,
         ]:
             for handler in self._handlers[priority]:
                 if handler not in self._disabled_handlers:
@@ -109,11 +114,12 @@ class Signal(Generic[T]):
         if handler in self._disabled_handlers:
             self._disabled_handlers.remove(handler)
 
+
 class SignalRegistry:
     """Registry of all signals in the application."""
 
     _instance = None
-    _signals : dict[str, Signal]
+    _signals: dict[str, Signal]
 
     def __new__(cls):
         if cls._instance is None:
@@ -132,6 +138,7 @@ class SignalRegistry:
     def list_signals(self) -> list[str]:
         """List all registered signal names."""
         return list(self._signals.keys())
+
 
 # Resource lifecycle signals
 pre_list = Signal[dict[str, Any]]("pre_list", "Emitted before listing resources")
@@ -163,7 +170,7 @@ resource_signals : list[Signal] = [
     pre_update,
     post_update,
     pre_delete,
-    post_delete
+    post_delete,
 ]
 
 # Register all signals

@@ -21,6 +21,7 @@
 *        2025-03-01     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from paperwrap.models.queryset import QuerySet
 from paperwrap.models.base import PaperlessModel
 from paperwrap.models.correspondent import Correspondent
@@ -34,11 +35,23 @@ from paperwrap.models.tag import Tag
 from paperwrap.models.task import Task
 from paperwrap.models.ui_settings import UISettings
 from paperwrap.models.user import Group, User
-from paperwrap.models.workflow import (Workflow, WorkflowAction,
-                                           WorkflowTrigger)
+from paperwrap.models.workflow import Workflow, WorkflowAction, WorkflowTrigger
 
 __all__ = [
-    "PaperlessModel", "Document", "Correspondent", "Tag", "DocumentType", "StoragePath",
-    "CustomField", "Log", "User", "Group", "Task", "SavedView",
-    "UISettings", "Workflow", "WorkflowTrigger", "WorkflowAction",
+    "PaperlessModel",
+    "Document",
+    "Correspondent",
+    "Tag",
+    "DocumentType",
+    "StoragePath",
+    "CustomField",
+    "Log",
+    "User",
+    "Group",
+    "Task",
+    "SavedView",
+    "UISettings",
+    "Workflow",
+    "WorkflowTrigger",
+    "WorkflowAction",
 ]

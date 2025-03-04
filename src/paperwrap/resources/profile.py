@@ -21,8 +21,10 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from paperwrap.models.profile import Profile
 from paperwrap.resources.base import PaperlessResource
+
 
 class ProfileResource(PaperlessResource[Profile]):
     """Resource for managing profiles."""

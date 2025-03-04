@@ -21,11 +21,12 @@
 *        2025-03-03     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from paperwrap.models.storage_path import StoragePath
 from paperwrap.resources.base import PaperlessResource
+
 
 class StoragePathResource(PaperlessResource[StoragePath]):
     """Resource for managing storage paths."""
 
     model_class = StoragePath
-

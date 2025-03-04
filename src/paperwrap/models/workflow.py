@@ -21,16 +21,19 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
 from paperwrap.models.base import PaperlessModel
 
+
 class WorkflowTrigger(PaperlessModel):
     """
     Represents a workflow trigger in Paperless-NgX.
     """
+
     name: str
     type: str
     matching_algorithm: int
@@ -44,6 +47,7 @@ class WorkflowAction(PaperlessModel):
     """
     Represents a workflow action in Paperless-NgX.
     """
+
     id: int
     name: str
     type: str
@@ -54,10 +58,12 @@ class WorkflowAction(PaperlessModel):
     assign_storage_path: int | None = None
     assign_owner: int | None = None
 
+
 class Workflow(PaperlessModel):
     """
     Represents a workflow in Paperless-NgX.
     """
+
     id: int
     name: str
     order: int

@@ -21,16 +21,19 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
 from paperwrap.models.base import PaperlessModel
 
+
 class SavedView(PaperlessModel):
     """
     Represents a saved view in Paperless-NgX.
     """
+
     name: str
     sort_field: str
     sort_reverse: bool

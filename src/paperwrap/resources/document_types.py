@@ -21,6 +21,7 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from paperwrap.models.document_type import DocumentType
 from paperwrap.resources.base import PaperlessResource
 
@@ -29,4 +30,3 @@ class DocumentTypeResource(PaperlessResource[DocumentType]):
     """Resource for managing document types."""
 
     model_class = DocumentType
-

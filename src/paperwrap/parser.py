@@ -21,6 +21,7 @@
 *        2025-03-01     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from __future__ import annotations
 
 import datetime
@@ -39,14 +40,14 @@ logger = logging.getLogger(__name__)
 
 _T = TypeVar("_T")
 
-class Parser:
-    model : type["PaperlessModel"]
 
-    def __init__(self, model : type["PaperlessModel"]):
+class Parser:
+    model: type["PaperlessModel"]
+
+    def __init__(self, model: type["PaperlessModel"]):
         self.model = model
 
-    def parse(self, value : Any, target_type: type[_T]) -> _T | None:
-
+    def parse(self, value: Any, target_type: type[_T]) -> _T | None:
         if target_type is None:
             raise TypeError("Cannot parse to None type")
 
@@ -66,7 +67,7 @@ class Parser:
             key_type, value_type = args
             return cast(_T, {self.parse(k, key_type): self.parse(v, value_type) for k, v in value.items()})
         if target_type is str:
-            return str(value) # type: ignore
+            return str(value)  # type: ignore
         if target_type is int:
             return self.parse_int(value)
         if target_type is float:
@@ -74,25 +75,22 @@ class Parser:
         if target_type is bool:
             return self.parse_bool(value)
         if target_type is datetime.datetime:
-            return self.parse_datetime(value) # type: ignore
+            return self.parse_datetime(value)  # type: ignore
         if target_type is datetime.date:
-            return self.parse_date(value) # type: ignore
+            return self.parse_date(value)  # type: ignore
         if issubclass(target_type, Enum):
             return self.parse_enum(value, target_type)
 
         raise TypeError(f"Unsupported type: {target_type}")
 
     @overload
-    def parse_datetime(self, value: str) -> datetime.datetime | None:
-        ...
+    def parse_datetime(self, value: str) -> datetime.datetime | None: ...
 
     @overload
-    def parse_datetime(self, value: None) -> None:
-        ...
+    def parse_datetime(self, value: None) -> None: ...
 
     @overload
-    def parse_datetime(self, value: datetime.datetime) -> datetime.datetime:
-        ...
+    def parse_datetime(self, value: datetime.datetime) -> datetime.datetime: ...
 
     def parse_datetime(self, value: str | datetime.datetime | None) -> datetime.datetime | None:
         if isinstance(value, datetime.datetime):
@@ -105,16 +103,13 @@ class Parser:
         return None
 
     @overload
-    def parse_date(self, value: str) -> datetime.date | None:
-        ...
+    def parse_date(self, value: str) -> datetime.date | None: ...
 
     @overload
-    def parse_date(self, value: None) -> None:
-        ...
+    def parse_date(self, value: None) -> None: ...
 
     @overload
-    def parse_date(self, value: datetime.datetime) -> datetime.date:
-        ...
+    def parse_date(self, value: datetime.datetime) -> datetime.date: ...
 
     def parse_date(self, value: str | datetime.datetime | None) -> datetime.date | None:
         if isinstance(value, datetime.datetime):
@@ -128,16 +123,13 @@ class Parser:
         return parsed_datetime
 
     @overload
-    def parse_enum(self, value: Enum, enum_type: type[Enum]) -> Enum:
-        ...
+    def parse_enum(self, value: Enum, enum_type: type[Enum]) -> Enum: ...
 
     @overload
-    def parse_enum(self, value: str | int, enum_type: type[Enum]) -> Enum | None:
-        ...
+    def parse_enum(self, value: str | int, enum_type: type[Enum]) -> Enum | None: ...
 
     @overload
-    def parse_enum(self, value: None, enum_type: type[Enum]) -> None:
-        ...
+    def parse_enum(self, value: None, enum_type: type[Enum]) -> None: ...
 
     def parse_enum(self, value: Enum | str | int | None, enum_type: type[Enum]) -> Enum | None:
         if value is None:
@@ -156,16 +148,13 @@ class Parser:
         return None
 
     @overload
-    def parse_bool(self, value: bool) -> bool:
-        ...
+    def parse_bool(self, value: bool) -> bool: ...
 
     @overload
-    def parse_bool(self, value: str | int) -> bool | None:
-        ...
+    def parse_bool(self, value: str | int) -> bool | None: ...
 
     @overload
-    def parse_bool(self, value: None) -> None:
-        ...
+    def parse_bool(self, value: None) -> None: ...
 
     def parse_bool(self, value: str | int | bool | None) -> bool | None:
         if value is None:
@@ -189,16 +178,13 @@ class Parser:
         raise TypeError(f"Unsupported type: {type(value)}")
 
     @overload
-    def parse_int(self, value: int | float | Decimal) -> int:
-        ...
+    def parse_int(self, value: int | float | Decimal) -> int: ...
 
     @overload
-    def parse_int(self, value: str) -> int | None:
-        ...
+    def parse_int(self, value: str) -> int | None: ...
 
     @overload
-    def parse_int(self, value: None) -> None:
-        ...
+    def parse_int(self, value: None) -> None: ...
 
     def parse_int(self, value: int | float | Decimal | str | None) -> int | None:
         if value is None:
@@ -210,16 +196,13 @@ class Parser:
         raise TypeError(f"Unsupported type: {type(value)}")
 
     @overload
-    def parse_float(self, value: float | int | Decimal) -> float:
-        ...
+    def parse_float(self, value: float | int | Decimal) -> float: ...
 
     @overload
-    def parse_float(self, value: str) -> float | None:
-        ...
+    def parse_float(self, value: str) -> float | None: ...
 
     @overload
-    def parse_float(self, value: None) -> None:
-        ...
+    def parse_float(self, value: None) -> None: ...
 
     def parse_float(self, value: int | float | Decimal | str | None) -> float | None:
         if value is None:
@@ -230,7 +213,7 @@ class Parser:
 
         raise TypeError(f"Unsupported type: {type(value)}")
 
-    def parse_data(self, data : dict[str, Any]) -> dict[str, Any]:
+    def parse_data(self, data: dict[str, Any]) -> dict[str, Any]:
         fields = self._get_model_fields()
         for field, value in data.items():
             if field in fields:

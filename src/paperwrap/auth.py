@@ -21,9 +21,11 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from abc import ABC, abstractmethod
 from pydantic import BaseModel
 from typing import Any
+
 
 class AuthBase(BaseModel):
     """Base authentication class."""
@@ -41,6 +43,7 @@ class AuthBase(BaseModel):
 
 class TokenAuth(AuthBase):
     """Authentication using a token."""
+
     token: str
 
     def get_auth_headers(self) -> dict[str, str]:
@@ -54,6 +57,7 @@ class TokenAuth(AuthBase):
 
 class BasicAuth(AuthBase):
     """Authentication using username and password."""
+
     username: str
     password: str
 

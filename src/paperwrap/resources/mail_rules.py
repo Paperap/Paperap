@@ -21,11 +21,12 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from paperwrap.models.mail_rules import MailRules
 from paperwrap.resources.base import PaperlessResource
+
 
 class MailRulesResource(PaperlessResource[MailRules]):
     """Resource for managing mail rules."""
 
     model_class = MailRules
-

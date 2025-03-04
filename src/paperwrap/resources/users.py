@@ -34,7 +34,6 @@ class UserResource(PaperlessResource[User]):
 
     model_class = User
 
-
     def get_current(self) -> User:
         """
         Get the current authenticated user.

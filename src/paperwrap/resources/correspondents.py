@@ -21,6 +21,7 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from paperwrap.models.correspondent import Correspondent
 from paperwrap.resources.base import PaperlessResource
 
@@ -29,4 +30,3 @@ class CorrespondentResource(PaperlessResource[Correspondent]):
     """Resource for managing correspondents."""
 
     model_class = Correspondent
-

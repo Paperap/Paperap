@@ -21,11 +21,13 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from abc import ABC, abstractmethod
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Annotated, Any, Optional, Self, TypedDict
 from yarl import URL
+
 
 class SettingsArgs(TypedDict, total=False):
     base_url: str | URL
@@ -35,18 +37,20 @@ class SettingsArgs(TypedDict, total=False):
     timeout: int
     require_ssl: bool
 
+
 class Settings(BaseSettings):
     """
     Settings for the paperwrap library
     """
-    token : str | None = None
-    username : str | None = None
-    password : str | None = None
-    base_url : URL
-    timeout : int = 60
-    require_ssl : bool = False
 
-    model_config = SettingsConfigDict(env_prefix='PAPERLESS_')
+    token: str | None = None
+    username: str | None = None
+    password: str | None = None
+    base_url: URL
+    timeout: int = 60
+    require_ssl: bool = False
+
+    model_config = SettingsConfigDict(env_prefix="PAPERLESS_")
 
     @field_validator("base_url", mode="before")
     @classmethod

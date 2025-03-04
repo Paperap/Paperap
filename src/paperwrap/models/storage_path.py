@@ -21,6 +21,7 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from datetime import datetime
 from typing import Any, Dict, Optional
 
@@ -28,10 +29,13 @@ from pydantic import BaseModel, Field
 
 
 from paperwrap.models.base import PaperlessModel
+
+
 class StoragePath(PaperlessModel):
     """
     Represents a storage path in Paperless-NgX.
     """
+
     name: str
     slug: str
     path: str
@@ -43,4 +47,3 @@ class StoragePath(PaperlessModel):
     class Meta(PaperlessModel.Meta):
         # Fields that should not be modified
         read_only_fields = {"slug", "document_count"}
-

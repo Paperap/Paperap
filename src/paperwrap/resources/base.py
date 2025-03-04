@@ -21,6 +21,7 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from abc import ABC
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, Iterator, Optional
 from typing_extensions import TypeVar
@@ -40,6 +41,7 @@ if TYPE_CHECKING:
 _PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel", covariant=True)
 
 logger = logging.getLogger(__name__)
+
 
 class PaperlessResourceMeta(ABC.__class__, Generic[_PaperlessModel]):
     """
@@ -64,7 +66,7 @@ class PaperlessResourceMeta(ABC.__class__, Generic[_PaperlessModel]):
             The newly created class.
         """
         # Not sure why pyright is complaining about this
-        new_class : type["PaperlessResource[_PaperlessModel]"] = super().__new__(cls, name, bases, dct) # type: ignore
+        new_class: type["PaperlessResource[_PaperlessModel]"] = super().__new__(cls, name, bases, dct)  # type: ignore
 
         # if classname is PaperlessResource, don't do anything
         if name == "PaperlessResource":
@@ -90,6 +92,7 @@ class PaperlessResourceMeta(ABC.__class__, Generic[_PaperlessModel]):
 
         return new_class
 
+
 class PaperlessResource(ABC, Generic[_PaperlessModel], metaclass=PaperlessResourceMeta):
     """
     Base class for API resources.
@@ -99,13 +102,14 @@ class PaperlessResource(ABC, Generic[_PaperlessModel], metaclass=PaperlessResour
         endpoint: The API endpoint for this resource.
         model_class: The model class for this resource.
     """
+
     # The model class for this resource.
     model_class: type[_PaperlessModel]
     # The PaperlessClient instance.
     client: "PaperlessClient"
     # The name of the model. This must line up with the API endpoint
     # It will default to the model's name
-    name : str
+    name: str
     # The API endpoint for this model.
     # It will default to a standard schema used by the API
     # Setting it will allow you to contact a different schema or even a completely different API.
@@ -113,17 +117,17 @@ class PaperlessResource(ABC, Generic[_PaperlessModel], metaclass=PaperlessResour
     endpoints: ClassVar[Endpoints]
     # A class which parses api data into appropriate types
     # this will usually not need to be overridden
-    parser : ClassVar[Parser]
+    parser: ClassVar[Parser]
 
-    def __init__(self, client : "PaperlessClient"):
+    def __init__(self, client: "PaperlessClient"):
         self.client = client
         if not hasattr(self, "name"):
-            self.name = f'{self.model_class._meta.name.lower()}s'
+            self.name = f"{self.model_class._meta.name.lower()}s"
 
         # Allow templating
-        key : str
-        value : Template
-        for key, value in self.endpoints.items(): # type: ignore # Endpoints is dict[str, Template]
+        key: str
+        value: Template
+        for key, value in self.endpoints.items():  # type: ignore # Endpoints is dict[str, Template]
             self.endpoints[key] = Template(value.safe_substitute(resource=self.name))
 
     def all(self) -> QuerySet[_PaperlessModel]:

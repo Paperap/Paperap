@@ -21,6 +21,7 @@
 *        2025-03-01     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -35,6 +36,7 @@ from paperwrap.parser import Parser
 
 if TYPE_CHECKING:
     from paperwrap.resources.base import PaperlessResource
+
 
 class PaperlessModelMeta(BaseModel.__class__, ABC):
     """
@@ -58,7 +60,7 @@ class PaperlessModelMeta(BaseModel.__class__, ABC):
         Returns:
             The newly created class.
         """
-        new_class : type["PaperlessModel"] = super().__new__(cls, name, bases, dct)
+        new_class: type["PaperlessModel"] = super().__new__(cls, name, bases, dct)
 
         # Instantiate _meta
         new_class._meta = new_class.Meta()
@@ -76,6 +78,7 @@ class PaperlessModelMeta(BaseModel.__class__, ABC):
 
         return new_class
 
+
 class PaperlessModel(BaseModel, ABC, metaclass=PaperlessModelMeta):
     """
     Base model for all Paperless-ngx API objects.
@@ -92,22 +95,23 @@ class PaperlessModel(BaseModel, ABC, metaclass=PaperlessModelMeta):
             class Meta:
                 api_endpoint: = URL("http://localhost:8000/api/documents/")
     """
-    id: int = Field(description="Unique identifier", default=0)
-    created : datetime = Field(description="Creation timestamp", default_factory=datetime.now, alias="created_on")
-    updated : datetime = Field(description="Last update timestamp", default_factory=datetime.now, alias="updated_on")
 
-    _meta : "Meta" = PrivateAttr()
+    id: int = Field(description="Unique identifier", default=0)
+    created: datetime = Field(description="Creation timestamp", default_factory=datetime.now, alias="created_on")
+    updated: datetime = Field(description="Last update timestamp", default_factory=datetime.now, alias="updated_on")
+
+    _meta: "Meta" = PrivateAttr()
 
     class Meta:
         # The name of the model.
         # It will default to the classname
-        name : str
+        name: str
         # Fields that should not be modified
         read_only_fields: ClassVar[set[str]] = {"id", "created", "updated"}
         # the type of parser, which parses api data into appropriate types
         # this will usually not need to be overridden
-        parser : type[Parser] = Parser
-        resource : "PaperlessResource"
+        parser: type[Parser] = Parser
+        resource: "PaperlessResource"
 
     # Configure Pydantic behavior
     model_config = ConfigDict(
@@ -117,11 +121,10 @@ class PaperlessModel(BaseModel, ABC, metaclass=PaperlessModelMeta):
         json_encoders={
             # Custom JSON encoders for types
             datetime: lambda dt: dt.isoformat().replace('+00:00', 'Z')
-                                if dt.tzinfo is not None and
-                                   dt.tzinfo.utcoffset(dt).total_seconds() == 0
+                                if dt.tzinfo is not None and dt.tzinfo.utcoffset(dt).total_seconds() == 0
                                 else dt.isoformat(),
             Decimal: lambda d: float(d),
-        }
+        },
     )
 
     def __init__(self, **data):
@@ -132,7 +135,7 @@ class PaperlessModel(BaseModel, ABC, metaclass=PaperlessModelMeta):
         self._meta.resource = resource
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any], resource : "PaperlessResource") -> Self:
+    def from_dict(cls, data: dict[str, Any], resource: "PaperlessResource") -> Self:
         """
         Create a model instance from API response data.
 
@@ -144,7 +147,7 @@ class PaperlessModel(BaseModel, ABC, metaclass=PaperlessModelMeta):
         """
         return cls.model_validate({**data, "resource": resource})
 
-    def to_dict(self, *, include_read_only: bool = True, exclude_none : bool = True, exclude_unset : bool = True) -> dict[str, Any]:
+    def to_dict(self, *, include_read_only: bool = True, exclude_none: bool = True, exclude_unset: bool = True) -> dict[str, Any]:
         """
         Convert the model to a dictionary for API requests.
 
@@ -162,7 +165,7 @@ class PaperlessModel(BaseModel, ABC, metaclass=PaperlessModelMeta):
             exclude=exclude,
             by_alias=True,
             exclude_none=exclude_none,
-            exclude_unset=exclude_unset
+            exclude_unset=exclude_unset,
         )
 
     @classmethod

@@ -21,16 +21,19 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from datetime import datetime
 from typing import Any, Optional
 from pydantic import Field
 
 from paperwrap.models.base import PaperlessModel
 
+
 class Correspondent(PaperlessModel):
     """
     Represents a correspondent in Paperless-NgX.
     """
+
     name: str
     slug: str
     match: str
@@ -44,5 +47,5 @@ class Correspondent(PaperlessModel):
         read_only_fields = {
             "slug",
             "document_count",
-            "last_correspondence"
+            "last_correspondence",
         }

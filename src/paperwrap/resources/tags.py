@@ -21,8 +21,10 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from paperwrap.models.tag import Tag
 from paperwrap.resources.base import PaperlessResource
+
 
 class TagResource(PaperlessResource[Tag]):
     """Resource for managing tags."""

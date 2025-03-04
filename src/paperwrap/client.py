@@ -21,6 +21,7 @@
 *        2025-03-01     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 import logging
 from pathlib import Path
 from typing import Any, Iterator, Literal, Unpack, overload
@@ -28,9 +29,7 @@ import requests
 from yarl import URL
 from string import Template
 from paperwrap.auth import BasicAuth, TokenAuth, AuthBase
-from paperwrap.exceptions import (APIError, AuthenticationError,
-                                      PaperlessException,
-                                      ResourceNotFoundError)
+from paperwrap.exceptions import APIError, AuthenticationError, PaperlessException, ResourceNotFoundError
 from paperwrap.plugin_manager import PluginConfig
 from paperwrap.plugins.base import Plugin
 from paperwrap.settings import Settings, SettingsArgs
@@ -58,6 +57,7 @@ from paperwrap.resources import (
 )
 
 logger = logging.getLogger(__name__)
+
 
 class PaperlessClient:
     """
@@ -93,10 +93,11 @@ class PaperlessClient:
             docs = client.documents.list()
         ```
     """
-    settings : Settings
-    auth : AuthBase
-    session : requests.Session
-    plugins : dict[str, Plugin]
+
+    settings: Settings
+    auth: AuthBase
+    session: requests.Session
+    plugins: dict[str, Plugin]
 
     # Resources
     correspondents: CorrespondentResource
@@ -120,14 +121,10 @@ class PaperlessClient:
     workflow_triggers: WorkflowTriggerResource
     workflows: WorkflowResource
 
-    def __init__(
-        self,
-        settings : Settings | None = None,
-        **kwargs : Unpack[SettingsArgs]
-    ):
+    def __init__(self, settings: Settings | None = None, **kwargs: Unpack[SettingsArgs]):
         if not settings:
             # Any params not provided in kwargs will be loaded from env vars
-            settings = Settings(**kwargs) # type: ignore # base_url is a URL, but accepts str | URL
+            settings = Settings(**kwargs)  # type: ignore # base_url is a URL, but accepts str | URL
 
         self.settings = settings
         if self.settings.token:
@@ -140,10 +137,12 @@ class PaperlessClient:
         self.session = requests.Session()
 
         # Set default headers
-        self.session.headers.update({
-            "Accept": "application/json; version=2",
-            "Content-Type": "application/json",
-        })
+        self.session.headers.update(
+            {
+                "Accept": "application/json; version=2",
+                "Content-Type": "application/json",
+            }
+        )
 
         # Initialize resources
         self._init_resources()
@@ -224,7 +223,7 @@ class PaperlessClient:
 
     def close(self) -> None:
         """Close the client and release resources."""
-        if hasattr(self, 'session') and self.session:
+        if hasattr(self, "session") and self.session:
             self.session.close()
 
     def _request(
@@ -261,9 +260,9 @@ class PaperlessClient:
         if endpoint.startswith("http"):
             url = endpoint
         else:
-            url = f'{self.base_url}/{endpoint.lstrip("/")}'
+            url = f"{self.base_url}/{endpoint.lstrip('/')}"
 
-        logger.critical('Requesting %s %s', method, url)
+        logger.critical("Requesting %s %s", method, url)
 
         # Add headers from authentication and session defaults
         headers = {**self.session.headers, **self._get_headers()}
@@ -292,7 +291,7 @@ class PaperlessClient:
                 if response.status_code == 401:
                     raise AuthenticationError(f"Authentication failed: {error_message}")
                 elif response.status_code == 404:
-                    raise ResourceNotFoundError(f'Paperless returned 404 for {endpoint}')
+                    raise ResourceNotFoundError(f"Paperless returned 404 for {endpoint}")
                 else:
                     raise APIError(error_message, response.status_code)
 
@@ -306,22 +305,18 @@ class PaperlessClient:
             raise PaperlessException(f"Request failed: {str(e)}") from e
 
     @overload
-    def _handle_response(self, response: requests.Response, *, json_response: Literal[True] = True) -> dict[str, Any]:
-        ...
+    def _handle_response(self, response: requests.Response, *, json_response: Literal[True] = True) -> dict[str, Any]: ...
 
     @overload
-    def _handle_response(self, response: None, *, json_response: bool = True) -> None:
-        ...
+    def _handle_response(self, response: None, *, json_response: bool = True) -> None: ...
 
     @overload
-    def _handle_response(self, response: requests.Response | None, *, json_response: Literal[False]) -> bytes | None:
-        ...
+    def _handle_response(self, response: requests.Response | None, *, json_response: Literal[False]) -> bytes | None: ...
 
     @overload
-    def _handle_response(self, response : requests.Response | None, *, json_response : bool = True) -> dict[str, Any] | bytes | None:
-        ...
+    def _handle_response(self, response: requests.Response | None, *, json_response: bool = True) -> dict[str, Any] | bytes | None: ...
 
-    def _handle_response(self, response : requests.Response | None, *, json_response : bool = True) -> dict[str, Any] | bytes | None:
+    def _handle_response(self, response: requests.Response | None, *, json_response: bool = True) -> dict[str, Any] | bytes | None:
         """Handle the response based on the content type."""
         if not response:
             return None
@@ -345,8 +340,7 @@ class PaperlessClient:
         data: dict[str, Any] | None = None,
         files: dict[str, Any] | None = None,
         json_response: Literal[True] = True,
-    ) -> dict[str, Any] | None:
-        ...
+    ) -> dict[str, Any] | None: ...
 
     @overload
     def request(
@@ -358,8 +352,7 @@ class PaperlessClient:
         data: dict[str, Any] | None = None,
         files: dict[str, Any] | None = None,
         json_response: Literal[False] = False,
-    ) -> bytes | None:
-        ...
+    ) -> bytes | None: ...
 
     @overload
     def request(
@@ -371,8 +364,7 @@ class PaperlessClient:
         data: dict[str, Any] | None = None,
         files: dict[str, Any] | None = None,
         json_response: bool = True,
-    ) -> dict[str, Any] | bytes | None:
-        ...
+    ) -> dict[str, Any] | bytes | None: ...
 
     def request(
         self,
@@ -384,14 +376,7 @@ class PaperlessClient:
         files: dict[str, Any] | None = None,
         json_response: bool = True,
     ) -> dict[str, Any] | bytes | None:
-
-        if not (response := self._request(
-            method,
-            endpoint,
-            params=params,
-            data=data,
-            files=files
-        )):
+        if not (response := self._request(method, endpoint, params=params, data=data, files=files)):
             return None
 
         return self._handle_response(response, json_response=json_response)

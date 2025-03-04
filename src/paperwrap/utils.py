@@ -21,6 +21,7 @@
 *        2025-03-01     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 import json
 import os
 from datetime import datetime
@@ -42,9 +43,7 @@ def datetime_to_str(dt: datetime) -> str:
     return dt.isoformat().replace("+00:00", "Z")
 
 
-def parse_filter_params(
-    **kwargs: Any
-) -> dict[str, Any]:
+def parse_filter_params(**kwargs: Any) -> dict[str, Any]:
     """
     Parse filter parameters for list endpoints.
 

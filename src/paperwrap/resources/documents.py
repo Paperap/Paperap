@@ -21,12 +21,14 @@
 *        2025-03-01     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 import os.path
 from typing import Any, BinaryIO, Dict, Iterator, List, Optional
 
 from paperwrap.exceptions import APIError
 from paperwrap.models.document import Document
 from paperwrap.resources.base import PaperlessResource
+
 
 class DocumentResource(PaperlessResource[Document]):
     """Resource for managing documents."""
@@ -93,7 +95,7 @@ class DocumentResource(PaperlessResource[Document]):
         Returns:
             The created document.
         """
-        data : dict[str, Any] = {}
+        data: dict[str, Any] = {}
         if title:
             data["title"] = title
         if correspondent:
@@ -109,7 +111,7 @@ class DocumentResource(PaperlessResource[Document]):
             "POST",
             "documents/post_document/",
             data=data,
-            files=files
+            files=files,
         )):
             raise APIError("Failed to upload document")
 
@@ -129,7 +131,7 @@ class DocumentResource(PaperlessResource[Document]):
         """
         endpoint = f"documents/{document_id}/{'download/' if original else 'preview/'}"
         response = self.client.session.get(
-            f'{self.client.base_url}{endpoint}',
+            f"{self.client.base_url}{endpoint}",
             headers=self.client._get_headers(),
             **self.client._get_auth_params(),
         )

@@ -21,6 +21,7 @@
 *        2025-03-01     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from paperwrap.resources.base import PaperlessResource
 from paperwrap.resources.correspondents import CorrespondentResource
 from paperwrap.resources.custom_fields import CustomFieldResource
@@ -38,14 +39,22 @@ from paperwrap.resources.tags import TagResource
 from paperwrap.resources.tasks import TaskResource
 from paperwrap.resources.ui_settings import UISettingsResource
 from paperwrap.resources.users import GroupResource, UserResource
-from paperwrap.resources.workflows import (WorkflowActionResource,
-                                               WorkflowResource,
-                                               WorkflowTriggerResource)
+from paperwrap.resources.workflows import WorkflowActionResource, WorkflowResource, WorkflowTriggerResource
 
 __all__ = [
-    "DocumentResource", "CorrespondentResource", "TagResource",
-    "DocumentTypeResource", "StoragePathResource", "CustomFieldResource",
-    "LogResource", "UserResource", "GroupResource", "TaskResource",
-    "SavedViewResource", "UISettingsResource", "WorkflowResource",
-    "WorkflowTriggerResource", "WorkflowActionResource",
+    "DocumentResource",
+    "CorrespondentResource",
+    "TagResource",
+    "DocumentTypeResource",
+    "StoragePathResource",
+    "CustomFieldResource",
+    "LogResource",
+    "UserResource",
+    "GroupResource",
+    "TaskResource",
+    "SavedViewResource",
+    "UISettingsResource",
+    "WorkflowResource",
+    "WorkflowTriggerResource",
+    "WorkflowActionResource",
 ]

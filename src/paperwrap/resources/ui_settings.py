@@ -21,6 +21,7 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from typing import Any, Dict
 
 from paperwrap.models.ui_settings import UISettings
@@ -31,7 +32,6 @@ class UISettingsResource(PaperlessResource[UISettings]):
     """Resource for managing UI settings."""
 
     model_class = UISettings
-
 
     def get_current(self) -> UISettings | None:
         """

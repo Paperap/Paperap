@@ -21,18 +21,24 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
-from paperwrap.models.workflow import (Workflow, WorkflowAction,
-                                           WorkflowTrigger)
+
+from paperwrap.models.workflow import Workflow, WorkflowAction, WorkflowTrigger
 from paperwrap.resources.base import PaperlessResource
+
 
 class WorkflowResource(PaperlessResource[Workflow]):
     """Resource for managing workflows."""
+
     model_class = Workflow
+
 
 class WorkflowTriggerResource(PaperlessResource[WorkflowTrigger]):
     """Resource for managing workflow triggers."""
+
     model_class = WorkflowTrigger
+
 
 class WorkflowActionResource(PaperlessResource[WorkflowAction]):
     """Resource for managing workflow actions."""
+
     model_class = WorkflowAction

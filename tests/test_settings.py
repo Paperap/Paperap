@@ -193,7 +193,7 @@ class TestSettingsEnvPrefix(unittest.TestCase):
         """Test that the environment prefix is applied correctly."""
         env_data = {f'PAPERLESS_{key.upper()}': str(value) for key, value in TOKEN_DATA.items() if value is not None}
         with patch.dict(os.environ, env_data, clear=True):
-            settings = Settings() # type: ignore # base_url is required, but loaded from env. pyright doesnt like that.
+            settings = Settings() # type: ignore # base_url is required, but loaded from env. pyright doesn't like that.
         self.assertEqual(settings.token, TOKEN_DATA['token'], f"Token was changed when token env vars were set: {settings.token} != {TOKEN_DATA['token']}")
         self.assertEqual(settings.username, TOKEN_DATA['username'], f"Username was changed when token env vars were set: {settings.username} != {TOKEN_DATA['username']}")
         self.assertEqual(settings.password, TOKEN_DATA['password'], f"Password was changed when token env vars were set: {settings.password} != {TOKEN_DATA['password']}")
@@ -206,7 +206,7 @@ class TestSettingsEnvPrefix(unittest.TestCase):
         """Test that the environment prefix is applied correctly."""
         env_data = {f'PAPERLESS_{key.upper()}': str(value) for key, value in AUTH_DATA.items() if value is not None}
         with patch.dict(os.environ, env_data, clear=True):
-            settings = Settings() # type: ignore # base_url is required, but loaded from env. pyright doesnt like that.
+            settings = Settings() # type: ignore # base_url is required, but loaded from env. pyright doesn't like that.
         self.assertEqual(settings.token, AUTH_DATA['token'], f"Token was changed when auth env vars were set: {settings.token} != {AUTH_DATA['token']}")
         self.assertEqual(settings.username, AUTH_DATA['username'], f"Username was changed when auth env vars were set: {settings.username} != {AUTH_DATA['username']}")
         self.assertEqual(settings.password, AUTH_DATA['password'], f"Password was changed when auth env vars were set: {settings.password} != {AUTH_DATA['password']}")

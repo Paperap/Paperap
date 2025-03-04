@@ -21,8 +21,10 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from paperwrap.models.share_links import ShareLinks
 from paperwrap.resources.base import PaperlessResource
+
 
 class ShareLinksResource(PaperlessResource[ShareLinks]):
     """Resource for managing share links."""

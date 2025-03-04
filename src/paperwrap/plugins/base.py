@@ -21,12 +21,14 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from paperwrap.client import PaperlessClient
+
 
 class Plugin(ABC):
     """Base class for all plugins."""
@@ -35,10 +37,10 @@ class Plugin(ABC):
     name: str | None = None
     description: str = "No description provided"
     version: str = "0.0.1"
-    client : PaperlessClient
-    config : dict[str, Any]
+    client: PaperlessClient
+    config: dict[str, Any]
 
-    def __init__(self, client : "PaperlessClient", **kwargs):
+    def __init__(self, client: "PaperlessClient", **kwargs):
         """
         Initialize the plugin.
 

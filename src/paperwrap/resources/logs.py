@@ -21,16 +21,17 @@
 *        2025-03-01     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from typing import Any, Dict, List, Optional
 
 from paperwrap.models.log import Log
 from paperwrap.resources.base import PaperlessResource
 
+
 class LogResource(PaperlessResource[Log]):
     """Resource for managing logs."""
 
     model_class = Log
-
 
     def create(self, data: dict[str, Any]) -> Log:
         """

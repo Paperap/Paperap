@@ -21,11 +21,12 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from paperwrap.models.saved_view import SavedView
 from paperwrap.resources.base import PaperlessResource
+
 
 class SavedViewResource(PaperlessResource[SavedView]):
     """Resource for managing saved views."""
 
     model_class = SavedView
-

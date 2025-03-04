@@ -21,8 +21,10 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from paperwrap.models.search import Search
 from paperwrap.resources.base import PaperlessResource
+
 
 class SearchResource(PaperlessResource[Search]):
     """Resource for managing searches."""

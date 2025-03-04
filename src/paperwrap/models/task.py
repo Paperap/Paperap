@@ -21,16 +21,19 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, Field
 
 from paperwrap.models.base import PaperlessModel
 
+
 class Task(PaperlessModel):
     """
     Represents a task in Paperless-NgX.
     """
+
     task_id: str
     task_file_name: str
     date_done: str | None = Field(default=None)  # ISO format date

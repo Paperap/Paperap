@@ -21,6 +21,7 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from __future__ import annotations
 
 from string import Template
@@ -29,21 +30,24 @@ from typing import TypedDict
 
 from yarl import URL
 
+
 class URLS:
-	index: Template = Template("/api/")
-	token: Template = Template("/api/token/")
-	list: Template = Template("/api/${resource}/")
-	detail: Template = Template("/api/${resource}/${pk}/")
-	create: Template = Template("/api/${resource}/")
-	update: Template = Template("/api/${resource}/${pk}")
-	delete: Template = Template("/api/${resource}/${pk}")
+    index: Template = Template("/api/")
+    token: Template = Template("/api/token/")
+    list: Template = Template("/api/${resource}/")
+    detail: Template = Template("/api/${resource}/${pk}/")
+    create: Template = Template("/api/${resource}/")
+    update: Template = Template("/api/${resource}/${pk}")
+    delete: Template = Template("/api/${resource}/${pk}")
+
 
 class Endpoints(TypedDict, total=False):
-    list : Template
-    detail : Template
-    create : Template
-    update : Template
-    delete : Template
+    list: Template
+    detail: Template
+    create: Template
+    update: Template
+    delete: Template
+
 
 # API endpoint paths
 API_PATH: dict[str, str] = {

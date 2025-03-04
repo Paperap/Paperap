@@ -21,6 +21,7 @@
 *        2025-03-01     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from datetime import datetime
 from typing import Any, Dict, Optional
 
@@ -28,10 +29,12 @@ from pydantic import BaseModel, Field
 
 from paperwrap.models.base import PaperlessModel
 
+
 class DocumentType(PaperlessModel):
     """
     Represents a document type in Paperless-NgX.
     """
+
     name: str
     slug: str
     match: str
@@ -42,4 +45,3 @@ class DocumentType(PaperlessModel):
     class Meta(PaperlessModel.Meta):
         # Fields that should not be modified
         read_only_fields = {"slug", "document_count"}
-

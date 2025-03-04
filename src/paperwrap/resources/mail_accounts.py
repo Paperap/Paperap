@@ -22,12 +22,11 @@
 *                                                                                                                      *
 *********************************************************************************************************************"""
 
-
 from paperwrap.models.mail_accounts import MailAccounts
 from paperwrap.resources.base import PaperlessResource
+
 
 class MailAccountsResource(PaperlessResource[MailAccounts]):
     """Resource for managing mail accounts."""
 
     model_class = MailAccounts
-

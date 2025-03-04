@@ -21,6 +21,7 @@
 *        2025-03-02     By Jess Mann                                                                                   *
 *                                                                                                                      *
 *********************************************************************************************************************"""
+
 from __future__ import annotations
 
 import copy
@@ -35,9 +36,10 @@ if TYPE_CHECKING:
     from paperwrap.models.base import PaperlessModel
     from paperwrap.resources.base import PaperlessResource
 
-_PaperlessModel = TypeVar('_PaperlessModel', bound="PaperlessModel")
+_PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel")
 
 logger = logging.getLogger(__name__)
+
 
 class QuerySet(Iterable[_PaperlessModel]):
     """
@@ -46,6 +48,7 @@ class QuerySet(Iterable[_PaperlessModel]):
     QuerySet provides pagination, filtering, and caching functionality similar to Django's QuerySet.
     It's designed to be lazy - only fetching data when it's actually needed.
     """
+
     resource: "PaperlessResource"
     filters: dict[str, Any]
     _last_response: dict[str, Any] | None = None
@@ -56,13 +59,13 @@ class QuerySet(Iterable[_PaperlessModel]):
 
     def __init__(
         self,
-        resource : "PaperlessResource",
+        resource: "PaperlessResource",
         filters: Optional[dict[str, Any]] = None,
         _cache: Optional[list[_PaperlessModel]] = None,
         _fetch_all: bool = False,
         _next_url: str | None = None,
         _last_response: Optional[dict[str, Any]] = None,
-        _iter: Optional[Iterator[_PaperlessModel]] = None
+        _iter: Optional[Iterator[_PaperlessModel]] = None,
     ):
         """
         Initialize a new QuerySet.
@@ -171,7 +174,7 @@ class QuerySet(Iterable[_PaperlessModel]):
         """
         # If we have a last response, we can use the "count" field
         if self._last_response:
-            if (count := self._last_response.get('count')) is not None:
+            if (count := self._last_response.get("count")) is not None:
                 return count
             raise NotImplementedError("Response does not have a count attribute.")
 
@@ -186,7 +189,7 @@ class QuerySet(Iterable[_PaperlessModel]):
             # I don't think this should ever occur, but just in case.
             raise NotImplementedError("Requested iter, but no last response")
 
-        if (count := self._last_response.get('count')) is not None:
+        if (count := self._last_response.get("count")) is not None:
             return count
 
         # I don't think this should ever occur, but just in case.
@@ -201,7 +204,7 @@ class QuerySet(Iterable[_PaperlessModel]):
         """
         # If we have a last response, we can count it without a new request
         if self._last_response:
-            results = self._last_response.get('results', [])
+            results = self._last_response.get("results", [])
             return len(results)
 
         # Get one page of results, to populate last response
@@ -215,7 +218,7 @@ class QuerySet(Iterable[_PaperlessModel]):
             # I don't think this should ever occur, but just in case.
             raise NotImplementedError("Requested iter, but no last response")
 
-        results = self._last_response.get('results', [])
+        results = self._last_response.get("results", [])
         return len(results)
 
     def all(self) -> QuerySet[_PaperlessModel]:
@@ -248,7 +251,7 @@ class QuerySet(Iterable[_PaperlessModel]):
             return self
 
         # Combine with existing ordering if any
-        ordering = self.filters.get('ordering', [])
+        ordering = self.filters.get("ordering", [])
         if isinstance(ordering, str):
             ordering = [ordering]
         elif not isinstance(ordering, list):
@@ -258,9 +261,9 @@ class QuerySet(Iterable[_PaperlessModel]):
         new_ordering = ordering + list(fields)
 
         # Join with commas for API
-        ordering_param = ','.join(new_ordering)
+        ordering_param = ",".join(new_ordering)
 
-        return self._chain(filters={**self.filters, 'ordering': ordering_param})
+        return self._chain(filters={**self.filters, "ordering": ordering_param})
 
     def first(self) -> Optional[_PaperlessModel]:
         """
@@ -273,7 +276,7 @@ class QuerySet(Iterable[_PaperlessModel]):
             return self._result_cache[0]
 
         # If not cached, create a copy limited to 1 result
-        results = list(self._chain(filters={**self.filters, 'limit': 1}))
+        results = list(self._chain(filters={**self.filters, "limit": 1}))
         return results[0] if results else None
 
     def last(self) -> Optional[_PaperlessModel]:
@@ -318,7 +321,7 @@ class QuerySet(Iterable[_PaperlessModel]):
         Returns:
             An empty QuerySet
         """
-        return self._chain(filters={'limit': 0})
+        return self._chain(filters={"limit": 0})
 
     def _fetch_all_results(self) -> None:
         """Fetch all results from the API and populate the cache."""
@@ -336,14 +339,14 @@ class QuerySet(Iterable[_PaperlessModel]):
         self._result_cache.extend(list(iterator))
 
         # Fetch additional pages if available
-        while response and (next_url := response.get('next')):
+        while response and (next_url := response.get("next")):
             iterator = self._request_iter(url=next_url)
             response = self._last_response
             self._result_cache.extend(list(iterator))
 
         self._fetch_all = True
 
-    def _request_iter(self, url : str | URL | Template | None = None, params: Optional[dict[str, Any]] = None) -> Iterator[_PaperlessModel]:
+    def _request_iter(self, url: str | URL | Template | None = None, params: Optional[dict[str, Any]] = None) -> Iterator[_PaperlessModel]:
         """
         Get an iterator of resources.
 
@@ -380,7 +383,7 @@ class QuerySet(Iterable[_PaperlessModel]):
 
         # Update with provided kwargs
         for key, value in kwargs.items():
-            if key == 'filters' and value:
+            if key == "filters" and value:
                 clone.filters.update(value)
             else:
                 setattr(clone, key, value)
@@ -407,7 +410,7 @@ class QuerySet(Iterable[_PaperlessModel]):
         if not self._iter:
             # Start a new iteration
             self._iter = self._request_iter(params=self.filters)
-            self._next_url = self._last_response.get('next') if self._last_response else None
+            self._next_url = self._last_response.get("next") if self._last_response else None
 
         # If there are more pages, keep going
         while self._next_url:
@@ -417,7 +420,7 @@ class QuerySet(Iterable[_PaperlessModel]):
                 yield obj
 
             self._iter = self._request_iter(url=self._next_url)
-            self._next_url = self._last_response.get('next') if self._last_response else None
+            self._next_url = self._last_response.get("next") if self._last_response else None
 
         # We've fetched everything
         self._fetch_all = True
@@ -467,7 +470,7 @@ class QuerySet(Iterable[_PaperlessModel]):
             # Optimize by using limit/offset if available
             if start == 0 and stop is not None:
                 # Simple limit
-                clone = self._chain(filters={**self.filters, 'limit': stop})
+                clone = self._chain(filters={**self.filters, "limit": stop})
                 results = list(clone)
                 return results
 
@@ -476,14 +479,14 @@ class QuerySet(Iterable[_PaperlessModel]):
                 clone = self._chain(filters={
                     **self.filters,
                     'limit': stop - start,
-                    'offset': start
+                    'offset': start,
                 })
                 results = list(clone)
                 return results
 
             if start > 0 and stop is None:
                 # Just offset
-                clone = self._chain(filters={**self.filters, 'offset': start})
+                clone = self._chain(filters={**self.filters, "offset": start})
                 self._fetch_all_results()  # We need all results after the offset
                 return self._result_cache
 
@@ -503,11 +506,7 @@ class QuerySet(Iterable[_PaperlessModel]):
             return self._result_cache[key]
 
         # Fetch specific item by position
-        clone = self._chain(filters={
-            **self.filters,
-            'limit': 1,
-            'offset': key
-        })
+        clone = self._chain(filters={**self.filters, "limit": 1, "offset": key})
         results = list(clone)
         if not results:
             raise IndexError(f"QuerySet index {key} out of range")
