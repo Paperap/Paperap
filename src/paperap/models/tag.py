@@ -8,12 +8,12 @@
    METADATA:
 
        File:    tag.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.1
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -37,12 +37,14 @@ class Tag(PaperlessModel):
 
     name: str
     slug: str
-    color: str
+    colour: str = Field(alias="color")
     match: str
     matching_algorithm: int
-    is_insensitive: bool
+    is_insensitive: bool = True
     is_inbox_tag: bool = False
     document_count: int = 0
+    owner : int | None = None
+    user_can_change : bool = True
 
     class Meta(PaperlessModel.Meta):
         # Fields that should not be modified

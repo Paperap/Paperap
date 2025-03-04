@@ -29,9 +29,6 @@ from paperap.models.correspondent import Correspondent
 from paperap.models.custom_field import CustomField
 from paperap.models.document import Document
 from paperap.models.document_type import DocumentType
-from paperap.models.log import Log
-from paperap.models.mail_accounts import MailAccounts
-from paperap.models.mail_rules import MailRules
 from paperap.models.profile import Profile
 from paperap.models.saved_view import SavedView
 from paperap.models.share_links import ShareLinks
@@ -50,7 +47,6 @@ __all__ = [
     "DocumentType",
     "StoragePath",
     "CustomField",
-    "Log",
     "User",
     "Group",
     "Task",

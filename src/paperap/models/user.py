@@ -8,12 +8,12 @@
    METADATA:
 
        File:    user.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.1
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -34,8 +34,8 @@ class Group(PaperlessModel):
     """
     Represents a user group in Paperless-NgX.
     """
-
     name: str
+    permissions: list[str] = Field(default_factory=list)
 
 
 class User(PaperlessModel):
@@ -43,13 +43,15 @@ class User(PaperlessModel):
     Represents a user in Paperless-NgX.
     """
 
-    id: int
     username: str
+    email: str
+    password : str
     first_name: str
     last_name: str
-    email: str
-    is_staff: bool
-    is_active: bool
-    is_superuser: bool
+    date_joined : str
+    is_staff: bool = False
+    is_active: bool = True
+    is_superuser: bool = False
     groups: list[int] = Field(default_factory=list)
     user_permissions: list[int] = Field(default_factory=list)
+    inherited_permissions : list[str] = Field(default_factory=list)

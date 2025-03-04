@@ -1,0 +1,39 @@
+{
+	"id": 133,
+	"name": "example-name",
+	"show_on_dashboard": true,
+	"show_in_sidebar": true,
+	"sort_field": "created",
+	"sort_reverse": false,
+	"filter_rules": [
+		{
+			"rule_type": 28,
+			"value": "1"
+		},
+		{
+			"rule_type": 28,
+			"value": "14"
+		},
+		{
+			"rule_type": 28,
+			"value": "2"
+		}
+	],
+	"page_size": null,
+	"display_mode": "largeCards",
+	"display_fields": [
+		"title",
+		"created",
+		"tag",
+		"correspondent",
+		"documenttype",
+		"storagepath",
+		"note",
+		"owner",
+		"shared",
+		"asn",
+		"pagecount"
+	],
+	"owner": 3,
+	"user_can_change": true
+}

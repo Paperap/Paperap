@@ -8,12 +8,12 @@
    METADATA:
 
        File:    saved_view.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.1
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -29,6 +29,18 @@ from pydantic import BaseModel, Field
 
 from paperap.models.base import PaperlessModel
 
+DEFAULT_DISPLAY_FIELDS = [
+    "title",
+    "created",
+    "tag",
+    "correspondent",
+    "documenttype",
+    "storagepath",
+    "note",
+    "owner",
+    "shared",
+    "pagecount"
+]
 
 class SavedView(PaperlessModel):
     """
@@ -36,13 +48,16 @@ class SavedView(PaperlessModel):
     """
 
     name: str
-    sort_field: str
-    sort_reverse: bool
     show_on_dashboard: bool
     show_in_sidebar: bool
+    sort_field: str
+    sort_reverse: bool
     filter_rules: list[dict[str, Any]]
-    owner: int | None = Field(default=None)
-    user_can_change: bool = Field(default=False)
+    page_size : int | None = None
+    display_mode : str = "smallCards"
+    display_fields : list[str] = Field(default_factory=lambda: DEFAULT_DISPLAY_FIELDS)
+    owner: int | None = None
+    user_can_change: bool = True
 
     class Meta(PaperlessModel.Meta):
         # Fields that should not be modified

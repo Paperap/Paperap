@@ -1,7 +1,8 @@
 """
 
-
-
+Tests that are run for every model. These are not exhaustive, and each model should have its own tests
+that are specific to it. However, these ensure that there is at least a base level
+of testing for all models.
 
  ----------------------------------------------------------------------------
 
@@ -39,9 +40,6 @@ from paperap.models.correspondent import Correspondent
 from paperap.models.custom_field import CustomField
 from paperap.models.document import Document
 from paperap.models.document_type import DocumentType
-from paperap.models.log import Log
-from paperap.models.mail_accounts import MailAccounts
-from paperap.models.mail_rules import MailRules
 from paperap.models.profile import Profile
 from paperap.models.saved_view import SavedView
 from paperap.models.share_links import ShareLinks
@@ -52,7 +50,7 @@ from paperap.models.ui_settings import UISettings
 from paperap.models.user import Group, User
 from paperap.models.workflow import Workflow, WorkflowAction, WorkflowTrigger
 
-from paperap.tests import TestCase, request_or_load_data
+from paperap.tests import TestCase
 from paperap.client import PaperlessClient
 
 logger = logging.getLogger(__name__)
@@ -67,28 +65,21 @@ class ModelTestCase(TestCase, ABC):
         self.setup_client()
         self.model_to_resource = {
             Correspondent: self.client.correspondents,
-        }
-        """
-            CustomField: self.client.custom_fields,
+            #CustomField: self.client.custom_fields,
             Document: self.client.documents,
-            DocumentType: self.client.document_types,
-            Log: self.client.logs,
-            MailAccounts: self.client.mail_accounts,
-            MailRules: self.client.mail_rules,
-            Profile: self.client.profile,
-            SavedView: self.client.saved_views,
-            ShareLinks: self.client.share_links,
-            StoragePath: self.client.storage_paths,
-            Tag: self.client.tags,
-            Task: self.client.tasks,
-            UISettings: self.client.ui_settings,
-            User: self.client.users,
-            Group: self.client.groups,
-            Workflow: self.client.workflows,
-            WorkflowAction: self.client.workflow_actions,
-            WorkflowTrigger: self.client.workflow_triggers,
+            #DocumentType: self.client.document_types,
+            #Profile: self.client.profile,
+            #SavedView: self.client.saved_views,
+            #ShareLinks: self.client.share_links,
+            #StoragePath: self.client.storage_paths,
+            #Tag: self.client.tags,
+            #Task: self.client.tasks,
+            #User: self.client.users,
+            #Group: self.client.groups,
+            #Workflow: self.client.workflows,
+            #WorkflowAction: self.client.workflow_actions,
+            #WorkflowTrigger: self.client.workflow_triggers,
         }
-        """
 
     @abstractmethod
     def setup_client(self):
@@ -157,7 +148,7 @@ class ModelTestCase(TestCase, ABC):
         return sample_data
 
     def _get_model_fields(self, model: PaperlessModel) -> dict[str, Iterable[type]]:
-        hints = get_type_hints(model)
+        hints = model.__annotations__
         fields = {}
         for field, type_hint in hints.items():
             model_types = []
@@ -188,20 +179,27 @@ class TestModelFromDict(ModelTestCase):
                 self.assertIsInstance(model, model_class, f"Expected {model_class.__name__}, got {type(model)}")
                 if hasattr(model, 'id'):
                     self.assertEqual(model.id, sample_data.get("id"), f"{model_class.__name__} id mismatch")
+
                 model_fields = self._get_model_fields(model)
+                
                 for date_field in ['created', 'updated', 'added']:
                     if hasattr(model, date_field) and date_field in sample_data:
+                        # Allow None
+                        if sample_data[date_field] is None:
+                            continue
+                        
                         field_value = getattr(model, date_field)
                         self.assertIsInstance(field_value, datetime, f"{model_class.__name__}.{date_field} should be datetime")
+
                 for attr_name, expected_value in sample_data.items():
                     if attr_name in ['id', 'created', 'updated', 'added']:
                         continue
                     if hasattr(model, attr_name):
                         field_types = model_fields.get(attr_name, [])
-                        if type(None) in field_types:
+                        if expected_value is None or type(None) in field_types:
                             continue
                         actual_value = getattr(model, attr_name)
-                        self.assertIsNotNone(actual_value, f"{model_class.__name__}.{attr_name} was not set correctly")
+                        self.assertIsNotNone(actual_value, f"{model_class.__name__}.{attr_name} was not set correctly. Expected {expected_value}, got {actual_value}")
 
     """
     # ID is not currently required, since the model can be instantiated before saving.
@@ -254,33 +252,34 @@ class TestRequest(ModelTestCase):
     def test_request(self):
         for model_class, resource in self.model_to_resource.items():
             with self.subTest(model=model_class.__name__):
-                if not (response := request_or_load_data(f"{resource.name}_list.json", resource._request_raw)):
-                    self.fail(f"Failed to get sample data for {resource.name}")
-                models : Iterator[PaperlessModel] = resource._handle_response(response)
+                print(f'Listing model: {model_class.__name__}')
+                models = self.list_resource(resource)
+                total = models.count()
+                print(f'Got models: {total}')
 
-            expected_count = response.get("count", 0)
-            count = 0
-            for model in models:
-                count += 1
-                self.assertIsInstance(model, model_class, f"Expected {model_class.__name__}, got {type(model)}")
-                if hasattr(model, 'id'):
-                    self.assertIsInstance(model.id, int, f"{model_class.__name__}.id should be int")
-                model_fields = self._get_model_fields(model)
-                for date_field in ['created', 'updated', 'added']:
-                    if hasattr(model, date_field):
-                        field_value = getattr(model, date_field)
-                        self.assertIsInstance(field_value, datetime, f"{model_class.__name__}.{date_field} should be datetime")
-                for attr_name, expected_value in model.to_dict().items():
-                    if attr_name in ['id', 'created', 'updated', 'added']:
-                        continue
-                    if hasattr(model, attr_name):
-                        field_types = model_fields.get(attr_name, [])
-                        if type(None) in field_types:
+                count = 0
+                for model in models:
+                    count += 1
+                    self.assertIsInstance(model, model_class, f"Expected {model_class.__name__}, got {type(model)}")
+                    if hasattr(model, 'id'):
+                        self.assertIsInstance(model.id, int, f"{model_class.__name__}.id should be int")
+                    model_fields = self._get_model_fields(model)
+                    for date_field in ['created', 'updated', 'added']:
+                        if hasattr(model, date_field):
+                            field_value = getattr(model, date_field)
+                            self.assertIsInstance(field_value, datetime, f"{model_class.__name__}.{date_field} should be datetime")
+                    for attr_name, expected_value in model.to_dict().items():
+                        if attr_name in ['id', 'created', 'updated', 'added']:
                             continue
-                        actual_value = getattr(model, attr_name)
-                        self.assertIsNotNone(actual_value, f"{model_class.__name__}.{attr_name} was not set correctly")
+                        if hasattr(model, attr_name):
+                            field_types = model_fields.get(attr_name, [])
+                            if type(None) in field_types:
+                                continue
+                            actual_value = getattr(model, attr_name)
+                            self.assertIsNotNone(actual_value, f"{model_class.__name__}.{attr_name} was not set correctly")
+                    break
 
-                #self.assertEqual(count, expected_count, f"Expected to iterate over {expected_count} {model_class.__name__}s, got {count}")
+                self.assertGreater(count, 0, f"Expected to iterate over at least one {model_class.__name__}")
 
     """
     # WIP

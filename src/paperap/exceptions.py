@@ -8,12 +8,12 @@
    METADATA:
 
        File:    exceptions.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.1
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -50,9 +50,11 @@ class APIError(PaperlessException):
 
 class AuthenticationError(APIError):
     """Raised when authentication fails."""
-
     pass
 
+class ResponseParsingError(APIError):
+    """Raised when the response can't be parsed."""
+    pass
 
 class ResourceNotFoundError(APIError):
     """Raised when a requested resource is not found."""

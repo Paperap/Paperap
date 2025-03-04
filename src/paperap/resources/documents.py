@@ -8,12 +8,12 @@
    METADATA:
 
        File:    documents.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.1
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -26,6 +26,7 @@
 from __future__ import annotations
 
 import os.path
+from datetime import datetime
 from typing import Any, BinaryIO, Iterator, Optional
 
 from paperap.exceptions import APIError

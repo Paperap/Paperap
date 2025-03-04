@@ -1,0 +1,12 @@
+{
+	"id": 8419,
+	"task_id": "333c8ac2-07fd-495b-9d59-172beca43bc6",
+	"task_file_name": "example-filename.pdf",
+	"date_created": "2025-02-24T16:53:35.890352-05:00",
+	"date_done": "2025-02-24T16:54:43.446608-05:00",
+	"type": "file",
+	"status": "SUCCESS",
+	"result": "Success. New document id 7006 created",
+	"acknowledged": false,
+	"related_document": "7006"
+}

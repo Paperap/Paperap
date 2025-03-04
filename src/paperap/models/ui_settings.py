@@ -8,12 +8,12 @@
    METADATA:
 
        File:    ui_settings.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.1
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -35,5 +35,6 @@ class UISettings(PaperlessModel):
     Represents UI settings in Paperless-NgX.
     """
 
-    user: int
+    user: dict[str, Any] = Field(default_factory=dict)
     settings: dict[str, Any]
+    permissions: list[str] = Field(default_factory=list)

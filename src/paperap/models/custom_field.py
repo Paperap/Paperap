@@ -8,12 +8,12 @@
    METADATA:
 
        File:    custom_field.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.1
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -37,10 +37,9 @@ class CustomField(PaperlessModel):
     """
 
     name: str
-    slug: str
-    data_type: int  # 0=text, 1=integer, 2=float, 3=boolean, 4=monetary, 5=date
-    required: bool
-    document_types: list[int] = Field(default_factory=list)
+    data_type: str
+    extra_data : dict[str, Any]
+    document_count: int
 
     model_config = {
         "arbitrary_types_allowed": True,

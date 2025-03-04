@@ -23,4 +23,4 @@
 
 """
 from __future__ import annotations
-from paperap.tests.testcase import TestCase, load_sample_data, request_or_load_data
+from paperap.tests.testcase import TestCase, load_sample_data

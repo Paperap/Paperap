@@ -32,7 +32,7 @@ import requests
 from yarl import URL
 from string import Template
 from paperap.auth import BasicAuth, TokenAuth, AuthBase
-from paperap.exceptions import APIError, AuthenticationError, PaperlessException, ResourceNotFoundError
+from paperap.exceptions import APIError, AuthenticationError, PaperlessException, ResourceNotFoundError, ResponseParsingError
 from paperap.plugin_manager import PluginConfig
 from paperap.plugins.base import Plugin
 from paperap.settings import Settings, SettingsArgs
@@ -42,12 +42,8 @@ from paperap.resources import (
     DocumentResource,
     DocumentTypeResource,
     GroupResource,
-    LogResource,
-    MailAccountsResource,
-    MailRulesResource,
     ProfileResource,
     SavedViewResource,
-    SearchResource,
     ShareLinksResource,
     StoragePathResource,
     TagResource,
@@ -108,12 +104,8 @@ class PaperlessClient:
     document_types: DocumentTypeResource
     documents: DocumentResource
     groups: GroupResource
-    logs: LogResource
-    mail_accounts: MailAccountsResource
-    mail_rules: MailRulesResource
     profile: ProfileResource
     saved_views: SavedViewResource
-    search: SearchResource
     share_links: ShareLinksResource
     storage_paths: StoragePathResource
     tags: TagResource
@@ -165,21 +157,22 @@ class PaperlessClient:
     def _init_resources(self) -> None:
         """Initialize all API resources."""
         # Initialize resources
-        self.documents = DocumentResource(self)
         self.correspondents = CorrespondentResource(self)
-        self.tags = TagResource(self)
-        self.document_types = DocumentTypeResource(self)
-        self.storage_paths = StoragePathResource(self)
         self.custom_fields = CustomFieldResource(self)
-        self.logs = LogResource(self)
-        self.users = UserResource(self)
+        self.document_types = DocumentTypeResource(self)
+        self.documents = DocumentResource(self)
         self.groups = GroupResource(self)
-        self.tasks = TaskResource(self)
+        self.profile = ProfileResource(self)
         self.saved_views = SavedViewResource(self)
+        self.share_links = ShareLinksResource(self)
+        self.storage_paths = StoragePathResource(self)
+        self.tags = TagResource(self)
+        self.tasks = TaskResource(self)
         self.ui_settings = UISettingsResource(self)
-        self.workflows = WorkflowResource(self)
-        self.workflow_triggers = WorkflowTriggerResource(self)
+        self.users = UserResource(self)
         self.workflow_actions = WorkflowActionResource(self)
+        self.workflow_triggers = WorkflowTriggerResource(self)
+        self.workflows = WorkflowResource(self)
 
     def _initialize_plugins(self, plugin_config: PluginConfig | None = None) -> None:
         """
@@ -337,7 +330,8 @@ class PaperlessClient:
             try:
                 return response.json()
             except ValueError as e:
-                raise PaperlessException(f"Failed to parse JSON response: {str(e)} -> {response}") from e
+                logger.error("Failed to parse JSON response: %s -> url %s -> content: %s", e, response.url, response.content)
+                raise ResponseParsingError(f"Failed to parse JSON response: {str(e)} -> url {response.url}") from e
 
         return response.content
 
