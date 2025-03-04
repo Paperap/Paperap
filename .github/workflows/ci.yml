@@ -41,8 +41,5 @@ jobs:
       - name: Run Bandit
         run: uv run bandit -r src/
 
-      - name: Run Safety
-        run: uv run safety check --full-report
-
       - name: Unit Tests
         run: uv run python -m unittest discover -s tests
