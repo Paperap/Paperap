@@ -142,7 +142,7 @@ class SignalRegistry:
 
 # Resource lifecycle signals
 pre_list = Signal[dict[str, Any]]("pre_list", "Emitted before listing resources")
-post_list_response = Signal[dict[str, Any]]("post_list_response", "Emitted after receiving list response, before processing")
+post_list_response = Signal[dict[str, Any]]("post_list_response", "Emitted after list response, before processing")
 post_list_item = Signal[dict[str, Any]]("post_list_item", "Emitted for each item in a list response")
 post_list = Signal[list[Any]]("post_list", "Emitted after listing resources")
 

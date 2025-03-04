@@ -72,7 +72,7 @@ class QuerySet(Iterable[_PaperlessModel]):
 
     def __init__(
         self,
-        resource: "PaperlessResource",
+        resource: "PaperlessResource[_PaperlessModel]",
         filters: Optional[dict[str, Any]] = None,
         _cache: Optional[list[_PaperlessModel]] = None,
         _fetch_all: bool = False,

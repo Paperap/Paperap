@@ -185,7 +185,7 @@ class TestQuerySetFirst(unittest.TestCase):
         self.qs = QuerySet(self.resource, filters={"init": "value"})
 
     def test_first_with_cache(self):
-        self.qs._result_cache = ["first", "second"]
+        self.qs._result_cache = ["first", "second"]  # type: ignore # Allow edit ClassVar in tests
         self.qs._fetch_all = True
         self.assertEqual(self.qs.first(), "first")
 
@@ -207,7 +207,7 @@ class TestQuerySetLast(unittest.TestCase):
         self.qs = QuerySet(self.resource, filters={"init": "value"})
 
     def test_last(self):
-        self.qs._result_cache = ["first", "middle", "last"]
+        self.qs._result_cache = ["first", "middle", "last"]  # type: ignore # Allow edit ClassVar in tests
         self.qs._fetch_all = True
         self.assertEqual(self.qs.last(), "last")
         self.qs._result_cache = []
@@ -224,7 +224,7 @@ class TestQuerySetExists(unittest.TestCase):
         self.qs = QuerySet(self.resource, filters={"init": "value"})
 
     def test_exists(self):
-        self.qs._result_cache = ["exists"]
+        self.qs._result_cache = ["exists"]  # type: ignore # Allow edit ClassVar in tests
         self.qs._fetch_all = True
         self.assertTrue(self.qs.exists())
         self.qs._result_cache = []
@@ -241,7 +241,7 @@ class TestQuerySetIter(unittest.TestCase):
         self.qs = QuerySet(self.resource, filters={"init": "value"})
 
     def test_iter_with_fully_fetched_cache(self):
-        self.qs._result_cache = ["a", "b"]
+        self.qs._result_cache = ["a", "b"]  # type: ignore # Allow edit ClassVar in tests
         self.qs._fetch_all = True
         result = list(iter(self.qs))
         self.assertEqual(result, ["a", "b"])
@@ -263,7 +263,7 @@ class TestQuerySetGetItem(unittest.TestCase):
         self.qs = QuerySet(self.resource, filters={"init": "value"})
 
     def test_getitem_index_cached(self):
-        self.qs._result_cache = ["zero", "one", "two"]
+        self.qs._result_cache = ["zero", "one", "two"]  # type: ignore # Allow edit ClassVar in tests
         self.qs._fetch_all = True
         self.assertEqual(self.qs[1], "one")
 
@@ -277,7 +277,7 @@ class TestQuerySetGetItem(unittest.TestCase):
         mock_chain.assert_called_once_with(filters={'limit': 1, 'offset': 5})
 
     def test_getitem_index_negative(self):
-        self.qs._result_cache = ["a", "b", "c"]
+        self.qs._result_cache = ["a", "b", "c"]  # type: ignore # Allow edit ClassVar in tests
         self.qs._fetch_all = True
         self.assertEqual(self.qs[-1], "c")
 
@@ -291,7 +291,7 @@ class TestQuerySetGetItem(unittest.TestCase):
             mock_chain.assert_called_once_with(filters={'limit': 2})
 
     def test_getitem_slice_negative(self):
-        self.qs._result_cache = ["a", "b", "c", "d"]
+        self.qs._result_cache = ["a", "b", "c", "d"]  # type: ignore # Allow edit ClassVar in tests
         self.qs._fetch_all = True
         result = self.qs[1:-1]
         self.assertEqual(result, ["b", "c"])

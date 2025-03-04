@@ -194,11 +194,11 @@ class PaperlessClient:
         self.plugin_manager.discover_plugins()
 
         # Configure plugins
-        default_config : PluginConfig = {
-            'enabled_plugins': ['TestDataCollector'],
-            'settings': {
-                'TestDataCollector': {
-                    'test_dir': str(Path(__file__).parent.parent.parent / "tests/sample_data")
+        default_config: PluginConfig = {
+            "enabled_plugins": ["TestDataCollector"],
+            "settings": {
+                "TestDataCollector": {
+                    "test_dir": str(Path(__file__).parent.parent.parent / "tests/sample_data"),
                 },
             },
         }

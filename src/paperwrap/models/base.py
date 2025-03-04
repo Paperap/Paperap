@@ -120,9 +120,9 @@ class PaperlessModel(BaseModel, ABC, metaclass=PaperlessModelMeta):
         extra="ignore",
         json_encoders={
             # Custom JSON encoders for types
-            datetime: lambda dt: dt.isoformat().replace('+00:00', 'Z')
-                                if dt.tzinfo is not None and dt.tzinfo.utcoffset(dt).total_seconds() == 0
-                                else dt.isoformat(),
+            datetime: lambda dt: dt.isoformat().replace("+00:00", "Z")
+            if dt.tzinfo is not None and dt.tzinfo.utcoffset(dt).total_seconds() == 0
+            else dt.isoformat(),
             Decimal: lambda d: float(d),
         },
     )
