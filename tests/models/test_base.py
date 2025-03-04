@@ -23,8 +23,11 @@
 
 """
 from __future__ import annotations
+import os
 import unittest
 from datetime import datetime, timezone
+from unittest.mock import patch
+from paperap.tests import TestCase
 from paperap.models import PaperlessModel
 from paperap.client import PaperlessClient
 from paperap.resources.base import PaperlessResource
@@ -46,10 +49,12 @@ class ExampleResource(PaperlessResource):
     name = "example"
     model_class = ExampleModel
 
-class TestModel(unittest.TestCase):
+class TestModel(TestCase):
     def setUp(self):
         # Setup a sample model instance
-        self.client = PaperlessClient()
+        env_data = {f'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        with patch.dict(os.environ, env_data, clear=True):
+            self.client = PaperlessClient()
         self.resource = ExampleResource(self.client)
         self.model_data = {
             "id": 1,

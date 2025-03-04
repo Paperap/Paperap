@@ -24,6 +24,7 @@
 """
 from __future__ import annotations
 
+import os
 from typing import Iterable
 import unittest
 from unittest.mock import patch, MagicMock
@@ -38,10 +39,16 @@ from paperap.tests import TestCase, load_sample_data
 sample_document_list = load_sample_data('documents_list.json')
 sample_document = load_sample_data('documents_item.json')
 
-class TestDocumentInit(unittest.TestCase):
+class DocumentTestCase(TestCase):
     def setUp(self):
+        env_data = {f'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        with patch.dict(os.environ, env_data, clear=True):
+            self.client = PaperlessClient()
+
+class TestDocumentInit(DocumentTestCase):
+    def setUp(self):
+        super().setUp()
         # Setup a sample model instance
-        self.client = PaperlessClient()
         self.resource = self.client.documents
         self.model_data = {
             "id": 1,
@@ -67,10 +74,10 @@ class TestDocumentInit(unittest.TestCase):
         self.assertEqual(model.created, datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc), f"created wrong value after from_dict {model.created}")
         self.assertEqual(model.updated, datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc), f"updated wrong value after from_dict {model.updated}")
 
-class TestDocument(unittest.TestCase):
+class TestDocument(DocumentTestCase):
     def setUp(self):
+        super().setUp()
         # Setup a sample model instance
-        self.client = PaperlessClient()
         self.resource = self.client.documents
         self.model_data = {
             "id": 1,
@@ -117,10 +124,10 @@ class TestDocument(unittest.TestCase):
         self.assertEqual(model_dict["document_type"], 1)
         self.assertEqual(model_dict["tags"], [1, 2, 3])
 
-class TestGetTags(unittest.TestCase):
+class TestGetTags(DocumentTestCase):
     def setUp(self):
+        super().setUp()
         # Setup a sample model instance
-        self.client = PaperlessClient()
         self.documents = self.client.documents()
 
     def test_get_tags(self):
@@ -133,10 +140,7 @@ class TestGetTags(unittest.TestCase):
                 self.assertTrue(tag.id in document.tags, f"Expected tag.id to be in document.tags")
                 self.assertIsInstance(tag.name, str, f"Expected tag.name to be a string, got {type(tag.name)}")
 
-class TestRequestDocumentList(TestCase):
-    def setUp(self):
-        self.client = PaperlessClient()
-
+class TestRequestDocumentList(DocumentTestCase):
     def test_get_documents(self):
         with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = sample_document_list
@@ -147,9 +151,7 @@ class TestRequestDocumentList(TestCase):
             expected = sample_document_list["count"]
             self.assertEqual(total, expected, f"Expected {expected} documents, got {total}")
 
-class TestRequestDocument(TestCase):
-    def setUp(self):
-        self.client = PaperlessClient()
+class TestRequestDocument(DocumentTestCase):
 
     def test_get_document(self):
         with patch("paperap.client.PaperlessClient.request") as mock_request:

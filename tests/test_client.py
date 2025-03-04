@@ -24,6 +24,7 @@
 """
 from __future__ import annotations
 import json
+import os
 from typing import Iterator
 import unittest
 from unittest.mock import MagicMock, patch
@@ -39,7 +40,9 @@ sample_data = load_sample_data('documents_list.json')
 
 class TestClient(TestCase):
     def setUp(self):
-        self.client = PaperlessClient()
+        env_data = {f'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        with patch.dict(os.environ, env_data, clear=True):
+            self.client = PaperlessClient()
 
     @patch("paperap.client.PaperlessClient.request")
     def test_get_documents(self, mock_request):

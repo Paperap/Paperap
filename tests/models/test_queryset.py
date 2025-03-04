@@ -25,6 +25,7 @@
 from __future__ import annotations
 
 import logging
+import os
 from string import Template
 import unittest
 from unittest.mock import MagicMock, patch
@@ -96,7 +97,9 @@ class TestQuerySetGetNoCache(unittest.TestCase):
 
 class TestQuerySetGetNoCacheFailure(unittest.TestCase):
     def setUp(self):
-        self.client = PaperlessClient()
+        env_data = {f'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        with patch.dict(os.environ, env_data, clear=True):
+            self.client = PaperlessClient()
         self.resource = DocumentResource(self.client)
         self.qs = QuerySet(self.resource)
 
@@ -129,7 +132,9 @@ class TestQuerySetGetCache(unittest.TestCase):
 
 class TestQuerySetGetCacheFailure(unittest.TestCase):
     def setUp(self):
-        self.client = PaperlessClient()
+        env_data = {f'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        with patch.dict(os.environ, env_data, clear=True):
+            self.client = PaperlessClient()
         self.resource = DocumentResource(self.client)
         self.qs = QuerySet(self.resource)
 

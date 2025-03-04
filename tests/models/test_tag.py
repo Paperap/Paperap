@@ -23,6 +23,7 @@
 
 """
 from __future__ import annotations
+import os
 from typing import Iterable
 import unittest
 from unittest.mock import MagicMock, patch
@@ -39,7 +40,9 @@ class TestTagInit(unittest.TestCase):
 
     def setUp(self):
         # Setup a sample model instance
-        self.client = PaperlessClient()
+        env_data = {f'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        with patch.dict(os.environ, env_data, clear=True):
+            self.client = PaperlessClient()
         self.resource = self.client.tags
         self.model_data = {
             "id": 1,
@@ -73,7 +76,9 @@ class TestTagInit(unittest.TestCase):
 class TestTag(unittest.TestCase):
     def setUp(self):
         # Setup a sample model instance
-        self.client = PaperlessClient()
+        env_data = {f'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        with patch.dict(os.environ, env_data, clear=True):
+            self.client = PaperlessClient()
         self.resource = self.client.tags
         self.model_data = {
             "id": 1,

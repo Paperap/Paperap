@@ -107,7 +107,6 @@ class PaperlessResource(ABC, Generic[_PaperlessModel]):
             raise ValueError(f"model_class must be defined in {cls.__name__}")
 
         # Set parser
-        print(f"Setting parser for {model_class.__name__}")
         parser_type = model_class._meta.parser
         cls.parser = parser_type(model_class)
 
