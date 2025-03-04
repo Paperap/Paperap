@@ -21,7 +21,7 @@ The library is in active development, and is not ready for production use.
 ## Installation
 
 ```sh
-pip install paperwrap
+pip install paperap
 ```
 
 ## Quick Start
@@ -31,7 +31,7 @@ pip install paperwrap
 #### Using API Token:
 
 ```python
-from paperwrap import PaperlessClient
+from paperap import PaperlessClient
 
 client = PaperlessClient(
     base_url="https://paperless.example.com",
@@ -106,7 +106,7 @@ Paperwrap raises exceptions for API errors:
 - `MultipleObjectsFoundError` - Error when a single object is requested but multiple objects are found
 
 ```python
-from paperwrap.exceptions import APIError
+from paperap.exceptions import APIError
 
 try:
     doc = client.documents.get(9999)  # Nonexistent document
