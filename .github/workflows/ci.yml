@@ -30,19 +30,19 @@ jobs:
         run: uv sync --all-groups
 
       - name: Run Pre-commit Hooks
-        run: pre-commit run --all-files
+        run: uv run pre-commit run --all-files
 
       - name: Run Ruff
-        run: ruff check .
+        run: uv run ruff check .
 
       - name: Run Mypy
-        run: mypy --config-file pyproject.toml src
+        run: uv run mypy --config-file pyproject.toml src
 
       - name: Run Bandit
-        run: bandit -r src/
+        run: uv run bandit -r src/
 
       - name: Run Safety
-        run: safety check --full-report
+        run: uv run safety check --full-report
 
       - name: Unit Tests
         run: uv run python -m unittest discover -s tests
