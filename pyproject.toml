@@ -18,17 +18,17 @@ dependencies = [
 license = "MIT"
 
 [project.scripts]
-paperwrap = "paperwrap:main"
+paperap = "paperap:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.pydoctor]
-add-package = ["./src/paperwrap"]
-project-name = "paperwrap"
+add-package = ["./src/paperap"]
+project-name = "paperap"
 project-version = "0.0.1"
-project-url = "https://github.com/avranu/Paperwrap"
+project-url = "https://github.com/paperap/paperap"
 html-output = "docs/API"
 project-base-dir = "./"
 intersphinx = ["https://docs.python.org/3/objects.inv"]
@@ -783,7 +783,7 @@ pythonPlatform = "Linux"
 
 [tool.mypy]
 python_version = "3.12"
-mypy_path = "./src/paperwrap"
+mypy_path = "./src/paperap"
 namespace_packages = true
 explicit_package_bases = false
 warn_unused_ignores = false

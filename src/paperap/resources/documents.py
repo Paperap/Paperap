@@ -1,29 +1,32 @@
-"""*********************************************************************************************************************
-*                                                                                                                      *
-*                                                                                                                      *
-*                                                                                                                      *
-*                                                                                                                      *
-* -------------------------------------------------------------------------------------------------------------------- *
-*                                                                                                                      *
-*    METADATA:                                                                                                         *
-*                                                                                                                      *
-*        File:    documents.py                                                                                         *
-*        Project: resources                                                                                            *
-*        Created: 2025-03-01                                                                                           *
-*        Author:  Jess Mann                                                                                            *
-*        Email:   jess@jmann.me                                                                                        *
-*        Copyright (c) 2025 Jess Mann                                                                                  *
-*                                                                                                                      *
-* -------------------------------------------------------------------------------------------------------------------- *
-*                                                                                                                      *
-*    LAST MODIFIED:                                                                                                    *
-*                                                                                                                      *
-*        2025-03-01     By Jess Mann                                                                                   *
-*                                                                                                                      *
-*********************************************************************************************************************"""
+"""
+
+
+
+
+ ----------------------------------------------------------------------------
+
+    METADATA:
+
+        File:    documents.py
+        Project: paperap
+        Created: 2025-03-04
+        Version: 0.0.1
+        Author:  Jess Mann
+        Email:   jess@jmann.me
+        Copyright (c) 2025 Jess Mann
+
+ ----------------------------------------------------------------------------
+
+    LAST MODIFIED:
+
+        2025-03-04     By Jess Mann
+
+"""
+
+from __future__ import annotations
 
 import os.path
-from typing import Any, BinaryIO, Dict, Iterator, List, Optional
+from typing import Any, BinaryIO, Iterator, Optional
 
 from paperap.exceptions import APIError
 from paperap.models.document import Document
@@ -79,7 +82,7 @@ class DocumentResource(PaperlessResource[Document]):
         title: str | None = None,
         correspondent: int | None = None,
         document_type: int | None = None,
-        tags: Optional[List[int]] = None,
+        tags: Optional[list[int]] = None,
     ) -> Document:
         """
         Upload a document from a file-like object.

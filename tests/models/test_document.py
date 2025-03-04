@@ -1,26 +1,29 @@
-"""*********************************************************************************************************************
-*                                                                                                                      *
-*                                                                                                                      *
-*                                                                                                                      *
-*                                                                                                                      *
-* -------------------------------------------------------------------------------------------------------------------- *
-*                                                                                                                      *
-*    METADATA:                                                                                                         *
-*                                                                                                                      *
-*        File:    document.py                                                                                          *
-*        Project: models                                                                                               *
-*        Created: 2025-03-02                                                                                           *
-*        Author:  Jess Mann                                                                                            *
-*        Email:   jess@jmann.me                                                                                        *
-*        Copyright (c) 2025 Jess Mann                                                                                  *
-*                                                                                                                      *
-* -------------------------------------------------------------------------------------------------------------------- *
-*                                                                                                                      *
-*    LAST MODIFIED:                                                                                                    *
-*                                                                                                                      *
-*        2025-03-02     By Jess Mann                                                                                   *
-*                                                                                                                      *
-*********************************************************************************************************************"""
+"""
+
+
+
+
+ ----------------------------------------------------------------------------
+
+    METADATA:
+
+        File:    test_document.py
+        Project: paperap
+        Created: 2025-03-04
+        Version: 0.0.1
+        Author:  Jess Mann
+        Email:   jess@jmann.me
+        Copyright (c) 2025 Jess Mann
+
+ ----------------------------------------------------------------------------
+
+    LAST MODIFIED:
+
+        2025-03-04     By Jess Mann
+
+"""
+from __future__ import annotations
+
 from typing import Iterable
 import unittest
 from unittest.mock import patch, MagicMock
@@ -167,6 +170,18 @@ class TestRequestDocument(TestCase):
             self.assertEqual(document.correspondent, sample_document["correspondent"], "Loading sample document correspondent mismatch")
             self.assertEqual(document.document_type, sample_document["document_type"], "Loading sample document document_type mismatch")
             self.assertEqual(document.tags, sample_document["tags"], "Loading sample document tags mismatch")
+
+    def test_get_tags(self):
+        with patch("paperap.client.PaperlessClient.request") as mock_request:
+            mock_request.return_value = sample_document
+            document = self.client.documents().get(1)
+
+        tags = document.get_tags()
+        self.assertIsInstance(tags, Iterable)
+        for tag in tags:
+            self.assertIsInstance(tag, Tag, f"Expected document.tag to be a Tag, got {type(tag)}")
+            self.assertTrue(tag.id in document.tags, f"Expected tag.id to be in document.tags")
+            self.assertIsInstance(tag.name, str, f"Expected tag.name to be a string, got {type(tag.name)}")
 
 if __name__ == "__main__":
     unittest.main()

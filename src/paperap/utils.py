@@ -1,31 +1,33 @@
-"""*********************************************************************************************************************
-*                                                                                                                      *
-*                                                                                                                      *
-*                                                                                                                      *
-*                                                                                                                      *
-* -------------------------------------------------------------------------------------------------------------------- *
-*                                                                                                                      *
-*    METADATA:                                                                                                         *
-*                                                                                                                      *
-*        File:    utils.py                                                                                             *
-*        Project: paperap                                                                                            *
-*        Created: 2025-03-01                                                                                           *
-*        Author:  Jess Mann                                                                                            *
-*        Email:   jess@jmann.me                                                                                        *
-*        Copyright (c) 2025 Jess Mann                                                                                  *
-*                                                                                                                      *
-* -------------------------------------------------------------------------------------------------------------------- *
-*                                                                                                                      *
-*    LAST MODIFIED:                                                                                                    *
-*                                                                                                                      *
-*        2025-03-01     By Jess Mann                                                                                   *
-*                                                                                                                      *
-*********************************************************************************************************************"""
+"""
+
+
+
+
+ ----------------------------------------------------------------------------
+
+    METADATA:
+
+        File:    utils.py
+        Project: paperap
+        Created: 2025-03-04
+        Version: 0.0.1
+        Author:  Jess Mann
+        Email:   jess@jmann.me
+        Copyright (c) 2025 Jess Mann
+
+ ----------------------------------------------------------------------------
+
+    LAST MODIFIED:
+
+        2025-03-04     By Jess Mann
+
+"""
+
 
 import json
 import os
 from datetime import datetime
-from typing import Any, BinaryIO, Dict, List, Optional
+from typing import Any, BinaryIO, Optional
 
 
 def datetime_to_str(dt: datetime) -> str:
