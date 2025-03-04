@@ -23,9 +23,9 @@
 *********************************************************************************************************************"""
 import unittest
 from datetime import datetime, timezone
-from paperwrap.models import PaperlessModel
-from paperwrap.client import PaperlessClient
-from paperwrap.resources.base import PaperlessResource
+from paperap.models import PaperlessModel
+from paperap.client import PaperlessClient
+from paperap.resources.base import PaperlessResource
 
 class ExampleModel(PaperlessModel):
     """

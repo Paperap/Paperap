@@ -25,10 +25,10 @@ from typing import Iterable
 import unittest
 from unittest.mock import MagicMock, patch
 from datetime import datetime, timezone
-from paperwrap.models.tag import Tag
-from paperwrap.client import PaperlessClient
-from paperwrap.resources.tags import TagResource
-from paperwrap.tests import TestCase, load_sample_data
+from paperap.models.tag import Tag
+from paperap.client import PaperlessClient
+from paperap.resources.tags import TagResource
+from paperap.tests import TestCase, load_sample_data
 
 # Load sample response from tests/sample_data/tags_list.json
 sample_data = load_sample_data('tags_list.json')

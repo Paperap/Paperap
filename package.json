@@ -1,0 +1,14 @@
+{
+  "name": "paperap",
+  "version": "0.0.1",
+  "description": "A wrapper for the paperless ngx rest api",
+  "scripts": {
+    "prettier": "prettier --write **/*.{json,js,md,yml,yaml} *.{json,js,md,yml,yaml}"
+  },
+  "author": "Jess Mann <jess@jmann.me>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "prettier": "^3.5.3"
+  }
+}

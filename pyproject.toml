@@ -1,5 +1,5 @@
 [project]
-name = "paperwrap"
+name = "paperap"
 version = "0.0.1"
 description = "Python library for interacting with the Paperless NGX REST API"
 readme = "README.md"
@@ -317,7 +317,7 @@ indent-after-paren = 1
 indent-string = "    "
 
 # Maximum number of characters on a single line.
-max-line-length = 250
+max-line-length = 120
 
 # Maximum number of lines in a module.
 max-module-lines = 1000
@@ -569,7 +569,7 @@ redefining-builtins-modules = ["six.moves", "past.builtins", "future.builtins", 
 
 [tool.yapf]
 based_on_style = "google"
-column_limit = 250
+column_limit = 120
 align_closing_bracket_with_visual_indent = true
 blank_line_before_nested_class_or_def = true
 each_dict_entry_on_separate_line = true
@@ -640,7 +640,7 @@ subprocess = [
 
 [tool.ruff]
 # Basic configuration options
-line-length = 250
+line-length = 120
 include = ["**/*.py", "**/*.pyi"]
 
 # Excludes in addition to ruff's defaults

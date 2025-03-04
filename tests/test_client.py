@@ -26,11 +26,11 @@ from typing import Iterator
 import unittest
 from unittest.mock import MagicMock, patch
 from pathlib import Path
-from paperwrap.tests import TestCase, load_sample_data
-from paperwrap.models.queryset import QuerySet
-from paperwrap.models.document import Document
-from paperwrap.models.tag import Tag
-from paperwrap.client import PaperlessClient
+from paperap.tests import TestCase, load_sample_data
+from paperap.models.queryset import QuerySet
+from paperap.models.document import Document
+from paperap.models.tag import Tag
+from paperap.client import PaperlessClient
 
 # Load sample response from tests/sample_data/documents_list.json
 sample_data = load_sample_data('documents_list.json')
@@ -39,7 +39,7 @@ class TestClient(TestCase):
     def setUp(self):
         self.client = PaperlessClient()
 
-    @patch("paperwrap.client.PaperlessClient.request")
+    @patch("paperap.client.PaperlessClient.request")
     def test_get_documents(self, mock_request):
         mock_request.return_value = sample_data
         documents = self.client.documents()

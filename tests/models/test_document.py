@@ -25,12 +25,12 @@ from typing import Iterable
 import unittest
 from unittest.mock import patch, MagicMock
 from datetime import datetime, timezone
-from paperwrap.models.queryset import QuerySet
-from paperwrap.models.document import Document
-from paperwrap.client import PaperlessClient
-from paperwrap.resources.documents import DocumentResource
-from paperwrap.models.tag import Tag
-from paperwrap.tests import TestCase, load_sample_data
+from paperap.models.queryset import QuerySet
+from paperap.models.document import Document
+from paperap.client import PaperlessClient
+from paperap.resources.documents import DocumentResource
+from paperap.models.tag import Tag
+from paperap.tests import TestCase, load_sample_data
 
 sample_document_list = load_sample_data('documents_list.json')
 sample_document = load_sample_data('documents_item.json')
@@ -135,7 +135,7 @@ class TestRequestDocumentList(TestCase):
         self.client = PaperlessClient()
 
     def test_get_documents(self):
-        with patch("paperwrap.client.PaperlessClient.request") as mock_request:
+        with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = sample_document_list
             documents = self.client.documents()
             self.assertIsInstance(documents, QuerySet)
@@ -149,7 +149,7 @@ class TestRequestDocument(TestCase):
         self.client = PaperlessClient()
 
     def test_get_document(self):
-        with patch("paperwrap.client.PaperlessClient.request") as mock_request:
+        with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = sample_document
             document = self.client.documents().get(1)
             self.assertIsInstance(document, Document)

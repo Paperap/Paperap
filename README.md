@@ -1,10 +1,10 @@
-# Paperwrap
+# Paperap
 
 **Python library for interacting with the Paperless NGX REST API**
 
 ## Overview
 
-Paperwrap is a Python client library for interacting with the [Paperless-NGX](https://github.com/paperless-ngx/paperless-ngx) REST API. It provides an object-oriented interface for managing documents, tags, correspondents, and other resources within Paperless-NGX.
+Paperap (pronounced like "paperwrap") is a Python client library for interacting with the [Paperless-NGX](https://github.com/paperless-ngx/paperless-ngx) REST API. It provides an object-oriented interface for managing documents, tags, correspondents, and other resources within Paperless-NGX.
 
 ## Status
 
@@ -29,34 +29,35 @@ pip install paperwrap
 ### Creating a Client
 
 #### Using API Token:
+
 ```python
-from paperwrap import PaperlessClient, Settings
+from paperwrap import PaperlessClient
 
 client = PaperlessClient(
-    Settings(
-        base_url="https://paperless.example.com",
-        token="your-token"
-    )
+    base_url="https://paperless.example.com",
+    token="your-token"
 )
 ```
 
 #### Using Username and Password:
+
 ```python
 client = PaperlessClient(
-    Settings(
-        base_url="https://paperless.example.com",
-        username="user",
-        password="pass"
-    )
+    base_url="https://paperless.example.com",
+    username="user",
+    password="pass"
 )
 ```
 
 #### Loading Settings from Environment Variables:
+
 Set the following environment variables:
+
 - `PAPERLESS_BASE_URL`
-- `PAPERLESS_TOKEN` or `PAPERLESS_USERNAME` and `PAPERLESS_PASSWORD`
+- `PAPERLESS_TOKEN` or both `PAPERLESS_USERNAME` and `PAPERLESS_PASSWORD`
 
 Then create a client without arguments:
+
 ```python
 client = PaperlessClient()
 ```
@@ -64,12 +65,14 @@ client = PaperlessClient()
 ## Working with Documents
 
 ### Listing Documents:
+
 ```python
 for doc in client.documents.all():
     print(doc.title)
 ```
 
 ### Filtering Documents:
+
 ```python
 docs = client.documents.filter(title__contains="invoice")
 for doc in docs:
@@ -77,6 +80,7 @@ for doc in docs:
 ```
 
 ### Getting a Single Document:
+
 ```python
 doc = client.documents.get(123)
 print(doc.title)
@@ -85,6 +89,7 @@ print(doc.title)
 ## Tags, Correspondents, and Other Resources
 
 The same interface applies to other resources like tags, correspondents, and document types:
+
 ```python
 for tag in client.tags.all():
     print(tag.name)
@@ -93,11 +98,12 @@ for tag in client.tags.all():
 ## Error Handling
 
 Paperwrap raises exceptions for API errors:
-* `PaperlessError` - Base exception
-* `APIError` - Error when contacting the Paperless NGX API
-* `AuthenticationError` - Error when authentication fails
-* `ObjectNotFoundError` - Error when a single object is requested but not found
-* `MultipleObjectsFoundError` - Error when a single object is requested but multiple objects are found
+
+- `PaperlessError` - Base exception
+- `APIError` - Error when contacting the Paperless NGX API
+- `AuthenticationError` - Error when authentication fails
+- `ObjectNotFoundError` - Error when a single object is requested but not found
+- `MultipleObjectsFoundError` - Error when a single object is requested but multiple objects are found
 
 ```python
 from paperwrap.exceptions import APIError
@@ -112,6 +118,12 @@ except ObjectNotFoundError as e:
 
 I welcome contributions! Please open an issue or submit a pull request on GitHub.
 
+Run tests:
+
+```sh
+python -m unittest discover -s tests
+```
+
 ## License
 
 Paperwrap is released under the MIT License.
@@ -121,5 +133,6 @@ Paperwrap is released under the MIT License.
 **Jess Mann** - [jess@jmann.me](mailto:jess@jmann.me)
 
 ## Related Projects
-* [Paperless-NGX](https://github.com/paperless-ngx/paperless-ngx)
-* [Pypaperless](https://github.com/tb1337/paperless-api) - async client that is more mature
+
+- [Paperless-NGX](https://github.com/paperless-ngx/paperless-ngx)
+- [Pypaperless](https://github.com/tb1337/paperless-api) - async client that is more mature
