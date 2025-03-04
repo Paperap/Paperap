@@ -39,7 +39,7 @@ class Tag(PaperlessModel):
     is_insensitive: bool
     is_inbox_tag: bool = False
     document_count: int = 0
-    
+
     class Meta(PaperlessModel.Meta):
         # Fields that should not be modified
         read_only_fields = {"slug", "document_count"}

@@ -33,12 +33,12 @@ class UserResource(PaperlessResource[User]):
     """Resource for managing users."""
 
     model_class = User
-    
-    
+
+
     def get_current(self) -> User:
         """
         Get the current authenticated user.
-        
+
         Returns:
             The current user.
         """

@@ -28,4 +28,4 @@ class SavedViewResource(PaperlessResource[SavedView]):
     """Resource for managing saved views."""
 
     model_class = SavedView
-    
+

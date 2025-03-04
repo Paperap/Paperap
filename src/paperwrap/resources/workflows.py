@@ -27,7 +27,7 @@ from paperwrap.resources.base import PaperlessResource
 
 class WorkflowResource(PaperlessResource[Workflow]):
     """Resource for managing workflows."""
-    model_class = Workflow    
+    model_class = Workflow
 
 class WorkflowTriggerResource(PaperlessResource[WorkflowTrigger]):
     """Resource for managing workflow triggers."""

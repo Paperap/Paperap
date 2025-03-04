@@ -64,7 +64,7 @@ class TestDocumentInit(unittest.TestCase):
         self.assertEqual(model.created, datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc), f"created wrong value after from_dict {model.created}")
         self.assertEqual(model.updated, datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc), f"updated wrong value after from_dict {model.updated}")
 
-class TestDocument(unittest.TestCase):    
+class TestDocument(unittest.TestCase):
     def setUp(self):
         # Setup a sample model instance
         self.client = PaperlessClient()
@@ -136,14 +136,14 @@ class TestRequestDocumentList(TestCase):
 
     def test_get_documents(self):
         with patch("paperwrap.client.PaperlessClient.request") as mock_request:
-            mock_request.return_value = sample_document_list    
+            mock_request.return_value = sample_document_list
             documents = self.client.documents()
             self.assertIsInstance(documents, QuerySet)
             # TODO: this should actually be more than 25 due to paging...
             total = documents.count()
             expected = sample_document_list["count"]
             self.assertEqual(total, expected, f"Expected {expected} documents, got {total}")
-            
+
 class TestRequestDocument(TestCase):
     def setUp(self):
         self.client = PaperlessClient()

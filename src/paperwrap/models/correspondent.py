@@ -41,8 +41,8 @@ class Correspondent(PaperlessModel):
 
     class Meta(PaperlessModel.Meta):
         # Fields that should not be modified
-        read_only_fields = { 
-            "slug", 
-            "document_count", 
+        read_only_fields = {
+            "slug",
+            "document_count",
             "last_correspondence"
         }

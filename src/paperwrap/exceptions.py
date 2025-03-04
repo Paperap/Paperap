@@ -23,14 +23,8 @@
 *********************************************************************************************************************"""
 from string import Template
 
-
 class PaperlessException(Exception):
     """Base exception for all paperless client errors."""
-    pass
-
-
-class AuthenticationError(PaperlessException):
-    """Raised when authentication fails."""
     pass
 
 class APIError(PaperlessException):
@@ -43,6 +37,11 @@ class APIError(PaperlessException):
         message = f'API Error {status_code}: {message}'
         message = Template(message).safe_substitute(status_code=status_code)
         super().__init__(message)
+
+
+class AuthenticationError(APIError):
+    """Raised when authentication fails."""
+    pass
 
 class ResourceNotFoundError(APIError):
     """Raised when a requested resource is not found."""

@@ -29,4 +29,4 @@ class CorrespondentResource(PaperlessResource[Correspondent]):
     """Resource for managing correspondents."""
 
     model_class = Correspondent
-    
+

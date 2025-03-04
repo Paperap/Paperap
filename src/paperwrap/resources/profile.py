@@ -28,4 +28,3 @@ class ProfileResource(PaperlessResource[Profile]):
     """Resource for managing profiles."""
 
     model_class = Profile
-    

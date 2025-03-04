@@ -30,4 +30,4 @@ class MailAccountsResource(PaperlessResource[MailAccounts]):
     """Resource for managing mail accounts."""
 
     model_class = MailAccounts
-    
+

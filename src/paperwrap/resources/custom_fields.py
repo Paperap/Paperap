@@ -24,9 +24,7 @@
 from paperwrap.models.custom_field import CustomField
 from paperwrap.resources.base import PaperlessResource
 
-
 class CustomFieldResource(PaperlessResource[CustomField]):
     """Resource for managing custom fields."""
 
     model_class = CustomField
-    

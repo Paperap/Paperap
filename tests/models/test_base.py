@@ -36,7 +36,7 @@ class ExampleModel(PaperlessModel):
     an_int : int
     a_float : float
     a_bool : bool
-    
+
 class ExampleResource(PaperlessResource):
     """
     Example resource for testing purposes.
@@ -83,7 +83,7 @@ class TestModel(unittest.TestCase):
     def test_model_to_dict(self):
         # Test if the model can be converted back to a dictionary
         model_dict = self.model.to_dict()
-        
+
         self.assertEqual(model_dict["id"], self.model_data["id"])
         self.assertEqual(model_dict["a_str"], self.model_data["a_str"])
         self.assertEqual(model_dict["an_int"], self.model_data["an_int"])

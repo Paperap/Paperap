@@ -22,7 +22,7 @@
 *                                                                                                                      *
 *********************************************************************************************************************"""
 from paperwrap.exceptions import (
-    APIError, 
+    APIError,
     AuthenticationError,
 	PaperlessException,
 	ResourceNotFoundError

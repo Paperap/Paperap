@@ -28,4 +28,3 @@ class ShareLinksResource(PaperlessResource[ShareLinks]):
     """Resource for managing share links."""
 
     model_class = ShareLinks
-    

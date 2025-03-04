@@ -49,10 +49,10 @@ class NoEnvTestCase(unittest.TestCase):
     def setUp(self):
         self.patcher = patch.dict(os.environ, {}, clear=True)
         self.patcher.start()
-    
+
     def tearDown(self):
         self.patcher.stop()
-    
+
 class TestSettings(NoEnvTestCase):
     """Unit tests for the Settings class."""
 
@@ -108,7 +108,7 @@ class TestSettingsURL(NoEnvTestCase):
             params = {**TOKEN_DATA, 'base_url': url}
             settings = Settings(**params)
             self.assertEqual(settings.base_url, url, f"URL does not match: {settings.base_url} != {url}")
-        
+
     def test_valid_url_conversion(self):
         """Test that a valid URL string is correctly converted to a URL object."""
         test_cases = [
@@ -155,7 +155,7 @@ class TestSettingsURL(NoEnvTestCase):
             params = {**TOKEN_DATA, 'base_url': url}
             settings = Settings(**params)
             self.assertEqual(str(settings.base_url), expected, f"URL final slash not removed. {settings.base_url} != {URL(expected)}")
-            
+
 class TestSettingsToken(NoEnvTestCase):
     def test_null_token(self):
         """Test that a None token is allowed when user/pass is provided."""

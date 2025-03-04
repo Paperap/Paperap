@@ -45,7 +45,7 @@ class PluginManager:
     instances : dict[str, Plugin]
     config : PluginConfig
     dependencies : dict[str, Set[str]]
-    
+
     def __init__(self):
         self.plugins = {}
         self.instances = {}
@@ -60,13 +60,13 @@ class PluginManager:
         # TODO: There's a bug here... disabling every plugin will then enable every plugin
         if enabled := self.config.get('enabled_plugins'):
             return enabled
-       
+
         return list(self.plugins.keys())
-    
+
     def discover_plugins(self, package_name: str = 'paperwrap.plugins') -> None:
         """
         Discover available plugins in the specified package.
-        
+
         Args:
             package_name: Dotted path to the package containing plugins.
         """
@@ -75,62 +75,62 @@ class PluginManager:
         except ImportError:
             logger.warning(f"Could not import plugin package: {package_name}")
             return
-            
+
         # Find all modules in the package
         for _, module_name, is_pkg in pkgutil.iter_modules(package.__path__, package.__name__ + '.'):
             if is_pkg:
                 # Recursively discover plugins in subpackages
                 self.discover_plugins(module_name)
                 continue
-                
+
             try:
                 module = importlib.import_module(module_name)
-                
+
                 # Find plugin classes in the module
                 for name, obj in inspect.getmembers(module, inspect.isclass):
-                    if (issubclass(obj, Plugin) and 
-                        obj is not Plugin and 
+                    if (issubclass(obj, Plugin) and
+                        obj is not Plugin and
                         obj.__module__ == module_name):
                         plugin_name = obj.__name__
                         self.plugins[plugin_name] = obj
                         logger.debug(f"Discovered plugin: {plugin_name}")
             except Exception as e:
                 logger.error(f"Error loading plugin module {module_name}: {e}")
-    
+
     def configure(self, config: PluginConfig) -> None:
         """
         Configure the plugin manager with plugin-specific configurations.
-        
+
         Args:
             config: dictionary mapping plugin names to their configurations.
         """
         self.config = config
-    
+
     def get_plugin_config(self, plugin_name: str) -> dict[str, Any]:
         """Get the configuration for a specific plugin."""
         return self.config['settings'].get(plugin_name, {})
-    
+
     def initialize_plugin(self, plugin_name: str, client: Any) -> Plugin | None:
         """
         Initialize a specific plugin.
-        
+
         Args:
             plugin_name: Name of the plugin to initialize.
             client: The PaperlessClient instance.
-            
+
         Returns:
             The initialized plugin instance or None if initialization failed.
         """
         if plugin_name in self.instances:
             return self.instances[plugin_name]
-            
+
         if plugin_name not in self.plugins:
             logger.warning(f"Plugin not found: {plugin_name}")
             return None
-            
+
         plugin_class = self.plugins[plugin_name]
         plugin_config = self.get_plugin_config(plugin_name)
-        
+
         try:
             # Initialize the plugin with client and any plugin-specific config
             plugin_instance = plugin_class(client, **plugin_config)
@@ -140,25 +140,25 @@ class PluginManager:
         except Exception as e:
             logger.error(f"Failed to initialize plugin {plugin_name}: {e}")
             return None
-    
+
     def initialize_all_plugins(self, client: Any) -> dict[str, Plugin]:
         """
         Initialize all discovered plugins.
-        
+
         Args:
             client: The PaperlessClient instance.
-            
+
         Returns:
             Dictionary mapping plugin names to their initialized instances.
         """
         # Get enabled plugins from config
         enabled_plugins = self.enabled_plugins
-        
+
         # Initialize plugins in dependency order (if we had dependencies)
         initialized = {}
         for plugin_name in enabled_plugins:
             instance = self.initialize_plugin(plugin_name, client)
             if instance:
                 initialized[plugin_name] = instance
-                
+
         return initialized

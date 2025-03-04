@@ -43,9 +43,9 @@ from paperwrap.resources.workflows import (WorkflowActionResource,
                                                WorkflowTriggerResource)
 
 __all__ = [
-    "DocumentResource", "CorrespondentResource", "TagResource", 
+    "DocumentResource", "CorrespondentResource", "TagResource",
     "DocumentTypeResource", "StoragePathResource", "CustomFieldResource",
-    "LogResource", "UserResource", "GroupResource", "TaskResource", 
+    "LogResource", "UserResource", "GroupResource", "TaskResource",
     "SavedViewResource", "UISettingsResource", "WorkflowResource",
     "WorkflowTriggerResource", "WorkflowActionResource",
 ]

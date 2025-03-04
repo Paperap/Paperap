@@ -38,54 +38,54 @@ class SignalPriority(Enum):
 class Signal(Generic[T]):
     """
     A signal that can be connected to and emitted.
-    
+
     Handlers can be registered with a priority to control execution order.
     """
     name : str
     description : str
     _handlers : dict[SignalPriority, list[Callable[..., T]]]
     _disabled_handlers : Set[Callable[..., T]]
-    
+
     def __init__(self, name: str, description: str = ""):
         self.name = name
         self.description = description
         self._handlers = defaultdict(list)
         self._disabled_handlers = set()
-    
+
     def connect(self, handler: Callable[..., T], priority: SignalPriority = SignalPriority.NORMAL) -> None:
         """
         Connect a handler to this signal.
-        
+
         Args:
             handler: The handler function to be called when the signal is emitted.
             priority: The priority level for this handler.
         """
         self._handlers[priority].append(handler)
-    
+
     def disconnect(self, handler: Callable[..., T]) -> None:
         """
         Disconnect a handler from this signal.
-        
+
         Args:
             handler: The handler to disconnect.
         """
         for priority in self._handlers:
             if handler in self._handlers[priority]:
                 self._handlers[priority].remove(handler)
-    
+
     def emit(self, *args: Any, **kwargs: Any) -> list[T]:
         """
         Emit the signal, calling all connected handlers.
-        
+
         Args:
             *args: Positional arguments to pass to handlers.
             **kwargs: Keyword arguments to pass to handlers.
-            
+
         Returns:
             A list of results from all handlers.
         """
         results = []
-        
+
         # Process handlers in priority order
         for priority in [
             SignalPriority.FIRST,
@@ -97,13 +97,13 @@ class Signal(Generic[T]):
             for handler in self._handlers[priority]:
                 if handler not in self._disabled_handlers:
                     results.append(handler(*args, **kwargs))
-        
+
         return results
-    
+
     def temporarily_disable(self, handler: Callable[..., T]) -> None:
         """Temporarily disable a handler without disconnecting it."""
         self._disabled_handlers.add(handler)
-    
+
     def enable(self, handler: Callable[..., T]) -> None:
         """Re-enable a temporarily disabled handler."""
         if handler in self._disabled_handlers:
@@ -111,24 +111,24 @@ class Signal(Generic[T]):
 
 class SignalRegistry:
     """Registry of all signals in the application."""
-    
+
     _instance = None
     _signals : dict[str, Signal]
-    
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(SignalRegistry, cls).__new__(cls)
             cls._instance._signals = {}
         return cls._instance
-    
+
     def register(self, signal: Signal) -> None:
         """Register a signal with the registry."""
         self._signals[signal.name] = signal
-    
+
     def get(self, name: str) -> Optional[Signal]:
         """Get a signal by name."""
         return self._signals.get(name)
-    
+
     def list_signals(self) -> list[str]:
         """List all registered signal names."""
         return list(self._signals.keys())

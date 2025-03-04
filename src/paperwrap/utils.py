@@ -30,10 +30,10 @@ from typing import Any, BinaryIO, Dict, List, Optional
 def datetime_to_str(dt: datetime) -> str:
     """
     Convert a datetime object to an ISO 8601 string for the API.
-    
+
     Args:
         dt: The datetime object to convert.
-        
+
     Returns:
         ISO 8601 formatted string.
     """
@@ -47,10 +47,10 @@ def parse_filter_params(
 ) -> dict[str, Any]:
     """
     Parse filter parameters for list endpoints.
-    
+
     Args:
         **kwargs: Filter parameters.
-        
+
     Returns:
         Dictionary of filter parameters.
     """

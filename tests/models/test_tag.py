@@ -68,7 +68,7 @@ class TestTagInit(unittest.TestCase):
         self.assertEqual(model.is_insensitive, self.model_data["is_insensitive"], f"Tag is_insensitive is wrong when created from dict: {model.is_insensitive}")
         self.assertEqual(model.is_inbox_tag, self.model_data["is_inbox_tag"], f"Tag is_inbox_tag is wrong when created from dict: {model.is_inbox_tag}")
 
-class TestTag(unittest.TestCase):    
+class TestTag(unittest.TestCase):
     def setUp(self):
         # Setup a sample model instance
         self.client = PaperlessClient()

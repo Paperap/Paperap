@@ -62,7 +62,7 @@ class PaperlessModelMeta(BaseModel.__class__, ABC):
 
         # Instantiate _meta
         new_class._meta = new_class.Meta()
-        
+
         # Set name defaults
         if not hasattr(new_class._meta, "name"):
             new_class._meta.name = new_class.__name__.lower()
@@ -73,7 +73,7 @@ class PaperlessModelMeta(BaseModel.__class__, ABC):
             if hasattr(base, "_meta") and hasattr(base._meta, "read_only_fields"):
                 read_only_fields.update(base._meta.read_only_fields)
         new_class._meta.read_only_fields = read_only_fields
-        
+
         return new_class
 
 class PaperlessModel(BaseModel, ABC, metaclass=PaperlessModelMeta):
@@ -108,7 +108,7 @@ class PaperlessModel(BaseModel, ABC, metaclass=PaperlessModelMeta):
         # this will usually not need to be overridden
         parser : type[Parser] = Parser
         resource : "PaperlessResource"
-    
+
     # Configure Pydantic behavior
     model_config = ConfigDict(
         populate_by_name=True,
@@ -116,9 +116,9 @@ class PaperlessModel(BaseModel, ABC, metaclass=PaperlessModelMeta):
         extra="ignore",
         json_encoders={
             # Custom JSON encoders for types
-            datetime: lambda dt: dt.isoformat().replace('+00:00', 'Z') 
-                                if dt.tzinfo is not None and 
-                                   dt.tzinfo.utcoffset(dt).total_seconds() == 0 
+            datetime: lambda dt: dt.isoformat().replace('+00:00', 'Z')
+                                if dt.tzinfo is not None and
+                                   dt.tzinfo.utcoffset(dt).total_seconds() == 0
                                 else dt.isoformat(),
             Decimal: lambda d: float(d),
         }
@@ -130,7 +130,7 @@ class PaperlessModel(BaseModel, ABC, metaclass=PaperlessModelMeta):
             raise ValueError("Resource is required for PaperlessModel")
         super().__init__(**data)
         self._meta.resource = resource
-    
+
     @classmethod
     def from_dict(cls, data: dict[str, Any], resource : "PaperlessResource") -> Self:
         """
@@ -143,7 +143,7 @@ class PaperlessModel(BaseModel, ABC, metaclass=PaperlessModelMeta):
             A model instance initialized with the provided data.
         """
         return cls.model_validate({**data, "resource": resource})
-    
+
     def to_dict(self, *, include_read_only: bool = True, exclude_none : bool = True, exclude_unset : bool = True) -> dict[str, Any]:
         """
         Convert the model to a dictionary for API requests.
@@ -164,7 +164,7 @@ class PaperlessModel(BaseModel, ABC, metaclass=PaperlessModelMeta):
             exclude_none=exclude_none,
             exclude_unset=exclude_unset
         )
-    
+
     @classmethod
     def create(cls, **kwargs: Any) -> Self:
         """
@@ -178,7 +178,7 @@ class PaperlessModel(BaseModel, ABC, metaclass=PaperlessModelMeta):
         """
         # TODO save
         return cls(**kwargs)
-    
+
     def update(self, **kwargs: Any) -> Self:
         """
         Update this model with new values.
@@ -191,7 +191,7 @@ class PaperlessModel(BaseModel, ABC, metaclass=PaperlessModelMeta):
         """
         # TODO save
         return self.model_copy(update=kwargs)
-    
+
     def is_new(self) -> bool:
         """
         Check if this model represents a new (unsaved) object.
@@ -200,7 +200,7 @@ class PaperlessModel(BaseModel, ABC, metaclass=PaperlessModelMeta):
             True if the model is new, False otherwise.
         """
         return self.id == 0
-    
+
     def __str__(self) -> str:
         """
         Human-readable string representation.

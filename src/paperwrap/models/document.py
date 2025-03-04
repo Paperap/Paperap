@@ -56,13 +56,13 @@ class Document(PaperlessModel):
     def get_tags(self) -> QuerySet["Tag"]:
         """
         Get the tags for this document.
-        
+
         Returns:
             List of tags associated with this document.
         """
         if not self.tags:
             return self._meta.resource.client.tags().none()
-        
+
         # Use the API's filtering capability to get only the tags with specific IDs
         # The paperless-ngx API supports id__in filter for retrieving multiple objects by ID
         tag_ids_param = ",".join(str(tag_id) for tag_id in self.tags)
@@ -71,29 +71,29 @@ class Document(PaperlessModel):
     def get_correspondent(self) -> Optional["Correspondent"]:
         """
         Get the correspondent for this document.
-        
+
         Returns:
             The correspondent or None if not set.
         """
         if not self.correspondent:
             return None
         return self._meta.resource.client.correspondents.get(self.correspondent)
-    
+
     def get_document_type(self) -> Optional["DocumentType"]:
         """
         Get the document type for this document.
-        
+
         Returns:
             The document type or None if not set.
         """
         if not self.document_type:
             return None
         return self._meta.resource.client.document_types.get(self.document_type)
-    
+
     def get_storage_path(self) -> Optional["StoragePath"]:
         """
         Get the storage path for this document.
-        
+
         Returns:
             The storage path or None if not set.
         """

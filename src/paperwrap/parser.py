@@ -44,16 +44,16 @@ class Parser:
 
     def __init__(self, model : type["PaperlessModel"]):
         self.model = model
-    
+
     def parse(self, value : Any, target_type: type[_T]) -> _T | None:
 
         if target_type is None:
             raise TypeError("Cannot parse to None type")
-        
+
         # Handle generic types (list[T], dict[K, V], set[T], tuple[T, ...])
         origin = get_origin(target_type)
         args = get_args(target_type)
-        
+
         if target_type is Any:
             return value
         if origin is list:
@@ -85,7 +85,7 @@ class Parser:
     @overload
     def parse_datetime(self, value: str) -> datetime.datetime | None:
         ...
-        
+
     @overload
     def parse_datetime(self, value: None) -> None:
         ...
@@ -121,7 +121,7 @@ class Parser:
             return value.date()
         if isinstance(value, datetime.date):
             return value
-        
+
         parsed_datetime = self.parse_datetime(value)
         if isinstance(parsed_datetime, datetime.datetime):
             return parsed_datetime.date()
@@ -142,7 +142,7 @@ class Parser:
     def parse_enum(self, value: Enum | str | int | None, enum_type: type[Enum]) -> Enum | None:
         if value is None:
             return None
-        
+
         try:
             if isinstance(value, Enum):
                 return value
@@ -158,7 +158,7 @@ class Parser:
     @overload
     def parse_bool(self, value: bool) -> bool:
         ...
-        
+
     @overload
     def parse_bool(self, value: str | int) -> bool | None:
         ...
@@ -173,7 +173,7 @@ class Parser:
 
         if isinstance(value, bool):
             return value
-        
+
         if isinstance(value, str):
             if value.lower() in ["true", "1"]:
                 return True
@@ -185,7 +185,7 @@ class Parser:
             if value in [0, 1]:
                 return bool(value)
             raise ValueError(f"Invalid boolean value: {value}")
-        
+
         raise TypeError(f"Unsupported type: {type(value)}")
 
     @overload
@@ -224,7 +224,7 @@ class Parser:
     def parse_float(self, value: int | float | Decimal | str | None) -> float | None:
         if value is None:
             return None
-        
+
         if isinstance(value, (str, int, float, Decimal)):
             return float(value)
 

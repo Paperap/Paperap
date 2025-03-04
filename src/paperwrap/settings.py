@@ -39,14 +39,14 @@ class Settings(BaseSettings):
     require_ssl : bool = False
 
     model_config = SettingsConfigDict(env_prefix='PAPERLESS_')
-    
+
     @field_validator("base_url", mode="before")
     @classmethod
     def validate_url(cls, value: Any) -> URL:
         """Ensure the URL is properly formatted."""
         if not value:
             raise ValueError("Base URL is required")
-        
+
         if isinstance(value, str):
             try:
                 value = URL(value)
@@ -64,7 +64,7 @@ class Settings(BaseSettings):
         # Remove trailing slash
         if value.path.endswith("/"):
             value = value.with_path(value.path[:-1])
-        
+
         return value
 
     @field_validator("timeout", mode="before")
@@ -75,12 +75,12 @@ class Settings(BaseSettings):
             if isinstance(value, str):
                 # May raise ValueError
                 value = int(value)
-                
+
             if not isinstance(value, int):
                 raise ValueError("Unknown type for timeout")
         except ValueError as ve:
             raise ValueError(f"Timeout must be an integer. Provided {value=} of type {type(value)}") from ve
-        
+
         if value < 0:
             raise ValueError("Timeout must be a positive integer")
         return value
@@ -91,7 +91,7 @@ class Settings(BaseSettings):
 
         if not self.base_url:
             raise ValueError("Base URL is required")
-        
+
         if self.require_ssl and self.base_url.scheme != "https":
             raise ValueError(f"URL must use HTTPS. Url: {self.base_url}. Scheme: {self.base_url.scheme}")
 

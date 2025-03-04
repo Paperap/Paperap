@@ -33,10 +33,10 @@ class DocumentResource(PaperlessResource[Document]):
 
     model_class = Document
     name = "documents"
-    
+
     def upload(
-        self, 
-        file_path: str, 
+        self,
+        file_path: str,
         title: str | None = None,
         correspondent: int | None = None,
         document_type: int | None = None,
@@ -44,32 +44,32 @@ class DocumentResource(PaperlessResource[Document]):
     ) -> Document:
         """
         Upload a document.
-        
+
         Args:
             file_path: Path to the file to upload.
             title: Document title. If None, uses the filename.
             correspondent: Correspondent ID.
             document_type: Document type ID.
             tags: list of tag IDs.
-            
+
         Returns:
             The created document.
         """
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"File not found: {file_path}")
-        
+
         filename = os.path.basename(file_path)
-        
+
         with open(file_path, "rb") as f:
             return self.upload_fileobj(
-                f, 
+                f,
                 filename,
                 title=title or os.path.splitext(filename)[0],
                 correspondent=correspondent,
                 document_type=document_type,
                 tags=tags,
             )
-    
+
     def upload_fileobj(
         self,
         fileobj: BinaryIO,
@@ -81,7 +81,7 @@ class DocumentResource(PaperlessResource[Document]):
     ) -> Document:
         """
         Upload a document from a file-like object.
-        
+
         Args:
             fileobj: File-like object to upload.
             filename: Name of the file.
@@ -89,7 +89,7 @@ class DocumentResource(PaperlessResource[Document]):
             correspondent: Correspondent ID.
             document_type: Document type ID.
             tags: list of tag IDs.
-            
+
         Returns:
             The created document.
         """
@@ -102,28 +102,28 @@ class DocumentResource(PaperlessResource[Document]):
             data["document_type"] = document_type
         if tags:
             data["tags"] = tags
-        
+
         files = {"document": (filename, fileobj, "application/octet-stream")}
-        
+
         if not (response := self.client.request(
-            "POST", 
-            "documents/post_document/", 
-            data=data, 
+            "POST",
+            "documents/post_document/",
+            data=data,
             files=files
         )):
-            raise APIError("Failed to upload document")  
-        
+            raise APIError("Failed to upload document")
+
         return Document.from_dict(response, self)
-    
+
     def download(self, document_id: int, original: bool = False) -> bytes:
         """
         Download a document.
-        
+
         Args:
             document_id: Document ID.
-            original: Whether to download the original file (True) or 
+            original: Whether to download the original file (True) or
                       the archived file (False).
-        
+
         Returns:
             Document content as bytes.
         """
@@ -135,14 +135,14 @@ class DocumentResource(PaperlessResource[Document]):
         )
         response.raise_for_status()
         return response.content
-    
+
     def search(self, query: str) -> Iterator[Document]:
         """
         Search for documents.
-        
+
         Args:
             query: Search query.
-            
+
         Returns:
             List of matching documents.
         """

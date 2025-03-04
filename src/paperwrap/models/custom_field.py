@@ -37,14 +37,14 @@ class CustomField(PaperlessModel):
     data_type: int  # 0=text, 1=integer, 2=float, 3=boolean, 4=monetary, 5=date
     required: bool
     document_types: list[int] = Field(default_factory=list)
-    
+
     model_config = {
-        "arbitrary_types_allowed": True,  
-        "populate_by_name": True,  
-        "extra": "allow",  
+        "arbitrary_types_allowed": True,
+        "populate_by_name": True,
+        "extra": "allow",
         "json_encoders": {},
     }
-    
+
     class Meta(PaperlessModel.Meta):
         # Fields that should not be modified
         read_only_fields = {"slug"}

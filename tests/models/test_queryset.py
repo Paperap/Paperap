@@ -90,7 +90,7 @@ class TestQuerySetGetNoCache(unittest.TestCase):
         self.assertIsInstance(result, Document)
         self.assertEqual(result.id, doc_id)
         self.assertEqual(result.title, sample_document["title"])
-        
+
 class TestQuerySetGetNoCacheFailure(unittest.TestCase):
     def setUp(self):
         self.client = PaperlessClient()
@@ -136,7 +136,7 @@ class TestQuerySetGetCacheFailure(unittest.TestCase):
         self.modified_document.id = self.modified_doc_id
         self.modified_document.title = self.modified_doc_title
         self.qs._result_cache = [self.modified_document]
-        
+
     @patch("paperwrap.client.PaperlessClient.request")
     def test_get_with_id(self, mock_request):
         mock_request.return_value = sample_document_item_404
@@ -152,7 +152,7 @@ class TestQuerySetAll(unittest.TestCase):
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
         self.qs = QuerySet(self.resource, filters={"init": "value"})
-        
+
     def test_all_returns_copy(self):
         qs_all = self.qs.all()
         self.assertIsNot(qs_all, self.qs)
@@ -168,7 +168,7 @@ class TestQuerySetOrderBy(unittest.TestCase):
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
         self.qs = QuerySet(self.resource, filters={"init": "value"})
-        
+
     def test_order_by(self):
         qs_ordered = self.qs.order_by("name", "-date")
         expected_order = "name,-date"
@@ -183,7 +183,7 @@ class TestQuerySetFirst(unittest.TestCase):
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
         self.qs = QuerySet(self.resource, filters={"init": "value"})
-        
+
     def test_first_with_cache(self):
         self.qs._result_cache = ["first", "second"]
         self.qs._fetch_all = True
@@ -205,7 +205,7 @@ class TestQuerySetLast(unittest.TestCase):
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
         self.qs = QuerySet(self.resource, filters={"init": "value"})
-        
+
     def test_last(self):
         self.qs._result_cache = ["first", "middle", "last"]
         self.qs._fetch_all = True
@@ -222,7 +222,7 @@ class TestQuerySetExists(unittest.TestCase):
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
         self.qs = QuerySet(self.resource, filters={"init": "value"})
-        
+
     def test_exists(self):
         self.qs._result_cache = ["exists"]
         self.qs._fetch_all = True
@@ -239,13 +239,13 @@ class TestQuerySetIter(unittest.TestCase):
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
         self.qs = QuerySet(self.resource, filters={"init": "value"})
-        
+
     def test_iter_with_fully_fetched_cache(self):
         self.qs._result_cache = ["a", "b"]
         self.qs._fetch_all = True
         result = list(iter(self.qs))
         self.assertEqual(result, ["a", "b"])
-        
+
     def test_request_iter_no_endpoint_raises(self):
         class DummyResourceNoEndpoint(PaperlessResource):
             model_class = MagicMock(spec=PaperlessModel).__class__
@@ -261,7 +261,7 @@ class TestQuerySetGetItem(unittest.TestCase):
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
         self.qs = QuerySet(self.resource, filters={"init": "value"})
-        
+
     def test_getitem_index_cached(self):
         self.qs._result_cache = ["zero", "one", "two"]
         self.qs._fetch_all = True

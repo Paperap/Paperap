@@ -28,4 +28,4 @@ class MailRulesResource(PaperlessResource[MailRules]):
     """Resource for managing mail rules."""
 
     model_class = MailRules
-    
+

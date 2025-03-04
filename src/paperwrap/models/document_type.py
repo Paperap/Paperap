@@ -38,8 +38,8 @@ class DocumentType(PaperlessModel):
     matching_algorithm: int
     is_insensitive: bool
     document_count: int
-    
+
     class Meta(PaperlessModel.Meta):
         # Fields that should not be modified
         read_only_fields = {"slug", "document_count"}
-        
+

@@ -29,4 +29,4 @@ class DocumentTypeResource(PaperlessResource[DocumentType]):
     """Resource for managing document types."""
 
     model_class = DocumentType
-    
+

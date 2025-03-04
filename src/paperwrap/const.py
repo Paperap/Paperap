@@ -29,7 +29,6 @@ from typing import TypedDict
 
 from yarl import URL
 
-# Define typeddict for URLS
 class URLS:
 	index: Template = Template("/api/")
 	token: Template = Template("/api/token/")

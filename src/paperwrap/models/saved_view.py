@@ -39,7 +39,7 @@ class SavedView(PaperlessModel):
     filter_rules: list[dict[str, Any]]
     owner: int | None = Field(default=None)
     user_can_change: bool = Field(default=False)
-    
+
     class Meta(PaperlessModel.Meta):
         # Fields that should not be modified
         read_only_fields = {"owner", "user_can_change"}

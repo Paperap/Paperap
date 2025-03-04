@@ -28,4 +28,3 @@ class SearchResource(PaperlessResource[Search]):
     """Resource for managing searches."""
 
     model_class = Search
-    
