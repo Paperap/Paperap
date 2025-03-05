@@ -26,7 +26,6 @@
 from __future__ import annotations
 
 from typing import Any, Optional
-from typing import Any, Optional
 
 from paperap.exceptions import ObjectNotFoundError
 from paperap.models.user import Group, User

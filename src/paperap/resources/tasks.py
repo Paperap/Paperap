@@ -26,7 +26,6 @@
 from __future__ import annotations
 
 from typing import Any, Optional
-from typing import Any, Optional
 
 from paperap.models.task import Task
 from paperap.resources.base import PaperlessResource

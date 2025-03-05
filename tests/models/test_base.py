@@ -24,36 +24,8 @@
 """
 from __future__ import annotations
 import os
-"""
-
-
-
-
- ----------------------------------------------------------------------------
-
-    METADATA:
-
-        File:    test_base.py
-        Project: paperap
-        Created: 2025-03-04
-        Version: 0.0.1
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
- ----------------------------------------------------------------------------
-
-    LAST MODIFIED:
-
-        2025-03-04     By Jess Mann
-
-"""
-from __future__ import annotations
-import os
 import unittest
 from datetime import datetime, timezone
-from unittest.mock import patch
-from paperap.tests import TestCase
 from unittest.mock import patch
 from paperap.tests import TestCase
 from paperap.models import PaperlessModel
@@ -77,7 +49,6 @@ class ExampleResource(PaperlessResource):
     name = "example"
     model_class = ExampleModel
 
-class TestModel(TestCase):
 class TestModel(TestCase):
     def setUp(self):
         # Setup a sample model instance

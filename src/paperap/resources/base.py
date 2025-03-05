@@ -26,34 +26,6 @@
 from __future__ import annotations
 
 from abc import ABC, ABCMeta
-"""
-
-
-
-
-----------------------------------------------------------------------------
-
-   METADATA:
-
-       File:    base.py
-        Project: paperap
-       Created: 2025-03-04
-        Version: 0.0.1
-       Author:  Jess Mann
-       Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
-----------------------------------------------------------------------------
-
-   LAST MODIFIED:
-
-       2025-03-04     By Jess Mann
-
-"""
-
-from __future__ import annotations
-
-from abc import ABC, ABCMeta
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, Iterator, Optional
 from typing_extensions import TypeVar
 from yarl import URL
@@ -86,7 +58,6 @@ _PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel", covariant=T
 logger = logging.getLogger(__name__)
 
 
-class PaperlessResource(ABC, Generic[_PaperlessModel]):
 class PaperlessResource(ABC, Generic[_PaperlessModel]):
     """
     Base class for API resources.
