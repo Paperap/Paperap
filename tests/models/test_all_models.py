@@ -1,8 +1,8 @@
 """
 
-Tests that are run for every model. These are not exhaustive, and each model should have its own tests
-that are specific to it. However, these ensure that there is at least a base level
-of testing for all models.
+Tests that are run for every model. These are not exhaustive, and each model
+should have its own tests specific to it. However, these ensure there is at
+least a base level of testing for all models.
 
  ----------------------------------------------------------------------------
 
@@ -33,8 +33,7 @@ from typing import Any, Iterable, Iterator, get_type_hints, get_origin, get_args
 from unittest.mock import patch
 from pydantic import ValidationError
 
-from paperap.models.abstract.model import PaperlessModel
-from paperap.models.abstract.queryset import PaperlessModel
+from paperap.models.abstract import PaperlessModel, QuerySet
 from paperap.resources.base import PaperlessResource
 from paperap.models.correspondent import Correspondent
 from paperap.models.custom_field import CustomField
@@ -88,7 +87,7 @@ class ModelTestCase(TestCase, ABC):
     def get_sample_value(self, type_hint, depth: int = 0) -> Any:
         if depth > self.MAX_RECURSION_DEPTH:
             return None
-        if type_hint is None or type_hint == type(None):
+        if type_hint is None or type_hint is type(None):
             return None
         origin = get_origin(type_hint)
         if origin is Union:
@@ -99,22 +98,22 @@ class ModelTestCase(TestCase, ABC):
             return None
         if isinstance(type_hint, type) and issubclass(type_hint, PaperlessModel):
             return self.generate_sample_data(type_hint, depth + 1)
-        if type_hint == str:
+        if type_hint is str:
             return "Sample String"
-        elif type_hint == int:
+        elif type_hint is int:
             return 1
-        elif type_hint == float:
+        elif type_hint is float:
             return 1.0
-        elif type_hint == bool:
+        elif type_hint is bool:
             return True
-        elif type_hint == datetime:
+        elif type_hint is datetime:
             return "2025-01-01T12:00:00Z"
-        if origin == list:
+        if origin is list:
             item_type = get_args(type_hint)[0]
             if isinstance(item_type, type) and issubclass(item_type, PaperlessModel):
                 return [self.generate_sample_data(item_type, depth + 1)]
             return [self.get_sample_value(item_type, depth)]
-        if origin == dict:
+        if origin is dict:
             key_type, value_type = get_args(type_hint)
             return {self.get_sample_value(key_type, depth): self.get_sample_value(value_type, depth)}
         return None

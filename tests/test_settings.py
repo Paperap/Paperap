@@ -219,7 +219,7 @@ class TestSettingsEnvPrefix(unittest.TestCase):
         self.assertFalse(settings.require_ssl, "require_ssl was changed when auth env vars were set")
 
     def test_env_prefix_token_override(self):
-        env_data = {f'PAPERLESS_{key.upper()}': f'random-env-value' for key, _ in TOKEN_DATA.items()}
+        env_data = {f'PAPERLESS_{key.upper()}': 'random-env-value' for key, _ in TOKEN_DATA.items()}
         with patch.dict(os.environ, env_data, clear=True):
             settings = Settings(**TOKEN_DATA)
         self.assertEqual(settings.token, TOKEN_DATA['token'], f"Token was not set during init when random env vars were set: {settings.token} != {TOKEN_DATA['token']}")

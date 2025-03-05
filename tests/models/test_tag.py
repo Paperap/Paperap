@@ -40,7 +40,7 @@ class TestTagInit(unittest.TestCase):
 
     def setUp(self):
         # Setup a sample model instance
-        env_data = {f'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
         with patch.dict(os.environ, env_data, clear=True):
             self.client = PaperlessClient()
         self.resource = self.client.tags
@@ -76,7 +76,7 @@ class TestTagInit(unittest.TestCase):
 class TestTag(unittest.TestCase):
     def setUp(self):
         # Setup a sample model instance
-        env_data = {f'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
         with patch.dict(os.environ, env_data, clear=True):
             self.client = PaperlessClient()
         self.resource = self.client.tags

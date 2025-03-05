@@ -29,7 +29,7 @@ from typing import Iterable
 import unittest
 from unittest.mock import patch, MagicMock
 from datetime import datetime, timezone
-from paperap.models.abstract.queryset import PaperlessModel
+from paperap.models.abstract.queryset import QuerySet
 from paperap.models.document import Document
 from paperap.client import PaperlessClient
 from paperap.resources.documents import DocumentResource
@@ -41,7 +41,7 @@ sample_document = load_sample_data('documents_item.json')
 
 class DocumentTestCase(TestCase):
     def setUp(self):
-        env_data = {f'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
         with patch.dict(os.environ, env_data, clear=True):
             self.client = PaperlessClient()
 
@@ -192,7 +192,7 @@ class TestRequestDocument(TestCase):
         self.assertIsInstance(tags, QuerySet)
         for tag in tags:
             self.assertIsInstance(tag, Tag, f"Expected document.tag to be a Tag, got {type(tag)}")
-            self.assertTrue(tag.id in document.tags, f"Expected tag.id to be in document.tags")
+            self.assertTrue(tag.id in document.tags, "Expected tag.id to be in document.tags")
             self.assertIsInstance(tag.name, str, f"Expected tag.name to be a string, got {type(tag.name)}")
 
 if __name__ == "__main__":
