@@ -84,6 +84,7 @@ class DocumentResource(PaperlessResource[Document]):
         correspondent: int | None = None,
         document_type: int | None = None,
         tags: Optional[list[int]] = None,
+        tags: Optional[list[int]] = None,
     ) -> Document:
         """
         Upload a document from a file-like object.

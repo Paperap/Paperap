@@ -40,6 +40,8 @@ from paperap.models.abstract.queryset import QuerySet
 if TYPE_CHECKING:
     from paperap.resources.base import PaperlessResource
 
+
+class PaperlessModel(BaseModel, ABC):
 _Self = TypeVar("_Self", bound="PaperlessModel")
 
 
@@ -72,6 +74,7 @@ class PaperlessModel(BaseModel, ABC):
         name: str
         # Fields that should not be modified
         read_only_fields: set[str] = {"id", "created", "updated"}
+        read_only_fields: set[str] = {"id", "created", "updated"}
         # the type of parser, which parses api data into appropriate types
         # this will usually not need to be overridden
         parser: type[Parser] = Parser
@@ -97,6 +100,25 @@ class PaperlessModel(BaseModel, ABC):
             raise ValueError("Resource is required for PaperlessModel")
         super().__init__(**data)
         self._meta.resource = resource
+
+    @classmethod
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        # Instantiate _meta
+        cls._meta = cls.Meta()
+
+        # Set name defaults
+        if not hasattr(cls._meta, "name"):
+            cls._meta.name = cls.__name__.lower()
+
+        # Append read_only_fields from all parents to _meta
+        read_only_fields = (cls._meta.read_only_fields or set()).copy()
+        for base in cls.__bases__:
+            if hasattr(base, "_meta") and hasattr(base._meta, "read_only_fields"):
+                read_only_fields.update(base._meta.read_only_fields)
+
+        cls._meta.read_only_fields = read_only_fields
 
     @classmethod
     def __init_subclass__(cls, **kwargs):

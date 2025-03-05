@@ -25,6 +25,33 @@
 from __future__ import annotations
 
 import os
+"""
+
+
+
+
+ ----------------------------------------------------------------------------
+
+    METADATA:
+
+        File:    test_document.py
+        Project: paperap
+        Created: 2025-03-04
+        Version: 0.0.1
+        Author:  Jess Mann
+        Email:   jess@jmann.me
+        Copyright (c) 2025 Jess Mann
+
+ ----------------------------------------------------------------------------
+
+    LAST MODIFIED:
+
+        2025-03-04     By Jess Mann
+
+"""
+from __future__ import annotations
+
+import os
 from typing import Iterable
 import unittest
 from unittest.mock import patch, MagicMock
@@ -47,6 +74,7 @@ class DocumentTestCase(TestCase):
 
 class TestDocumentInit(DocumentTestCase):
     def setUp(self):
+        super().setUp()
         super().setUp()
         # Setup a sample model instance
         self.resource = self.client.documents
@@ -75,7 +103,9 @@ class TestDocumentInit(DocumentTestCase):
         self.assertEqual(model.updated, datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc), f"updated wrong value after from_dict {model.updated}")
 
 class TestDocument(DocumentTestCase):
+class TestDocument(DocumentTestCase):
     def setUp(self):
+        super().setUp()
         super().setUp()
         # Setup a sample model instance
         self.resource = self.client.documents
@@ -126,6 +156,7 @@ class TestDocument(DocumentTestCase):
 
 class TestGetTags(TestCase):
     def setUp(self):
+        super().setUp()
         super().setUp()
         # Setup a sample model instance
         self.documents = self.client.documents()

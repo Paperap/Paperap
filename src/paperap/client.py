@@ -379,6 +379,7 @@ class PaperlessClient:
         data: dict[str, Any] | None = None,
         files: dict[str, Any] | None = None,
         json_response: Literal[False],
+        json_response: Literal[False],
     ) -> bytes | None: ...
 
     @overload
