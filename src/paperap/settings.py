@@ -1,3 +1,27 @@
+"""
+
+
+
+
+ ----------------------------------------------------------------------------
+
+    METADATA:
+
+        File:    settings.py
+        Project: paperap
+        Created: 2025-03-04
+        Version: 0.0.1
+        Author:  Jess Mann
+        Email:   jess@jmann.me
+        Copyright (c) 2025 Jess Mann
+
+ ----------------------------------------------------------------------------
+
+    LAST MODIFIED:
+
+        2025-03-04     By Jess Mann
+
+"""
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -6,6 +30,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Annotated, Any, Optional, Self, TypedDict
 from yarl import URL
 
+from paperap.exceptions import ConfigurationError
 
 class SettingsArgs(TypedDict, total=False):
     base_url: str | URL
@@ -35,21 +60,21 @@ class Settings(BaseSettings):
     def validate_url(cls, value: Any) -> URL:
         """Ensure the URL is properly formatted."""
         if not value:
-            raise ValueError("Base URL is required")
+            raise ConfigurationError("Base URL is required")
 
         if isinstance(value, str):
             try:
                 value = URL(value)
             except ValueError as e:
-                raise ValueError(f"Invalid URL format: {value}") from e
+                raise ConfigurationError(f"Invalid URL format: {value}") from e
 
         # Validate
         if not isinstance(value, URL):
-            raise ValueError("Base URL must be a string or a yarl.URL object")
+            raise ConfigurationError("Base URL must be a string or a yarl.URL object")
 
         # Make sure the URL has a scheme
         if not all([value.scheme, value.host]):
-            raise ValueError("Base URL must have a scheme and host")
+            raise ConfigurationError("Base URL must have a scheme and host")
 
         # Remove trailing slash
         if value.path.endswith("/"):
@@ -67,22 +92,22 @@ class Settings(BaseSettings):
                 value = int(value)
 
             if not isinstance(value, int):
-                raise ValueError("Unknown type for timeout")
+                raise TypeError("Unknown type for timeout")
         except ValueError as ve:
-            raise ValueError(f"Timeout must be an integer. Provided {value=} of type {type(value)}") from ve
+            raise TypeError(f"Timeout must be an integer. Provided {value=} of type {type(value)}") from ve
 
         if value < 0:
-            raise ValueError("Timeout must be a positive integer")
+            raise ConfigurationError("Timeout must be a positive integer")
         return value
 
     def model_post_init(self, __context):
         if self.token is None and (self.username is None or self.password is None):
-            raise ValueError("Provide a token, or a username and password")
+            raise ConfigurationError("Provide a token, or a username and password")
 
         if not self.base_url:
-            raise ValueError("Base URL is required")
+            raise ConfigurationError("Base URL is required")
 
         if self.require_ssl and self.base_url.scheme != "https":
-            raise ValueError(f"URL must use HTTPS. Url: {self.base_url}. Scheme: {self.base_url.scheme}")
+            raise ConfigurationError(f"URL must use HTTPS. Url: {self.base_url}. Scheme: {self.base_url.scheme}")
 
         return super().model_post_init(__context)

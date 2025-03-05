@@ -65,20 +65,20 @@ class ModelTestCase(TestCase, ABC):
         self.setup_client()
         self.model_to_resource = {
             Correspondent: self.client.correspondents,
-            #CustomField: self.client.custom_fields,
+            CustomField: self.client.custom_fields,
             Document: self.client.documents,
-            #DocumentType: self.client.document_types,
+            DocumentType: self.client.document_types,
             #Profile: self.client.profile,
-            #SavedView: self.client.saved_views,
-            #ShareLinks: self.client.share_links,
-            #StoragePath: self.client.storage_paths,
-            #Tag: self.client.tags,
+            SavedView: self.client.saved_views,
+            ShareLinks: self.client.share_links,
+            StoragePath: self.client.storage_paths,
+            Tag: self.client.tags,
             #Task: self.client.tasks,
-            #User: self.client.users,
-            #Group: self.client.groups,
-            #Workflow: self.client.workflows,
-            #WorkflowAction: self.client.workflow_actions,
-            #WorkflowTrigger: self.client.workflow_triggers,
+            User: self.client.users,
+            Group: self.client.groups,
+            Workflow: self.client.workflows,
+            WorkflowAction: self.client.workflow_actions,
+            WorkflowTrigger: self.client.workflow_triggers,
         }
 
     @abstractmethod
@@ -252,10 +252,10 @@ class TestRequest(ModelTestCase):
     def test_request(self):
         for model_class, resource in self.model_to_resource.items():
             with self.subTest(model=model_class.__name__):
-                print(f'Listing model: {model_class.__name__}')
                 models = self.list_resource(resource)
+                self.assertIsInstance(models, QuerySet, f"Expected QuerySet after list, got {type(models)}")
                 total = models.count()
-                print(f'Got models: {total}')
+                self.assertIsInstance(total, int, f"Expected int for count, got {type(total)}")
 
                 count = 0
                 for model in models:

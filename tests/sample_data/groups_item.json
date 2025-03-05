@@ -1,0 +1,24 @@
+{
+	"id": 6,
+	"name": "Example Group",
+	"permissions": [
+		"add_logentry",
+		"view_logentry",
+		"add_correspondent",
+		"change_correspondent",
+		"view_correspondent",
+		"view_customfield",
+		"add_document",
+		"change_document",
+		"view_document",
+		"add_documenttype",
+		"change_documenttype",
+		"view_documenttype",
+		"add_note",
+		"change_note",
+		"view_note",
+		"add_tag",
+		"change_tag",
+		"view_tag"
+	]
+}

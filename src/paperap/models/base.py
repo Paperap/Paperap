@@ -87,8 +87,7 @@ class PaperlessModel(BaseModel, ABC):
         },
     )
 
-    def __init__(self, **data):
-        resource = data.pop("resource", None)
+    def __init__(self, resource : "PaperlessResource", **data):
         if resource is None:
             raise ValueError("Resource is required for PaperlessModel")
         super().__init__(**data)

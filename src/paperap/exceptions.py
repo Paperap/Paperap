@@ -31,8 +31,8 @@ from string import Template
 class PaperlessException(Exception):
     """Base exception for all paperless client errors."""
 
-    pass
-
+class ConfigurationError(PaperlessException):
+    """Raised when the configuration is invalid."""
 
 class APIError(PaperlessException):
     """Raised when the API returns an error."""
@@ -47,10 +47,15 @@ class APIError(PaperlessException):
         message = Template(message).safe_substitute(status_code=status_code)
         super().__init__(message)
 
-
 class AuthenticationError(APIError):
     """Raised when authentication fails."""
     pass
+
+class RequestError(APIError):
+    """Raised when an error occurs while making a request."""
+
+class BadResponseError(APIError):
+    """Raised when a response is returned, but the status code is not 200."""
 
 class ResponseParsingError(APIError):
     """Raised when the response can't be parsed."""

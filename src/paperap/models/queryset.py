@@ -8,12 +8,12 @@
    METADATA:
 
        File:    queryset.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.1
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -428,15 +428,20 @@ class QuerySet(Iterable[_PaperlessModel]):
             self._iter = self._request_iter(params=self.filters)
             self._next_url = self._last_response.get("next") if self._last_response else None
 
-        # If there are more pages, keep going
-        while self._next_url:
             # Yield objects from the current page
             for obj in self._iter:
                 self._result_cache.append(obj)
                 yield obj
 
+        # If there are more pages, keep going
+        while self._next_url:
             self._iter = self._request_iter(url=self._next_url)
             self._next_url = self._last_response.get("next") if self._last_response else None
+
+            # Yield objects from the current page
+            for obj in self._iter:
+                self._result_cache.append(obj)
+                yield obj
 
         # We've fetched everything
         self._fetch_all = True

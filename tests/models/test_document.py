@@ -124,21 +124,32 @@ class TestDocument(DocumentTestCase):
         self.assertEqual(model_dict["document_type"], 1)
         self.assertEqual(model_dict["tags"], [1, 2, 3])
 
-class TestGetTags(DocumentTestCase):
+class TestGetTags(TestCase):
     def setUp(self):
         super().setUp()
         # Setup a sample model instance
         self.documents = self.client.documents()
 
+    def setup_client(self):
+        self.client = PaperlessClient()
+
     def test_get_tags(self):
         for document in self.documents:
             self.assertIsInstance(document, Document, f"Expected Document, got {type(document)}")
             tags = document.get_tags()
-            self.assertIsInstance(tags, Iterable)
+            self.assertIsInstance(tags, QuerySet)
+            expected_count = len(document.tags)
+            actual_count = tags.count()
+            self.assertEqual(expected_count, actual_count, f"Expected {expected_count} tags, got {actual_count}")
+            
+            count = 0
             for tag in tags:
+                count += 1
                 self.assertIsInstance(tag, Tag, f"Expected document.tag to be a Tag, got {type(tag)}")
-                self.assertTrue(tag.id in document.tags, f"Expected tag.id to be in document.tags")
+                self.assertTrue(tag.id in document.tags, f"Expected tag.id to be in document.tags. {tag.id} not in {document.tags}")
                 self.assertIsInstance(tag.name, str, f"Expected tag.name to be a string, got {type(tag.name)}")
+
+            self.assertEqual(count, expected_count, f"Expected to iterate over {expected_count} tags, only saw {count}")
 
 class TestRequestDocumentList(DocumentTestCase):
     def test_get_documents(self):
@@ -150,7 +161,7 @@ class TestRequestDocumentList(DocumentTestCase):
             expected = sample_document_list["count"]
             self.assertEqual(total, expected, f"Expected {expected} documents, got {total}")
 
-class TestRequestDocument(DocumentTestCase):
+class TestRequestDocument(TestCase):
 
     def test_get_document(self):
         with patch("paperap.client.PaperlessClient.request") as mock_request:
@@ -178,7 +189,7 @@ class TestRequestDocument(DocumentTestCase):
             document = self.client.documents().get(1)
 
         tags = document.get_tags()
-        self.assertIsInstance(tags, Iterable)
+        self.assertIsInstance(tags, QuerySet)
         for tag in tags:
             self.assertIsInstance(tag, Tag, f"Expected document.tag to be a Tag, got {type(tag)}")
             self.assertTrue(tag.id in document.tags, f"Expected tag.id to be in document.tags")

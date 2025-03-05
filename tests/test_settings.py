@@ -29,6 +29,7 @@ import unittest
 from unittest.mock import patch
 from yarl import URL
 from paperap.settings import Settings
+from paperap.exceptions import ConfigurationError
 
 TOKEN_DATA = {
     'token': 'abc123',
@@ -87,7 +88,7 @@ class TestSettingsTimeout(NoEnvTestCase):
 
     def test_negative_timeouts(self):
         """Test that a negative timeout raises a validation error."""
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ConfigurationError):
             params = {**TOKEN_DATA, 'timeout': -1}
             Settings(**params)
 
@@ -95,7 +96,7 @@ class TestSettingsTimeout(NoEnvTestCase):
         """Test that invalid types for the timeout raise a validation error."""
         test_cases = ["abc", object(), [], {}]
         for timeout in test_cases:
-            with self.assertRaises(ValueError, msg=f"Timeout should be invalid: {timeout}"):
+            with self.assertRaises(TypeError, msg=f"Timeout should be invalid: {timeout}"):
                 params = {**TOKEN_DATA, 'timeout': timeout}
                 Settings(**params)
 
@@ -134,10 +135,10 @@ class TestSettingsURL(NoEnvTestCase):
             'https://',
         ]
         for value in test_cases:
-            with self.assertRaises(ValueError, msg=f"URL should be invalid: {value}"):
+            with self.assertRaises(ConfigurationError, msg=f"URL should be invalid: {value}"):
                 params = {**TOKEN_DATA, 'base_url': value}
                 Settings(**params)
-            with self.assertRaises(ValueError, msg=f"URL object should be invalid: {value}"):
+            with self.assertRaises(ConfigurationError, msg=f"URL object should be invalid: {value}"):
                 params = {**TOKEN_DATA, 'base_url': URL(value)}
                 Settings(**params)
 
@@ -181,7 +182,7 @@ class TestSettingsSSL(NoEnvTestCase):
     def test_require_ssl_enforced(self):
         """Test that require_ssl is enforced."""
         params = {**TOKEN_DATA, 'require_ssl': True, 'base_url': 'http://example.com'}
-        with self.assertRaises(ValueError, msg="http URL should be invalid when require_ssl is True"):
+        with self.assertRaises(ConfigurationError, msg="http URL should be invalid when require_ssl is True"):
             Settings(**params)
 
     def test_require_ssl_success(self):

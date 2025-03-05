@@ -29,7 +29,7 @@ import os.path
 from datetime import datetime
 from typing import Any, BinaryIO, Iterator, Optional
 
-from paperap.exceptions import APIError
+from paperap.exceptions import APIError, BadResponseError
 from paperap.models.document import Document
 from paperap.resources.base import PaperlessResource
 
@@ -119,7 +119,7 @@ class DocumentResource(PaperlessResource[Document]):
                 files=files,
             )
         ):
-            raise APIError("Failed to upload document")
+            raise BadResponseError("Failed to upload document")
 
         return Document.from_dict(response, self)
 

@@ -28,9 +28,9 @@ from typing import TYPE_CHECKING, Any, Callable, Iterator, TypeVar
 import unittest
 from unittest.mock import MagicMock, patch
 from pathlib import Path
+from paperap.client import PaperlessClient
 
 if TYPE_CHECKING:
-    from paperap.client import PaperlessClient
     from paperap.resources import PaperlessResource
     from paperap.models import PaperlessModel
     from paperap.models.queryset import QuerySet
@@ -47,6 +47,13 @@ _PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel")
 
 class TestCase(unittest.TestCase):
     client : "PaperlessClient"
+
+    def setUp(self):
+        self.setup_client()
+
+    def setup_client(self):
+        if not hasattr(self, "client") or not self.client:
+            self.client = PaperlessClient()
 
     def _call_list_resource(self, resource : type["PaperlessResource[_PaperlessModel]"] | "PaperlessResource[_PaperlessModel]", **kwargs) -> QuerySet[_PaperlessModel]:
         # If resource is a type, instantiate it

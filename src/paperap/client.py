@@ -32,7 +32,15 @@ import requests
 from yarl import URL
 from string import Template
 from paperap.auth import BasicAuth, TokenAuth, AuthBase
-from paperap.exceptions import APIError, AuthenticationError, PaperlessException, ResourceNotFoundError, ResponseParsingError
+from paperap.exceptions import (
+    APIError, 
+    AuthenticationError, 
+    PaperlessException, 
+    ResourceNotFoundError, 
+    ResponseParsingError, 
+    RequestError, 
+    BadResponseError,
+)
 from paperap.plugin_manager import PluginConfig
 from paperap.plugins.base import Plugin
 from paperap.settings import Settings, SettingsArgs
@@ -268,6 +276,10 @@ class PaperlessClient:
             headers.pop("Content-Type", None)
 
         try:
+            # TODO: Temporary hack
+            params = params.get('params', params) if params else params
+            
+            logger.debug('Request (%s) url %s, params %s, data %s, files %s', method, url, params, data, files)
             response = self.session.request(
                 method=method,
                 url=url,
@@ -286,10 +298,9 @@ class PaperlessClient:
 
                 if response.status_code == 401:
                     raise AuthenticationError(f"Authentication failed: {error_message}")
-                elif response.status_code == 404:
+                if response.status_code == 404:
                     raise ResourceNotFoundError(f"Paperless returned 404 for {endpoint}")
-                else:
-                    raise APIError(error_message, response.status_code)
+                raise BadResponseError(error_message, response.status_code)
 
             # No content
             if response.status_code == 204:
@@ -297,8 +308,11 @@ class PaperlessClient:
 
             return response
 
-        except requests.exceptions.RequestException as e:
-            raise PaperlessException(f"Request failed: {str(e)}") from e
+        except requests.exceptions.ConnectionError as ce:
+            logger.error('Unable to connect to Paperless server: %s url %s, params %s, data %s, files %s', method, url, params, data, files)
+            raise RequestError(f"Connection error: {str(ce)}") from ce
+        except requests.exceptions.RequestException as re:
+            raise RequestError(f"Request failed: {str(re)}") from re
 
     @overload
     def _handle_response(
@@ -453,22 +467,24 @@ class PaperlessClient:
             data = response.json()
 
             if "token" not in data:
-                raise PaperlessException("Token not found in response")
+                raise ResponseParsingError("Token not found in response")
 
             return data["token"]
-        except requests.exceptions.HTTPError as e:
-            if e.response.status_code == 401:
-                raise AuthenticationError("Invalid username or password") from e
+        except requests.exceptions.HTTPError as he:
+            if he.response.status_code == 401:
+                raise AuthenticationError("Invalid username or password") from he
             else:
                 try:
-                    error_data = e.response.json()
-                    error_message = error_data.get("detail", str(e))
+                    error_data = he.response.json()
+                    error_message = error_data.get("detail", str(he))
                 except (ValueError, KeyError):
-                    error_message = str(e)
+                    error_message = str(he)
 
-                raise PaperlessException(f"Failed to generate token: {error_message}") from e
-        except (requests.exceptions.RequestException, ValueError, KeyError) as e:
-            raise PaperlessException(f"Failed to generate token: {str(e)}") from e
+                raise RequestError(f"Failed to generate token: {error_message}") from he
+        except requests.exceptions.RequestException as re:
+            raise RequestError(f"Error while requesting a new token: {str(re)}") from re
+        except (ValueError, KeyError) as ve:
+            raise ResponseParsingError(f"Failed to parse response when generating token: {str(ve)}") from ve
 
     def get_statistics(self) -> dict[str, Any]:
         """
