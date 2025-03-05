@@ -27,7 +27,7 @@ from __future__ import annotations
 
 import copy
 from string import Template
-from typing import Any, Generic, Iterable, Iterator, Optional, TypeVar, Union, TYPE_CHECKING
+from typing import Any, Generic, Iterable, Iterator, Optional, Self, TypeVar, Union, TYPE_CHECKING
 import logging
 from yarl import URL
 from paperap.exceptions import MultipleObjectsFoundError, ObjectNotFoundError
@@ -99,12 +99,13 @@ class QuerySet(Iterable[_PaperlessModel]):
         self._last_response = _last_response
         self._iter = _iter
 
-    def filter(self, **kwargs) -> QuerySet[_PaperlessModel]:
+    def filter(self, **kwargs) -> Self:
         """
         Return a new QuerySet with the given filters applied.
 
         Args:
-            **kwargs: Filters to apply, where keys are field names and values are desired values
+            **kwargs: Filters to apply, where keys are field names and values are desired values.
+                    Supports Django-style lookups like field__contains, field__in, etc.
 
         Returns:
             A new QuerySet with the additional filters applied
@@ -118,10 +119,28 @@ class QuerySet(Iterable[_PaperlessModel]):
 
             # Get documents with title containing "invoice"
             docs = client.documents.filter(title__contains="invoice")
-        """
-        return self._chain(filters={**self.filters, **kwargs})
 
-    def exclude(self, **kwargs) -> QuerySet[_PaperlessModel]:
+            # Get documents with IDs in a list
+            docs = client.documents.filter(id__in=[1, 2, 3])
+        """
+        processed_filters = {}
+
+        for key, value in kwargs.items():
+            # Handle list values for __in lookups
+            if key.endswith("__in") and isinstance(value, (Iterable, tuple)):
+                # Convert list to comma-separated string for the API
+                processed_value = ",".join(str(item) for item in value)
+                processed_filters[key] = processed_value
+            # Handle boolean values
+            elif isinstance(value, bool):
+                processed_filters[key] = str(value).lower()
+            # Handle normal values
+            else:
+                processed_filters[key] = value
+
+        return self._chain(filters={**self.filters, **processed_filters})
+
+    def exclude(self, **kwargs) -> Self:
         """
         Return a new QuerySet excluding objects with the given filters.
 
@@ -235,7 +254,7 @@ class QuerySet(Iterable[_PaperlessModel]):
         results = self._last_response.get("results", [])
         return len(results)
 
-    def all(self) -> QuerySet[_PaperlessModel]:
+    def all(self) -> Self:
         """
         Return a new QuerySet that copies the current one.
 
@@ -244,7 +263,7 @@ class QuerySet(Iterable[_PaperlessModel]):
         """
         return self._chain()
 
-    def order_by(self, *fields: str) -> QuerySet[_PaperlessModel]:
+    def order_by(self, *fields: str) -> Self:
         """
         Return a new QuerySet ordered by the specified fields.
 
@@ -328,7 +347,7 @@ class QuerySet(Iterable[_PaperlessModel]):
         # Check if there's at least one result
         return self.first() is not None
 
-    def none(self) -> QuerySet[_PaperlessModel]:
+    def none(self) -> Self:
         """
         Return an empty QuerySet.
 
@@ -380,7 +399,7 @@ class QuerySet(Iterable[_PaperlessModel]):
 
         yield from self.resource._handle_response(response)
 
-    def _chain(self, **kwargs) -> QuerySet[_PaperlessModel]:
+    def _chain(self, **kwargs) -> Self:
         """
         Return a copy of the current QuerySet with updated attributes.
 
