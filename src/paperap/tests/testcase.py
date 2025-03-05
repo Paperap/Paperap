@@ -33,7 +33,7 @@ from paperap.client import PaperlessClient
 if TYPE_CHECKING:
     from paperap.resources import PaperlessResource
     from paperap.models import PaperlessModel
-    from paperap.models.queryset import QuerySet
+    from paperap.models.abstract import QuerySet
 
 def load_sample_data(filename : str) -> dict[str, Any]:
 	# Load sample response from tests/sample_data/{model}_{endpoint}.json

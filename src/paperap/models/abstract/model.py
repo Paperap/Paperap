@@ -28,16 +28,19 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, ClassVar, Self, TYPE_CHECKING
+from typing import Any, ClassVar, Generic, Self, TYPE_CHECKING
+from typing_extensions import TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 from yarl import URL
 
-from paperap.parser import Parser
+from paperap.models.abstract.parser import Parser
+from paperap.models.abstract.queryset import QuerySet
 
 if TYPE_CHECKING:
     from paperap.resources.base import PaperlessResource
 
+_Self = TypeVar("_Self", bound="PaperlessModel")
 
 class PaperlessModel(BaseModel, ABC):
     """
@@ -47,7 +50,7 @@ class PaperlessModel(BaseModel, ABC):
     with minimal configuration needed.
 
     Examples:
-        from paperap.models.base import PaperlessModel
+        from paperap.models.abstract.model import PaperlessModel
         class Document(PaperlessModel):
             filename: str
             contents : bytes
@@ -60,9 +63,9 @@ class PaperlessModel(BaseModel, ABC):
     created: datetime = Field(description="Creation timestamp", default_factory=datetime.now, alias="created_on")
     updated: datetime = Field(description="Last update timestamp", default_factory=datetime.now, alias="updated_on")
 
-    _meta: "Meta" = PrivateAttr()
+    _meta: "Meta[Self]" = PrivateAttr()
 
-    class Meta:
+    class Meta(Generic[_Self]):
         # The name of the model.
         # It will default to the classname
         name: str
@@ -71,7 +74,8 @@ class PaperlessModel(BaseModel, ABC):
         # the type of parser, which parses api data into appropriate types
         # this will usually not need to be overridden
         parser: type[Parser] = Parser
-        resource: "PaperlessResource"
+        resource: "PaperlessResource[_Self]"
+        queryset: type[QuerySet[_Self]] = QuerySet
 
     # Configure Pydantic behavior
     model_config = ConfigDict(

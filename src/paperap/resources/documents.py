@@ -30,9 +30,8 @@ from datetime import datetime
 from typing import Any, BinaryIO, Iterator, Optional
 
 from paperap.exceptions import APIError, BadResponseError
-from paperap.models.document import Document
+from paperap.models.document import Document, DocumentQuerySet
 from paperap.resources.base import PaperlessResource
-
 
 class DocumentResource(PaperlessResource[Document]):
     """Resource for managing documents."""

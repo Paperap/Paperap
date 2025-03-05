@@ -28,7 +28,7 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
-from paperap.models.base import PaperlessModel
+from paperap.models.abstract.model import PaperlessModel
 
 
 class DocumentType(PaperlessModel):

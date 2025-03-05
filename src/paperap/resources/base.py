@@ -32,7 +32,7 @@ from yarl import URL
 from string import Template
 import logging
 from paperap.const import URLS, Endpoints
-from paperap.parser import Parser
+from paperap.models.abstract.parser import Parser
 from paperap.exceptions import ObjectNotFoundError, ResourceNotFoundError, ConfigurationError
 from paperap.signals import (
     pre_list,
@@ -48,16 +48,14 @@ from paperap.signals import (
     pre_delete,
     post_delete,
 )
-from paperap.models.queryset import QuerySet
 
 if TYPE_CHECKING:
     from paperap.client import PaperlessClient
-    from paperap.models.base import PaperlessModel
+    from paperap.models.abstract import PaperlessModel, QuerySet
 
 _PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel", covariant=True)
 
 logger = logging.getLogger(__name__)
-
 
 class PaperlessResource(ABC, Generic[_PaperlessModel]):
     """
@@ -127,7 +125,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel]):
         Returns:
             A QuerySet for this resource
         """
-        return QuerySet(self)
+        return self.model_class._meta.queryset(self)
 
     def filter(self, **kwargs) -> QuerySet[_PaperlessModel]:
         """

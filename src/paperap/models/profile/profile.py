@@ -27,7 +27,7 @@ from __future__ import annotations
 from typing import Any
 
 from pydantic import Field
-from paperap.models.base import PaperlessModel
+from paperap.models.abstract.model import PaperlessModel
 
 
 class Profile(PaperlessModel):

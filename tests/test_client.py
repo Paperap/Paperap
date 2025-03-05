@@ -30,7 +30,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 from pathlib import Path
 from paperap.tests import TestCase, load_sample_data
-from paperap.models.queryset import QuerySet
+from paperap.models.abstract import QuerySet
 from paperap.models.document import Document
 from paperap.models.tag import Tag
 from paperap.client import PaperlessClient

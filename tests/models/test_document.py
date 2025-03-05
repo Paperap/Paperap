@@ -29,7 +29,7 @@ from typing import Iterable
 import unittest
 from unittest.mock import patch, MagicMock
 from datetime import datetime, timezone
-from paperap.models.queryset import QuerySet
+from paperap.models.abstract.queryset import PaperlessModel
 from paperap.models.document import Document
 from paperap.client import PaperlessClient
 from paperap.resources.documents import DocumentResource

@@ -27,7 +27,7 @@ from typing import Any, Dict
 
 from pydantic import BaseModel, Field
 
-from paperap.models.base import PaperlessModel
+from paperap.models.abstract.model import PaperlessModel
 
 
 class UISettings(PaperlessModel):

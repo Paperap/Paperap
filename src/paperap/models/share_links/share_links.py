@@ -23,7 +23,7 @@
 
 """
 from __future__ import annotations
-from paperap.models.base import PaperlessModel
+from paperap.models.abstract.model import PaperlessModel
 
 from datetime import datetime
 from typing import Any, TYPE_CHECKING, Iterable, Iterator, Optional
@@ -31,7 +31,7 @@ from typing import Any, TYPE_CHECKING, Iterable, Iterator, Optional
 from pydantic import BaseModel, Field
 from yarl import URL
 
-from paperap.models.queryset import QuerySet
+from paperap.models.abstract.queryset import PaperlessModel
 
 if TYPE_CHECKING:
     from paperap.models.correspondent import Correspondent

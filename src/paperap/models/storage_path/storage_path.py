@@ -7,7 +7,7 @@
 
    METADATA:
 
-       File:    correspondent.py
+       File:    storage_path.py
         Project: paperap
        Created: 2025-03-04
         Version: 0.0.1
@@ -25,20 +25,23 @@
 
 from datetime import datetime
 from typing import Any, Optional
-from pydantic import Field
 
-from paperap.models.base import PaperlessModel
+from pydantic import BaseModel, Field
 
 
-class Correspondent(PaperlessModel):
+from paperap.models.abstract.model import PaperlessModel
+
+
+class StoragePath(PaperlessModel):
     """
-    Represents a correspondent in Paperless-NgX.
+    Represents a storage path in Paperless-NgX.
     """
 
-    slug: str
     name: str
-    match: str
-    matching_algorithm: int
+    slug: str
+    path: str = "{{ created_year }}/{{ correspondent }}/{{ title }}"
+    match: str = ".*"
+    matching_algorithm: int = 0
     is_insensitive: bool = True
     document_count: int = 0
     owner : int | None = None
@@ -46,8 +49,4 @@ class Correspondent(PaperlessModel):
 
     class Meta(PaperlessModel.Meta):
         # Fields that should not be modified
-        read_only_fields = {
-            "slug",
-            "document_count",
-            "last_correspondence",
-        }
+        read_only_fields = {"slug", "document_count"}

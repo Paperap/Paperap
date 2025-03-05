@@ -8,12 +8,12 @@
    METADATA:
 
        File:    parser.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.1
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -29,23 +29,23 @@ import datetime
 import logging
 from decimal import Decimal
 from enum import Enum
-from typing import TYPE_CHECKING, Any, TypeVar, Union, cast, get_type_hints, overload, get_origin, get_args
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, Union, cast, get_type_hints, overload, get_origin, get_args
 import types
 
 import dateparser
 
 if TYPE_CHECKING:
-    from paperap.models.base import PaperlessModel
+    from paperap.models.abstract.model import PaperlessModel
 
 logger = logging.getLogger(__name__)
 
 _T = TypeVar("_T")
+_PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel")
 
+class Parser(Generic[_PaperlessModel]):
+    model: type[_PaperlessModel]
 
-class Parser:
-    model: type["PaperlessModel"]
-
-    def __init__(self, model: type["PaperlessModel"]):
+    def __init__(self, model: type[_PaperlessModel]):
         self.model = model
 
     def parse(self, value: Any, target_type: type[_T]) -> _T | None:

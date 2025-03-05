@@ -22,7 +22,6 @@
        2025-03-04     By Jess Mann
 
 """
-
 from __future__ import annotations
 
 import copy
@@ -47,13 +46,12 @@ from paperap.signals import (
 )
 
 if TYPE_CHECKING:
-    from paperap.models.base import PaperlessModel
+    from paperap.models.abstract.model import PaperlessModel
     from paperap.resources.base import PaperlessResource
 
 _PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel")
 
 logger = logging.getLogger(__name__)
-
 
 class QuerySet(Iterable[_PaperlessModel]):
     """
@@ -63,7 +61,7 @@ class QuerySet(Iterable[_PaperlessModel]):
     It's designed to be lazy - only fetching data when it's actually needed.
     """
 
-    resource: "PaperlessResource"
+    resource: "PaperlessResource[_PaperlessModel]"
     filters: dict[str, Any]
     _last_response: dict[str, Any] | None = None
     _result_cache: list[_PaperlessModel] = []

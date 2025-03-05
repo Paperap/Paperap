@@ -26,8 +26,7 @@ from datetime import datetime
 from typing import Any, Optional
 from pydantic import BaseModel, Field
 
-from paperap.models.base import PaperlessModel
-
+from paperap.models.abstract.model import PaperlessModel
 
 class Config(PaperlessModel):
     user_args: str | None = None
