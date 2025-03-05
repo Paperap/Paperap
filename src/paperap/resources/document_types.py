@@ -8,12 +8,12 @@
    METADATA:
 
        File:    document_types.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.1
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -33,3 +33,4 @@ class DocumentTypeResource(PaperlessResource[DocumentType]):
     """Resource for managing document types."""
 
     model_class = DocumentType
+    name = "document_types"

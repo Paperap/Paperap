@@ -8,12 +8,12 @@
    METADATA:
 
        File:    __init__.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.1
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -30,10 +30,6 @@ from paperap.resources.correspondents import CorrespondentResource
 from paperap.resources.custom_fields import CustomFieldResource
 from paperap.resources.document_types import DocumentTypeResource
 from paperap.resources.documents import DocumentResource
-from paperap.resources.logs import LogResource
-from paperap.resources.mail_accounts import MailAccountsResource
-from paperap.resources.mail_rules import MailRulesResource
-from paperap.resources.search import SearchResource
 from paperap.resources.share_links import ShareLinksResource
 from paperap.resources.profile import ProfileResource
 from paperap.resources.saved_views import SavedViewResource
@@ -51,7 +47,6 @@ __all__ = [
     "DocumentTypeResource",
     "StoragePathResource",
     "CustomFieldResource",
-    "LogResource",
     "UserResource",
     "GroupResource",
     "TaskResource",

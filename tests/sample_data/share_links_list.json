@@ -1,0 +1,27 @@
+{
+	"count": 2,
+	"next": null,
+	"previous": null,
+	"all": [
+		1,
+		2
+	],
+	"results": [
+		{
+			"id": 1,
+			"created": "2025-01-23T13:17:49.684538-05:00",
+			"expiration": null,
+			"slug": "example-slug",
+			"document": 3378,
+			"file_version": "original"
+		},
+		{
+			"id": 2,
+			"created": "2025-01-29T14:28:27.710410-05:00",
+			"expiration": null,
+			"slug": "example-slug",
+			"document": 3379,
+			"file_version": "original"
+		}
+	]
+}

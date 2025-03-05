@@ -52,7 +52,7 @@ class ExampleResource(PaperlessResource):
 class TestModel(TestCase):
     def setUp(self):
         # Setup a sample model instance
-        env_data = {f'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
         with patch.dict(os.environ, env_data, clear=True):
             self.client = PaperlessClient()
         self.resource = ExampleResource(self.client)
@@ -97,8 +97,8 @@ class TestModel(TestCase):
         self.assertEqual(model_dict["a_float"], self.model_data["a_float"])
         self.assertEqual(model_dict["a_bool"], self.model_data["a_bool"])
 
-        self.assertEqual(model_dict["created_on"], datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc))
-        self.assertEqual(model_dict["updated_on"], datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc))
+        self.assertEqual(model_dict["created"], datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc))
+        self.assertEqual(model_dict["updated"], datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc))
         self.assertEqual(model_dict["a_date"], datetime(2020, 5, 12, 12, 0, 0, tzinfo=timezone.utc))
 
     def test_model_update_int(self):

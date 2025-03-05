@@ -40,7 +40,7 @@ class TestTagInit(unittest.TestCase):
 
     def setUp(self):
         # Setup a sample model instance
-        env_data = {f'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
         with patch.dict(os.environ, env_data, clear=True):
             self.client = PaperlessClient()
         self.resource = self.client.tags
@@ -67,7 +67,7 @@ class TestTagInit(unittest.TestCase):
         self.assertEqual(model.updated, datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc), f"updated wrong value after from_dict {model.updated}")
         self.assertEqual(model.name, self.model_data["name"], f"Tag name is wrong when created from dict: {model.name}")
         self.assertEqual(model.slug, self.model_data["slug"], f"Tag slug is wrong when created from dict: {model.slug}")
-        self.assertEqual(model.color, self.model_data["color"], f"Tag color is wrong when created from dict: {model.color}")
+        self.assertEqual(model.colour, self.model_data["color"], f"Tag color is wrong when created from dict: {model.colour}")
         self.assertEqual(model.match, self.model_data["match"], f"Tag match is wrong when created from dict: {model.match}")
         self.assertEqual(model.matching_algorithm, self.model_data["matching_algorithm"], f"Tag matching_algorithm is wrong when created from dict: {model.matching_algorithm}")
         self.assertEqual(model.is_insensitive, self.model_data["is_insensitive"], f"Tag is_insensitive is wrong when created from dict: {model.is_insensitive}")
@@ -76,7 +76,7 @@ class TestTagInit(unittest.TestCase):
 class TestTag(unittest.TestCase):
     def setUp(self):
         # Setup a sample model instance
-        env_data = {f'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
         with patch.dict(os.environ, env_data, clear=True):
             self.client = PaperlessClient()
         self.resource = self.client.tags
@@ -115,11 +115,11 @@ class TestTag(unittest.TestCase):
         # Test if the model can be converted back to a dictionary
         model_dict = self.model.to_dict()
 
-        self.assertEqual(model_dict["created_on"], datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc))
-        self.assertEqual(model_dict["updated_on"], datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc))
+        self.assertEqual(model_dict["created"], datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc))
+        self.assertEqual(model_dict["updated"], datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc))
         self.assertEqual(model_dict["name"], self.model_data["name"])
         self.assertEqual(model_dict["slug"], self.model_data["slug"])
-        self.assertEqual(model_dict["color"], self.model_data["color"])
+        self.assertEqual(model_dict["colour"], self.model_data["color"])
         self.assertEqual(model_dict["match"], self.model_data["match"])
         self.assertEqual(model_dict["matching_algorithm"], self.model_data["matching_algorithm"])
         self.assertEqual(model_dict["is_insensitive"], self.model_data["is_insensitive"])

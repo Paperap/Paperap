@@ -1,0 +1,17 @@
+{
+	"id": 12,
+	"sources": [],
+	"type": 3,
+	"filter_path": null,
+	"filter_filename": null,
+	"filter_mailrule": null,
+	"matching_algorithm": 0,
+	"match": "",
+	"is_insensitive": true,
+	"filter_has_tags": [
+		6,
+		160
+	],
+	"filter_has_correspondent": null,
+	"filter_has_document_type": null
+}

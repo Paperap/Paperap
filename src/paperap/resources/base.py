@@ -32,8 +32,8 @@ from yarl import URL
 from string import Template
 import logging
 from paperap.const import URLS, Endpoints
-from paperap.parser import Parser
-from paperap.exceptions import ObjectNotFoundError, ResourceNotFoundError
+from paperap.models.abstract.parser import Parser
+from paperap.exceptions import ObjectNotFoundError, ResourceNotFoundError, ConfigurationError
 from paperap.signals import (
     pre_list,
     post_list_response,
@@ -48,11 +48,10 @@ from paperap.signals import (
     pre_delete,
     post_delete,
 )
-from paperap.models.queryset import QuerySet
 
 if TYPE_CHECKING:
     from paperap.client import PaperlessClient
-    from paperap.models.base import PaperlessModel
+    from paperap.models.abstract import PaperlessModel, QuerySet
 
 _PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel", covariant=True)
 
@@ -104,7 +103,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel]):
 
         # model_class is required
         if not (model_class := getattr(cls, "model_class", None)):
-            raise ValueError(f"model_class must be defined in {cls.__name__}")
+            raise ConfigurationError(f"model_class must be defined in {cls.__name__}")
 
         # Set parser
         parser_type = model_class._meta.parser
@@ -127,7 +126,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel]):
         Returns:
             A QuerySet for this resource
         """
-        return QuerySet(self)
+        return self.model_class._meta.queryset(self)
 
     def filter(self, **kwargs) -> QuerySet[_PaperlessModel]:
         """
@@ -156,7 +155,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel]):
         pre_get.emit(self, **signal_params)
 
         if not (template := self.endpoints.get("detail")):
-            raise ValueError(f"Get detail endpoint not defined for resource {self.name}")
+            raise ConfigurationError(f"Get detail endpoint not defined for resource {self.name}")
 
         # Provide template substitutions for endpoints
         url = template.safe_substitute(resource=self.name, pk=resource_id)
@@ -191,7 +190,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel]):
         pre_create.emit(self, **signal_params)
 
         if not (template := self.endpoints.get("create")):
-            raise ValueError(f"Create endpoint not defined for resource {self.name}")
+            raise ConfigurationError(f"Create endpoint not defined for resource {self.name}")
 
         url = template.safe_substitute(resource=self.name)
         if not (response := self.client.request("POST", url, data=data)):
@@ -220,7 +219,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel]):
         pre_update.emit(self, **signal_params)
 
         if not (template := self.endpoints.get("update")):
-            raise ValueError(f"Update endpoint not defined for resource {self.name}")
+            raise ConfigurationError(f"Update endpoint not defined for resource {self.name}")
 
         url = template.safe_substitute(resource=self.name)
         if not (response := self.client.request("PUT", url, data=data)):
@@ -245,7 +244,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel]):
         pre_delete.emit(self, **signal_params)
 
         if not (template := self.endpoints.get("delete")):
-            raise ValueError(f"Delete endpoint not defined for resource {self.name}")
+            raise ConfigurationError(f"Delete endpoint not defined for resource {self.name}")
 
         url = template.safe_substitute(resource=self.name, pk=resource_id)
         self.client.request("DELETE", url)
@@ -287,7 +286,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel]):
         """
         if not url:
             if not (url := self.endpoints.get("list")):
-                raise ValueError(f"List endpoint not defined for resource {self.name}")
+                raise ConfigurationError(f"List endpoint not defined for resource {self.name}")
 
         if isinstance(url, Template):
             url = url.safe_substitute(resource=self.name)

@@ -1,0 +1,11 @@
+{
+	"id": 10,
+	"slug": "example-slug",
+	"name": "example-name",
+	"match": "",
+	"matching_algorithm": 6,
+	"is_insensitive": true,
+	"document_count": 6,
+	"owner": null,
+	"user_can_change": true
+}

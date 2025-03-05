@@ -1,0 +1,1 @@
+{"id": 1, "slug": "yearcorrespondenttitle", "name": "Year/Correspondent/Title", "path": "{{ created_year }}/{{ correspondent }}/{{ title }}", "match": ".*", "matching_algorithm": 0, "is_insensitive": true, "document_count": 22, "owner": 3, "user_can_change": true}

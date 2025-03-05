@@ -30,7 +30,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 from pathlib import Path
 from paperap.tests import TestCase, load_sample_data
-from paperap.models.queryset import QuerySet
+from paperap.models.abstract import QuerySet
 from paperap.models.document import Document
 from paperap.models.tag import Tag
 from paperap.client import PaperlessClient
@@ -40,7 +40,7 @@ sample_data = load_sample_data('documents_list.json')
 
 class TestClient(TestCase):
     def setUp(self):
-        env_data = {f'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
         with patch.dict(os.environ, env_data, clear=True):
             self.client = PaperlessClient()
 
@@ -74,7 +74,7 @@ class TestClient(TestCase):
             if count >= test_iterations:
                 break
 
-        self.assertEqual(count, test_iterations, f"Document queryset did not iterate over 3 pages.")
+        self.assertEqual(count, test_iterations, "Document queryset did not iterate over 3 pages.")
 
 if __name__ == "__main__":
     unittest.main()

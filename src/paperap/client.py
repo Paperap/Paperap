@@ -8,12 +8,12 @@
    METADATA:
 
        File:    client.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.1
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -32,7 +32,15 @@ import requests
 from yarl import URL
 from string import Template
 from paperap.auth import BasicAuth, TokenAuth, AuthBase
-from paperap.exceptions import APIError, AuthenticationError, PaperlessException, ResourceNotFoundError
+from paperap.exceptions import (
+    APIError,
+    AuthenticationError,
+    PaperlessException,
+    ResourceNotFoundError,
+    ResponseParsingError,
+    RequestError,
+    BadResponseError,
+)
 from paperap.plugin_manager import PluginConfig
 from paperap.plugins.base import Plugin
 from paperap.settings import Settings, SettingsArgs
@@ -42,12 +50,8 @@ from paperap.resources import (
     DocumentResource,
     DocumentTypeResource,
     GroupResource,
-    LogResource,
-    MailAccountsResource,
-    MailRulesResource,
     ProfileResource,
     SavedViewResource,
-    SearchResource,
     ShareLinksResource,
     StoragePathResource,
     TagResource,
@@ -108,12 +112,8 @@ class PaperlessClient:
     document_types: DocumentTypeResource
     documents: DocumentResource
     groups: GroupResource
-    logs: LogResource
-    mail_accounts: MailAccountsResource
-    mail_rules: MailRulesResource
     profile: ProfileResource
     saved_views: SavedViewResource
-    search: SearchResource
     share_links: ShareLinksResource
     storage_paths: StoragePathResource
     tags: TagResource
@@ -165,21 +165,22 @@ class PaperlessClient:
     def _init_resources(self) -> None:
         """Initialize all API resources."""
         # Initialize resources
-        self.documents = DocumentResource(self)
         self.correspondents = CorrespondentResource(self)
-        self.tags = TagResource(self)
-        self.document_types = DocumentTypeResource(self)
-        self.storage_paths = StoragePathResource(self)
         self.custom_fields = CustomFieldResource(self)
-        self.logs = LogResource(self)
-        self.users = UserResource(self)
+        self.document_types = DocumentTypeResource(self)
+        self.documents = DocumentResource(self)
         self.groups = GroupResource(self)
-        self.tasks = TaskResource(self)
+        self.profile = ProfileResource(self)
         self.saved_views = SavedViewResource(self)
+        self.share_links = ShareLinksResource(self)
+        self.storage_paths = StoragePathResource(self)
+        self.tags = TagResource(self)
+        self.tasks = TaskResource(self)
         self.ui_settings = UISettingsResource(self)
-        self.workflows = WorkflowResource(self)
-        self.workflow_triggers = WorkflowTriggerResource(self)
+        self.users = UserResource(self)
         self.workflow_actions = WorkflowActionResource(self)
+        self.workflow_triggers = WorkflowTriggerResource(self)
+        self.workflows = WorkflowResource(self)
 
     def _initialize_plugins(self, plugin_config: PluginConfig | None = None) -> None:
         """
@@ -265,7 +266,7 @@ class PaperlessClient:
         else:
             url = f"{self.base_url}/{endpoint.lstrip('/')}"
 
-        logger.critical("Requesting %s %s", method, url)
+        logger.debug("Requesting %s %s", method, url)
 
         # Add headers from authentication and session defaults
         headers = {**self.session.headers, **self._get_headers()}
@@ -275,6 +276,10 @@ class PaperlessClient:
             headers.pop("Content-Type", None)
 
         try:
+            # TODO: Temporary hack
+            params = params.get("params", params) if params else params
+
+            logger.debug("Request (%s) url %s, params %s, data %s, files %s", method, url, params, data, files)
             response = self.session.request(
                 method=method,
                 url=url,
@@ -293,10 +298,9 @@ class PaperlessClient:
 
                 if response.status_code == 401:
                     raise AuthenticationError(f"Authentication failed: {error_message}")
-                elif response.status_code == 404:
+                if response.status_code == 404:
                     raise ResourceNotFoundError(f"Paperless returned 404 for {endpoint}")
-                else:
-                    raise APIError(error_message, response.status_code)
+                raise BadResponseError(error_message, response.status_code)
 
             # No content
             if response.status_code == 204:
@@ -304,8 +308,18 @@ class PaperlessClient:
 
             return response
 
-        except requests.exceptions.RequestException as e:
-            raise PaperlessException(f"Request failed: {str(e)}") from e
+        except requests.exceptions.ConnectionError as ce:
+            logger.error(
+                "Unable to connect to Paperless server: %s url %s, params %s, data %s, files %s",
+                method,
+                url,
+                params,
+                data,
+                files,
+            )
+            raise RequestError(f"Connection error: {str(ce)}") from ce
+        except requests.exceptions.RequestException as re:
+            raise RequestError(f"Request failed: {str(re)}") from re
 
     @overload
     def _handle_response(
@@ -337,7 +351,10 @@ class PaperlessClient:
             try:
                 return response.json()
             except ValueError as e:
-                raise PaperlessException(f"Failed to parse JSON response: {str(e)} -> {response}") from e
+                logger.error(
+                    "Failed to parse JSON response: %s -> url %s -> content: %s", e, response.url, response.content
+                )
+                raise ResponseParsingError(f"Failed to parse JSON response: {str(e)} -> url {response.url}") from e
 
         return response.content
 
@@ -459,22 +476,24 @@ class PaperlessClient:
             data = response.json()
 
             if "token" not in data:
-                raise PaperlessException("Token not found in response")
+                raise ResponseParsingError("Token not found in response")
 
             return data["token"]
-        except requests.exceptions.HTTPError as e:
-            if e.response.status_code == 401:
-                raise AuthenticationError("Invalid username or password") from e
+        except requests.exceptions.HTTPError as he:
+            if he.response.status_code == 401:
+                raise AuthenticationError("Invalid username or password") from he
             else:
                 try:
-                    error_data = e.response.json()
-                    error_message = error_data.get("detail", str(e))
+                    error_data = he.response.json()
+                    error_message = error_data.get("detail", str(he))
                 except (ValueError, KeyError):
-                    error_message = str(e)
+                    error_message = str(he)
 
-                raise PaperlessException(f"Failed to generate token: {error_message}") from e
-        except (requests.exceptions.RequestException, ValueError, KeyError) as e:
-            raise PaperlessException(f"Failed to generate token: {str(e)}") from e
+                raise RequestError(f"Failed to generate token: {error_message}") from he
+        except requests.exceptions.RequestException as re:
+            raise RequestError(f"Error while requesting a new token: {str(re)}") from re
+        except (ValueError, KeyError) as ve:
+            raise ResponseParsingError(f"Failed to parse response when generating token: {str(ve)}") from ve
 
     def get_statistics(self) -> dict[str, Any]:
         """

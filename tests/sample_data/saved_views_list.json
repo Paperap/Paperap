@@ -1,0 +1,994 @@
+{
+	"count": 88,
+	"next": "http://example.com/api/saved_views/?page=2",
+	"previous": null,
+	"all": [
+		133,
+		134,
+		222,
+		135,
+		224,
+		137,
+		210,
+		211,
+		195,
+		199,
+		197,
+		198,
+		216,
+		196,
+		213,
+		194,
+		200,
+		204,
+		205,
+		202,
+		218,
+		203,
+		201,
+		190,
+		141,
+		184,
+		185,
+		191,
+		186,
+		187,
+		189,
+		183,
+		188,
+		192,
+		193,
+		208,
+		84,
+		86,
+		132,
+		138,
+		255,
+		139,
+		178,
+		152,
+		159,
+		160,
+		171,
+		173,
+		172,
+		180,
+		182,
+		165,
+		166,
+		167,
+		177,
+		154,
+		157,
+		156,
+		158,
+		155,
+		164,
+		174,
+		175,
+		176,
+		161,
+		162,
+		163,
+		221,
+		179,
+		247,
+		170,
+		219,
+		220,
+		246,
+		209,
+		140,
+		206,
+		207,
+		142,
+		143,
+		214,
+		215,
+		144,
+		145,
+		146,
+		149,
+		249,
+		256
+	],
+	"results": [
+		{
+			"id": 133,
+			"name": "example-name",
+			"show_on_dashboard": true,
+			"show_in_sidebar": true,
+			"sort_field": "created",
+			"sort_reverse": false,
+			"filter_rules": [
+				{
+					"rule_type": 28,
+					"value": "1"
+				},
+				{
+					"rule_type": 28,
+					"value": "14"
+				},
+				{
+					"rule_type": 28,
+					"value": "2"
+				}
+			],
+			"page_size": null,
+			"display_mode": "largeCards",
+			"display_fields": [
+				"title",
+				"created",
+				"tag",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 134,
+			"name": "example-name",
+			"show_on_dashboard": true,
+			"show_in_sidebar": true,
+			"sort_field": "created",
+			"sort_reverse": false,
+			"filter_rules": [
+				{
+					"rule_type": 26,
+					"value": "1"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"tag",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 222,
+			"name": "example-name",
+			"show_on_dashboard": true,
+			"show_in_sidebar": false,
+			"sort_field": "added",
+			"sort_reverse": true,
+			"filter_rules": [],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"note",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_3",
+				"custom_field_15",
+				"custom_field_14",
+				"custom_field_16",
+				"tag"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 135,
+			"name": "example-name",
+			"show_on_dashboard": false,
+			"show_in_sidebar": false,
+			"sort_field": "added",
+			"sort_reverse": true,
+			"filter_rules": [],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_3",
+				"custom_field_15",
+				"custom_field_14"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 224,
+			"name": "example-name",
+			"show_on_dashboard": false,
+			"show_in_sidebar": false,
+			"sort_field": "created",
+			"sort_reverse": false,
+			"filter_rules": [
+				{
+					"rule_type": 28,
+					"value": "31"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"note",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_3",
+				"custom_field_15",
+				"custom_field_14",
+				"custom_field_16",
+				"tag",
+				"custom_field_11"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 137,
+			"name": "example-name",
+			"show_on_dashboard": false,
+			"show_in_sidebar": false,
+			"sort_field": "created",
+			"sort_reverse": false,
+			"filter_rules": [
+				{
+					"rule_type": 42,
+					"value": "[\"AND\",[[\"OR\",[[15,\"icontains\",\"Partial\"],[19,\"icontains\",\"Partial Search\"]]],[\"OR\",[[14,\"exact\",\"1\"],[14,\"isnull\",\"true\"]]]]]"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_15",
+				"custom_field_19",
+				"custom_field_20"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 210,
+			"name": "example-name",
+			"show_on_dashboard": false,
+			"show_in_sidebar": false,
+			"sort_field": "added",
+			"sort_reverse": true,
+			"filter_rules": [
+				{
+					"rule_type": 22,
+					"value": "2"
+				},
+				{
+					"rule_type": 28,
+					"value": "8"
+				},
+				{
+					"rule_type": 42,
+					"value": "[\"AND\",[[\"OR\",[[15,\"icontains\",\"Partial\"],[19,\"icontains\",\"Partial Search\"]]],[\"OR\",[[14,\"exact\",\"1\"],[14,\"isnull\",\"true\"]]]]]"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_16"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 211,
+			"name": "example-name",
+			"show_on_dashboard": false,
+			"show_in_sidebar": false,
+			"sort_field": "created",
+			"sort_reverse": false,
+			"filter_rules": [
+				{
+					"rule_type": 22,
+					"value": "2"
+				},
+				{
+					"rule_type": 28,
+					"value": "8"
+				},
+				{
+					"rule_type": 42,
+					"value": "[\"AND\",[[\"OR\",[[15,\"icontains\",\"Partial\"],[19,\"icontains\",\"Partial Search\"]]],[\"OR\",[[14,\"exact\",\"1\"],[14,\"isnull\",\"true\"]]]]]"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_16"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 195,
+			"name": "example-name",
+			"show_on_dashboard": false,
+			"show_in_sidebar": false,
+			"sort_field": "added",
+			"sort_reverse": true,
+			"filter_rules": [
+				{
+					"rule_type": 22,
+					"value": "2"
+				},
+				{
+					"rule_type": 28,
+					"value": "8"
+				},
+				{
+					"rule_type": 42,
+					"value": "[\"AND\",[[\"OR\",[[15,\"icontains\",\"Partial\"],[19,\"icontains\",\"Partial Search\"]]],[\"OR\",[[14,\"exact\",\"1\"],[14,\"isnull\",\"true\"]]]]]"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_16"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 199,
+			"name": "example-name",
+			"show_on_dashboard": false,
+			"show_in_sidebar": false,
+			"sort_field": "added",
+			"sort_reverse": true,
+			"filter_rules": [
+				{
+					"rule_type": 22,
+					"value": "2"
+				},
+				{
+					"rule_type": 28,
+					"value": "8"
+				},
+				{
+					"rule_type": 28,
+					"value": "13"
+				},
+				{
+					"rule_type": 42,
+					"value": "[\"AND\",[[\"OR\",[[15,\"icontains\",\"Partial\"],[19,\"icontains\",\"Partial Search\"]]],[\"OR\",[[14,\"exact\",\"1\"],[14,\"isnull\",\"true\"]]]]]"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_16"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 197,
+			"name": "example-name",
+			"show_on_dashboard": false,
+			"show_in_sidebar": false,
+			"sort_field": "added",
+			"sort_reverse": true,
+			"filter_rules": [
+				{
+					"rule_type": 22,
+					"value": "2"
+				},
+				{
+					"rule_type": 28,
+					"value": "8"
+				},
+				{
+					"rule_type": 28,
+					"value": "13"
+				},
+				{
+					"rule_type": 42,
+					"value": "[\"AND\",[[\"OR\",[[15,\"icontains\",\"Partial\"],[19,\"icontains\",\"Partial Search\"]]],[\"OR\",[[14,\"exact\",\"1\"],[14,\"isnull\",\"true\"]]]]]"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_16"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 198,
+			"name": "example-name",
+			"show_on_dashboard": false,
+			"show_in_sidebar": false,
+			"sort_field": "added",
+			"sort_reverse": true,
+			"filter_rules": [
+				{
+					"rule_type": 22,
+					"value": "2"
+				},
+				{
+					"rule_type": 28,
+					"value": "8"
+				},
+				{
+					"rule_type": 28,
+					"value": "13"
+				},
+				{
+					"rule_type": 42,
+					"value": "[\"AND\",[[\"OR\",[[15,\"icontains\",\"Partial\"],[19,\"icontains\",\"Partial Search\"]]],[\"OR\",[[14,\"exact\",\"1\"],[14,\"isnull\",\"true\"]]]]]"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_16"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 216,
+			"name": "example-name",
+			"show_on_dashboard": false,
+			"show_in_sidebar": false,
+			"sort_field": "added",
+			"sort_reverse": true,
+			"filter_rules": [
+				{
+					"rule_type": 22,
+					"value": "2"
+				},
+				{
+					"rule_type": 28,
+					"value": "8"
+				},
+				{
+					"rule_type": 42,
+					"value": "[\"AND\",[[\"OR\",[[15,\"icontains\",\"Partial\"],[19,\"icontains\",\"Partial Search\"]]],[\"OR\",[[14,\"exact\",\"1\"],[14,\"isnull\",\"true\"]]]]]"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_16"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 196,
+			"name": "example-name",
+			"show_on_dashboard": false,
+			"show_in_sidebar": false,
+			"sort_field": "created",
+			"sort_reverse": false,
+			"filter_rules": [
+				{
+					"rule_type": 22,
+					"value": "2"
+				},
+				{
+					"rule_type": 42,
+					"value": "[\"AND\",[[\"OR\",[[15,\"icontains\",\"Partial\"],[19,\"icontains\",\"Partial Search\"]]],[\"OR\",[[14,\"exact\",\"1\"],[14,\"isnull\",\"true\"]]]]]"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_16"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 213,
+			"name": "example-name",
+			"show_on_dashboard": false,
+			"show_in_sidebar": false,
+			"sort_field": "added",
+			"sort_reverse": true,
+			"filter_rules": [
+				{
+					"rule_type": 22,
+					"value": "2"
+				},
+				{
+					"rule_type": 42,
+					"value": "[\"AND\",[[\"OR\",[[15,\"icontains\",\"Partial\"],[19,\"icontains\",\"Partial Search\"]]],[\"OR\",[[14,\"exact\",\"1\"],[14,\"isnull\",\"true\"]]]]]"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_16"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 194,
+			"name": "example-name",
+			"show_on_dashboard": false,
+			"show_in_sidebar": false,
+			"sort_field": "added",
+			"sort_reverse": true,
+			"filter_rules": [
+				{
+					"rule_type": 22,
+					"value": "2"
+				},
+				{
+					"rule_type": 42,
+					"value": "[\"AND\",[[\"OR\",[[15,\"icontains\",\"Partial\"],[19,\"icontains\",\"Partial Search\"]]],[\"OR\",[[14,\"exact\",\"1\"],[14,\"isnull\",\"true\"]]]]]"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_16"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 200,
+			"name": "example-name",
+			"show_on_dashboard": false,
+			"show_in_sidebar": false,
+			"sort_field": "added",
+			"sort_reverse": true,
+			"filter_rules": [
+				{
+					"rule_type": 22,
+					"value": "2"
+				},
+				{
+					"rule_type": 42,
+					"value": "[\"AND\",[[\"OR\",[[15,\"icontains\",\"Partial\"],[19,\"icontains\",\"Partial Search\"]]],[\"OR\",[[14,\"exact\",\"1\"],[14,\"isnull\",\"true\"]]]]]"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_16"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 204,
+			"name": "example-name",
+			"show_on_dashboard": false,
+			"show_in_sidebar": false,
+			"sort_field": "created",
+			"sort_reverse": false,
+			"filter_rules": [
+				{
+					"rule_type": 22,
+					"value": "2"
+				},
+				{
+					"rule_type": 42,
+					"value": "[\"AND\",[[\"OR\",[[15,\"icontains\",\"Partial\"],[19,\"icontains\",\"Partial Search\"]]],[\"OR\",[[14,\"exact\",\"1\"],[14,\"isnull\",\"true\"]]]]]"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_16"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 205,
+			"name": "example-name",
+			"show_on_dashboard": false,
+			"show_in_sidebar": false,
+			"sort_field": "created",
+			"sort_reverse": false,
+			"filter_rules": [
+				{
+					"rule_type": 22,
+					"value": "2"
+				},
+				{
+					"rule_type": 42,
+					"value": "[\"AND\",[[\"OR\",[[15,\"icontains\",\"Partial\"],[19,\"icontains\",\"Partial Search\"]]],[\"OR\",[[14,\"exact\",\"1\"],[14,\"isnull\",\"true\"]]]]]"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_16"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 202,
+			"name": "example-name",
+			"show_on_dashboard": false,
+			"show_in_sidebar": false,
+			"sort_field": "added",
+			"sort_reverse": true,
+			"filter_rules": [
+				{
+					"rule_type": 22,
+					"value": "2"
+				},
+				{
+					"rule_type": 42,
+					"value": "[\"AND\",[[\"OR\",[[15,\"icontains\",\"Partial\"],[19,\"icontains\",\"Partial Search\"]]],[\"OR\",[[14,\"exact\",\"1\"],[14,\"isnull\",\"true\"]]]]]"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_16"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 218,
+			"name": "example-name",
+			"show_on_dashboard": false,
+			"show_in_sidebar": false,
+			"sort_field": "added",
+			"sort_reverse": true,
+			"filter_rules": [
+				{
+					"rule_type": 22,
+					"value": "2"
+				},
+				{
+					"rule_type": 42,
+					"value": "[\"AND\",[[\"OR\",[[15,\"icontains\",\"Partial\"],[19,\"icontains\",\"Partial Search\"]]],[\"OR\",[[14,\"exact\",\"1\"],[14,\"isnull\",\"true\"]]]]]"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_16"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 203,
+			"name": "example-name",
+			"show_on_dashboard": false,
+			"show_in_sidebar": false,
+			"sort_field": "created",
+			"sort_reverse": false,
+			"filter_rules": [
+				{
+					"rule_type": 22,
+					"value": "2"
+				},
+				{
+					"rule_type": 42,
+					"value": "[\"AND\",[[\"OR\",[[15,\"icontains\",\"Partial\"],[19,\"icontains\",\"Partial Search\"]]],[\"OR\",[[14,\"exact\",\"1\"],[14,\"isnull\",\"true\"]]]]]"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_16"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 201,
+			"name": "example-name",
+			"show_on_dashboard": false,
+			"show_in_sidebar": false,
+			"sort_field": "added",
+			"sort_reverse": true,
+			"filter_rules": [
+				{
+					"rule_type": 22,
+					"value": "2"
+				},
+				{
+					"rule_type": 42,
+					"value": "[\"AND\",[[\"OR\",[[15,\"icontains\",\"Partial\"],[19,\"icontains\",\"Partial Search\"]]],[\"OR\",[[14,\"exact\",\"1\"],[14,\"isnull\",\"true\"]]]]]"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_16"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 190,
+			"name": "example-name",
+			"show_on_dashboard": false,
+			"show_in_sidebar": false,
+			"sort_field": "added",
+			"sort_reverse": true,
+			"filter_rules": [
+				{
+					"rule_type": 22,
+					"value": "2"
+				},
+				{
+					"rule_type": 42,
+					"value": "[\"AND\",[[\"OR\",[[15,\"icontains\",\"Partial\"],[19,\"icontains\",\"Partial Search\"]]],[\"OR\",[[14,\"exact\",\"1\"],[14,\"isnull\",\"true\"]]]]]"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_16"
+			],
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 141,
+			"name": "example-name",
+			"show_on_dashboard": true,
+			"show_in_sidebar": true,
+			"sort_field": "added",
+			"sort_reverse": true,
+			"filter_rules": [
+				{
+					"rule_type": 22,
+					"value": "2"
+				},
+				{
+					"rule_type": 42,
+					"value": "[\"AND\",[[\"OR\",[[15,\"icontains\",\"Partial\"],[19,\"icontains\",\"Partial Search\"]]],[\"OR\",[[14,\"exact\",\"1\"],[14,\"isnull\",\"true\"]]]]]"
+				}
+			],
+			"page_size": null,
+			"display_mode": "smallCards",
+			"display_fields": [
+				"title",
+				"created",
+				"correspondent",
+				"documenttype",
+				"storagepath",
+				"note",
+				"owner",
+				"shared",
+				"asn",
+				"pagecount",
+				"custom_field_16"
+			],
+			"owner": 3,
+			"user_can_change": true
+		}
+	]
+}
