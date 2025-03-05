@@ -55,7 +55,7 @@ from paperap.client import PaperlessClient
 logger = logging.getLogger(__name__)
 
 
-class ModelTestCase(TestCase, ABC):
+class ModelTestCase(TestCase):
     MAX_RECURSION_DEPTH = 2
     model_to_resource : dict[type[PaperlessModel], PaperlessResource]
     client : PaperlessClient
@@ -79,10 +79,6 @@ class ModelTestCase(TestCase, ABC):
             WorkflowAction: self.client.workflow_actions,
             WorkflowTrigger: self.client.workflow_triggers,
         }
-
-    @abstractmethod
-    def setup_client(self):
-        pass
 
     def get_sample_value(self, type_hint, depth: int = 0) -> Any:
         if depth > self.MAX_RECURSION_DEPTH:
@@ -246,7 +242,9 @@ class TestModelFromDict(ModelTestCase):
 
 class TestRequest(ModelTestCase):
     def setup_client(self):
-        self.client = PaperlessClient()
+        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        with patch.dict(os.environ, env_data, clear=True):
+            self.client = PaperlessClient()
 
     def test_request(self):
         for model_class, resource in self.model_to_resource.items():

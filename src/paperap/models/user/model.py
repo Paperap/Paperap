@@ -58,7 +58,7 @@ class User(PaperlessModel):
     is_active: bool = True
     is_superuser: bool = False
     groups: list[int] = Field(default_factory=list)
-    user_permissions: list[int] = Field(default_factory=list)
+    user_permissions: list[str] = Field(default_factory=list)
     inherited_permissions: list[str] = Field(default_factory=list)
 
     class Meta(PaperlessModel.Meta):
