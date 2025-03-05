@@ -28,11 +28,11 @@ from __future__ import annotations
 from typing import Any, Optional
 
 from paperap.exceptions import ObjectNotFoundError
-from paperap.models.user import Group, User
-from paperap.resources.base import PaperlessResource
+from paperap.models.user import Group, User, UserQuerySet, GroupQuerySet
+from paperap.resources.base import PaperlessResource, StandardResource
 
 
-class UserResource(PaperlessResource[User]):
+class UserResource(StandardResource[User, UserQuerySet]):
     """Resource for managing users."""
 
     model_class = User
@@ -49,7 +49,7 @@ class UserResource(PaperlessResource[User]):
         return User.from_dict(response, self)
 
 
-class GroupResource(PaperlessResource[Group]):
+class GroupResource(StandardResource[Group, GroupQuerySet]):
     """Resource for managing groups."""
 
     model_class = Group

@@ -24,14 +24,17 @@
 """
 
 from datetime import datetime
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from pydantic import BaseModel, Field
 
-from paperap.models.abstract.model import PaperlessModel
+from paperap.models.abstract.model import StandardModel
+
+if TYPE_CHECKING:
+    from paperap.models.document import DocumentQuerySet
 
 
-class CustomField(PaperlessModel):
+class CustomField(StandardModel):
     """
     Represents a custom field in Paperless-NgX.
     """
@@ -48,6 +51,10 @@ class CustomField(PaperlessModel):
         "json_encoders": {},
     }
 
-    class Meta(PaperlessModel.Meta):
+    class Meta(StandardModel.Meta):
         # Fields that should not be modified
         read_only_fields = {"slug"}
+
+    @property
+    def documents(self) -> "DocumentQuerySet":
+        return self._client.documents().all().has_custom_field(self.name)

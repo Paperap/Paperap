@@ -33,8 +33,8 @@ from typing import Any, Iterable, Iterator, get_type_hints, get_origin, get_args
 from unittest.mock import patch
 from pydantic import ValidationError
 
-from paperap.models.abstract import PaperlessModel, QuerySet
-from paperap.resources.base import PaperlessResource
+from paperap.models.abstract import StandardModel, QuerySet
+from paperap.resources.base import PaperlessResource, StandardResource
 from paperap.models.correspondent import Correspondent
 from paperap.models.custom_field import CustomField
 from paperap.models.document import Document

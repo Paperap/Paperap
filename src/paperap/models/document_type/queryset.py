@@ -27,7 +27,8 @@ from __future__ import annotations
 
 from typing import Any, Self, TYPE_CHECKING
 import logging
-from paperap.models.abstract.queryset import QuerySet
+from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
+from paperap.models.mixins.queryset import HasOwner, HasDocumentCount
 
 if TYPE_CHECKING:
     from paperap.models.document_type.model import DocumentType
@@ -35,52 +36,63 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class DocumentTypeQuerySet(QuerySet["DocumentType"]):
+class DocumentTypeQuerySet(StandardQuerySet["DocumentType"], HasOwner, HasDocumentCount):
     """
     QuerySet for Paperless-ngx document types with specialized filtering methods.
     """
 
-    def with_name(self, name: str, *, exact: bool = True) -> Self:
+    def name(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
         Filter document types by name.
 
         Args:
-            name: The document type name to filter by
+            value: The document type name to filter by
             exact: If True, match the exact name, otherwise use contains
 
         Returns:
             Filtered DocumentTypeQuerySet
         """
-        if exact:
-            return self.filter(name=name)
-        return self.filter(name__contains=name)
+        return self.filter_field_by_str("name", value, exact=exact, case_insensitive=case_insensitive)
 
-    def with_ids(self, ids: list[int]) -> Self:
+    def slug(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
-        Filter document types by multiple IDs.
+        Filter document types by slug.
 
         Args:
-            ids: list of document type IDs to filter by
+            value: The slug to filter by
+            exact: If True, match the exact slug, otherwise use contains
 
         Returns:
             Filtered DocumentTypeQuerySet
         """
-        ids_param = ",".join(str(id) for id in ids)
-        return self.filter(id__in=ids_param)
+        return self.filter_field_by_str("slug", value, exact=exact, case_insensitive=case_insensitive)
 
-    def with_matching_rule(self, rule_pattern: str) -> Self:
+    def match(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
-        Filter document types by their matching rule pattern.
+        Filter document types by match pattern.
 
         Args:
-            rule_pattern: The pattern to search for in matching rules
+            value: The pattern to search for in match
+            exact: If True, match the exact pattern, otherwise use contains
 
         Returns:
             Filtered DocumentTypeQuerySet
         """
-        return self.filter(matching_algorithm__contains=rule_pattern)
+        return self.filter_field_by_str("match", value, exact=exact, case_insensitive=case_insensitive)
 
-    def is_insensitive(self, insensitive: bool = True) -> Self:
+    def matching_algorithm(self, value: int) -> Self:
+        """
+        Filter document types by matching algorithm.
+
+        Args:
+            value: The matching algorithm ID
+
+        Returns:
+            Filtered DocumentTypeQuerySet
+        """
+        return self.filter(matching_algorithm=value)
+
+    def case_insensitive(self, value: bool = True) -> Self:
         """
         Filter document types by case sensitivity setting.
 
@@ -90,4 +102,16 @@ class DocumentTypeQuerySet(QuerySet["DocumentType"]):
         Returns:
             Filtered DocumentTypeQuerySet
         """
-        return self.filter(is_insensitive=insensitive)
+        return self.filter(is_insensitive=value)
+
+    def user_can_change(self, value: bool = True) -> Self:
+        """
+        Filter document types by user change permission.
+
+        Args:
+            value: If True, get document types where users can change
+
+        Returns:
+            Filtered DocumentTypeQuerySet
+        """
+        return self.filter(user_can_change=value)

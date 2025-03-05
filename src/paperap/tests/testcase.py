@@ -32,7 +32,7 @@ from paperap.client import PaperlessClient
 
 if TYPE_CHECKING:
     from paperap.resources import PaperlessResource
-    from paperap.models import PaperlessModel
+    from paperap.models import StandardModel
     from paperap.models.abstract import QuerySet
 
 def load_sample_data(filename : str) -> dict[str, Any]:
@@ -43,7 +43,7 @@ def load_sample_data(filename : str) -> dict[str, Any]:
 		sample_data = json.loads(text)
 	return sample_data
 
-_PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel")
+_StandardModel = TypeVar("_StandardModel", bound="StandardModel")
 
 class TestCase(unittest.TestCase):
     client : "PaperlessClient"
@@ -55,19 +55,19 @@ class TestCase(unittest.TestCase):
         if not hasattr(self, "client") or not self.client:
             self.client = PaperlessClient()
 
-    def _call_list_resource(self, resource : type["PaperlessResource[_PaperlessModel]"] | "PaperlessResource[_PaperlessModel]", **kwargs) -> QuerySet[_PaperlessModel]:
+    def _call_list_resource(self, resource : type["PaperlessResource[_StandardModel]"] | "PaperlessResource[_StandardModel]", **kwargs) -> QuerySet[_StandardModel]:
         # If resource is a type, instantiate it
         if isinstance(resource, type):
             return resource(client=self.client).filter(**kwargs)
         return resource.filter(**kwargs)
 
-    def _call_get_resource(self, resource : type["PaperlessResource[_PaperlessModel]"] | "PaperlessResource[_PaperlessModel]", id : int) -> _PaperlessModel:
+    def _call_get_resource(self, resource : type["PaperlessResource[_StandardModel]"] | "PaperlessResource[_StandardModel]", id : int) -> _StandardModel:
         # If resource is a type, instantiate it
         if isinstance(resource, type):
             return resource(client=self.client).get(id)
         return resource.get(id)
 
-    def list_resource(self, resource : type["PaperlessResource[_PaperlessModel]"] | "PaperlessResource[_PaperlessModel]", **kwargs) -> QuerySet[_PaperlessModel]:
+    def list_resource(self, resource : type["PaperlessResource[_StandardModel]"] | "PaperlessResource[_StandardModel]", **kwargs) -> QuerySet[_StandardModel]:
         filename = f"{resource.name}_list.json"
         try:
             sample_data = load_sample_data(filename)
@@ -81,7 +81,7 @@ class TestCase(unittest.TestCase):
         except FileNotFoundError:
             return self._call_list_resource(resource, **kwargs)
 
-    def get_resource(self, resource : type["PaperlessResource[_PaperlessModel]"] | "PaperlessResource[_PaperlessModel]", id : int) -> _PaperlessModel:
+    def get_resource(self, resource : type["PaperlessResource[_StandardModel]"] | "PaperlessResource[_StandardModel]", id : int) -> _StandardModel:
         filename = f"{resource.name}_item.json"
         try:
             sample_data = load_sample_data(filename)

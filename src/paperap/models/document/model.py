@@ -31,8 +31,8 @@ from typing import Any, TYPE_CHECKING, Iterable, Iterator, Optional
 from pydantic import BaseModel, Field
 from yarl import URL
 
-from paperap.models.abstract.queryset import QuerySet
-from paperap.models.abstract.model import PaperlessModel
+from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
+from paperap.models.abstract.model import StandardModel
 from paperap.models.document.queryset import DocumentQuerySet
 
 if TYPE_CHECKING:
@@ -42,31 +42,31 @@ if TYPE_CHECKING:
     from paperap.models.tag import Tag
 
 
-class Document(PaperlessModel):
+class Document(StandardModel):
     """
     Represents a Paperless-NgX document.
     """
 
-    title: str
-    content: str | None = None
-    archive_serial_number: str | None = None
-    original_file_name: str | None = None
-    correspondent: int | None = None
-    document_type: int | None = None
-    storage_path: int | None = None
-    created_date: str | None = None
     added: datetime | None = None
-    deleted_at: datetime | None = None
+    archive_serial_number: str | None = None
     archived_file_name: str | None = None
-    tags: list[int] = Field(default_factory=list)
-    owner: int | None = None
-    user_can_change: bool = True
+    content: str | None = None
+    correspondent: int | None = None
+    created_date: str | None = None
+    custom_fields: list[dict[str, Any]] = Field(default_factory=list)
+    deleted_at: datetime | None = None
+    document_type: int | None = None
     is_shared_by_requester: bool = False
     notes: list[Any] = Field(default_factory=list)  # TODO unknown subtype
-    custom_fields: list[dict[str, Any]] = Field(default_factory=list)
+    original_file_name: str | None = None
+    owner: int | None = None
     page_count: int | None = None
+    storage_path: int | None = None
+    tags: list[int] = Field(default_factory=list)
+    title: str
+    user_can_change: bool = True
 
-    class Meta(PaperlessModel.Meta):
+    class Meta(StandardModel.Meta):
         queryset = DocumentQuerySet
 
     def get_tags(self) -> QuerySet["Tag"]:

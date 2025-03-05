@@ -38,7 +38,7 @@ from paperap.models.abstract.parser import Parser
 from paperap.models.abstract.queryset import QuerySet
 
 if TYPE_CHECKING:
-    from paperap.resources.base import PaperlessResource
+    from paperap.resources.base import PaperlessResource, StandardResource
     from paperap.client import PaperlessClient
 
 _Self = TypeVar("_Self", bound="PaperlessModel")
@@ -52,18 +52,14 @@ class PaperlessModel(BaseModel, ABC):
     with minimal configuration needed.
 
     Examples:
-        from paperap.models.abstract.model import PaperlessModel
-        class Document(PaperlessModel):
+        from paperap.models.abstract.model import StandardModel
+        class Document(StandardModel):
             filename: str
             contents : bytes
 
             class Meta:
                 api_endpoint: = URL("http://localhost:8000/api/documents/")
     """
-
-    id: int = Field(description="Unique identifier", default=0)
-    created: datetime = Field(description="Creation timestamp", default_factory=datetime.now, alias="created_on")
-    updated: datetime = Field(description="Last update timestamp", default_factory=datetime.now, alias="updated_on")
 
     _meta: "Meta[Self]" = PrivateAttr()
 
@@ -75,7 +71,7 @@ class PaperlessModel(BaseModel, ABC):
         read_only_fields: set[str] = {"id", "created", "updated"}
         # the type of parser, which parses api data into appropriate types
         # this will usually not need to be overridden
-        parser: type[Parser] = Parser
+        parser: type[Parser[_Self]] = Parser[_Self]
         resource: "PaperlessResource[_Self]"
         queryset: type[QuerySet[_Self]] = QuerySet
 
@@ -187,6 +183,34 @@ class PaperlessModel(BaseModel, ABC):
         """
         # TODO save
         return self.model_copy(update=kwargs)
+
+    @abstractmethod
+    def is_new(self) -> bool:
+        """
+        Check if this model represents a new (unsaved) object.
+
+        Returns:
+            True if the model is new, False otherwise.
+        """
+
+    def __str__(self) -> str:
+        """
+        Human-readable string representation.
+
+        Returns:
+            A string representation of the model.
+        """
+        return f"{self._meta.name.capitalize()}"
+
+
+class StandardModel(PaperlessModel, ABC):
+    id: int = Field(description="Unique identifier", default=0)
+    created: datetime = Field(description="Creation timestamp", default_factory=datetime.now, alias="created_on")
+    updated: datetime = Field(description="Last update timestamp", default_factory=datetime.now, alias="updated_on")
+
+    class Meta(PaperlessModel.Meta[_Self], Generic[_Self]):
+        # Fields that should not be modified
+        read_only_fields: set[str] = {"id", "created", "updated"}
 
     def is_new(self) -> bool:
         """

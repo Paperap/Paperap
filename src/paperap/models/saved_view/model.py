@@ -27,7 +27,7 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
-from paperap.models.abstract.model import PaperlessModel
+from paperap.models.abstract.model import StandardModel
 from paperap.models.saved_view.queryset import SavedViewQuerySet
 
 DEFAULT_DISPLAY_FIELDS = [
@@ -44,16 +44,16 @@ DEFAULT_DISPLAY_FIELDS = [
 ]
 
 
-class SavedView(PaperlessModel):
+class SavedView(StandardModel):
     """
     Represents a saved view in Paperless-NgX.
     """
 
     name: str
-    show_on_dashboard: bool
-    show_in_sidebar: bool
+    show_on_dashboard: bool = False
+    show_in_sidebar: bool = False
     sort_field: str
-    sort_reverse: bool
+    sort_reverse: bool = False
     filter_rules: list[dict[str, Any]]
     page_size: int | None = None
     display_mode: str = "smallCards"
@@ -61,7 +61,7 @@ class SavedView(PaperlessModel):
     owner: int | None = None
     user_can_change: bool = True
 
-    class Meta(PaperlessModel.Meta):
+    class Meta(StandardModel.Meta):
         # Fields that should not be modified
         read_only_fields = {"owner", "user_can_change"}
         queryset = SavedViewQuerySet

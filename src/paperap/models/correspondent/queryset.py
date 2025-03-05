@@ -27,7 +27,8 @@ from __future__ import annotations
 
 from typing import Any, Self, Union, Optional, TYPE_CHECKING
 import logging
-from paperap.models.abstract.queryset import QuerySet
+from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
+from paperap.models.mixins.queryset import HasOwner, HasDocumentCount
 
 if TYPE_CHECKING:
     from paperap.models.correspondent.model import Correspondent
@@ -35,12 +36,12 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class CorrespondentQuerySet(QuerySet["Correspondent"]):
+class CorrespondentQuerySet(StandardQuerySet["Correspondent"], HasOwner, HasDocumentCount):
     """
     QuerySet for Paperless-ngx correspondents with specialized filtering methods.
     """
 
-    def with_name(self, name: str, *, exact: bool = True) -> Self:
+    def name(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
         Filter correspondents by name.
 
@@ -51,24 +52,9 @@ class CorrespondentQuerySet(QuerySet["Correspondent"]):
         Returns:
             Filtered CorrespondentQuerySet
         """
-        if exact:
-            return self.filter(name=name)
-        return self.filter(name__contains=name)
+        return self.filter_field_by_str("name", value, exact=exact, case_insensitive=case_insensitive)
 
-    def with_ids(self, ids: list[int]) -> Self:
-        """
-        Filter correspondents by multiple IDs.
-
-        Args:
-            ids: list of correspondent IDs to filter by
-
-        Returns:
-            Filtered CorrespondentQuerySet
-        """
-        ids_param = ",".join(str(id) for id in ids)
-        return self.filter(id__in=ids_param)
-
-    def with_matching_rule(self, rule_pattern: str) -> Self:
+    def matching_algorithm(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
         Filter correspondents by their matching rule pattern.
 
@@ -78,9 +64,22 @@ class CorrespondentQuerySet(QuerySet["Correspondent"]):
         Returns:
             Filtered CorrespondentQuerySet
         """
-        return self.filter(matching_algorithm__contains=rule_pattern)
+        return self.filter_field_by_str("matching_algorithm", value, exact=exact, case_insensitive=case_insensitive)
 
-    def is_insensitive(self, insensitive: bool = True) -> Self:
+    def match(self, match: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+        """
+        Filter correspondents by match.
+
+        Args:
+            match: The match to filter by
+            exact: If True, match the exact match, otherwise use contains
+
+        Returns:
+            Filtered CorrespondentQuerySet
+        """
+        return self.filter_field_by_str("match", match, exact=exact, case_insensitive=case_insensitive)
+
+    def case_insensitive(self, insensitive: bool = True) -> Self:
         """
         Filter correspondents by case sensitivity setting.
 
@@ -91,3 +90,15 @@ class CorrespondentQuerySet(QuerySet["Correspondent"]):
             Filtered CorrespondentQuerySet
         """
         return self.filter(is_insensitive=insensitive)
+
+    def user_can_change(self, value: bool) -> Self:
+        """
+        Filter correspondents by user_can_change.
+
+        Args:
+            value: The value to filter by
+
+        Returns:
+            Filtered CorrespondentQuerySet
+        """
+        return self.filter(user_can_change=value)

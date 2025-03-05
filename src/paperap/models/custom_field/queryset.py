@@ -27,7 +27,8 @@ from __future__ import annotations
 
 from typing import Any, Self, Union, Optional, TYPE_CHECKING
 import logging
-from paperap.models.abstract.queryset import QuerySet
+from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
+from paperap.models.mixins.queryset import HasDocumentCount
 
 if TYPE_CHECKING:
     from paperap.models.custom_field.model import CustomField
@@ -35,12 +36,12 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class CustomFieldQuerySet(QuerySet["CustomField"]):
+class CustomFieldQuerySet(StandardQuerySet["CustomField"], HasDocumentCount):
     """
     QuerySet for Paperless-ngx custom fields with specialized filtering methods.
     """
 
-    def with_name(self, name: str, *, exact: bool = True) -> Self:
+    def name(self, name: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
         Filter custom fields by name.
 
@@ -55,7 +56,7 @@ class CustomFieldQuerySet(QuerySet["CustomField"]):
             return self.filter(name=name)
         return self.filter(name__contains=name)
 
-    def with_data_type(self, data_type: str) -> Self:
+    def data_type(self, data_type: str) -> Self:
         """
         Filter custom fields by data type.
 
@@ -66,27 +67,3 @@ class CustomFieldQuerySet(QuerySet["CustomField"]):
             Filtered CustomFieldQuerySet
         """
         return self.filter(data_type=data_type)
-
-    def for_document_type(self, document_type_id: int) -> Self:
-        """
-        Filter custom fields associated with a specific document type.
-
-        Args:
-            document_type_id: The document type ID these fields are associated with
-
-        Returns:
-            Filtered CustomFieldQuerySet
-        """
-        return self.filter(document_type=document_type_id)
-
-    def is_required(self, required: bool = True) -> Self:
-        """
-        Filter custom fields by required status.
-
-        Args:
-            required: If True, get required fields, otherwise optional fields
-
-        Returns:
-            Filtered CustomFieldQuerySet
-        """
-        return self.filter(required=required)

@@ -32,9 +32,9 @@ from unittest.mock import MagicMock, patch
 
 # Import the exceptions used by QuerySet.
 from paperap.exceptions import ObjectNotFoundError, MultipleObjectsFoundError
-from paperap.models import PaperlessModel, QuerySet
+from paperap.models import StandardModel, QuerySet
 from paperap.models.document import Document
-from paperap.resources import PaperlessResource
+from paperap.resources import PaperlessResource, StandardResource
 from paperap.client import PaperlessClient
 from paperap.resources.documents import DocumentResource
 from paperap.tests import load_sample_data, TestCase
@@ -45,10 +45,10 @@ sample_document_list = load_sample_data('documents_list.json')
 sample_document = load_sample_data('documents_item.json')
 sample_document_item_404 = load_sample_data('documents_item_404.json')
 
-class DummyModel(PaperlessModel):
+class DummyModel(StandardModel):
     pass
 
-class DummyResource(PaperlessResource[DummyModel]):
+class DummyResource(StandardResource[DummyModel]):
     model_class = DummyModel
     endpoints = {
         "list": Template("http://dummy/api/list"),

@@ -28,14 +28,14 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from pydantic import BaseModel, Field
 
-from paperap.models.abstract.model import PaperlessModel
+from paperap.models.abstract.model import StandardModel
 from paperap.models.document_type.queryset import DocumentTypeQuerySet
 
 if TYPE_CHECKING:
     from paperap.models.document import Document, DocumentQuerySet
 
 
-class DocumentType(PaperlessModel):
+class DocumentType(StandardModel):
     """
     Represents a document type in Paperless-NgX.
     """
@@ -49,7 +49,7 @@ class DocumentType(PaperlessModel):
     owner: int | None = None
     user_can_change: bool = True
 
-    class Meta(PaperlessModel.Meta):
+    class Meta(StandardModel.Meta):
         # Fields that should not be modified
         read_only_fields = {"slug", "document_count"}
         queryset = DocumentTypeQuerySet
@@ -59,4 +59,4 @@ class DocumentType(PaperlessModel):
         """
         Get documents with this document type.
         """
-        return self._client.documents().all().with_document_type_id(self.id)
+        return self._client.documents().all().document_type_id(self.id)

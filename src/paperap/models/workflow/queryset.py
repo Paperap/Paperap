@@ -8,12 +8,12 @@
    METADATA:
 
        File:    queryset.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.1
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -27,7 +27,7 @@ from __future__ import annotations
 
 from typing import Any, TYPE_CHECKING
 import logging
-from paperap.models.abstract.queryset import QuerySet
+from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
 
 if TYPE_CHECKING:
     from paperap.models.workflow.model import Workflow, WorkflowAction, WorkflowTrigger
@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class WorkflowQuerySet(QuerySet["Workflow"]):
+class WorkflowQuerySet(StandardQuerySet["Workflow"]):
     """
     A lazy-loaded, chainable query interface for Paperless NGX resources.
 
@@ -44,7 +44,7 @@ class WorkflowQuerySet(QuerySet["Workflow"]):
     """
 
 
-class WorkflowActionQuerySet(QuerySet["WorkflowAction"]):
+class WorkflowActionQuerySet(StandardQuerySet["WorkflowAction"]):
     """
     A lazy-loaded, chainable query interface for Paperless NGX resources.
 
@@ -53,7 +53,7 @@ class WorkflowActionQuerySet(QuerySet["WorkflowAction"]):
     """
 
 
-class WorkflowTriggerQuerySet(QuerySet["WorkflowTrigger"]):
+class WorkflowTriggerQuerySet(StandardQuerySet["WorkflowTrigger"]):
     """
     A lazy-loaded, chainable query interface for Paperless NGX resources.
 

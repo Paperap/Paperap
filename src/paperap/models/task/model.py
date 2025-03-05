@@ -27,11 +27,11 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
-from paperap.models.abstract.model import PaperlessModel
+from paperap.models.abstract.model import StandardModel
 from paperap.models.task.queryset import TaskQuerySet
 
 
-class Task(PaperlessModel):
+class Task(StandardModel):
     """
     Represents a task in Paperless-NgX.
     """
@@ -45,5 +45,5 @@ class Task(PaperlessModel):
     acknowledged: bool = False
     related_document: int | None = None
 
-    class Meta(PaperlessModel.Meta):
+    class Meta(StandardModel.Meta):
         queryset = TaskQuerySet

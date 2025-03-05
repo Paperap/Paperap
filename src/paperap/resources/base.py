@@ -51,10 +51,14 @@ from paperap.signals import (
 
 if TYPE_CHECKING:
     from paperap.client import PaperlessClient
-    from paperap.models.abstract import PaperlessModel, QuerySet
+    from paperap.models.abstract import StandardModel, PaperlessModel, QuerySet, StandardQuerySet
 
 _PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel", covariant=True)
+_StandardModel = TypeVar("_StandardModel", bound="StandardModel", covariant=True, default="StandardModel")
 _QuerySet = TypeVar("_QuerySet", bound="QuerySet", covariant=True, default="QuerySet[_PaperlessModel]")
+_StandardQuerySet = TypeVar(
+    "_StandardQuerySet", bound="StandardQuerySet", covariant=True, default="StandardQuerySet[_StandardModel]"
+)
 
 logger = logging.getLogger(__name__)
 
@@ -143,38 +147,20 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
     def get(self, resource_id: int) -> _PaperlessModel:
         """
-        Get a resource by ID.
+        Get a model by ID.
+
+        Raises NotImplementedError. Subclasses may implement this.
 
         Args:
-            resource_id: ID of the resource.
+            resource_id: ID of the model to retrieve.
+
+        Raises:
+            NotImplementedError: Unless implemented by a subclass.
 
         Returns:
-            The resource.
+            The model retrieved.
         """
-        # Signal before getting resource
-        signal_params = {"resource": self.name, "resource_id": resource_id}
-        pre_get.emit(self, **signal_params)
-
-        if not (template := self.endpoints.get("detail")):
-            raise ConfigurationError(f"Get detail endpoint not defined for resource {self.name}")
-
-        # Provide template substitutions for endpoints
-        url = template.safe_substitute(resource=self.name, pk=resource_id)
-
-        if not (response := self.client.request("GET", url)):
-            raise ObjectNotFoundError(resource_type=self.name, resource_id=resource_id)
-
-        # If the response doesn't have an ID, it's likely a 404
-        if not response.get("id"):
-            message = response.get("detail") or f"No ID found in {self.name} response"
-            raise ObjectNotFoundError(message, resource_type=self.name, resource_id=resource_id)
-
-        model = self.parse_to_model(response)
-
-        # Signal after getting resource
-        post_get.emit(self, model=model, **signal_params)
-
-        return model
+        raise NotImplementedError("get method not available for paperless resources without an id")
 
     def create(self, data: dict[str, Any]) -> _PaperlessModel:
         """
@@ -332,3 +318,54 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
             A filtered QuerySet
         """
         return self.filter(**keywords)
+
+
+class StandardResource(
+    PaperlessResource[_StandardModel, _StandardQuerySet], Generic[_StandardModel, _StandardQuerySet]
+):
+    """
+    Base class for API resources.
+
+    Args:
+        client: The PaperlessClient instance.
+        endpoint: The API endpoint for this resource.
+        model_class: The model class for this resource.
+    """
+
+    # The model class for this resource.
+    model_class: type[_StandardModel]
+
+    def get(self, resource_id: int) -> _StandardModel:
+        """
+        Get a model within this resource by ID.
+
+        Args:
+            resource_id: ID of the model to retrieve.
+
+        Returns:
+            The model retrieved
+        """
+        # Signal before getting resource
+        signal_params = {"resource": self.name, "resource_id": resource_id}
+        pre_get.emit(self, **signal_params)
+
+        if not (template := self.endpoints.get("detail")):
+            raise ConfigurationError(f"Get detail endpoint not defined for resource {self.name}")
+
+        # Provide template substitutions for endpoints
+        url = template.safe_substitute(resource=self.name, pk=resource_id)
+
+        if not (response := self.client.request("GET", url)):
+            raise ObjectNotFoundError(resource_type=self.name, resource_id=resource_id)
+
+        # If the response doesn't have an ID, it's likely a 404
+        if not response.get("id"):
+            message = response.get("detail") or f"No ID found in {self.name} response"
+            raise ObjectNotFoundError(message, resource_type=self.name, resource_id=resource_id)
+
+        model = self.parse_to_model(response)
+
+        # Signal after getting resource
+        post_get.emit(self, model=model, **signal_params)
+
+        return model

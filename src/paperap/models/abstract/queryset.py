@@ -26,6 +26,7 @@
 from __future__ import annotations
 
 import copy
+from datetime import datetime
 from string import Template
 from typing import Any, Generic, Iterable, Iterator, Optional, Self, TypeVar, Union, TYPE_CHECKING
 import logging
@@ -47,15 +48,16 @@ from paperap.signals import (
 )
 
 if TYPE_CHECKING:
-    from paperap.models.abstract.model import PaperlessModel
-    from paperap.resources.base import PaperlessResource
+    from paperap.models.abstract.model import PaperlessModel, StandardModel
+    from paperap.resources.base import PaperlessResource, StandardResource
 
 _PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel", covariant=True)
+_StandardModel = TypeVar("_StandardModel", bound="StandardModel", covariant=True)
 
 logger = logging.getLogger(__name__)
 
 
-class QuerySet(Iterable[_PaperlessModel]):
+class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
     """
     A lazy-loaded, chainable query interface for Paperless NGX resources.
 
@@ -173,6 +175,8 @@ class QuerySet(Iterable[_PaperlessModel]):
         """
         Retrieve a single object from the API.
 
+        Raises NotImplementedError. Subclasses may implement this.
+
         Args:
             id: The ID of the object to retrieve
 
@@ -180,23 +184,14 @@ class QuerySet(Iterable[_PaperlessModel]):
             A single object matching the query
 
         Raises:
+            NotImplementedError: If the method is not implemented by the subclass
             ObjectNotFoundError: If no object or multiple objects are found
 
         Examples:
             # Get document with ID 123
             doc = client.documents.get(123)
-
-            # Get document with a specific title (assuming it's unique)
-            doc = client.documents.get(title="My Important Document")
         """
-        # Attempt to find it in the result cache
-        if self._result_cache:
-            for obj in self._result_cache:
-                if obj.id == id:
-                    return obj
-
-        # Direct lookup by ID - use the resource's get method
-        return self.resource.get(id)
+        raise NotImplementedError("Getting a single resource is not defined by PaperlessModels without an id.")
 
     def count(self) -> int:
         """
@@ -355,6 +350,28 @@ class QuerySet(Iterable[_PaperlessModel]):
             An empty QuerySet
         """
         return self._chain(filters={"limit": 0})
+
+    def filter_field_by_str(self, field: str, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+        """
+        Generic method to filter a queryset based on a given field.
+
+        This allows subclasses to easily implement custom filter methods.
+
+        Args:
+            field: The field name to filter by.
+            value: The value to filter against.
+            exact: Whether to filter by an exact match.
+            case_insensitive: Whether the filter should be case-insensitive.
+
+        Returns:
+            A new QuerySet instance with the filter applied.
+        """
+        if exact:
+            lookup = f"{field}__iexact" if case_insensitive else field
+        else:
+            lookup = f"{field}__icontains" if case_insensitive else f"{field}__contains"
+
+        return self.filter(**{lookup: value})
 
     def _fetch_all_results(self) -> None:
         """Fetch all results from the API and populate the cache."""
@@ -553,3 +570,123 @@ class QuerySet(Iterable[_PaperlessModel]):
         if not results:
             raise IndexError(f"QuerySet index {key} out of range")
         return results[0]
+
+
+class StandardQuerySet(QuerySet[_StandardModel], Generic[_StandardModel]):
+    """
+    A queryset for StandardModel instances (i.e. Paperless Models with standard fields, like id).
+    """
+
+    def get(self, id: int) -> _StandardModel:
+        """
+        Retrieve a single object from the API.
+
+        Args:
+            id: The ID of the object to retrieve
+
+        Returns:
+            A single object matching the query
+
+        Raises:
+            ObjectNotFoundError: If no object or multiple objects are found
+
+        Examples:
+            # Get document with ID 123
+            doc = client.documents.get(123)
+        """
+        # Attempt to find it in the result cache
+        if self._result_cache:
+            for obj in self._result_cache:
+                if obj.id == id:
+                    return obj
+
+        # Direct lookup by ID - use the resource's get method
+        return self.resource.get(id)
+
+    def id(self, value: int | list[int]) -> Self:
+        """
+        Filter models by ID.
+
+        Args:
+            value: The ID or list of IDs to filter by
+
+        Returns:
+            Filtered QuerySet
+        """
+        if isinstance(value, list):
+            return self.filter(id__in=value)
+        return self.filter(id=value)
+
+    def created_before(self, date: datetime) -> Self:
+        """
+        Filter models created before a given date.
+
+        Args:
+            date: The date to filter by
+
+        Returns:
+            Filtered QuerySet
+        """
+        return self.filter(created__lt=date)
+
+    def created_after(self, date: datetime) -> Self:
+        """
+        Filter models created after a given date.
+
+        Args:
+            date: The date to filter by
+
+        Returns:
+            Filtered QuerySet
+        """
+        return self.filter(created__gt=date)
+
+    def created_between(self, start: datetime, end: datetime) -> Self:
+        """
+        Filter models created between two dates.
+
+        Args:
+            start: The start date to filter by
+            end: The end date to filter by
+
+        Returns:
+            Filtered QuerySet
+        """
+        return self.filter(created__range=(start, end))
+
+    def updated_before(self, date: datetime) -> Self:
+        """
+        Filter models updated before a given date.
+
+        Args:
+            date: The date to filter by
+
+        Returns:
+            Filtered QuerySet
+        """
+        return self.filter(updated__lt=date)
+
+    def updated_after(self, date: datetime) -> Self:
+        """
+        Filter models updated after a given date.
+
+        Args:
+            date: The date to filter by
+
+        Returns:
+            Filtered QuerySet
+        """
+        return self.filter(updated__gt=date)
+
+    def updated_between(self, start: datetime, end: datetime) -> Self:
+        """
+        Filter models updated between two dates.
+
+        Args:
+            start: The start date to filter by
+            end: The end date to filter by
+
+        Returns:
+            Filtered QuerySet
+        """
+        return self.filter(updated__range=(start, end))

@@ -32,10 +32,10 @@ from typing_extensions import TypeVar
 
 from paperap.exceptions import APIError, BadResponseError
 from paperap.models.document import Document, DocumentQuerySet
-from paperap.resources.base import PaperlessResource
+from paperap.resources.base import PaperlessResource, StandardResource
 
 
-class DocumentResource(PaperlessResource[Document, DocumentQuerySet]):
+class DocumentResource(StandardResource[Document, DocumentQuerySet]):
     """Resource for managing documents."""
 
     model_class = Document

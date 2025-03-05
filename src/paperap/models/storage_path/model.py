@@ -27,14 +27,14 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
-from paperap.models.abstract.model import PaperlessModel
+from paperap.models.abstract.model import StandardModel
 from paperap.models.storage_path.queryset import StoragePathQuerySet
 
 if TYPE_CHECKING:
     from paperap.models.document import Document, DocumentQuerySet
 
 
-class StoragePath(PaperlessModel):
+class StoragePath(StandardModel):
     """
     Represents a storage path in Paperless-NgX.
     """
@@ -49,7 +49,7 @@ class StoragePath(PaperlessModel):
     owner: int | None = None
     user_can_change: bool = True
 
-    class Meta(PaperlessModel.Meta):
+    class Meta(StandardModel.Meta):
         # Fields that should not be modified
         read_only_fields = {"slug", "document_count"}
         queryset = StoragePathQuerySet
@@ -59,4 +59,4 @@ class StoragePath(PaperlessModel):
         """
         Get documents in this storage path.
         """
-        return self._client.documents().all().with_storage_path_id(self.id)
+        return self._client.documents().all().storage_path_id(self.id)

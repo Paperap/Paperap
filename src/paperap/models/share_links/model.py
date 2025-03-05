@@ -30,7 +30,7 @@ from typing import Any, TYPE_CHECKING
 
 from yarl import URL
 
-from paperap.models.abstract.model import PaperlessModel
+from paperap.models.abstract.model import StandardModel
 from paperap.models.share_links.queryset import ShareLinksQuerySet
 
 if TYPE_CHECKING:
@@ -38,13 +38,17 @@ if TYPE_CHECKING:
     from paperap.models.document_type import DocumentType
     from paperap.models.storage_path import StoragePath
     from paperap.models.tag import Tag
+    from paperap.models.document import Document
 
 
-class ShareLinks(PaperlessModel):
+class ShareLinks(StandardModel):
     expiration: datetime | None = None
     slug: str
     document: int
     file_version: str = "original"
 
-    class Meta(PaperlessModel.Meta):
+    class Meta(StandardModel.Meta):
         queryset = ShareLinksQuerySet
+
+    def get_document(self) -> "Document":
+        return self._client.documents().get(id=self.document)

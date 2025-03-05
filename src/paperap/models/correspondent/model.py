@@ -27,14 +27,14 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, Optional
 from pydantic import Field
 
-from paperap.models.abstract.model import PaperlessModel
+from paperap.models.abstract.model import StandardModel
 from paperap.models.correspondent.queryset import CorrespondentQuerySet
 
 if TYPE_CHECKING:
     from paperap.models.document import Document, DocumentQuerySet
 
 
-class Correspondent(PaperlessModel):
+class Correspondent(StandardModel):
     """
     Represents a correspondent in Paperless-NgX.
     """
@@ -48,7 +48,7 @@ class Correspondent(PaperlessModel):
     owner: int | None = None
     user_can_change: bool = True
 
-    class Meta(PaperlessModel.Meta):
+    class Meta(StandardModel.Meta):
         # Fields that should not be modified
         read_only_fields = {
             "slug",
@@ -61,4 +61,4 @@ class Correspondent(PaperlessModel):
         """
         Get documents for this correspondent.
         """
-        return self._client.documents().all().with_correspondent_id(self.id)
+        return self._client.documents().all().correspondent_id(self.id)

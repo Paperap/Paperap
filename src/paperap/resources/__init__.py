@@ -25,7 +25,7 @@
 
 from __future__ import annotations
 
-from paperap.resources.base import PaperlessResource
+from paperap.resources.base import PaperlessResource, StandardResource
 from paperap.resources.correspondents import CorrespondentResource
 from paperap.resources.custom_fields import CustomFieldResource
 from paperap.resources.document_types import DocumentTypeResource

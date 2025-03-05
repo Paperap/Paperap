@@ -25,11 +25,11 @@
 
 from __future__ import annotations
 
-from paperap.models.custom_field import CustomField
-from paperap.resources.base import PaperlessResource
+from paperap.models.custom_field import CustomField, CustomFieldQuerySet
+from paperap.resources.base import PaperlessResource, StandardResource
 
 
-class CustomFieldResource(PaperlessResource[CustomField]):
+class CustomFieldResource(StandardResource[CustomField, CustomFieldQuerySet]):
     """Resource for managing custom fields."""
 
     model_class = CustomField

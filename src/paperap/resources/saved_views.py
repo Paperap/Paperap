@@ -25,11 +25,11 @@
 
 from __future__ import annotations
 
-from paperap.models.saved_view import SavedView
-from paperap.resources.base import PaperlessResource
+from paperap.models.saved_view import SavedView, SavedViewQuerySet
+from paperap.resources.base import PaperlessResource, StandardResource
 
 
-class SavedViewResource(PaperlessResource[SavedView]):
+class SavedViewResource(StandardResource[SavedView, SavedViewQuerySet]):
     """Resource for managing saved views."""
 
     model_class = SavedView

@@ -23,7 +23,7 @@
 
 """
 
-from paperap.models.abstract import PaperlessModel, QuerySet, Parser
+from paperap.models.abstract import StandardModel, QuerySet, Parser
 from paperap.models.correspondent import Correspondent
 from paperap.models.custom_field import CustomField
 from paperap.models.document import Document

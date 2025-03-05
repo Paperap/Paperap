@@ -27,11 +27,11 @@ from __future__ import annotations
 from typing import Any
 
 from pydantic import Field
-from paperap.models.abstract.model import PaperlessModel
+from paperap.models.abstract.model import StandardModel
 from paperap.models.profile.queryset import ProfileQuerySet
 
 
-class Profile(PaperlessModel):
+class Profile(StandardModel):
     email: str
     password: str
     first_name: str
@@ -40,5 +40,5 @@ class Profile(PaperlessModel):
     social_accounts: list[Any] = Field(default_factory=list)  # TODO unknown subtype
     has_usable_password: bool = True
 
-    class Meta(PaperlessModel.Meta):
+    class Meta(StandardModel.Meta):
         queryset = ProfileQuerySet

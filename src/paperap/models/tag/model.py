@@ -27,14 +27,14 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, Optional
 from pydantic import BaseModel, Field
 
-from paperap.models.abstract.model import PaperlessModel
+from paperap.models.abstract.model import StandardModel
 from paperap.models.tag.queryset import TagQuerySet
 
 if TYPE_CHECKING:
     from paperap.models.document import Document, DocumentQuerySet
 
 
-class Tag(PaperlessModel):
+class Tag(StandardModel):
     """
     Represents a tag in Paperless-NgX.
     """
@@ -50,7 +50,7 @@ class Tag(PaperlessModel):
     owner: int | None = None
     user_can_change: bool = True
 
-    class Meta(PaperlessModel.Meta):
+    class Meta(StandardModel.Meta):
         # Fields that should not be modified
         read_only_fields = {"slug", "document_count"}
         queryset = TagQuerySet
@@ -63,4 +63,4 @@ class Tag(PaperlessModel):
         Returns:
             List of documents.
         """
-        return self._client.documents().all().with_tag_id(self.id)
+        return self._client.documents().all().tag_id(self.id)

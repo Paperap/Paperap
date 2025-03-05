@@ -27,11 +27,11 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from paperap.models.task import Task
-from paperap.resources.base import PaperlessResource
+from paperap.models.task import Task, TaskQuerySet
+from paperap.resources.base import PaperlessResource, StandardResource
 
 
-class TaskResource(PaperlessResource[Task]):
+class TaskResource(StandardResource[Task, TaskQuerySet]):
     """Resource for managing tasks."""
 
     model_class = Task

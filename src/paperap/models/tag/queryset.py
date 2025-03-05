@@ -27,7 +27,8 @@ from __future__ import annotations
 
 from typing import Any, Self, Union, Optional, TYPE_CHECKING
 import logging
-from paperap.models.abstract.queryset import QuerySet
+from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
+from paperap.models.mixins.queryset import HasStandard
 
 if TYPE_CHECKING:
     from paperap.models.tag.model import Tag
@@ -35,59 +36,82 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class TagQuerySet(QuerySet["Tag"]):
+class TagQuerySet(StandardQuerySet["Tag"], HasStandard):
     """
     QuerySet for Paperless-ngx tags with specialized filtering methods.
     """
 
-    def with_ids(self, ids: list[int]) -> Self:
-        """
-        Filter tags by multiple IDs.
-
-        Args:
-            ids: list of tag IDs to filter by
-
-        Returns:
-            Filtered TagQuerySet
-        """
-        ids_param = ",".join(str(id) for id in ids)
-        return self.filter(id__in=ids_param)
-
-    def with_name(self, name: str, *, exact: bool = True) -> Self:
-        """
-        Filter tags by name.
-
-        Args:
-            name: The tag name to filter by
-            exact: If True, match the exact name, otherwise use contains
-
-        Returns:
-            Filtered TagQuerySet
-        """
-        if exact:
-            return self.filter(name=name)
-        return self.filter(name__contains=name)
-
-    def with_color(self, color: str) -> Self:
+    def colour(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
         Filter tags by color.
 
         Args:
-            color: The color code to filter by
+            value (str): The color to filter by
+            exact (bool): If True, match the exact color, otherwise use contains
+            case_insensitive (bool): If True, ignore case when matching
 
         Returns:
             Filtered TagQuerySet
         """
-        return self.filter(color=color)
+        return self.filter_field_by_str("colour", value, exact=exact, case_insensitive=case_insensitive)
 
-    def is_inbox_tag(self, inbox: bool = True) -> Self:
+    def match(self, value: str, *, exact: bool = True) -> Self:
+        """
+        Filter tags by match value.
+
+        Args:
+            value (str): The value to filter by
+            exact (bool): If True, match the exact value, otherwise use contains
+
+        Returns:
+            Filtered TagQuerySet
+        """
+        return self.filter_field_by_str("match", value, exact=exact)
+
+    def matching_algorithm(self, value: int) -> Self:
+        """
+        Filter tags by matching algorithm.
+
+        Args:
+            value (int): The matching algorithm to filter by
+
+        Returns:
+            Filtered TagQuerySet
+        """
+        return self.filter(matching_algorithm=value)
+
+    def case_insensitive(self, value: bool = True) -> Self:
+        """
+        Filter tags by case insensitivity.
+
+        Args:
+            value: If True, filter tags that are case insensitive
+
+        Returns:
+            Filtered TagQuerySet
+        """
+        return self.filter(is_insensitive=value)
+
+    def is_inbox_tag(self, value: bool = True) -> Self:
         """
         Filter tags by inbox status.
 
         Args:
-            inbox: If True, get inbox tags, otherwise non-inbox tags
+            value: If True, get inbox tags, otherwise non-inbox tags
 
         Returns:
             Filtered TagQuerySet
         """
-        return self.filter(is_inbox_tag=inbox)
+        return self.filter(is_inbox_tag=value)
+
+    def user_can_change(self, value: bool = True) -> Self:
+        """
+        Filter tags by user change permission.
+
+        Args:
+            value: If True, get tags that can be changed by user
+
+        Returns:
+            Filtered TagQuerySet
+        """
+        return self.filter(user_can_change=value)

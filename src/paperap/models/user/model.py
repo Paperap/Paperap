@@ -27,11 +27,11 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
-from paperap.models.abstract.model import PaperlessModel
+from paperap.models.abstract.model import StandardModel
 from paperap.models.user.queryset import UserQuerySet, GroupQuerySet
 
 
-class Group(PaperlessModel):
+class Group(StandardModel):
     """
     Represents a user group in Paperless-NgX.
     """
@@ -39,11 +39,21 @@ class Group(PaperlessModel):
     name: str
     permissions: list[str] = Field(default_factory=list)
 
-    class Meta(PaperlessModel.Meta):
+    class Meta(StandardModel.Meta):
         queryset = GroupQuerySet
 
+    @property
+    def users(self) -> "UserQuerySet":
+        """
+        Get the users in this group.
 
-class User(PaperlessModel):
+        Returns:
+            UserQuerySet: The users in this group
+        """
+        return self._client.users().all().in_group(self.id)
+
+
+class User(StandardModel):
     """
     Represents a user in Paperless-NgX.
     """
@@ -61,5 +71,14 @@ class User(PaperlessModel):
     user_permissions: list[str] = Field(default_factory=list)
     inherited_permissions: list[str] = Field(default_factory=list)
 
-    class Meta(PaperlessModel.Meta):
+    class Meta(StandardModel.Meta):
         queryset = UserQuerySet
+
+    def get_groups(self) -> "GroupQuerySet":
+        """
+        Get the groups this user is a member of.
+
+        Returns:
+            GroupQuerySet: The groups this user is a member
+        """
+        return self._client.groups().all().id(self.groups)

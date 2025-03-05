@@ -27,11 +27,11 @@ from __future__ import annotations
 from typing import Any, Optional
 from pydantic import BaseModel, Field
 
-from paperap.models.abstract.model import PaperlessModel
+from paperap.models.abstract.model import StandardModel
 from paperap.models.workflow.queryset import WorkflowQuerySet, WorkflowActionQuerySet, WorkflowTriggerQuerySet
 
 
-class WorkflowTrigger(PaperlessModel):
+class WorkflowTrigger(StandardModel):
     """
     Represents a workflow trigger in Paperless-NgX.
     """
@@ -48,11 +48,11 @@ class WorkflowTrigger(PaperlessModel):
     filter_has_correspondent: int | None = None
     filter_has_document_type: int | None = None
 
-    class Meta(PaperlessModel.Meta):
+    class Meta(StandardModel.Meta):
         queryset = WorkflowTriggerQuerySet
 
 
-class WorkflowAction(PaperlessModel):
+class WorkflowAction(StandardModel):
     """
     Represents a workflow action in Paperless-NgX.
     """
@@ -87,11 +87,11 @@ class WorkflowAction(PaperlessModel):
     remove_change_users: list[int] = Field(default_factory=list)
     remove_change_groups: list[int] = Field(default_factory=list)
 
-    class Meta(PaperlessModel.Meta):
+    class Meta(StandardModel.Meta):
         queryset = WorkflowActionQuerySet
 
 
-class Workflow(PaperlessModel):
+class Workflow(StandardModel):
     """
     Represents a workflow in Paperless-NgX.
     """
@@ -102,5 +102,5 @@ class Workflow(PaperlessModel):
     triggers: list[dict[str, Any]] = Field(default_factory=list)
     actions: list[dict[str, Any]] = Field(default_factory=list)
 
-    class Meta(PaperlessModel.Meta):
+    class Meta(StandardModel.Meta):
         queryset = WorkflowQuerySet
