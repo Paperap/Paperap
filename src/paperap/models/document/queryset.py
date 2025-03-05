@@ -25,6 +25,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any, Self, Union, Optional, TYPE_CHECKING
 import logging
 from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
@@ -584,3 +585,77 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             Filtered DocumentQuerySet
         """
         return self.filter(notes__contains=text)
+
+    def created_before(self, date: datetime) -> Self:
+        """
+        Filter models created before a given date.
+
+        Args:
+            date: The date to filter by
+
+        Returns:
+            Filtered QuerySet
+        """
+        return self.filter(created__lt=date)
+
+    def created_after(self, date: datetime) -> Self:
+        """
+        Filter models created after a given date.
+
+        Args:
+            date: The date to filter by
+
+        Returns:
+            Filtered QuerySet
+        """
+        return self.filter(created__gt=date)
+
+    def created_between(self, start: datetime, end: datetime) -> Self:
+        """
+        Filter models created between two dates.
+
+        Args:
+            start: The start date to filter by
+            end: The end date to filter by
+
+        Returns:
+            Filtered QuerySet
+        """
+        return self.filter(created__range=(start, end))
+
+    def updated_before(self, date: datetime) -> Self:
+        """
+        Filter models updated before a given date.
+
+        Args:
+            date: The date to filter by
+
+        Returns:
+            Filtered QuerySet
+        """
+        return self.filter(updated__lt=date)
+
+    def updated_after(self, date: datetime) -> Self:
+        """
+        Filter models updated after a given date.
+
+        Args:
+            date: The date to filter by
+
+        Returns:
+            Filtered QuerySet
+        """
+        return self.filter(updated__gt=date)
+
+    def updated_between(self, start: datetime, end: datetime) -> Self:
+        """
+        Filter models updated between two dates.
+
+        Args:
+            start: The start date to filter by
+            end: The end date to filter by
+
+        Returns:
+            Filtered QuerySet
+        """
+        return self.filter(updated__range=(start, end))

@@ -33,6 +33,7 @@ from unittest.mock import MagicMock, patch
 # Import the exceptions used by QuerySet.
 from paperap.exceptions import ObjectNotFoundError, MultipleObjectsFoundError
 from paperap.models import StandardModel, QuerySet
+from paperap.models.abstract.queryset import StandardQuerySet
 from paperap.models.document import Document
 from paperap.resources import PaperlessResource, StandardResource
 from paperap.client import PaperlessClient
@@ -67,7 +68,7 @@ class TestQuerySetFilter(unittest.TestCase):
         self.resource = DummyResource()
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
-        self.qs = QuerySet(self.resource, filters={"init": "value"})
+        self.qs = StandardQuerySet(self.resource, filters={"init": "value"})
 
     def test_filter_returns_new_queryset(self):
         qs2 = self.qs.filter(new_filter=123)
@@ -86,7 +87,7 @@ class TestQuerySetGetNoCache(unittest.TestCase):
         mock_request.return_value = sample_document
         self.resource = DocumentResource(MockClient)
         self.resource.client.request = mock_request
-        self.qs = QuerySet(self.resource)
+        self.qs = StandardQuerySet(self.resource)
 
     def test_get_with_id(self):
         doc_id = sample_document["id"]
@@ -101,7 +102,7 @@ class TestQuerySetGetNoCacheFailure(unittest.TestCase):
         with patch.dict(os.environ, env_data, clear=True):
             self.client = PaperlessClient()
         self.resource = DocumentResource(self.client)
-        self.qs = QuerySet(self.resource)
+        self.qs = StandardQuerySet(self.resource)
 
     @patch("paperap.client.PaperlessClient.request")
     def test_get_with_id(self, mock_request):
@@ -115,7 +116,7 @@ class TestQuerySetGetCache(unittest.TestCase):
         mock_request.return_value = sample_document
         self.resource = DocumentResource(MockClient)
         self.resource.client.request = mock_request
-        self.qs = QuerySet(self.resource)
+        self.qs = StandardQuerySet(self.resource)
 
         self.modified_doc_id = 1337
         self.modified_doc_title = "Paperap Unit Test - Modified Title"
@@ -136,7 +137,7 @@ class TestQuerySetGetCacheFailure(unittest.TestCase):
         with patch.dict(os.environ, env_data, clear=True):
             self.client = PaperlessClient()
         self.resource = DocumentResource(self.client)
-        self.qs = QuerySet(self.resource)
+        self.qs = StandardQuerySet(self.resource)
 
         self.modified_doc_id = 1337
         self.modified_doc_title = "Paperap Unit Test - Modified Title"
@@ -159,7 +160,7 @@ class TestQuerySetAll(unittest.TestCase):
         self.resource = DummyResource()
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
-        self.qs = QuerySet(self.resource, filters={"init": "value"})
+        self.qs = StandardQuerySet(self.resource, filters={"init": "value"})
 
     def test_all_returns_copy(self):
         qs_all = self.qs.all()
@@ -175,7 +176,7 @@ class TestQuerySetOrderBy(unittest.TestCase):
         self.resource = DummyResource()
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
-        self.qs = QuerySet(self.resource, filters={"init": "value"})
+        self.qs = StandardQuerySet(self.resource, filters={"init": "value"})
 
     def test_order_by(self):
         qs_ordered = self.qs.order_by("name", "-date")
@@ -190,7 +191,7 @@ class TestQuerySetFirst(unittest.TestCase):
         self.resource = DummyResource()
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
-        self.qs = QuerySet(self.resource, filters={"init": "value"})
+        self.qs = StandardQuerySet(self.resource, filters={"init": "value"})
 
     def test_first_with_cache(self):
         self.qs._result_cache = ["first", "second"]  # type: ignore # Allow edit ClassVar in tests
@@ -212,7 +213,7 @@ class TestQuerySetLast(unittest.TestCase):
         self.resource = DummyResource()
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
-        self.qs = QuerySet(self.resource, filters={"init": "value"})
+        self.qs = StandardQuerySet(self.resource, filters={"init": "value"})
 
     def test_last(self):
         self.qs._result_cache = ["first", "middle", "last"]  # type: ignore # Allow edit ClassVar in tests
@@ -229,7 +230,7 @@ class TestQuerySetExists(unittest.TestCase):
         self.resource = DummyResource()
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
-        self.qs = QuerySet(self.resource, filters={"init": "value"})
+        self.qs = StandardQuerySet(self.resource, filters={"init": "value"})
 
     def test_exists(self):
         self.qs._result_cache = ["exists"]  # type: ignore # Allow edit ClassVar in tests
@@ -246,7 +247,7 @@ class TestQuerySetIter(unittest.TestCase):
         self.resource = DummyResource()
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
-        self.qs = QuerySet(self.resource, filters={"init": "value"})
+        self.qs = StandardQuerySet(self.resource, filters={"init": "value"})
 
     def test_iter_with_fully_fetched_cache(self):
         self.qs._result_cache = ["a", "b"]  # type: ignore # Allow edit ClassVar in tests
@@ -259,7 +260,7 @@ class TestQuerySetGetItem(unittest.TestCase):
         self.resource = DummyResource()
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
-        self.qs = QuerySet(self.resource, filters={"init": "value"})
+        self.qs = StandardQuerySet(self.resource, filters={"init": "value"})
 
     def test_getitem_index_cached(self):
         self.qs._result_cache = ["zero", "one", "two"]  # type: ignore # Allow edit ClassVar in tests
@@ -282,7 +283,7 @@ class TestQuerySetGetItem(unittest.TestCase):
 
     def test_getitem_slice_positive(self):
         # Use a fresh QuerySet with empty filters to test slicing optimization.
-        qs_clone = QuerySet(self.resource, filters={})
+        qs_clone = StandardQuerySet(self.resource, filters={})
         with patch.object(qs_clone, "_chain", return_value=iter(["item1", "item2"])) as mock_chain:
             qs_clone._result_cache = []  # force using _chain
             result = qs_clone[0:2]

@@ -56,7 +56,7 @@ class Tag(StandardModel):
         queryset = TagQuerySet
 
     @property
-    def documents(self) -> DocumentQuerySet:
+    def documents(self) -> "DocumentQuerySet":
         """
         Get documents with this tag.
 

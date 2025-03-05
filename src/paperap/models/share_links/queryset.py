@@ -107,3 +107,40 @@ class ShareLinksQuerySet(StandardQuerySet["ShareLinks"]):
             ShareLinksQuerySet: The filtered queryset
         """
         return self.filter(file_version=value)
+
+    def created_before(self, date: datetime.datetime) -> Self:
+        """
+        Filter models created before a given date.
+
+        Args:
+            date: The date to filter by
+
+        Returns:
+            Filtered QuerySet
+        """
+        return self.filter(created__lt=date)
+
+    def created_after(self, date: datetime.datetime) -> Self:
+        """
+        Filter models created after a given date.
+
+        Args:
+            date: The date to filter by
+
+        Returns:
+            Filtered QuerySet
+        """
+        return self.filter(created__gt=date)
+
+    def created_between(self, start: datetime.datetime, end: datetime.datetime) -> Self:
+        """
+        Filter models created between two dates.
+
+        Args:
+            start: The start date to filter by
+            end: The end date to filter by
+
+        Returns:
+            Filtered QuerySet
+        """
+        return self.filter(created__range=(start, end))

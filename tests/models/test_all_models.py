@@ -33,7 +33,7 @@ from typing import Any, Iterable, Iterator, get_type_hints, get_origin, get_args
 from unittest.mock import patch
 from pydantic import ValidationError
 
-from paperap.models.abstract import StandardModel, QuerySet
+from paperap.models.abstract import PaperlessModel, StandardModel, QuerySet
 from paperap.resources.base import PaperlessResource, StandardResource
 from paperap.models.correspondent import Correspondent
 from paperap.models.custom_field import CustomField
@@ -117,7 +117,7 @@ class ModelTestCase(TestCase):
     def generate_sample_data(self, model_class, depth: int = 0) -> dict[str, Any]:
         sample_data: dict[str, Any] = {}
         if depth == 0:
-            sample_data = {"id": 1, "created": "2025-01-01T12:00:00Z", "updated": "2025-01-02T12:00:00Z"}
+            sample_data = {"id": 1}
         try:
             hints = get_type_hints(model_class)
             for attr_name, type_hint in hints.items():

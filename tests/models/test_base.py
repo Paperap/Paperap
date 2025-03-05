@@ -60,8 +60,6 @@ class TestModel(TestCase):
         self.resource = ExampleResource(self.client)
         self.model_data = {
             "id": 1,
-            "created": "2025-03-01T12:00:00Z",
-            "updated": "2025-03-02T12:00:00Z",
             "a_str": "Hello, world!",
             "a_date": "2020-05-12T12:00:00Z",
             "an_int": 42,
@@ -80,13 +78,9 @@ class TestModel(TestCase):
 
     def test_model_date_parsing(self):
         # Test if date strings are parsed into datetime objects
-        self.assertIsInstance(self.model.created, datetime)
-        self.assertIsInstance(self.model.updated, datetime)
         self.assertIsInstance(self.model.a_date, datetime)
 
         # TZ UTC
-        self.assertEqual(self.model.created, datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc))
-        self.assertEqual(self.model.updated, datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc))
         self.assertEqual(self.model.a_date, datetime(2020, 5, 12, 12, 0, 0, tzinfo=timezone.utc))
 
     def test_model_to_dict(self):
@@ -99,8 +93,6 @@ class TestModel(TestCase):
         self.assertEqual(model_dict["a_float"], self.model_data["a_float"])
         self.assertEqual(model_dict["a_bool"], self.model_data["a_bool"])
 
-        self.assertEqual(model_dict["created"], datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc))
-        self.assertEqual(model_dict["updated"], datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc))
         self.assertEqual(model_dict["a_date"], datetime(2020, 5, 12, 12, 0, 0, tzinfo=timezone.utc))
 
     def test_model_update_int(self):

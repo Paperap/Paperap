@@ -205,12 +205,10 @@ class PaperlessModel(BaseModel, ABC):
 
 class StandardModel(PaperlessModel, ABC):
     id: int = Field(description="Unique identifier", default=0)
-    created: datetime = Field(description="Creation timestamp", default_factory=datetime.now, alias="created_on")
-    updated: datetime = Field(description="Last update timestamp", default_factory=datetime.now, alias="updated_on")
 
     class Meta(PaperlessModel.Meta[_Self], Generic[_Self]):
         # Fields that should not be modified
-        read_only_fields: set[str] = {"id", "created", "updated"}
+        read_only_fields: set[str] = {"id"}
 
     def is_new(self) -> bool:
         """

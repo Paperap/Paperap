@@ -55,7 +55,7 @@ class DocumentType(StandardModel):
         queryset = DocumentTypeQuerySet
 
     @property
-    def documents(self) -> DocumentQuerySet:
+    def documents(self) -> "DocumentQuerySet":
         """
         Get documents with this document type.
         """

@@ -57,7 +57,7 @@ class Correspondent(StandardModel):
         queryset = CorrespondentQuerySet
 
     @property
-    def documents(self) -> DocumentQuerySet:
+    def documents(self) -> "DocumentQuerySet":
         """
         Get documents for this correspondent.
         """

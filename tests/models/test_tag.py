@@ -46,8 +46,6 @@ class TestTagInit(unittest.TestCase):
         self.resource = self.client.tags
         self.model_data = {
             "id": 1,
-            "created": "2025-03-01T12:00:00Z",
-            "updated": "2025-03-02T12:00:00Z",
             "name": "Test Tag",
             "slug": "test-tag",
             "color": "blue",
@@ -61,10 +59,6 @@ class TestTagInit(unittest.TestCase):
         model = Tag.from_dict(self.model_data, self.resource)
         self.assertIsInstance(model, Tag, f"Expected Tag, got {type(model)}")
         self.assertEqual(model.id, self.model_data["id"], f"Tag id is wrong when created from dict: {model.id}")
-        self.assertIsInstance(model.created, datetime, f"created wrong type after from_dict {type(model.created)}")
-        self.assertIsInstance(model.updated, datetime, f"updated wrong type after from_dict {type(model.updated)}")
-        self.assertEqual(model.created, datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc), f"created wrong value after from_dict {model.created}")
-        self.assertEqual(model.updated, datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc), f"updated wrong value after from_dict {model.updated}")
         self.assertEqual(model.name, self.model_data["name"], f"Tag name is wrong when created from dict: {model.name}")
         self.assertEqual(model.slug, self.model_data["slug"], f"Tag slug is wrong when created from dict: {model.slug}")
         self.assertEqual(model.colour, self.model_data["color"], f"Tag color is wrong when created from dict: {model.colour}")
@@ -94,15 +88,6 @@ class TestTag(unittest.TestCase):
         }
         self.model = Tag.from_dict(self.model_data, self.resource)
 
-    def test_model_date_parsing(self):
-        # Test if date strings are parsed into datetime objects
-        self.assertIsInstance(self.model.created, datetime, f"created wrong type after from_dict {type(self.model.created)}")
-        self.assertIsInstance(self.model.updated, datetime, f"updated wrong type after from_dict {type(self.model.updated)}")
-
-        # TZ UTC
-        self.assertEqual(self.model.created, datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc))
-        self.assertEqual(self.model.updated, datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc))
-
     def test_model_string_parsing(self):
         # Test if string fields are parsed correctly
         self.assertEqual(self.model.name, self.model_data["name"])
@@ -115,8 +100,6 @@ class TestTag(unittest.TestCase):
         # Test if the model can be converted back to a dictionary
         model_dict = self.model.to_dict()
 
-        self.assertEqual(model_dict["created"], datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc))
-        self.assertEqual(model_dict["updated"], datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc))
         self.assertEqual(model_dict["name"], self.model_data["name"])
         self.assertEqual(model_dict["slug"], self.model_data["slug"])
         self.assertEqual(model_dict["colour"], self.model_data["color"])

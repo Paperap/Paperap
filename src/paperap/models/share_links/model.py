@@ -28,6 +28,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, TYPE_CHECKING
 
+from pydantic import Field
 from yarl import URL
 
 from paperap.models.abstract.model import StandardModel
@@ -45,6 +46,7 @@ class ShareLinks(StandardModel):
     expiration: datetime | None = None
     slug: str
     document: int
+    created: datetime = Field(description="Creation timestamp", default_factory=datetime.now, alias="created_on")
     file_version: str = "original"
 
     class Meta(StandardModel.Meta):

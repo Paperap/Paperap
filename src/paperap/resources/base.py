@@ -102,8 +102,8 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
 
-        # Skip processing for the base class itself
-        if cls.__name__ == "PaperlessResource":
+        # Skip processing for the base class itself. TODO: This is a hack
+        if cls.__name__ in ["PaperlessResource", "StandardResource"]:
             return
 
         # model_class is required

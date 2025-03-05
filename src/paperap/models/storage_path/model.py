@@ -55,7 +55,7 @@ class StoragePath(StandardModel):
         queryset = StoragePathQuerySet
 
     @property
-    def documents(self) -> DocumentQuerySet:
+    def documents(self) -> "DocumentQuerySet":
         """
         Get documents in this storage path.
         """

@@ -52,7 +52,9 @@ class Document(StandardModel):
     archived_file_name: str | None = None
     content: str | None = None
     correspondent: int | None = None
+    created: datetime = Field(description="Creation timestamp", default_factory=datetime.now, alias="created_on")
     created_date: str | None = None
+    updated: datetime = Field(description="Last update timestamp", default_factory=datetime.now, alias="updated_on")
     custom_fields: list[dict[str, Any]] = Field(default_factory=list)
     deleted_at: datetime | None = None
     document_type: int | None = None
