@@ -22,4 +22,4 @@
         2025-03-04     By Jess Mann
 
 """
-from paperap.models.storage_path.storage_path import StoragePath
+from paperap.models.storage_path.model import StoragePath

@@ -22,4 +22,4 @@
         2025-03-04     By Jess Mann
 
 """
-from paperap.models.share_links.share_links import ShareLinks
+from paperap.models.share_links.model import ShareLinks

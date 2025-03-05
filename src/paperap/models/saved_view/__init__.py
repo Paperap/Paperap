@@ -22,4 +22,4 @@
         2025-03-04     By Jess Mann
 
 """
-from paperap.models.saved_view.saved_view import SavedView
+from paperap.models.saved_view.model import SavedView

@@ -25,13 +25,13 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any, Generic, Union, cast, get_type_hints, overload, get_origin, get_args
+from typing_extensions import TypeVar
+import types
 import datetime
 import logging
 from decimal import Decimal
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Generic, TypeVar, Union, cast, get_type_hints, overload, get_origin, get_args
-import types
-
 import dateparser
 
 if TYPE_CHECKING:
@@ -40,7 +40,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 _T = TypeVar("_T")
-_PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel")
+_PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel", default="PaperlessModel")
 
 class Parser(Generic[_PaperlessModel]):
     model: type[_PaperlessModel]

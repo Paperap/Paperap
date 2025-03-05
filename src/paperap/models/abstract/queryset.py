@@ -67,7 +67,7 @@ class QuerySet(Iterable[_PaperlessModel]):
     _result_cache: list[_PaperlessModel] = []
     _fetch_all: bool = False
     _next_url: str | None = None
-    _iter: Optional[Iterator[_PaperlessModel]]
+    _iter: Iterator[_PaperlessModel] | None
 
     def __init__(
         self,

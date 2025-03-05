@@ -29,11 +29,11 @@ import logging
 from paperap.models.abstract.queryset import QuerySet
 
 if TYPE_CHECKING:
-    from paperap.models.document.model import Document
+    from paperap.models.document_type.model import DocumentType
 
 logger = logging.getLogger(__name__)
 
-class DocumentQuerySet(QuerySet["Document"]):
+class DocumentTypeQuerySet(QuerySet["DocumentType"]):
     """
     A lazy-loaded, chainable query interface for Paperless NGX resources.
 

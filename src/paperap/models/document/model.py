@@ -30,8 +30,9 @@ from typing import Any, TYPE_CHECKING, Iterable, Iterator, Optional
 from pydantic import BaseModel, Field
 from yarl import URL
 
+from paperap.models.abstract.queryset import QuerySet
 from paperap.models.abstract.model import PaperlessModel
-from paperap.models.abstract.queryset import PaperlessModel
+from paperap.models.document.queryset import DocumentQuerySet
 
 if TYPE_CHECKING:
     from paperap.models.correspondent import Correspondent
@@ -61,6 +62,9 @@ class Document(PaperlessModel):
     notes : list[Any] = Field(default_factory=list) # TODO unknown subtype
     custom_fields : list[dict[str, Any]] = Field(default_factory=list)
     page_count : int | None = None
+
+    class Meta(PaperlessModel.Meta):
+        queryset = DocumentQuerySet
 
     def get_tags(self) -> QuerySet["Tag"]:
         """

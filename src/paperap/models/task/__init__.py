@@ -22,4 +22,4 @@
         2025-03-04     By Jess Mann
 
 """
-from paperap.models.task.task import Task
+from paperap.models.task.model import Task

@@ -22,4 +22,4 @@
         2025-03-04     By Jess Mann
 
 """
-from paperap.models.tag.tag import Tag
+from paperap.models.tag.model import Tag

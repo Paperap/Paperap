@@ -22,4 +22,4 @@
         2025-03-04     By Jess Mann
 
 """
-from paperap.models.custom_field.custom_field import CustomField
+from paperap.models.custom_field.model import CustomField

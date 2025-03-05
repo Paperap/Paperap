@@ -22,4 +22,4 @@
         2025-03-04     By Jess Mann
 
 """
-from paperap.models.ui_settings.ui_settings import UiSettings
+from paperap.models.ui_settings.model import UiSettings

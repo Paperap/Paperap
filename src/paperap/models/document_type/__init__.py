@@ -22,4 +22,4 @@
         2025-03-04     By Jess Mann
 
 """
-from paperap.models.document_type.document_type import DocumentType
+from paperap.models.document_type.model import DocumentType

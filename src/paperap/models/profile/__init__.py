@@ -22,4 +22,4 @@
         2025-03-04     By Jess Mann
 
 """
-from paperap.models.profile.profile import Profile
+from paperap.models.profile.model import Profile

@@ -22,4 +22,4 @@
         2025-03-04     By Jess Mann
 
 """
-from paperap.models.user.user import User, Group
+from paperap.models.user.model import User, Group

@@ -22,4 +22,4 @@
         2025-03-04     By Jess Mann
 
 """
-from paperap.models.workflow.workflow import Workflow, WorkflowAction, WorkflowTrigger
+from paperap.models.workflow.model import Workflow, WorkflowAction, WorkflowTrigger

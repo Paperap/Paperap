@@ -28,9 +28,7 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
-
 from paperap.models.abstract.model import PaperlessModel
-
 
 class StoragePath(PaperlessModel):
     """
