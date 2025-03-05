@@ -53,7 +53,6 @@ class Correspondent(PaperlessModel):
         read_only_fields = {
             "slug",
             "document_count",
-            "last_correspondence",
         }
         queryset = CorrespondentQuerySet
 
