@@ -24,11 +24,14 @@
 """
 
 from datetime import datetime
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 from pydantic import Field
 
 from paperap.models.abstract.model import PaperlessModel
 from paperap.models.correspondent.queryset import CorrespondentQuerySet
+
+if TYPE_CHECKING:
+    from paperap.models.document import Document, DocumentQuerySet
 
 
 class Correspondent(PaperlessModel):
@@ -53,3 +56,10 @@ class Correspondent(PaperlessModel):
             "last_correspondence",
         }
         queryset = CorrespondentQuerySet
+
+    @property
+    def documents(self) -> DocumentQuerySet:
+        """
+        Get documents for this correspondent.
+        """
+        return self._client.documents().all().with_correspondent_id(self.id)

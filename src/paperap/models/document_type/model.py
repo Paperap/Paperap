@@ -24,12 +24,15 @@
 """
 
 from datetime import datetime
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from pydantic import BaseModel, Field
 
 from paperap.models.abstract.model import PaperlessModel
 from paperap.models.document_type.queryset import DocumentTypeQuerySet
+
+if TYPE_CHECKING:
+    from paperap.models.document import Document, DocumentQuerySet
 
 
 class DocumentType(PaperlessModel):
@@ -50,3 +53,10 @@ class DocumentType(PaperlessModel):
         # Fields that should not be modified
         read_only_fields = {"slug", "document_count"}
         queryset = DocumentTypeQuerySet
+
+    @property
+    def documents(self) -> DocumentQuerySet:
+        """
+        Get documents with this document type.
+        """
+        return self._client.documents().all().with_document_type_id(self.id)

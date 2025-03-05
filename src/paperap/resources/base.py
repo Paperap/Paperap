@@ -54,11 +54,12 @@ if TYPE_CHECKING:
     from paperap.models.abstract import PaperlessModel, QuerySet
 
 _PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel", covariant=True)
+_QuerySet = TypeVar("_QuerySet", bound="QuerySet", covariant=True, default="QuerySet[_PaperlessModel]")
 
 logger = logging.getLogger(__name__)
 
 
-class PaperlessResource(ABC, Generic[_PaperlessModel]):
+class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
     """
     Base class for API resources.
 
@@ -119,16 +120,16 @@ class PaperlessResource(ABC, Generic[_PaperlessModel]):
                 "delete": URLS.delete,
             }
 
-    def all(self) -> QuerySet[_PaperlessModel]:
+    def all(self) -> _QuerySet:
         """
         Return a QuerySet representing all objects of this resource type.
 
         Returns:
             A QuerySet for this resource
         """
-        return self.model_class._meta.queryset(self)
+        return self.model_class._meta.queryset(self)  # type: ignore # _meta.queryset is always the right queryset type
 
-    def filter(self, **kwargs) -> QuerySet[_PaperlessModel]:
+    def filter(self, **kwargs) -> _QuerySet:
         """
         Return a QuerySet filtered by the given parameters.
 
@@ -318,7 +319,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel]):
             post_list_item.emit(self, resource=self.name, item=item)
             yield self.parse_to_model(item)
 
-    def __call__(self, *args, **keywords) -> QuerySet[_PaperlessModel]:
+    def __call__(self, *args, **keywords) -> _QuerySet:
         """
         Make the resource callable to get a QuerySet.
 

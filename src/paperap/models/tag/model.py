@@ -24,11 +24,14 @@
 """
 
 from datetime import datetime
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 from pydantic import BaseModel, Field
 
 from paperap.models.abstract.model import PaperlessModel
 from paperap.models.tag.queryset import TagQuerySet
+
+if TYPE_CHECKING:
+    from paperap.models.document import Document, DocumentQuerySet
 
 
 class Tag(PaperlessModel):
@@ -51,3 +54,13 @@ class Tag(PaperlessModel):
         # Fields that should not be modified
         read_only_fields = {"slug", "document_count"}
         queryset = TagQuerySet
+
+    @property
+    def documents(self) -> DocumentQuerySet:
+        """
+        Get documents with this tag.
+
+        Returns:
+            List of documents.
+        """
+        return self._client.documents().all().with_tag_id(self.id)

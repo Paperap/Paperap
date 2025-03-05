@@ -25,10 +25,13 @@
 
 from __future__ import annotations
 from datetime import datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from paperap.models.abstract.model import PaperlessModel
 from paperap.models.storage_path.queryset import StoragePathQuerySet
+
+if TYPE_CHECKING:
+    from paperap.models.document import Document, DocumentQuerySet
 
 
 class StoragePath(PaperlessModel):
@@ -50,3 +53,10 @@ class StoragePath(PaperlessModel):
         # Fields that should not be modified
         read_only_fields = {"slug", "document_count"}
         queryset = StoragePathQuerySet
+
+    @property
+    def documents(self) -> DocumentQuerySet:
+        """
+        Get documents in this storage path.
+        """
+        return self._client.documents().all().with_storage_path_id(self.id)

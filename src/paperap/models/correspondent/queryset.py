@@ -25,7 +25,7 @@
 
 from __future__ import annotations
 
-from typing import Any, List, Self, Union, Optional, TYPE_CHECKING
+from typing import Any, Self, Union, Optional, TYPE_CHECKING
 import logging
 from paperap.models.abstract.queryset import QuerySet
 
@@ -40,7 +40,7 @@ class CorrespondentQuerySet(QuerySet["Correspondent"]):
     QuerySet for Paperless-ngx correspondents with specialized filtering methods.
     """
 
-    def with_name(self, name: str, exact: bool = True) -> Self:
+    def with_name(self, name: str, *, exact: bool = True) -> Self:
         """
         Filter correspondents by name.
 
@@ -55,12 +55,12 @@ class CorrespondentQuerySet(QuerySet["Correspondent"]):
             return self.filter(name=name)
         return self.filter(name__contains=name)
 
-    def with_ids(self, ids: List[int]) -> Self:
+    def with_ids(self, ids: list[int]) -> Self:
         """
         Filter correspondents by multiple IDs.
 
         Args:
-            ids: List of correspondent IDs to filter by
+            ids: list of correspondent IDs to filter by
 
         Returns:
             Filtered CorrespondentQuerySet

@@ -28,13 +28,14 @@ from __future__ import annotations
 import os.path
 from datetime import datetime
 from typing import Any, BinaryIO, Iterator, Optional
+from typing_extensions import TypeVar
 
 from paperap.exceptions import APIError, BadResponseError
 from paperap.models.document import Document, DocumentQuerySet
 from paperap.resources.base import PaperlessResource
 
 
-class DocumentResource(PaperlessResource[Document]):
+class DocumentResource(PaperlessResource[Document, DocumentQuerySet]):
     """Resource for managing documents."""
 
     model_class = Document

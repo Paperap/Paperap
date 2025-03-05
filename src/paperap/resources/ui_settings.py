@@ -25,7 +25,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 
 from paperap.models.ui_settings import UISettings
 from paperap.resources.base import PaperlessResource

@@ -40,7 +40,7 @@ class StoragePathQuerySet(QuerySet["StoragePath"]):
     QuerySet for Paperless-ngx storage paths with specialized filtering methods.
     """
 
-    def with_name(self, name: str, exact: bool = True) -> Self:
+    def with_name(self, name: str, *, exact: bool = True) -> Self:
         """
         Filter storage paths by name.
 
@@ -55,7 +55,7 @@ class StoragePathQuerySet(QuerySet["StoragePath"]):
             return self.filter(name=name)
         return self.filter(name__contains=name)
 
-    def with_path(self, path: str, exact: bool = True) -> Self:
+    def with_path(self, path: str, *, exact: bool = True) -> Self:
         """
         Filter storage paths by their actual path value.
 
@@ -69,6 +69,21 @@ class StoragePathQuerySet(QuerySet["StoragePath"]):
         if exact:
             return self.filter(path=path)
         return self.filter(path__contains=path)
+
+    def with_slug(self, slug: str, *, exact: bool = True) -> Self:
+        """
+        Filter storage paths by their slug.
+
+        Args:
+            slug: The slug to filter by
+            exact: If True, match the exact slug, otherwise use contains
+
+        Returns:
+            Filtered StoragePathQuery
+        """
+        if exact:
+            return self.filter(slug=slug)
+        return self.filter(slug__contains=slug)
 
     def with_matching_rule(self, rule_pattern: str) -> Self:
         """

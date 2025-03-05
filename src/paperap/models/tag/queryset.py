@@ -25,7 +25,7 @@
 
 from __future__ import annotations
 
-from typing import Any, List, Self, Union, Optional, TYPE_CHECKING
+from typing import Any, Self, Union, Optional, TYPE_CHECKING
 import logging
 from paperap.models.abstract.queryset import QuerySet
 
@@ -40,12 +40,12 @@ class TagQuerySet(QuerySet["Tag"]):
     QuerySet for Paperless-ngx tags with specialized filtering methods.
     """
 
-    def with_ids(self, ids: List[int]) -> Self:
+    def with_ids(self, ids: list[int]) -> Self:
         """
         Filter tags by multiple IDs.
 
         Args:
-            ids: List of tag IDs to filter by
+            ids: list of tag IDs to filter by
 
         Returns:
             Filtered TagQuerySet
@@ -53,7 +53,7 @@ class TagQuerySet(QuerySet["Tag"]):
         ids_param = ",".join(str(id) for id in ids)
         return self.filter(id__in=ids_param)
 
-    def with_name(self, name: str, exact: bool = True) -> Self:
+    def with_name(self, name: str, *, exact: bool = True) -> Self:
         """
         Filter tags by name.
 

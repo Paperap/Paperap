@@ -25,7 +25,7 @@
 
 from __future__ import annotations
 
-from typing import Any, List, Self, Union, Optional, TYPE_CHECKING
+from typing import Any, Self, Union, Optional, TYPE_CHECKING
 import logging
 from paperap.models.abstract.queryset import QuerySet
 
@@ -40,7 +40,7 @@ class DocumentQuerySet(QuerySet["Document"]):
     QuerySet for Paperless-ngx documents with specialized filtering methods.
     """
 
-    def with_tag_id(self, tag_id: Union[int, List[int]]) -> Self:
+    def with_tag_id(self, tag_id: int | list[int]) -> Self:
         """
         Filter documents that have the specified tag ID(s).
 
@@ -50,12 +50,11 @@ class DocumentQuerySet(QuerySet["Document"]):
         Returns:
             Filtered DocumentQuerySet
         """
-        if isinstance(tag_id, list):
-            tag_ids_param = ",".join(str(tid) for tid in tag_id)
-            return self.filter(tags__id__in=tag_ids_param)
+        if not isinstance(tag_id, list):
+            return self.filter(tags__id__in=tag_id)
         return self.filter(tags__id=tag_id)
 
-    def with_tag_name(self, tag_name: str, exact: bool = True) -> Self:
+    def with_tag_name(self, tag_name: str, *, exact: bool = True) -> Self:
         """
         Filter documents that have a tag with the specified name.
 
@@ -70,7 +69,7 @@ class DocumentQuerySet(QuerySet["Document"]):
             return self.filter(tags__name=tag_name)
         return self.filter(tags__name__contains=tag_name)
 
-    def with_title(self, title: str, exact: bool = True) -> Self:
+    def with_title(self, title: str, *, exact: bool = True) -> Self:
         """
         Filter documents by title.
 
@@ -97,7 +96,7 @@ class DocumentQuerySet(QuerySet["Document"]):
         """
         return self.filter(correspondent=correspondent_id)
 
-    def with_correspondent_name(self, name: str, exact: bool = True) -> Self:
+    def with_correspondent_name(self, name: str, *, exact: bool = True) -> Self:
         """
         Filter documents by correspondent name.
 
@@ -123,6 +122,48 @@ class DocumentQuerySet(QuerySet["Document"]):
             Filtered DocumentQuerySet
         """
         return self.filter(document_type=document_type_id)
+
+    def with_document_type_name(self, name: str, *, exact: bool = True) -> Self:
+        """
+        Filter documents by document type name.
+
+        Args:
+            name: The document type name to filter by
+            exact: If True, match the exact name, otherwise use contains
+
+        Returns:
+            Filtered DocumentQuerySet
+        """
+        if exact:
+            return self.filter(document_type__name=name)
+        return self.filter(document_type__name__contains=name)
+
+    def with_storage_path_id(self, storage_path_id: int) -> Self:
+        """
+        Filter documents by storage path ID.
+
+        Args:
+            storage_path_id: The storage path ID to filter by
+
+        Returns:
+            Filtered DocumentQuerySet
+        """
+        return self.filter(storage_path=storage_path_id)
+
+    def with_storage_path_name(self, name: str, *, exact: bool = True) -> Self:
+        """
+        Filter documents by storage path name.
+
+        Args:
+            name: The storage path name to filter by
+            exact: If True, match the exact name, otherwise use contains
+
+        Returns:
+            Filtered DocumentQuerySet
+        """
+        if exact:
+            return self.filter(storage_path__name=name)
+        return self.filter(storage_path__name__contains=name)
 
     def with_content(self, text: str) -> Self:
         """

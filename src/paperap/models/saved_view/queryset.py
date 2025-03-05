@@ -25,7 +25,7 @@
 
 from __future__ import annotations
 
-from typing import Any, List, Self, Union, Optional, TYPE_CHECKING
+from typing import Any, Self, Union, Optional, TYPE_CHECKING
 import logging
 from paperap.models.abstract.queryset import QuerySet
 
@@ -40,7 +40,7 @@ class SavedViewQuerySet(QuerySet["SavedView"]):
     QuerySet for Paperless-ngx saved views with specialized filtering methods.
     """
 
-    def with_name(self, name: str, exact: bool = True) -> Self:
+    def with_name(self, name: str, *, exact: bool = True) -> Self:
         """
         Filter saved views by name.
 

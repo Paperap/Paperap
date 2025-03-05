@@ -39,6 +39,7 @@ from paperap.models.abstract.queryset import QuerySet
 
 if TYPE_CHECKING:
     from paperap.resources.base import PaperlessResource
+    from paperap.client import PaperlessClient
 
 _Self = TypeVar("_Self", bound="PaperlessModel")
 
@@ -91,6 +92,14 @@ class PaperlessModel(BaseModel, ABC):
             Decimal: lambda d: float(d),
         },
     )
+
+    @property
+    def _resource(self) -> "PaperlessResource":
+        return self._meta.resource
+
+    @property
+    def _client(self) -> "PaperlessClient":
+        return self._meta.resource.client
 
     def __init__(self, resource: "PaperlessResource", **data):
         if resource is None:
