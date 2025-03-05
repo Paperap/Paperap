@@ -22,6 +22,7 @@
        2025-03-04     By Jess Mann
 
 """
+
 from __future__ import annotations
 
 import copy
@@ -49,9 +50,10 @@ if TYPE_CHECKING:
     from paperap.models.abstract.model import PaperlessModel
     from paperap.resources.base import PaperlessResource
 
-_PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel")
+_PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel", covariant=True)
 
 logger = logging.getLogger(__name__)
+
 
 class QuerySet(Iterable[_PaperlessModel]):
     """

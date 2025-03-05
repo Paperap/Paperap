@@ -22,25 +22,29 @@
        2025-03-04     By Jess Mann
 
 """
+
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, TYPE_CHECKING, Iterable, Iterator, Optional
+from typing import Any, TYPE_CHECKING
 
-from pydantic import BaseModel, Field
 from yarl import URL
 
-from paperap.models.abstract.queryset import QuerySet
 from paperap.models.abstract.model import PaperlessModel
+from paperap.models.share_links.queryset import ShareLinksQuerySet
 
 if TYPE_CHECKING:
     from paperap.models.correspondent import Correspondent
     from paperap.models.document_type import DocumentType
     from paperap.models.storage_path import StoragePath
     from paperap.models.tag import Tag
-    
+
+
 class ShareLinks(PaperlessModel):
-    expiration : datetime | None = None
-    slug : str
-    document : int
-    file_version : str = "original"
+    expiration: datetime | None = None
+    slug: str
+    document: int
+    file_version: str = "original"
+
+    class Meta(PaperlessModel.Meta):
+        queryset = ShareLinksQuerySet

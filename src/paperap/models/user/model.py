@@ -28,14 +28,19 @@ from typing import Any, Optional
 from pydantic import BaseModel, Field
 
 from paperap.models.abstract.model import PaperlessModel
+from paperap.models.user.queryset import UserQuerySet, GroupQuerySet
 
 
 class Group(PaperlessModel):
     """
     Represents a user group in Paperless-NgX.
     """
+
     name: str
     permissions: list[str] = Field(default_factory=list)
+
+    class Meta(PaperlessModel.Meta):
+        queryset = GroupQuerySet
 
 
 class User(PaperlessModel):
@@ -45,13 +50,16 @@ class User(PaperlessModel):
 
     username: str
     email: str
-    password : str
+    password: str
     first_name: str
     last_name: str
-    date_joined : str
+    date_joined: str
     is_staff: bool = False
     is_active: bool = True
     is_superuser: bool = False
     groups: list[int] = Field(default_factory=list)
     user_permissions: list[int] = Field(default_factory=list)
-    inherited_permissions : list[str] = Field(default_factory=list)
+    inherited_permissions: list[str] = Field(default_factory=list)
+
+    class Meta(PaperlessModel.Meta):
+        queryset = UserQuerySet

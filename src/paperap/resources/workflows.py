@@ -41,6 +41,7 @@ class WorkflowTriggerResource(PaperlessResource[WorkflowTrigger]):
     model_class = WorkflowTrigger
     name = "workflow_triggers"
 
+
 class WorkflowActionResource(PaperlessResource[WorkflowAction]):
     """Resource for managing workflow actions."""
 

@@ -181,13 +181,13 @@ class TestModelFromDict(ModelTestCase):
                     self.assertEqual(model.id, sample_data.get("id"), f"{model_class.__name__} id mismatch")
 
                 model_fields = self._get_model_fields(model)
-                
+
                 for date_field in ['created', 'updated', 'added']:
                     if hasattr(model, date_field) and date_field in sample_data:
                         # Allow None
                         if sample_data[date_field] is None:
                             continue
-                        
+
                         field_value = getattr(model, date_field)
                         self.assertIsInstance(field_value, datetime, f"{model_class.__name__}.{date_field} should be datetime")
 
@@ -239,7 +239,7 @@ class TestModelFromDict(ModelTestCase):
             with self.subTest(model=model_class.__name__):
                 sample_data = self.generate_sample_data(model_class)
                 model = model_class.from_dict(sample_data, resource)
-                
+
                 model_dict = model.to_dict(exclude_none=False, exclude_unset=False, include_read_only=True)
                 missing = set(sample_data.keys()) - set(model_dict.keys())
                 self.assertFalse(missing, f"{model_class.__name__}.to_dict missing keys: {missing}")

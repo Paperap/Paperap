@@ -3,30 +3,32 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+   METADATA:
 
-        File:    config.py
-        Project: paperap
-        Created: 2025-03-04
-        Version: 0.0.1
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+       File:    config.py
+       Project: paperap
+       Created: 2025-03-04
+       Version: 0.0.1
+       Author:  Jess Mann
+       Email:   jess@jmann.me
+       Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+   LAST MODIFIED:
 
-        2025-03-04     By Jess Mann
+       2025-03-04     By Jess Mann
 
 """
+
 from datetime import datetime
 from typing import Any, Optional
 from pydantic import BaseModel, Field
 
 from paperap.models.abstract.model import PaperlessModel
+
 
 class Config(PaperlessModel):
     user_args: str | None = None

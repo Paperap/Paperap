@@ -23,12 +23,13 @@
 
 """
 
+from __future__ import annotations
 from datetime import datetime
-from typing import Any, Optional
-
-from pydantic import BaseModel, Field
+from typing import Any
 
 from paperap.models.abstract.model import PaperlessModel
+from paperap.models.storage_path.queryset import StoragePathQuerySet
+
 
 class StoragePath(PaperlessModel):
     """
@@ -42,9 +43,10 @@ class StoragePath(PaperlessModel):
     matching_algorithm: int = 0
     is_insensitive: bool = True
     document_count: int = 0
-    owner : int | None = None
-    user_can_change : bool = True
+    owner: int | None = None
+    user_can_change: bool = True
 
     class Meta(PaperlessModel.Meta):
         # Fields that should not be modified
         read_only_fields = {"slug", "document_count"}
+        queryset = StoragePathQuerySet

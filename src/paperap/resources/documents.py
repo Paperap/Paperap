@@ -33,6 +33,7 @@ from paperap.exceptions import APIError, BadResponseError
 from paperap.models.document import Document, DocumentQuerySet
 from paperap.resources.base import PaperlessResource
 
+
 class DocumentResource(PaperlessResource[Document]):
     """Resource for managing documents."""
 

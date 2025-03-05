@@ -42,6 +42,7 @@ logger = logging.getLogger(__name__)
 _T = TypeVar("_T")
 _PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel", default="PaperlessModel")
 
+
 class Parser(Generic[_PaperlessModel]):
     model: type[_PaperlessModel]
 

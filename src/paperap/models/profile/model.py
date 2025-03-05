@@ -28,13 +28,17 @@ from typing import Any
 
 from pydantic import Field
 from paperap.models.abstract.model import PaperlessModel
+from paperap.models.profile.queryset import ProfileQuerySet
 
 
 class Profile(PaperlessModel):
-    email : str
-    password : str
-    first_name : str
-    last_name : str
-    auth_token : str
-    social_accounts : list[Any] = Field(default_factory=list) # TODO unknown subtype
-    has_usable_password : bool = True
+    email: str
+    password: str
+    first_name: str
+    last_name: str
+    auth_token: str
+    social_accounts: list[Any] = Field(default_factory=list)  # TODO unknown subtype
+    has_usable_password: bool = True
+
+    class Meta(PaperlessModel.Meta):
+        queryset = ProfileQuerySet

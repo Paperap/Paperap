@@ -28,6 +28,7 @@ from typing import Any, Optional
 from pydantic import Field
 
 from paperap.models.abstract.model import PaperlessModel
+from paperap.models.correspondent.queryset import CorrespondentQuerySet
 
 
 class Correspondent(PaperlessModel):
@@ -41,8 +42,8 @@ class Correspondent(PaperlessModel):
     matching_algorithm: int
     is_insensitive: bool = True
     document_count: int = 0
-    owner : int | None = None
-    user_can_change : bool = True
+    owner: int | None = None
+    user_can_change: bool = True
 
     class Meta(PaperlessModel.Meta):
         # Fields that should not be modified
@@ -51,3 +52,4 @@ class Correspondent(PaperlessModel):
             "document_count",
             "last_correspondence",
         }
+        queryset = CorrespondentQuerySet

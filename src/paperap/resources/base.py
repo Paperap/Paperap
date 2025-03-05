@@ -57,6 +57,7 @@ _PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel", covariant=T
 
 logger = logging.getLogger(__name__)
 
+
 class PaperlessResource(ABC, Generic[_PaperlessModel]):
     """
     Base class for API resources.

@@ -141,7 +141,7 @@ class TestGetTags(TestCase):
             expected_count = len(document.tags)
             actual_count = tags.count()
             self.assertEqual(expected_count, actual_count, f"Expected {expected_count} tags, got {actual_count}")
-            
+
             count = 0
             for tag in tags:
                 count += 1

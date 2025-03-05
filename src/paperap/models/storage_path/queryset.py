@@ -30,12 +30,12 @@ import logging
 from paperap.models.abstract.queryset import QuerySet
 
 if TYPE_CHECKING:
-    from paperap.models.saved_view.model import SavedView
+    from paperap.models.storage_path.model import StoragePath
 
 logger = logging.getLogger(__name__)
 
 
-class SavedViewQuerySet(QuerySet["SavedView"]):
+class StoragePathQuerySet(QuerySet["StoragePath"]):
     """
     A lazy-loaded, chainable query interface for Paperless NGX resources.
 

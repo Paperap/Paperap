@@ -28,6 +28,7 @@ from typing import Any, Dict
 from pydantic import BaseModel, Field
 
 from paperap.models.abstract.model import PaperlessModel
+from paperap.models.ui_settings.queryset import UISettingsQuerySet
 
 
 class UISettings(PaperlessModel):
@@ -38,3 +39,6 @@ class UISettings(PaperlessModel):
     user: dict[str, Any] = Field(default_factory=dict)
     settings: dict[str, Any]
     permissions: list[str] = Field(default_factory=list)
+
+    class Meta(PaperlessModel.Meta):
+        queryset = UISettingsQuerySet

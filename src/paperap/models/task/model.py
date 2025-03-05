@@ -28,6 +28,7 @@ from typing import Any, Optional
 from pydantic import BaseModel, Field
 
 from paperap.models.abstract.model import PaperlessModel
+from paperap.models.task.queryset import TaskQuerySet
 
 
 class Task(PaperlessModel):
@@ -43,3 +44,6 @@ class Task(PaperlessModel):
     result: str | None = None
     acknowledged: bool = False
     related_document: int | None = None
+
+    class Meta(PaperlessModel.Meta):
+        queryset = TaskQuerySet

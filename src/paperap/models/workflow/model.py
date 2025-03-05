@@ -23,28 +23,33 @@
 
 """
 
+from __future__ import annotations
 from typing import Any, Optional
-
 from pydantic import BaseModel, Field
 
 from paperap.models.abstract.model import PaperlessModel
+from paperap.models.workflow.queryset import WorkflowQuerySet, WorkflowActionQuerySet, WorkflowTriggerQuerySet
 
 
 class WorkflowTrigger(PaperlessModel):
     """
     Represents a workflow trigger in Paperless-NgX.
     """
-    sources : list[Any] # TODO unknown subtype
+
+    sources: list[Any]  # TODO unknown subtype
     type: int
     filter_path: str | None = None
     filter_filename: str | None = None
-    filter_mailrule : str | None = None
+    filter_mailrule: str | None = None
     matching_algorithm: int
-    match : str
+    match: str
     is_insensitive: bool = True
-    filter_has_tags : list[int] = Field(default_factory=list)
-    filter_has_correspondent : int | None = None
-    filter_has_document_type : int | None = None
+    filter_has_tags: list[int] = Field(default_factory=list)
+    filter_has_correspondent: int | None = None
+    filter_has_document_type: int | None = None
+
+    class Meta(PaperlessModel.Meta):
+        queryset = WorkflowTriggerQuerySet
 
 
 class WorkflowAction(PaperlessModel):
@@ -58,7 +63,6 @@ class WorkflowAction(PaperlessModel):
     assign_correspondent: int | None = None
     assign_document_type: int | None = None
     assign_storage_path: int | None = None
-    assign_owner: int | None = None
     assign_owner: int | None = None
     assign_view_users: list[int] = Field(default_factory=list)
     assign_view_groups: list[int] = Field(default_factory=list)
@@ -83,6 +87,10 @@ class WorkflowAction(PaperlessModel):
     remove_change_users: list[int] = Field(default_factory=list)
     remove_change_groups: list[int] = Field(default_factory=list)
 
+    class Meta(PaperlessModel.Meta):
+        queryset = WorkflowActionQuerySet
+
+
 class Workflow(PaperlessModel):
     """
     Represents a workflow in Paperless-NgX.
@@ -93,3 +101,6 @@ class Workflow(PaperlessModel):
     enabled: bool = True
     triggers: list[dict[str, Any]] = Field(default_factory=list)
     actions: list[dict[str, Any]] = Field(default_factory=list)
+
+    class Meta(PaperlessModel.Meta):
+        queryset = WorkflowQuerySet

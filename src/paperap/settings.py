@@ -3,25 +3,26 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+   METADATA:
 
-        File:    settings.py
-        Project: paperap
-        Created: 2025-03-04
-        Version: 0.0.1
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+       File:    settings.py
+       Project: paperap
+       Created: 2025-03-04
+       Version: 0.0.1
+       Author:  Jess Mann
+       Email:   jess@jmann.me
+       Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+   LAST MODIFIED:
 
-        2025-03-04     By Jess Mann
+       2025-03-04     By Jess Mann
 
 """
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -31,6 +32,7 @@ from typing import Annotated, Any, Optional, Self, TypedDict
 from yarl import URL
 
 from paperap.exceptions import ConfigurationError
+
 
 class SettingsArgs(TypedDict, total=False):
     base_url: str | URL

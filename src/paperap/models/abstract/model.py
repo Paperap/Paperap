@@ -42,6 +42,7 @@ if TYPE_CHECKING:
 
 _Self = TypeVar("_Self", bound="PaperlessModel")
 
+
 class PaperlessModel(BaseModel, ABC):
     """
     Base model for all Paperless-ngx API objects.
@@ -91,7 +92,7 @@ class PaperlessModel(BaseModel, ABC):
         },
     )
 
-    def __init__(self, resource : "PaperlessResource", **data):
+    def __init__(self, resource: "PaperlessResource", **data):
         if resource is None:
             raise ValueError("Resource is required for PaperlessModel")
         super().__init__(**data)

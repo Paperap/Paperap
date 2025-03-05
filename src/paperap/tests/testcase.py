@@ -74,7 +74,7 @@ class TestCase(unittest.TestCase):
             with patch("paperap.client.PaperlessClient.request") as request:
                 request.return_value = sample_data
                 return self._call_list_resource(resource, **kwargs)
-            
+
         except FileNotFoundError:
             return self._call_list_resource(resource, **kwargs)
 

@@ -33,12 +33,12 @@ from yarl import URL
 from string import Template
 from paperap.auth import BasicAuth, TokenAuth, AuthBase
 from paperap.exceptions import (
-    APIError, 
-    AuthenticationError, 
-    PaperlessException, 
-    ResourceNotFoundError, 
-    ResponseParsingError, 
-    RequestError, 
+    APIError,
+    AuthenticationError,
+    PaperlessException,
+    ResourceNotFoundError,
+    ResponseParsingError,
+    RequestError,
     BadResponseError,
 )
 from paperap.plugin_manager import PluginConfig
@@ -277,9 +277,9 @@ class PaperlessClient:
 
         try:
             # TODO: Temporary hack
-            params = params.get('params', params) if params else params
-            
-            logger.debug('Request (%s) url %s, params %s, data %s, files %s', method, url, params, data, files)
+            params = params.get("params", params) if params else params
+
+            logger.debug("Request (%s) url %s, params %s, data %s, files %s", method, url, params, data, files)
             response = self.session.request(
                 method=method,
                 url=url,
@@ -309,7 +309,14 @@ class PaperlessClient:
             return response
 
         except requests.exceptions.ConnectionError as ce:
-            logger.error('Unable to connect to Paperless server: %s url %s, params %s, data %s, files %s', method, url, params, data, files)
+            logger.error(
+                "Unable to connect to Paperless server: %s url %s, params %s, data %s, files %s",
+                method,
+                url,
+                params,
+                data,
+                files,
+            )
             raise RequestError(f"Connection error: {str(ce)}") from ce
         except requests.exceptions.RequestException as re:
             raise RequestError(f"Request failed: {str(re)}") from re
@@ -344,7 +351,9 @@ class PaperlessClient:
             try:
                 return response.json()
             except ValueError as e:
-                logger.error("Failed to parse JSON response: %s -> url %s -> content: %s", e, response.url, response.content)
+                logger.error(
+                    "Failed to parse JSON response: %s -> url %s -> content: %s", e, response.url, response.content
+                )
                 raise ResponseParsingError(f"Failed to parse JSON response: {str(e)} -> url {response.url}") from e
 
         return response.content

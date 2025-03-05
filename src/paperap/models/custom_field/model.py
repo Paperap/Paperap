@@ -30,6 +30,7 @@ from pydantic import BaseModel, Field
 
 from paperap.models.abstract.model import PaperlessModel
 
+
 class CustomField(PaperlessModel):
     """
     Represents a custom field in Paperless-NgX.
@@ -37,7 +38,7 @@ class CustomField(PaperlessModel):
 
     name: str
     data_type: str
-    extra_data : dict[str, Any]
+    extra_data: dict[str, Any]
     document_count: int
 
     model_config = {

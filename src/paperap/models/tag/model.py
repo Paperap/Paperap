@@ -28,6 +28,7 @@ from typing import Any, Optional
 from pydantic import BaseModel, Field
 
 from paperap.models.abstract.model import PaperlessModel
+from paperap.models.tag.queryset import TagQuerySet
 
 
 class Tag(PaperlessModel):
@@ -43,9 +44,10 @@ class Tag(PaperlessModel):
     is_insensitive: bool = True
     is_inbox_tag: bool = False
     document_count: int = 0
-    owner : int | None = None
-    user_can_change : bool = True
+    owner: int | None = None
+    user_can_change: bool = True
 
     class Meta(PaperlessModel.Meta):
         # Fields that should not be modified
         read_only_fields = {"slug", "document_count"}
+        queryset = TagQuerySet
