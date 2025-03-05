@@ -169,6 +169,11 @@ class TestRequestDocumentList(DocumentTestCase):
 
 class TestRequestDocument(TestCase):
 
+    def setup_client(self):
+        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        with patch.dict(os.environ, env_data, clear=True):
+            self.client = PaperlessClient()
+
     def test_get_document(self):
         with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = sample_document
