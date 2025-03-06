@@ -10,7 +10,7 @@
        File:    client.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -405,17 +405,20 @@ class PaperlessClient:
         json_response: bool = True,
     ) -> dict[str, Any] | bytes | None:
 
+        kwargs = {
+            "method": method,
+            "endpoint": endpoint,
+            "params": params,
+            "data": data,
+            "files": files,
+            "json_response": json_response,
+        }
+        
         SignalRegistry.emit(
             "client.request__before",
             "Before a request is sent to the Paperless server",
-            kwargs={
-                "method": method,
-                "endpoint": endpoint,
-                "params": params,
-                "data": data,
-                "files": files,
-                "json_response": json_response,
-            },
+            args = [self],
+            kwargs=kwargs
         )
         
         if not (response := self._request(method, endpoint, params=params, data=data, files=files)):
@@ -424,13 +427,9 @@ class PaperlessClient:
         SignalRegistry.emit(
             "client.request__response",
             "After a response is received, before it is parsed",
+            args = [self],
             kwargs={
-                "method": method,
-                "endpoint": endpoint,
-                "params": params,
-                "data": data,
-                "files": files,
-                "json_response": json_response,
+                **kwargs,
                 "response": response,
             },
         )
@@ -440,13 +439,9 @@ class PaperlessClient:
         SignalRegistry.emit(
             "client.request__after",
             "After a request is parsed.",
+            args = [self],
             kwargs={
-                "method": method,
-                "endpoint": endpoint,
-                "params": params,
-                "data": data,
-                "files": files,
-                "json_response": json_response,
+                **kwargs,
                 "parsed_response": parsed_response,
             },
         )

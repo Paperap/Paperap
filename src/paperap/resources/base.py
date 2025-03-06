@@ -308,7 +308,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
             kwargs={"response": response, "resource": self.name}
         )
         if not (results := response.get("results", response)):
-            raise NotImplementedError("No results found in response")
+            return 0
 
         # Signal after receiving response
         SignalRegistry.emit(

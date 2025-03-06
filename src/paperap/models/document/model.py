@@ -10,7 +10,7 @@
        File:    document.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -68,7 +68,10 @@ class Document(StandardModel):
     user_can_change: bool = True
 
     class Meta(StandardModel.Meta):
+        # NOTE: Filtering appears to be disabled by paperless on page_count
         queryset = DocumentQuerySet
+        read_only_fields = {'page_count'}
+        filtering_disabled = {'page_count'}
 
     def get_tags(self) -> TagQuerySet:
         """

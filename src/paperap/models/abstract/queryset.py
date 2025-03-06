@@ -10,7 +10,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -31,7 +31,7 @@ from string import Template
 from typing import Any, Generic, Iterable, Iterator, Optional, Self, TypeVar, Union, TYPE_CHECKING
 import logging
 from yarl import URL
-from paperap.exceptions import MultipleObjectsFoundError, ObjectNotFoundError
+from paperap.exceptions import MultipleObjectsFoundError, ObjectNotFoundError, FilterDisabledError
 
 if TYPE_CHECKING:
     from paperap.models.abstract.model import PaperlessModel, StandardModel
@@ -114,6 +114,16 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
         processed_filters = {}
 
         for key, value in kwargs.items():
+            split_key = key.split("__")
+            if len(split_key) > 1:
+                field, _lookup = split_key
+            else:
+                field, _lookup = key, None
+                
+            # If key is in filtering_disabled, throw an error
+            if field in getattr(self.resource.model_class._meta, "filtering_disabled", []):
+                raise FilterDisabledError(f"Filtering by {key} for {self.resource.name} does not appear to be supported by the API.")
+            
             # Handle list values for __in lookups
             if key.endswith("__in") and isinstance(value, (Iterable, tuple)):
                 # Convert list to comma-separated string for the API

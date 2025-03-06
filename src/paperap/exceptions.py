@@ -10,7 +10,7 @@
        File:    exceptions.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -53,8 +53,11 @@ class APIError(PaperlessException):
 class AuthenticationError(APIError):
     """Raised when authentication fails."""
 
-    pass
+class FeatureNotAvailableError(APIError):
+    """Raised when a feature is not available."""
 
+class FilterDisabledError(FeatureNotAvailableError):
+    """Raised when a filter is not available."""
 
 class RequestError(APIError):
     """Raised when an error occurs while making a request."""
@@ -66,8 +69,6 @@ class BadResponseError(APIError):
 
 class ResponseParsingError(APIError):
     """Raised when the response can't be parsed."""
-
-    pass
 
 
 class ResourceNotFoundError(APIError):
@@ -98,5 +99,3 @@ class ObjectNotFoundError(ResourceNotFoundError):
 
 class MultipleObjectsFoundError(APIError):
     """Raised when multiple objects are found when only one was expected."""
-
-    pass

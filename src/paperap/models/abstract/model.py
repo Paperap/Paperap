@@ -10,7 +10,7 @@
        File:    base.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -69,6 +69,7 @@ class PaperlessModel(BaseModel, ABC):
         name: str
         # Fields that should not be modified
         read_only_fields: set[str] = {"id", "created", "updated"}
+        filtering_disabled : set[str] = set()
         # the type of parser, which parses api data into appropriate types
         # this will usually not need to be overridden
         parser: type[Parser[_Self]] = Parser[_Self]
@@ -115,12 +116,18 @@ class PaperlessModel(BaseModel, ABC):
             cls._meta.name = cls.__name__.lower()
 
         # Append read_only_fields from all parents to _meta
+        # Same with filtering_disabled
         read_only_fields = (cls._meta.read_only_fields or set()).copy()
+        filtering_disabled = (cls._meta.filtering_disabled or set()).copy()
         for base in cls.__bases__:
-            if hasattr(base, "_meta") and hasattr(base._meta, "read_only_fields"):
-                read_only_fields.update(base._meta.read_only_fields)
+            if hasattr(base, "_meta"):
+                if hasattr(base._meta, "read_only_fields"):
+                    read_only_fields.update(base._meta.read_only_fields)
+                if hasattr(base._meta, "filtering_disabled"):
+                    filtering_disabled.update(base._meta.filtering_disabled)
 
         cls._meta.read_only_fields = read_only_fields
+        cls._meta.filtering_disabled = filtering_disabled
 
     @classmethod
     def from_dict(cls, data: dict[str, Any], resource: "PaperlessResource") -> Self:

@@ -10,7 +10,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -332,7 +332,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         Returns:
             Filtered DocumentQuerySet
         """
-        return self.filter(storage_path=storage_path_id)
+        return self.filter(storage_path__id=storage_path_id)
 
     def storage_path_name(self, name: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
@@ -444,55 +444,6 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             Filtered DocumentQuerySet
         """
         return self.filter_field_by_str("original_file_name", name, exact=exact, case_insensitive=case_insensitive)
-
-    def page_count(self, page_count: int) -> Self:
-        """
-        Filter documents by page count.
-
-        Args:
-            page_count: The page count to filter by
-
-        Returns:
-            Filtered DocumentQuerySet
-        """
-        return self.filter(page_count=page_count)
-
-    def page_count_over(self, page_count: int) -> Self:
-        """
-        Filter documents with more pages than the specified count.
-
-        Args:
-            page_count: The minimum page count
-
-        Returns:
-            Filtered DocumentQuerySet
-        """
-        return self.filter(page_count__gt=page_count)
-
-    def page_count_under(self, page_count: int) -> Self:
-        """
-        Filter documents with fewer pages than the specified count.
-
-        Args:
-            page_count: The maximum page count
-
-        Returns:
-            Filtered DocumentQuerySet
-        """
-        return self.filter(page_count__lt=page_count)
-
-    def page_count_between(self, min_pages: int, max_pages: int) -> Self:
-        """
-        Filter documents with a page count between the specified range.
-
-        Args:
-            min_pages: The minimum page count
-            max_pages: The maximum page count
-
-        Returns:
-            Filtered DocumentQuerySet
-        """
-        return self.filter(page_count__range=(min_pages, max_pages))
 
     def user_can_change(self, value: bool) -> Self:
         """

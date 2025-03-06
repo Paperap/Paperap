@@ -31,6 +31,7 @@ import datetime
 from decimal import Decimal
 import json
 from pathlib import Path
+import re
 from typing import Any, TYPE_CHECKING
 import logging
 
@@ -42,6 +43,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+sanitize_pattern = re.compile(r"[^a-zA-Z0-9_-]")
 
 class TestDataCollector(Plugin):
     """
@@ -65,11 +67,13 @@ class TestDataCollector(Plugin):
         """Register signal handlers."""
         SignalRegistry.connect("post_list_response", self.save_list_response, SignalPriority.LOW)
         SignalRegistry.connect("post_list_item", self.save_first_item, SignalPriority.LOW)
+        SignalRegistry.connect("client.request__after", self.save_parsed_response, SignalPriority.LOW)
 
     def teardown(self):
         """Unregister signal handlers."""
         SignalRegistry.disconnect("post_list_response", self.save_list_response)
         SignalRegistry.disconnect("post_list_item", self.save_first_item)
+        SignalRegistry.disconnect("client.request__after", self.save_parsed_response)
 
     @staticmethod
     def _json_serializer(obj: Any) -> Any:
@@ -114,12 +118,41 @@ class TestDataCollector(Plugin):
                 with filepath.open("w") as f:
                     f.write(json.dumps(item))
                 # Disable this handler after saving the first item
-                post_list_item.temporarily_disable(self.save_first_item)
+                SignalRegistry.disable("post_list_item", self.save_first_item)
         except (TypeError, OverflowError, OSError) as e:
             # Don't allow the plugin to interfere with normal operations in the event of failure
             logger.error(f"Error saving first item to file: {e}")
 
         return item
+
+    def save_parsed_response(self, sender, parsed_response: dict[str, Any], params : dict[str, Any] | None, json_response : bool, endpoint : str, **kwargs) -> dict[str, Any]:
+        """
+        Save the request data to a JSON file.
+
+        Connects to client.request__after signal.
+        """
+        if not json_response or not params:
+            return parsed_response
+
+        # Strip url to final path segment
+        resource_name = '.'.join(endpoint.split("/")[-2:])
+        resource_name = sanitize_pattern.sub("_", resource_name)
+
+        combined_params = list(params.keys())
+        params_str = '|'.join(combined_params)
+        params_str = sanitize_pattern.sub("_", params_str)
+        filename = f"{resource_name}__{params_str}.json"
+
+        try:
+            filepath = self.test_dir / filename
+            if not filepath.exists():
+                with filepath.open("w") as f:
+                    f.write(json.dumps(parsed_response))
+        except (TypeError, OverflowError, OSError) as e:
+            # Don't allow the plugin to interfere with normal operations in the event of failure
+            logger.error(f"Error saving parsed response to file: {e}")
+
+        return parsed_response
 
     @classmethod
     def get_config_schema(cls) -> dict[str, Any]:
