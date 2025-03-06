@@ -8,12 +8,12 @@
    METADATA:
 
        File:    signals.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.1
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -22,15 +22,16 @@
        2025-03-04     By Jess Mann
 
 """
-
 from __future__ import annotations
 
 from collections import defaultdict
 from enum import Enum, auto
-from typing import Any, Callable, Optional, TypeVar, Generic, Set
+from typing import Any, Callable, Optional, Self, TypeVar, Generic, Set, TypedDict
+import logging
 
 T = TypeVar("T")
 
+logger = logging.getLogger(__name__)
 
 class SignalPriority(Enum):
     """Priority levels for signal handlers."""
@@ -41,6 +42,9 @@ class SignalPriority(Enum):
     LOW = auto()
     LAST = auto()
 
+class SignalParams(TypedDict):
+    name: str
+    description: str
 
 class Signal(Generic[T]):
     """
@@ -70,6 +74,10 @@ class Signal(Generic[T]):
         """
         self._handlers[priority].append(handler)
 
+        # Check if the handler was temporarily disabled in the registry
+        if (self.name, handler) in SignalRegistry._instance._disable_queue:
+            self.temporarily_disable(handler)
+            
     def disconnect(self, handler: Callable[..., T]) -> None:
         """
         Disconnect a handler from this signal.
@@ -121,11 +129,13 @@ class Signal(Generic[T]):
 class SignalRegistry:
     """Registry of all signals in the application."""
 
-    _instance = None
+    _instance : Self
     _signals: dict[str, Signal]
+    _connect_queue : list[tuple[str, Callable, SignalPriority]]
+    _disable_queue : list[tuple[str, Callable]]
 
     def __new__(cls):
-        if cls._instance is None:
+        if not hasattr(cls, '_instance') or cls._instance is None:
             cls._instance = super(SignalRegistry, cls).__new__(cls)
             cls._instance._signals = {}
         return cls._instance
@@ -133,6 +143,20 @@ class SignalRegistry:
     def register(self, signal: Signal) -> None:
         """Register a signal with the registry."""
         self._signals[signal.name] = signal
+
+        for name, handler, priority in self._connect_queue:
+            if name == signal.name:
+                signal.connect(handler, priority)
+                # Remove the handler from the queue
+                self._connect_queue.remove((name, handler, priority))
+
+    def queue_connect(self, name: str, handler: Callable[..., T], priority: SignalPriority = SignalPriority.NORMAL) -> None:
+        """Queue a connection to a signal."""
+        self._connect_queue.append((name, handler, priority))
+
+    def queue_disable(self, name: str, handler: Callable[..., T]) -> None:
+        """Queue a handler to be disabled."""
+        self._disable_queue.append((name, handler))
 
     def get(self, name: str) -> Optional[Signal]:
         """Get a signal by name."""
@@ -142,41 +166,53 @@ class SignalRegistry:
         """List all registered signal names."""
         return list(self._signals.keys())
 
+    @classmethod
+    def create(cls, name : str, description : str = "", return_type : type[T] | None = None) -> Signal:
+        signal = Signal[return_type](name, description)
+        cls._instance.register(signal)
+        return signal
 
-# Resource lifecycle signals
-pre_list = Signal[dict[str, Any]]("pre_list", "Emitted before listing resources")
-post_list_response = Signal[dict[str, Any]]("post_list_response", "Emitted after list response, before processing")
-post_list_item = Signal[dict[str, Any]]("post_list_item", "Emitted for each item in a list response")
-post_list = Signal[list[Any]]("post_list", "Emitted after listing resources")
+    @classmethod
+    def emit(cls, name: str, description : str = "", *, return_type : type[T] | None = None, args: list[Any] | None = None, kwargs : dict[str, Any] | None = None) -> list[T]:
+        if not (signal := cls._instance.get(name)):
+            signal = cls.create(name, description, return_type)
 
-pre_get = Signal[dict[str, Any]]("pre_get", "Emitted before getting a resource")
-post_get = Signal[dict[str, Any]]("post_get", "Emitted after getting a resource")
+        args = args or []
+        kwargs = kwargs or {}
+        return signal.emit(*args, **kwargs)
 
-pre_create = Signal[dict[str, Any]]("pre_create", "Emitted before creating a resource")
-post_create = Signal[dict[str, Any]]("post_create", "Emitted after creating a resource")
+    @classmethod
+    def connect(cls, name: str, handler: Callable[..., T], priority: SignalPriority = SignalPriority.NORMAL) -> None:
+        if not (signal := cls._instance.get(name)):
+            logger.error('Signal not found to connect to: %s', name)
+            cls._instance.queue_connect(name, handler, priority)
+            return
 
-pre_update = Signal[dict[str, Any]]("pre_update", "Emitted before updating a resource")
-post_update = Signal[dict[str, Any]]("post_update", "Emitted after updating a resource")
+        signal.connect(handler, priority)
 
-pre_delete = Signal[dict[str, Any]]("pre_delete", "Emitted before deleting a resource")
-post_delete = Signal[None]("post_delete", "Emitted after deleting a resource")
+    @classmethod
+    def disconnect(cls, name: str, handler: Callable[..., T]) -> None:
+        if not (signal := cls._instance.get(name)):
+            logger.error('Signal not found to disconnect from: %s', name)
+            return
 
-resource_signals: list[Signal] = [
-    pre_list,
-    post_list_response,
-    post_list_item,
-    post_list,
-    pre_get,
-    post_get,
-    pre_create,
-    post_create,
-    pre_update,
-    post_update,
-    pre_delete,
-    post_delete,
-]
+        signal.disconnect(handler)
 
-# Register all signals
-registry = SignalRegistry()
-for obj in resource_signals:
-    registry.register(obj)
+    @classmethod
+    def temporarily_disable(cls, name: str, handler: Callable[..., T]) -> None:
+        if not (signal := cls._instance.get(name)):
+            logger.debug('Signal not found to temporarily disable: %s', name)
+            cls._instance.queue_disable(name, handler)
+            return
+
+        signal.temporarily_disable(handler)
+
+    @classmethod
+    def enable(cls, name: str, handler: Callable[..., T]) -> None:
+        if not (signal := cls._instance.get(name)):
+            logger.debug('Signal not found to enable: %s', name)
+            # Remove it from the disable queue
+            cls._instance._disable_queue = [(n, h) for n, h in cls._instance._disable_queue if n != name and h != handler]
+            return
+
+        signal.enable(handler)

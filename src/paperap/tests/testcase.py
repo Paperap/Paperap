@@ -24,6 +24,7 @@
 """
 from __future__ import annotations
 import json
+import os
 from typing import TYPE_CHECKING, Any, Callable, Iterator, TypeVar
 import unittest
 from unittest.mock import MagicMock, patch
@@ -47,13 +48,19 @@ _StandardModel = TypeVar("_StandardModel", bound="StandardModel")
 
 class TestCase(unittest.TestCase):
     client : "PaperlessClient"
+    mock_env : bool = False
 
     def setUp(self):
         self.setup_client()
 
     def setup_client(self):
         if not hasattr(self, "client") or not self.client:
-            self.client = PaperlessClient()
+            if self.mock_env:
+                env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+                with patch.dict(os.environ, env_data, clear=True):
+                    self.client = PaperlessClient()
+            else:
+                self.client = PaperlessClient()
 
     def _call_list_resource(self, resource : type["PaperlessResource[_StandardModel]"] | "PaperlessResource[_StandardModel]", **kwargs) -> QuerySet[_StandardModel]:
         # If resource is a type, instantiate it

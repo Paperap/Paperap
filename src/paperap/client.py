@@ -62,6 +62,7 @@ from paperap.resources import (
     WorkflowResource,
     WorkflowTriggerResource,
 )
+from paperap.signals import SignalRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -279,7 +280,7 @@ class PaperlessClient:
             # TODO: Temporary hack
             params = params.get("params", params) if params else params
 
-            logger.debug("Request (%s) url %s, params %s, data %s, files %s", method, url, params, data, files)
+            logger.critical("Request (%s) url %s, params %s, data %s, files %s", method, url, params, data, files)
             response = self.session.request(
                 method=method,
                 url=url,
@@ -403,10 +404,54 @@ class PaperlessClient:
         files: dict[str, Any] | None = None,
         json_response: bool = True,
     ) -> dict[str, Any] | bytes | None:
+
+        SignalRegistry.emit(
+            "client.request__before",
+            "Before a request is sent to the Paperless server",
+            kwargs={
+                "method": method,
+                "endpoint": endpoint,
+                "params": params,
+                "data": data,
+                "files": files,
+                "json_response": json_response,
+            },
+        )
+        
         if not (response := self._request(method, endpoint, params=params, data=data, files=files)):
             return None
 
-        return self._handle_response(response, json_response=json_response)
+        SignalRegistry.emit(
+            "client.request__response",
+            "After a response is received, before it is parsed",
+            kwargs={
+                "method": method,
+                "endpoint": endpoint,
+                "params": params,
+                "data": data,
+                "files": files,
+                "json_response": json_response,
+                "response": response,
+            },
+        )
+
+        parsed_response = self._handle_response(response, json_response=json_response)
+
+        SignalRegistry.emit(
+            "client.request__after",
+            "After a request is parsed.",
+            kwargs={
+                "method": method,
+                "endpoint": endpoint,
+                "params": params,
+                "data": data,
+                "files": files,
+                "json_response": json_response,
+                "parsed_response": parsed_response,
+            },
+        )
+
+        return parsed_response
 
     def _extract_error_message(self, response: requests.Response) -> str:
         """Extract error message from response."""
@@ -464,6 +509,12 @@ class PaperlessClient:
 
         url = f"{base_url.rstrip('/')}/api/token/"
 
+        SignalRegistry.emit(
+            "client.generate_token__before",
+            "Before a new token is generated",
+            kwargs={"url": url, "username": username},
+        )
+
         try:
             response = requests.post(
                 url,
@@ -474,6 +525,12 @@ class PaperlessClient:
 
             response.raise_for_status()
             data = response.json()
+
+            SignalRegistry.emit(
+                "client.generate_token__after",
+                "After a new token is generated",
+                kwargs={"url": url, "username": username, "response": data},
+            )
 
             if "token" not in data:
                 raise ResponseParsingError("Token not found in response")

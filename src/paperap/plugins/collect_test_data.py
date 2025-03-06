@@ -11,12 +11,12 @@
    METADATA:
 
        File:    collect_test_data.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.1
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -35,8 +35,7 @@ from typing import Any, TYPE_CHECKING
 import logging
 
 from paperap.plugins.base import Plugin
-from paperap.signals import post_list_response, post_list_item
-from paperap.signals import SignalPriority
+from paperap.signals import SignalPriority, SignalRegistry
 
 if TYPE_CHECKING:
     from paperap.client import PaperlessClient
@@ -64,13 +63,13 @@ class TestDataCollector(Plugin):
 
     def setup(self):
         """Register signal handlers."""
-        post_list_response.connect(self.save_list_response, SignalPriority.LOW)
-        post_list_item.connect(self.save_first_item, SignalPriority.LOW)
+        SignalRegistry.connect("post_list_response", self.save_list_response, SignalPriority.LOW)
+        SignalRegistry.connect("post_list_item", self.save_first_item, SignalPriority.LOW)
 
     def teardown(self):
         """Unregister signal handlers."""
-        post_list_response.disconnect(self.save_list_response)
-        post_list_item.disconnect(self.save_first_item)
+        SignalRegistry.disconnect("post_list_response", self.save_list_response)
+        SignalRegistry.disconnect("post_list_item", self.save_first_item)
 
     @staticmethod
     def _json_serializer(obj: Any) -> Any:

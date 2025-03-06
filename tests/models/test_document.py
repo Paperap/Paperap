@@ -30,24 +30,20 @@ import unittest
 from unittest.mock import patch, MagicMock
 from datetime import datetime, timezone
 from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
-from paperap.models.document import Document
+from paperap.models import *
 from paperap.client import PaperlessClient
 from paperap.resources.documents import DocumentResource
-from paperap.models.tag import Tag
+from paperap.models.tag import Tag, TagQuerySet
 from paperap.tests import TestCase, load_sample_data
 
 sample_document_list = load_sample_data('documents_list.json')
 sample_document = load_sample_data('documents_item.json')
 
 class DocumentTestCase(TestCase):
-    def setUp(self):
-        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
-        with patch.dict(os.environ, env_data, clear=True):
-            self.client = PaperlessClient()
+    mock_env = True
 
 class TestDocumentInit(DocumentTestCase):
     def setUp(self):
-        super().setUp()
         super().setUp()
         # Setup a sample model instance
         self.resource = self.client.documents
@@ -63,13 +59,17 @@ class TestDocumentInit(DocumentTestCase):
 
     def test_from_dict(self):
         model = Document.from_dict(self.model_data, self.resource)
-        self.assertIsInstance(model, Document, f"Expected Document, got {type(model)}")
-        self.assertEqual(model.id, self.model_data["id"], f"Document id is wrong when created from dict: {model.id}")
-        self.assertEqual(model.title, self.model_data["title"], f"Document title is wrong when created from dict: {model.title}")
-        self.assertEqual(model.correspondent, self.model_data["correspondent"], f"Document correspondent is wrong when created from dict: {model.correspondent}")
-        self.assertEqual(model.document_type, self.model_data["document_type"], f"Document document_type is wrong when created from dict: {model.document_type}")
-        self.assertIsInstance(model.tags, Iterable, f"Document tags is wrong type when created from dict: {type(model.tags)}")
-        self.assertEqual(model.tags, self.model_data["tags"], f"Document tags is wrong when created from dict: {model.tags}")
+        fields = {
+            "id": int,
+            "title": str,
+            "correspondent": int,
+            "document_type": int,
+            "tags": list
+        }
+        for field, field_type in fields.items():
+            value = getattr(model, field)
+            self.assertIsInstance(value, field_type, f"Expected {field} to be a {field_type}, got {type(value)}")
+            self.assertEqual(value, self.model_data[field], f"Expected {field} to match sample data")
         self.assertIsInstance(model.created, datetime, f"created wrong type after from_dict {type(model.created)}")
         self.assertIsInstance(model.updated, datetime, f"updated wrong type after from_dict {type(model.updated)}")
         self.assertEqual(model.created, datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc), f"created wrong value after from_dict {model.created}")
@@ -77,7 +77,6 @@ class TestDocumentInit(DocumentTestCase):
 
 class TestDocument(DocumentTestCase):
     def setUp(self):
-        super().setUp()
         super().setUp()
         # Setup a sample model instance
         self.resource = self.client.documents
@@ -126,37 +125,130 @@ class TestDocument(DocumentTestCase):
         self.assertEqual(model_dict["document_type"], 1)
         self.assertEqual(model_dict["tags"], [1, 2, 3])
 
-class TestGetTags(TestCase):
+class TestGetRelationships(TestCase):
     def setUp(self):
         super().setUp()
-        super().setUp()
         # Setup a sample model instance
-        self.documents = self.client.documents()
+        sample_document = load_sample_data('documents_item.json')
+        self.resource = DocumentResource(self.client)
+        self.document = Document.from_dict(sample_document, self.resource)
 
     def setup_client(self):
         self.client = PaperlessClient()
 
-    """
-    # Working test when connected to a real server. Needs proper mocking for the request.
     def test_get_tags(self):
-        for document in self.documents:
-            self.assertIsInstance(document, Document, f"Expected Document, got {type(document)}")
-            tags = document.get_tags()
-            self.assertIsInstance(tags, QuerySet)
-            expected_count = len(document.tags)
+        sample_data = load_sample_data('tags_list_id__in_38,162,160,191.json')
+        with patch("paperap.client.PaperlessClient.request") as mock_request:
+            mock_request.return_value = sample_data
+            expected_count = len(self.document.tags)
+            tags = self.document.get_tags()
+            self.assertIsInstance(tags, TagQuerySet)
             actual_count = tags.count()
             self.assertEqual(expected_count, actual_count, f"Expected {expected_count} tags, got {actual_count}")
 
             count = 0
             for tag in tags:
                 count += 1
-                self.assertIsInstance(tag, Tag, f"Expected document.tag to be a Tag, got {type(tag)}")
-                self.assertTrue(tag.id in document.tags, f"Expected tag.id to be in document.tags. {tag.id} not in {document.tags}")
-                self.assertIsInstance(tag.name, str, f"Expected tag.name to be a string, got {type(tag.name)}")
+                fields = {
+                    "id": int,
+                    "name": str,
+                    "slug": str,
+                    "colour": str,
+                    "match": str,
+                    "matching_algorithm": int,
+                    "is_insensitive": bool,
+                    "is_inbox_tag": bool,
+                    "document_count": int,
+                    "owner": int,
+                    "user_can_change": bool
+                }
+                for field, field_type in fields.items():
+                    value = getattr(tag, field)
+                    self.assertIsInstance(value, field_type, f"Expected tag.{field} to be a {field_type}, got {type(value)}")
+                    self.assertEqual(value, sample_data["results"][0][field], f"Expected tag.{field} to match sample data")
+                    
+                self.assertGreater(tag.document_count, 0, f"Expected tag.document_count to be greater than 0, got {tag.document_count}")
+                self.assertTrue(tag.id in self.document.tags, f"Expected tag.id to be in document.tags. {tag.id} not in {self.document.tags}")                
 
             self.assertEqual(count, expected_count, f"Expected to iterate over {expected_count} tags, only saw {count}")
-        """
 
+    def test_get_correspondent(self):
+        sample_data = load_sample_data('correspondents_item.json')
+        with patch("paperap.client.PaperlessClient.request") as mock_request:
+            mock_request.return_value = sample_data
+            self.document.correspondent = sample_data["id"]
+            correspondent = self.document.get_correspondent()
+            self.assertIsInstance(correspondent, Correspondent, f"Expected document.correspondent to be a Correspondent, got {type(correspondent)}")
+            # Make mypy happy
+            assert correspondent is not None
+            fields = {
+                "id": int,
+                "slug": str,
+                "name": str,
+                "match": str,
+                "matching_algorithm": int,
+                "is_insensitive": bool,
+                "document_count": int,
+                "owner": int,
+                "user_can_change": bool
+            }
+            for field, field_type in fields.items():
+                value = getattr(correspondent, field)
+                self.assertIsInstance(value, field_type, f"Expected correspondent.{field} to be a {field_type}, got {type(value)}")
+                self.assertEqual(value, sample_data[field], f"Expected correspondent.{field} to match sample data")
+                
+    def test_get_document_type(self):
+        sample_data = load_sample_data('document_types_item.json')
+        with patch("paperap.client.PaperlessClient.request") as mock_request:
+            mock_request.return_value = sample_data
+            self.document.document_type = sample_data["id"]
+            document_type = self.document.get_document_type()
+            self.assertIsInstance(document_type, DocumentType, f"Expected document.document_type to be a DocumentType, got {type(document_type)}")
+            # Make mypy happy
+            assert document_type is not None
+            fields = {
+                "id": int,
+                "name": str,
+                "slug": str,
+                "match": str,
+                "matching_algorithm": int,
+                "is_insensitive": bool,
+                "document_count": int,
+                "owner": int,
+                "user_can_change": bool
+            }
+            for field, field_type in fields.items():
+                value = getattr(document_type, field)
+                self.assertIsInstance(value, field_type, f"Expected document_type.{field} to be a {field_type}, got {type(value)}")
+                self.assertEqual(value, sample_data[field], f"Expected document_type.{field} to match sample data")
+            
+
+    def test_get_storage_path(self):
+        sample_data = load_sample_data('storage_paths_item.json')
+        with patch("paperap.client.PaperlessClient.request") as mock_request:
+            mock_request.return_value = sample_data
+            self.document.storage_path = sample_data["id"]
+            storage_path = self.document.get_storage_path()
+            self.assertIsInstance(storage_path, StoragePath, f"Expected document.storage_path to be a StoragePath, got {type(storage_path)}")
+            # Make mypy happy
+            assert storage_path is not None
+            fields = {
+                "id": int,
+                "name": str,
+                "slug": str,
+                "path": str,
+                "match": str,
+                "matching_algorithm": int,
+                "is_insensitive": bool,
+                "document_count": int,
+                "owner": int,
+                "user_can_change": bool
+            }
+            for field, field_type in fields.items():
+                value = getattr(storage_path, field)
+                self.assertIsInstance(value, field_type, f"Expected storage_path.{field} to be a {field_type}, got {type(value)}")
+                self.assertEqual(value, sample_data[field], f"Expected storage_path.{field} to match sample data")
+                
 class TestRequestDocumentList(DocumentTestCase):
     def test_get_documents(self):
         with patch("paperap.client.PaperlessClient.request") as mock_request:
@@ -179,35 +271,20 @@ class TestRequestDocument(TestCase):
             mock_request.return_value = sample_document
             document = self.get_resource(DocumentResource, 7313)
             self.assertIsInstance(document, Document)
-            self.assertIsInstance(document.id, int, "Loading sample document, id wrong type")
-            self.assertIsInstance(document.title, str, "Loading sample document, title wrong type")
-            self.assertIsInstance(document.storage_path, str if sample_document["storage_path"] else type(None), "Loading sample document, storage_path wrong type")
-            self.assertIsInstance(document.correspondent, int if sample_document["correspondent"] is not None else type(None), "Loading sample document, correspondent wrong type")
-            self.assertIsInstance(document.document_type, int if sample_document["document_type"] is not None else type(None), "Loading sample document, document_type wrong type")
-            self.assertIsInstance(document.created, datetime, "Loading sample document created wrong type")
-            self.assertIsInstance(document.updated, datetime, "Loading sample document updated wrong type")
-            self.assertIsInstance(document.tags, list, "Loading sample document, tags wrong type")
-            self.assertEqual(document.id, sample_document["id"], "Loading sample document id mismatch")
-            self.assertEqual(document.title, sample_document["title"], "Loading sample document title mismatch")
-            self.assertEqual(document.storage_path, sample_document["storage_path"], "Loading sample document storage_path mismatch")
-            self.assertEqual(document.correspondent, sample_document["correspondent"], "Loading sample document correspondent mismatch")
-            self.assertEqual(document.document_type, sample_document["document_type"], "Loading sample document document_type mismatch")
-            self.assertEqual(document.tags, sample_document["tags"], "Loading sample document tags mismatch")
-
-    """
-    # Working test when connected to a real server. Needs proper mocking for the request.
-    def test_get_tags(self):
-        with patch("paperap.client.PaperlessClient.request") as mock_request:
-            mock_request.return_value = sample_document
-            document = self.client.documents().get(1)
-
-        tags = document.get_tags()
-        self.assertIsInstance(tags, QuerySet)
-        for tag in tags:
-            self.assertIsInstance(tag, Tag, f"Expected document.tag to be a Tag, got {type(tag)}")
-            self.assertTrue(tag.id in document.tags, "Expected tag.id to be in document.tags")
-            self.assertIsInstance(tag.name, str, f"Expected tag.name to be a string, got {type(tag.name)}")
-    """
+            fields = {
+                "id": int,
+                "title": str,
+                "storage_path": str,
+                "correspondent": int,
+                "document_type": int,
+                "created": datetime,
+                "updated": datetime,
+                "tags": list
+            }
+            for field, field_type in fields.items():
+                value = getattr(document, field)
+                self.assertIsInstance(value, field_type, f"Expected document.{field} to be a {field_type}, got {type(value)}")
+                self.assertEqual(value, sample_document[field], f"Expected document.{field} to match sample data")
 
 if __name__ == "__main__":
     unittest.main()

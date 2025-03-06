@@ -31,7 +31,6 @@ from typing import Any, TYPE_CHECKING, Iterable, Iterator, Optional
 from pydantic import BaseModel, Field
 from yarl import URL
 
-from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
 from paperap.models.abstract.model import StandardModel
 from paperap.models.document.queryset import DocumentQuerySet
 
@@ -39,7 +38,7 @@ if TYPE_CHECKING:
     from paperap.models.correspondent import Correspondent
     from paperap.models.document_type import DocumentType
     from paperap.models.storage_path import StoragePath
-    from paperap.models.tag import Tag
+    from paperap.models.tag import Tag, TagQuerySet
 
 
 class Document(StandardModel):
@@ -71,7 +70,7 @@ class Document(StandardModel):
     class Meta(StandardModel.Meta):
         queryset = DocumentQuerySet
 
-    def get_tags(self) -> QuerySet["Tag"]:
+    def get_tags(self) -> TagQuerySet:
         """
         Get the tags for this document.
 
@@ -83,8 +82,7 @@ class Document(StandardModel):
 
         # Use the API's filtering capability to get only the tags with specific IDs
         # The paperless-ngx API supports id__in filter for retrieving multiple objects by ID
-        tag_ids_param = ",".join(str(tag_id) for tag_id in self.tags)
-        return self._meta.resource.client.tags(params={"id__in": tag_ids_param})
+        return self._meta.resource.client.tags().id(self.tags)
 
     def get_correspondent(self) -> Optional["Correspondent"]:
         """
@@ -95,7 +93,7 @@ class Document(StandardModel):
         """
         if not self.correspondent:
             return None
-        return self._meta.resource.client.correspondents.get(self.correspondent)
+        return self._meta.resource.client.correspondents().get(self.correspondent)
 
     def get_document_type(self) -> Optional["DocumentType"]:
         """

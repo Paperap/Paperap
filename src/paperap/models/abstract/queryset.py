@@ -32,20 +32,6 @@ from typing import Any, Generic, Iterable, Iterator, Optional, Self, TypeVar, Un
 import logging
 from yarl import URL
 from paperap.exceptions import MultipleObjectsFoundError, ObjectNotFoundError
-from paperap.signals import (
-    pre_list,
-    post_list_response,
-    post_list_item,
-    post_list,
-    pre_get,
-    post_get,
-    pre_create,
-    post_create,
-    pre_update,
-    post_update,
-    pre_delete,
-    post_delete,
-)
 
 if TYPE_CHECKING:
     from paperap.models.abstract.model import PaperlessModel, StandardModel
