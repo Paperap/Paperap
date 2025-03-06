@@ -54,6 +54,60 @@ class ExampleResource(StandardResource):
     model_class = ExampleModel
 
 class TestModel(TestCase):
+    def test_from_dict(self):
+        # Test if the model can be created from a dictionary
+        model_data = {
+            "id": 1,
+            "a_str": "Hello, world!",
+            "a_date": "2020-05-12T12:00:00Z",
+            "an_int": 42,
+            "a_float": 3.14,
+            "a_bool": True
+        }
+        model = ExampleModel.from_dict(model_data, self.resource)
+        self.assertEqual(model.id, model_data["id"])
+        self.assertEqual(model.a_str, model_data["a_str"])
+        self.assertEqual(model.an_int, model_data["an_int"])
+        self.assertEqual(model.a_float, model_data["a_float"])
+        self.assertEqual(model.a_bool, model_data["a_bool"])
+
+    def test_to_dict_options(self):
+        # Test if the model can be converted to a dictionary with different options
+        model_dict = self.model.to_dict(include_read_only=False)
+        self.assertNotIn("id", model_dict)
+
+        model_dict = self.model.to_dict(exclude_none=False)
+        self.assertIn("a_str", model_dict)
+
+    def test_create_method(self):
+        # Test if a new model instance can be created
+        new_model = ExampleModel.create(
+            id=2,
+            a_str="New Model",
+            a_date="2021-01-01T00:00:00Z",
+            an_int=100,
+            a_float=1.23,
+            a_bool=False
+        )
+        self.assertEqual(new_model.id, 2)
+        self.assertEqual(new_model.a_str, "New Model")
+
+    def test_update_method(self):
+        # Test if the model can be updated
+        updated_model = self.model.update(a_str="Updated String")
+        self.assertEqual(updated_model.a_str, "Updated String")
+
+    def test_is_new_method(self):
+        # Test if the is_new method works correctly
+        new_model = ExampleModel.create(
+            a_str="New Model",
+            a_date="2021-01-01T00:00:00Z",
+            an_int=100,
+            a_float=1.23,
+            a_bool=False
+        )
+        self.assertTrue(new_model.is_new())
+        self.assertFalse(self.model.is_new())
     def setUp(self):
         # Setup a sample model instance
         env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
