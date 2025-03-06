@@ -10,7 +10,7 @@
        File:    share_links.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -28,7 +28,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, TYPE_CHECKING
 
-from pydantic import Field
+from pydantic import Field, field_serializer
 from yarl import URL
 
 from paperap.models.abstract.model import StandardModel
@@ -52,5 +52,9 @@ class ShareLinks(StandardModel):
     class Meta(StandardModel.Meta):
         queryset = ShareLinksQuerySet
 
+    @field_serializer('expiration', 'created')
+    def serialize_datetime(self, value: datetime | None, _info):
+        return value.isoformat() if value else None
+    
     def get_document(self) -> "Document":
         return self._client.documents().get(id=self.document)

@@ -67,14 +67,52 @@ class PaperlessModel(BaseModel, ABC):
         # The name of the model.
         # It will default to the classname
         name: str
-        # Fields that should not be modified
-        read_only_fields: set[str] = {"id", "created", "updated"}
-        filtering_disabled : set[str] = set()
+        # Fields that should not be modified. These will be appended to read_only_fields for all parent classes.
+        read_only_fields: ClassVar[set[str]] = {"id", "created", "updated"}
+        # Fields that are disabled by Paperless NGX for filtering. These will be appended to filtering_disabled for all parent classes.
+        filtering_disabled : ClassVar[set[str]] = set()
+        # Fields allowed for filtering. Generated automatically during class init.
+        filtering_fields : ClassVar[set[str]] = set()
         # the type of parser, which parses api data into appropriate types
         # this will usually not need to be overridden
         parser: type[Parser[_Self]] = Parser[_Self]
         resource: "PaperlessResource[_Self]"
         queryset: type[QuerySet[_Self]] = QuerySet
+
+        def __init__(self, model : type[_Self]):
+            self.model = model
+
+    @classmethod
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        # Append read_only_fields from all parents to Meta
+        # Same with filtering_disabled
+        # Retrieve filtering_fields from the attributes of the class
+        read_only_fields = (cls.Meta.read_only_fields or set()).copy()
+        filtering_disabled = (cls.Meta.filtering_disabled or set()).copy()
+        filtering_fields = set(cls.__annotations__.keys())
+        for base in cls.__bases__:
+            _meta : PaperlessModel.Meta | None
+            if _meta := getattr(base, "Meta", None):
+                if hasattr(_meta, "read_only_fields"):
+                    read_only_fields.update(_meta.read_only_fields)
+                if hasattr(_meta, "filtering_disabled"):
+                    filtering_disabled.update(_meta.filtering_disabled)
+                if hasattr(_meta, "filtering_fields"):
+                    filtering_fields.update(_meta.filtering_fields)
+
+        cls.Meta.read_only_fields = read_only_fields
+        cls.Meta.filtering_disabled = filtering_disabled
+        # excluding filtering_disabled from filtering_fields
+        cls.Meta.filtering_fields = filtering_fields - filtering_disabled
+        
+        # Instantiate _meta
+        cls._meta = cls.Meta(cls)
+
+        # Set name defaults
+        if not hasattr(cls._meta, "name"):
+            cls._meta.name = cls.__name__.lower()
 
     # Configure Pydantic behavior
     model_config = ConfigDict(
@@ -103,31 +141,6 @@ class PaperlessModel(BaseModel, ABC):
             raise ValueError("Resource is required for PaperlessModel")
         super().__init__(**data)
         self._meta.resource = resource
-
-    @classmethod
-    def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
-
-        # Instantiate _meta
-        cls._meta = cls.Meta()
-
-        # Set name defaults
-        if not hasattr(cls._meta, "name"):
-            cls._meta.name = cls.__name__.lower()
-
-        # Append read_only_fields from all parents to _meta
-        # Same with filtering_disabled
-        read_only_fields = (cls._meta.read_only_fields or set()).copy()
-        filtering_disabled = (cls._meta.filtering_disabled or set()).copy()
-        for base in cls.__bases__:
-            if hasattr(base, "_meta"):
-                if hasattr(base._meta, "read_only_fields"):
-                    read_only_fields.update(base._meta.read_only_fields)
-                if hasattr(base._meta, "filtering_disabled"):
-                    filtering_disabled.update(base._meta.filtering_disabled)
-
-        cls._meta.read_only_fields = read_only_fields
-        cls._meta.filtering_disabled = filtering_disabled
 
     @classmethod
     def from_dict(cls, data: dict[str, Any], resource: "PaperlessResource") -> Self:
@@ -215,7 +228,7 @@ class StandardModel(PaperlessModel, ABC):
 
     class Meta(PaperlessModel.Meta[_Self], Generic[_Self]):
         # Fields that should not be modified
-        read_only_fields: set[str] = {"id"}
+        read_only_fields: ClassVar[set[str]] = {"id"}
 
     def is_new(self) -> bool:
         """

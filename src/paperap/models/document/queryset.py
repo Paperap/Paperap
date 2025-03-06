@@ -155,7 +155,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         Returns:
             Filtered DocumentQuerySet
         """
-        return self.filter(correspondent=correspondent_id)
+        return self.filter(correspondent__id=correspondent_id)
 
     def correspondent_name(self, name: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
@@ -250,7 +250,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         Returns:
             Filtered DocumentQuerySet
         """
-        return self.filter(document_type=document_type_id)
+        return self.filter(document_type__id=document_type_id)
 
     def document_type_name(self, name: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
@@ -396,42 +396,6 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter_field_by_str("asn", value, exact=exact, case_insensitive=case_insensitive)
 
-    def deleted_before(self, date_str: str) -> Self:
-        """
-        Filter documents deleted before the specified date.
-
-        Args:
-            date_str: ISO format date string (YYYY-MM-DD)
-
-        Returns:
-            Filtered DocumentQuerySet
-        """
-        return self.filter(deleted_at__lt=date_str)
-
-    def deleted_after(self, date_str: str) -> Self:
-        """
-        Filter documents deleted after the specified date.
-
-        Args:
-            date_str: ISO format date string (YYYY-MM-DD)
-
-        Returns:
-            Filtered DocumentQuerySet
-        """
-        return self.filter(deleted_at__gt=date_str)
-
-    def shared(self, value: bool) -> Self:
-        """
-        Filter documents by shared status.
-
-        Args:
-            value: True to filter shared documents, False for unshared
-
-        Returns:
-            Filtered DocumentQuerySet
-        """
-        return self.filter(is_shared_by_requester=value)
-
     def original_file_name(self, name: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
         Filter documents by original file name.
@@ -537,7 +501,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter(notes__contains=text)
 
-    def created_before(self, date: datetime) -> Self:
+    def created_before(self, date: datetime | str) -> Self:
         """
         Filter models created before a given date.
 
@@ -547,9 +511,11 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         Returns:
             Filtered QuerySet
         """
+        if isinstance(date, datetime):
+            return self.filter(created__lt=date.strftime("%Y-%m-%d"))
         return self.filter(created__lt=date)
 
-    def created_after(self, date: datetime) -> Self:
+    def created_after(self, date: datetime | str) -> Self:
         """
         Filter models created after a given date.
 
@@ -559,9 +525,11 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         Returns:
             Filtered QuerySet
         """
+        if isinstance(date, datetime):
+            return self.filter(created__gt=date.strftime("%Y-%m-%d"))
         return self.filter(created__gt=date)
 
-    def created_between(self, start: datetime, end: datetime) -> Self:
+    def created_between(self, start: datetime | str, end: datetime | str) -> Self:
         """
         Filter models created between two dates.
 
@@ -572,41 +540,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         Returns:
             Filtered QuerySet
         """
+        if isinstance(start, datetime):
+            start = start.strftime("%Y-%m-%d")
+        if isinstance(end, datetime):
+            end = end.strftime("%Y-%m-%d")
+            
         return self.filter(created__range=(start, end))
-
-    def updated_before(self, date: datetime) -> Self:
-        """
-        Filter models updated before a given date.
-
-        Args:
-            date: The date to filter by
-
-        Returns:
-            Filtered QuerySet
-        """
-        return self.filter(updated__lt=date)
-
-    def updated_after(self, date: datetime) -> Self:
-        """
-        Filter models updated after a given date.
-
-        Args:
-            date: The date to filter by
-
-        Returns:
-            Filtered QuerySet
-        """
-        return self.filter(updated__gt=date)
-
-    def updated_between(self, start: datetime, end: datetime) -> Self:
-        """
-        Filter models updated between two dates.
-
-        Args:
-            start: The start date to filter by
-            end: The end date to filter by
-
-        Returns:
-            Filtered QuerySet
-        """
-        return self.filter(updated__range=(start, end))

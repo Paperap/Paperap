@@ -10,7 +10,7 @@
         File:    test_base.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -27,6 +27,8 @@ import os
 import unittest
 from datetime import datetime, timezone
 from unittest.mock import patch
+from paperap.exceptions import FilterDisabledError
+from paperap.models.abstract.queryset import StandardQuerySet
 from paperap.tests import TestCase
 from unittest.mock import patch
 from paperap.tests import TestCase
@@ -133,6 +135,130 @@ class TestModel(TestCase):
         for update_data, expected_value in test_cases:
             updated_model = self.model.update(**update_data)
             self.assertEqual(updated_model.a_bool, expected_value)
+
+class TestClassAttributes(TestCase):
+    def test_filtering_fields(self):
+        expected_fields = {"id", "a_str", "a_date", "an_int", "a_float", "a_bool"}
+        self.assertEqual(set(ExampleModel._meta.filtering_fields), expected_fields)
+
+    def test_new_fields_in_filtering_fields(self):
+        class NewFieldsModel(StandardModel):
+            a_str: str
+            an_int : int
+            a_date : datetime
+
+        # Inherited ID included
+        self.assertIn("id", NewFieldsModel._meta.filtering_fields)
+        # New fields included
+        self.assertIn("a_str", NewFieldsModel._meta.filtering_fields)
+        self.assertIn("an_int", NewFieldsModel._meta.filtering_fields)
+        self.assertIn("a_date", NewFieldsModel._meta.filtering_fields)
+
+    def test_filtering_fields_excludes_disabled(self):
+        class DisabledFieldsModel(StandardModel):
+            # Fields to disable
+            a_str_no: str
+            an_int_no : int
+            a_date_no : datetime
+            # Fields to include
+            a_str_yes: str
+            an_int_yes : int
+            a_date_yes : datetime
+
+            class Meta(StandardModel.Meta):
+                filtering_disabled = {"a_str_no", "an_int_no", "a_date_no"}
+
+        # Inherited ID included
+        self.assertIn("id", DisabledFieldsModel._meta.filtering_fields)
+        # Disabled field excluded
+        self.assertNotIn("a_str_no", DisabledFieldsModel._meta.filtering_fields)
+        self.assertNotIn("an_int_no", DisabledFieldsModel._meta.filtering_fields)
+        self.assertNotIn("a_date_no", DisabledFieldsModel._meta.filtering_fields)
+        # Enabled field included
+        self.assertIn("a_str_yes", DisabledFieldsModel._meta.filtering_fields)
+        self.assertIn("an_int_yes", DisabledFieldsModel._meta.filtering_fields)
+        self.assertIn("a_date_yes", DisabledFieldsModel._meta.filtering_fields)
+
+    def test_read_only_doesnt_influence_filtering_fields(self):
+        class ReadOnlyFieldsModel(StandardModel):
+            # Fields to disable
+            a_str_no: str
+            an_int_no : int
+            a_date_no : datetime
+            # Fields to include
+            a_str_yes: str
+            an_int_yes : int
+            a_date_yes : datetime
+
+            class Meta(StandardModel.Meta):
+                read_only_fields = {"a_str_no", "an_int_no", "a_date_no"}
+
+        # Inherited ID included
+        self.assertIn("id", ReadOnlyFieldsModel._meta.filtering_fields)
+        # All fields included
+        self.assertIn("a_str_no", ReadOnlyFieldsModel._meta.filtering_fields)
+        self.assertIn("an_int_no", ReadOnlyFieldsModel._meta.filtering_fields)
+        self.assertIn("a_date_no", ReadOnlyFieldsModel._meta.filtering_fields)
+        self.assertIn("a_str_yes", ReadOnlyFieldsModel._meta.filtering_fields)
+        self.assertIn("an_int_yes", ReadOnlyFieldsModel._meta.filtering_fields)
+        self.assertIn("a_date_yes", ReadOnlyFieldsModel._meta.filtering_fields)
+
+    def test_can_disable_inherited(self):
+        class DisabledInheritedModel(StandardModel):
+            a_str: str
+            an_int : int
+            a_date : datetime
+
+            class Meta(StandardModel.Meta):
+                filtering_disabled = {"id"}
+
+        # Inherited ID excluded
+        self.assertNotIn("id", DisabledInheritedModel._meta.filtering_fields)
+        # New fields included
+        self.assertIn("a_str", DisabledInheritedModel._meta.filtering_fields)
+        self.assertIn("an_int", DisabledInheritedModel._meta.filtering_fields)
+        self.assertIn("a_date", DisabledInheritedModel._meta.filtering_fields)
+
+class TestFilters(TestCase):
+    def setUp(self):
+        super().setUp()
+        
+        class DisabledInheritedModel(StandardModel):
+            a_str: str
+            an_int : int
+            a_date : datetime
+
+            class Meta(StandardModel.Meta):
+                filtering_disabled = {"a_str", "an_int", "a_date"}
+                
+        class SampleResource(StandardResource):
+            name = "sample"
+            model_class = DisabledInheritedModel
+
+        self.resource = SampleResource(self.client)
+        self.qs = StandardQuerySet(self.resource)
+            
+    def test_calling_a_disabled_filter_raises(self):
+        disabled_filters = {
+            'a_str': 'example',
+            'an_int': 5,
+            'a_date': datetime(2020, 5, 12, 12, 0, 0, tzinfo=timezone.utc),
+        }
+        suffixes = [
+            "__eq",
+            "__range",
+            "__lt",
+            "__lte",
+            "__gt",
+            "__gte",
+        ]
+        for filter_name, value in disabled_filters.items():
+            for suffix in suffixes:
+                with self.subTest(suffix=suffix, filter_name=filter_name):
+                    key = f"{filter_name}{suffix}"
+                    kwargs = {key: value}
+                    with self.assertRaises(FilterDisabledError, msg=f"Filtering with {suffix} does not raise exception"):
+                        self.qs.filter(**kwargs)
 
 if __name__ == "__main__":
     unittest.main()

@@ -116,7 +116,7 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
         for key, value in kwargs.items():
             split_key = key.split("__")
             if len(split_key) > 1:
-                field, _lookup = split_key
+                field, _lookup = split_key[-2:]
             else:
                 field, _lookup = key, None
                 
