@@ -550,7 +550,83 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         query_str = self._normalize_custom_field_query(query)
         return self.filter(custom_field_query=query_str)
 
-    def has_custom_fields(self) -> Self:
+    def custom_field_range(self, field: str, start: str, end: str) -> Self:
+        """
+        Filter documents with a custom field value within a specified range.
+
+        Args:
+            field: The name of the custom field
+            start: The start value of the range
+            end: The end value of the range
+
+        Returns:
+            Filtered DocumentQuerySet
+        """
+        return self.custom_field_query(field, "range", [start, end])
+
+    def custom_field_exact(self, field: str, value: Any) -> Self:
+        """
+        Filter documents with a custom field value that matches exactly.
+
+        Args:
+            field: The name of the custom field
+            value: The exact value to match
+
+        Returns:
+            Filtered DocumentQuerySet
+        """
+        return self.custom_field_query(field, "exact", value)
+
+    def custom_field_in(self, field: str, values: list[Any]) -> Self:
+        """
+        Filter documents with a custom field value in a list of values.
+
+        Args:
+            field: The name of the custom field
+            values: The list of values to match
+
+        Returns:
+            Filtered DocumentQuerySet
+        """
+        return self.custom_field_query(field, "in", values)
+
+    def custom_field_isnull(self, field: str) -> Self:
+        """
+        Filter documents with a custom field that is null or empty.
+
+        Args:
+            field: The name of the custom field
+
+        Returns:
+            Filtered DocumentQuerySet
+        """
+        return self.custom_field_query("OR", [field, "isnull", True], [field, "exact", ""])
+
+    def custom_field_exists(self, field: str, exists: bool = True) -> Self:
+        """
+        Filter documents based on the existence of a custom field.
+
+        Args:
+            field: The name of the custom field
+            exists: True to filter documents where the field exists, False otherwise
+
+        Returns:
+            Filtered DocumentQuerySet
+        """
+        return self.custom_field_query(field, "exists", exists)
+
+    def custom_field_contains(self, field: str, values: list[Any]) -> Self:
+        """
+        Filter documents with a custom field that contains all specified values.
+
+        Args:
+            field: The name of the custom field
+            values: The list of values that the field should contain
+
+        Returns:
+            Filtered DocumentQuerySet
+        """
+        return self.custom_field_query(field, "contains", values)
         return self.filter(has_custom_fields=True)
 
     def no_custom_fields(self) -> Self:
