@@ -45,7 +45,6 @@ logger = logging.getLogger(__name__)
 
 class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
     """
-    """
     A lazy-loaded, chainable query interface for Paperless NGX resources.
 
     QuerySet provides pagination, filtering, and caching functionality similar to Django's QuerySet.
@@ -63,6 +62,7 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
     Examples:
         # Create a QuerySet for documents
         docs = QuerySet(resource=client.documents)
+    """
     """
 
     resource: "PaperlessResource[_PaperlessModel]"
