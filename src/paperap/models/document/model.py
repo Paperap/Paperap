@@ -39,6 +39,7 @@ if TYPE_CHECKING:
     from paperap.models.document_type import DocumentType
     from paperap.models.storage_path import StoragePath
     from paperap.models.tag import Tag, TagQuerySet
+    from paperap.models.custom_field import CustomField, CustomFieldQuerySet
 
 
 class Document(StandardModel):
@@ -229,7 +230,21 @@ class Document(StandardModel):
             return None
         return self._meta.resource.client.storage_paths.get(self.storage_path)
 
-    def custom_field(self, field_id: int, default: Any = None, *, raise_errors: bool = False) -> Any:
+    def get_custom_fields(self) -> "CustomFieldQuerySet":
+        """
+        Get the custom fields for this document.
+
+        Returns:
+            List of custom fields associated with this document.
+        """
+        if not self.custom_fields:
+            return self._meta.resource.client.custom_fields().none()
+
+        # Use the API's filtering capability to get only the custom fields with specific IDs
+        # The paperless-ngx API supports id__in filter for retrieving multiple objects by ID
+        return self._meta.resource.client.custom_fields().id(self.custom_field_ids)
+
+    def custom_field_value(self, field_id: int, default: Any = None, *, raise_errors: bool = False) -> Any:
         """
         Get the value of a custom field by ID.
 

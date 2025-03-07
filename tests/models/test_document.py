@@ -324,19 +324,19 @@ class TestCustomFieldAccess(TestCase):
         for field in self.custom_fields:
             field_id = field["field"]
             expected = field["value"]
-            actual = self.document.custom_field(field_id)
+            actual = self.document.custom_field_value(field_id)
             self.assertEqual(expected, actual, f"Expected {expected}, got {actual} of type {type(actual)}")
 
     def test_custom_field_default(self):
         default = "Default Value"
-        actual = self.document.custom_field(3, default=default)
+        actual = self.document.custom_field_value(3, default=default)
         self.assertEqual(default, actual, f"Expected {default}, got {actual} of type {type(actual)}")
 
     def test_custom_field_raises(self):
         with self.assertRaises(ValueError):
-            self.document.custom_field(3, raise_errors=True)
+            self.document.custom_field_value(3, raise_errors=True)
         with self.assertRaises(ValueError):
-            self.document.custom_field(3, default="Some Default", raise_errors=True)
+            self.document.custom_field_value(3, default="Some Default", raise_errors=True)
 
 if __name__ == "__main__":
     unittest.main()
