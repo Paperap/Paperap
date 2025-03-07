@@ -62,6 +62,12 @@ class PaperlessModel(BaseModel, ABC):
     Attributes:
         _meta: Metadata for the model, including filtering and resource information.
 
+    Returns:
+        A new instance of PaperlessModel.
+
+    Raises:
+        ValueError: If resource is not provided.
+
     Examples:
         from paperap.models.abstract.model import StandardModel
         class Document(StandardModel):

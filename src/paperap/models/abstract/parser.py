@@ -51,6 +51,12 @@ class Parser(Generic[_PaperlessModel]):
     Args:
         model: The model class to parse data into.
 
+    Returns:
+        A new instance of Parser.
+
+    Raises:
+        TypeError: If the target type is unsupported.
+
     Examples:
         # Create a parser for a Document model
         parser = Parser(Document)

@@ -59,6 +59,12 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
         _last_response: Optional last response from the API.
         _iter: Optional iterator for the results.
 
+    Returns:
+        A new instance of QuerySet.
+
+    Raises:
+        FilterDisabledError: If a filter is not allowed by the resource.
+
     Examples:
         # Create a QuerySet for documents
         docs = QuerySet(resource=client.documents)
@@ -635,6 +641,30 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
 class StandardQuerySet(QuerySet[_StandardModel], Generic[_StandardModel]):
     """
     A queryset for StandardModel instances (i.e. Paperless Models with standard fields, like id).
+
+    Returns:
+        A new instance of StandardModel.
+
+    Raises:
+        ValueError: If resource is not provided.
+
+    Examples:
+        # Create a StandardModel instance
+        model = StandardModel(id=1)
+
+    Args:
+        resource: The PaperlessResource instance.
+        filters: Initial filter parameters.
+
+    Returns:
+        A new instance of StandardQuerySet.
+
+    Raises:
+        ObjectNotFoundError: If no object or multiple objects are found.
+
+    Examples:
+        # Create a StandardQuerySet for documents
+        docs = StandardQuerySet(resource=client.documents)
     """
 
     def get(self, id: int) -> _StandardModel:
