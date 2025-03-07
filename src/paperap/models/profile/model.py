@@ -32,7 +32,22 @@ from paperap.models.profile.queryset import ProfileQuerySet
 
 
 class Profile(StandardModel):
-    email: str
+    """
+    Represents a user profile in the Paperless NGX system.
+
+    Attributes:
+        email: The email address of the user.
+        password: The password for the user.
+        first_name: The first name of the user.
+        last_name: The last name of the user.
+        auth_token: The authentication token for the user.
+        social_accounts: A list of social accounts associated with the user.
+        has_usable_password: Indicates if the user has a usable password.
+
+    Examples:
+        >>> profile = Profile(email="example@example.com", password="securepassword", first_name="John", last_name="Doe")
+        >>> print(profile.email)
+    """
     password: str
     first_name: str
     last_name: str
