@@ -26,7 +26,8 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Self, Union, Optional, TYPE_CHECKING
+from functools import singledispatchmethod
+from typing import Any, NamedTuple, Self, Union, Optional, TYPE_CHECKING, overload
 import logging
 from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
 from paperap.models.mixins.queryset import HasOwner
@@ -37,6 +38,10 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+class CustomFieldQuery(NamedTuple):
+    field: str
+    operation: str | CustomFieldQuery
+    value: Any
 
 class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
     """
@@ -421,73 +426,116 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter(user_can_change=value)
 
-    def custom_field(self, field_name: str, value: Any, *, exact: bool = True, case_insensitive: bool = True) -> Self:
-        """
-        Filter documents by custom field value.
+    def custom_field_search(self, value: str, *, case_insensitive: bool = True) -> Self:
+        """ 
+        Filter documents by custom field name or value.
 
         Args:
             field_name: The name of the custom field
             value: The value to filter by
-            exact: If True, match the exact value, otherwise use contains
+
+        Returns:
+            Filtered DocumentQuerySet
+        """
+        if case_insensitive:
+            return self.filter(custom_fields__icontains=value)
+        raise NotImplementedError("Case-sensitive custom field search is not supported by Paperless NGX")
+
+    def has_custom_field_id(self, id : int | list[int], *, exact : bool = False) -> Self:
+        """
+        Filter documents that have a custom field with the specified ID(s).
+
+        Args:
+            id: A single custom field ID or list of custom field IDs
+            exact: If True, return results that have exactly these ids and no others
 
         Returns:
             Filtered DocumentQuerySet
         """
         if exact:
-            return self.filter(custom_fields__contains={field_name: value})
-        return self.filter(custom_fields__contains={field_name: {"$regex": value}})
+            return self.filter(custom_fields__id__all=id)
+        return self.filter(custom_fields__id__in=id)
 
-    def has_custom_field(self, field_name: str) -> Self:
+    def _normalize_custom_field_query_item(self, value : Any) -> str:
+        if isinstance(value, tuple):
+            # Check if it's a CustomFieldQuery
+            try:
+                converted_value = CustomFieldQuery(*value)
+                return self._normalize_custom_field_query(converted_value)
+            except TypeError:
+                # It's a tuple, not a CustomFieldQuery
+                pass
+
+        if isinstance(value, str):
+            return f'"{value}"'
+        if isinstance(value, (list, tuple)):
+            values = [str(self._normalize_custom_field_query_item(v)) for v in value]
+            return f'[{", ".join(values)}]'
+        if isinstance(value, bool):
+            return str(value).lower()
+        
+        return str(value)
+
+    def _normalize_custom_field_query(self, query: CustomFieldQuery | tuple) -> str:
+        try:
+            if not isinstance(query, CustomFieldQuery):
+                query = CustomFieldQuery(*query)
+        except TypeError:
+            raise TypeError("Invalid custom field query format")
+        
+        field, operation, value = query
+        operation = self._normalize_custom_field_query_item(operation)    
+        value = self._normalize_custom_field_query_item(value)
+        return f'["{field}", {operation}, {value}]'
+
+    @overload
+    def custom_field_query(self, query: CustomFieldQuery) -> Self:
         """
-        Filter documents that have a custom field with the specified name.
+        Filter documents by custom field query.
 
         Args:
-            field_name: The name of the custom field
+            query: A list representing a custom field query
 
         Returns:
             Filtered DocumentQuerySet
         """
-        return self.filter(custom_fields__has_key=field_name)
+        ...
 
-    def custom_field_over(self, field_name: str, value: Any) -> Self:
+    @overload
+    def custom_field_query(self, field: str, operation: str | CustomFieldQuery, value: Any) -> Self:
         """
-        Filter documents with a custom field value greater than the specified value.
+        Filter documents by custom field query.
 
         Args:
-            field_name: The name of the custom field
-            value: The minimum value
+            field: The name of the custom field
+            operation: The operation to perform
+            value: The value to filter by
 
         Returns:
             Filtered DocumentQuerySet
         """
-        return self.filter(custom_fields__contains={field_name: {"$gt": value}})
+        ...
 
-    def custom_field_under(self, field_name: str, value: Any) -> Self:
-        """
-        Filter documents with a custom field value less than the specified value.
+    @singledispatchmethod
+    def custom_field_query(self, *args, **kwargs) -> Self:
+        raise TypeError("Invalid custom field query format")
 
-        Args:
-            field_name: The name of the custom field
-            value: The maximum value
+    @custom_field_query.register
+    def _(self, query: CustomFieldQuery) -> Self:
+        query_str = self._normalize_custom_field_query(query)
+        return self.filter(custom_field_query=query_str)
 
-        Returns:
-            Filtered DocumentQuerySet
-        """
-        return self.filter(custom_fields__contains={field_name: {"$lt": value}})
+    @custom_field_query.register
+    def _(self, field: str, operation: str | CustomFieldQuery, value: Any) -> Self:
+        query = CustomFieldQuery(field, operation, value)
+        query_str = self._normalize_custom_field_query(query)
+        return self.filter(custom_field_query=query_str)
 
-    def custom_field_between(self, field_name: str, min_value: Any, max_value: Any) -> Self:
-        """
-        Filter documents with a custom field value between the specified range.
+    def has_custom_fields(self) -> Self:
+        return self.filter(has_custom_fields=True)
 
-        Args:
-            field_name: The name of the custom field
-            min_value: The minimum value
-            max_value: The maximum value
-
-        Returns:
-            Filtered DocumentQuerySet
-        """
-        return self.filter(custom_fields__contains={field_name: {"$gte": min_value, "$lte": max_value}})
+    def no_custom_fields(self) -> Self:
+        return self.filter(has_custom_fields=False)
 
     def notes(self, text: str) -> Self:
         """

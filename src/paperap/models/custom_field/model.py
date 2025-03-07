@@ -10,7 +10,7 @@
        File:    custom_field.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -48,7 +48,6 @@ class CustomField(StandardModel):
         "arbitrary_types_allowed": True,
         "populate_by_name": True,
         "extra": "allow",
-        "json_encoders": {},
     }
 
     class Meta(StandardModel.Meta):

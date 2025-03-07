@@ -50,7 +50,6 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
     QuerySet provides pagination, filtering, and caching functionality similar to Django's QuerySet.
     It's designed to be lazy - only fetching data when it's actually needed.
     """
-
     resource: "PaperlessResource[_PaperlessModel]"
     filters: dict[str, Any]
     _last_response: dict[str, Any] | None = None
@@ -87,6 +86,21 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
         self._last_response = _last_response
         self._iter = _iter
 
+    @property
+    def _model(self) -> type[_PaperlessModel]:
+        return self.resource.model_class
+
+    @property
+    def _meta(self) -> "PaperlessModel.Meta":
+        return self._model._meta
+
+    def _update_filters(self, values: dict[str, Any]) -> None:
+        for key, _value in values.items():
+            if not self._meta.filter_allowed(key):
+                raise FilterDisabledError(f"Filtering by {key} for {self.resource.name} does not appear to be supported by the API.")
+            
+        self.filters.update(**values)
+
     def filter(self, **kwargs) -> Self:
         """
         Return a new QuerySet with the given filters applied.
@@ -114,18 +128,8 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
         processed_filters = {}
 
         for key, value in kwargs.items():
-            split_key = key.split("__")
-            if len(split_key) > 1:
-                field, _lookup = split_key[-2:]
-            else:
-                field, _lookup = key, None
-                
-            # If key is in filtering_disabled, throw an error
-            if field in getattr(self.resource.model_class._meta, "filtering_disabled", []):
-                raise FilterDisabledError(f"Filtering by {key} for {self.resource.name} does not appear to be supported by the API.")
-            
             # Handle list values for __in lookups
-            if key.endswith("__in") and isinstance(value, (Iterable, tuple)):
+            if isinstance(value, (list, set, tuple)):
                 # Convert list to comma-separated string for the API
                 processed_value = ",".join(str(item) for item in value)
                 processed_filters[key] = processed_value
@@ -432,7 +436,7 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
         # Update with provided kwargs
         for key, value in kwargs.items():
             if key == "filters" and value:
-                clone.filters.update(value)
+                clone._update_filters(value)
             else:
                 setattr(clone, key, value)
 

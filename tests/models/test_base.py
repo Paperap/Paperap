@@ -53,7 +53,28 @@ class ExampleResource(StandardResource):
     name = "example"
     model_class = ExampleModel
 
-class TestModel(TestCase):
+class TestBase(TestCase):
+    def setUp(self):
+        super().setUp()
+        
+        self.resource = ExampleResource(self.client)
+        self.model_data = {
+            "id": 1,
+            "a_str": "Hello, world!",
+            "a_date": "2020-05-12T12:00:00Z",
+            "an_int": 42,
+            "a_float": 3.14,
+            "a_bool": True
+        }
+
+class TestWithModel(TestBase):
+    
+    def setUp(self):
+        super().setUp()
+        self.model = ExampleModel.from_dict(self.model_data, self.resource)
+
+class TestModelFromDict(TestBase):
+        
     def test_from_dict(self):
         # Test if the model can be created from a dictionary
         model_data = {
@@ -65,12 +86,22 @@ class TestModel(TestCase):
             "a_bool": True
         }
         model = ExampleModel.from_dict(model_data, self.resource)
+        self.assertIsInstance(model, ExampleModel)
+        self.assertIsInstance(model.a_date, datetime)
+        self.assertIsInstance(model.a_str, str)
+        self.assertIsInstance(model.an_int, int)
+        self.assertIsInstance(model.a_float, float)
+        self.assertIsInstance(model.a_bool, bool)
+        
         self.assertEqual(model.id, model_data["id"])
         self.assertEqual(model.a_str, model_data["a_str"])
         self.assertEqual(model.an_int, model_data["an_int"])
         self.assertEqual(model.a_float, model_data["a_float"])
         self.assertEqual(model.a_bool, model_data["a_bool"])
+        # TODO datetime
 
+class TestModelToDict(TestWithModel):
+        
     def test_to_dict_options(self):
         # Test if the model can be converted to a dictionary with different options
         model_dict = self.model.to_dict(include_read_only=False)
@@ -87,7 +118,8 @@ class TestModel(TestCase):
             a_date="2021-01-01T00:00:00Z",
             an_int=100,
             a_float=1.23,
-            a_bool=False
+            a_bool=False,
+            resource=self.resource
         )
         self.assertEqual(new_model.id, 2)
         self.assertEqual(new_model.a_str, "New Model")
@@ -104,26 +136,13 @@ class TestModel(TestCase):
             a_date="2021-01-01T00:00:00Z",
             an_int=100,
             a_float=1.23,
-            a_bool=False
+            a_bool=False,
+            resource=self.resource
         )
         self.assertTrue(new_model.is_new())
         self.assertFalse(self.model.is_new())
-    def setUp(self):
-        # Setup a sample model instance
-        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
-        with patch.dict(os.environ, env_data, clear=True):
-            self.client = PaperlessClient()
-        self.resource = ExampleResource(self.client)
-        self.model_data = {
-            "id": 1,
-            "a_str": "Hello, world!",
-            "a_date": "2020-05-12T12:00:00Z",
-            "an_int": 42,
-            "a_float": 3.14,
-            "a_bool": True
-        }
-        self.model = ExampleModel.from_dict(self.model_data, self.resource)
 
+class TestModel(TestWithModel):
     def test_model_initialization(self):
         # Test if the model is initialized correctly
         self.assertEqual(self.model.id, self.model_data["id"])

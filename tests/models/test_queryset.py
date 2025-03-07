@@ -10,7 +10,7 @@
         File:    test_queryset.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -60,7 +60,7 @@ class DummyResource(StandardResource[DummyModel]):
     def __init__(self):
         self.name = "dummy"
 
-class TestQuerySetFilter(unittest.TestCase):
+class TestQuerySetFilterBase(unittest.TestCase):
     @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
         self.mock_request = mock_request
@@ -70,12 +70,85 @@ class TestQuerySetFilter(unittest.TestCase):
         # By default, we use a nonempty filter.
         self.qs = StandardQuerySet(self.resource, filters={"init": "value"})
 
+
+class TestUpdateFilters(TestQuerySetFilterBase):
+    def test_update_filters(self):
+        self.assertEqual(self.qs.filters, {"init": "value"}, "test assumptions failed")
+        self.qs._update_filters({"new_filter": 123})
+        self.assertEqual(self.qs.filters, {"init": "value", "new_filter": 123})
+        self.qs._update_filters({"another_new_filter": 456})
+        self.assertEqual(self.qs.filters, {"init": "value", "new_filter": 123, "another_new_filter": 456})
+        self.qs._update_filters({"new_filter": 789})
+        self.assertEqual(self.qs.filters, {"init": "value", "new_filter": 789, "another_new_filter": 456})
+
+class TestChain(TestQuerySetFilterBase):
+    def test_chain_no_parms(self):
+        self.assertEqual(self.qs.filters, {"init": "value"}, "test assumptions failed")
+
+        # Test no params
+        qs2 = self.qs._chain()
+        self.assertIsInstance(qs2, StandardQuerySet, "chain did not return a queryset instance")
+        self.assertIsNot(qs2, self.qs, "chain did not return a NEW queryset")
+        self.assertEqual(qs2.filters, {"init": "value"}, "chain modified the original filters")
+
+        # Do it again for qs2
+        qs3 = qs2._chain()
+        self.assertIsInstance(qs3, StandardQuerySet, "chain did not return a queryset instance")
+        self.assertIsNot(qs3, qs2, "chain did not return a NEW queryset")
+        self.assertEqual(qs3.filters, {"init": "value"}, "chain modified the original filters on the second chain")
+
+    def test_chain_one_parm(self):
+        self.assertEqual(self.qs.filters, {"init": "value"}, "test assumptions failed")
+        
+        # Test new filter
+        qs3 = self.qs._chain(filters={"new_filter": 123})
+        self.assertIsInstance(qs3, StandardQuerySet, "chain did not return a queryset instance when filters were passed")
+        self.assertIsNot(qs3, self.qs, "chain did not return a NEW queryset when filters were passed")
+        self.assertEqual(qs3.filters, {"init": "value", "new_filter": 123}, "chain did not add new filters correctly")
+
+        # Do it again for qs3
+        qs4 = qs3._chain(filters={"another_new_filter": 456})
+        self.assertIsInstance(qs4, StandardQuerySet, "chain did not return a queryset instance when filters were passed")
+        self.assertIsNot(qs4, qs3, "chain did not return a NEW queryset when filters were passed")
+        self.assertEqual(qs4.filters, {"init": "value", "new_filter": 123, "another_new_filter": 456}, "chain did not add new filters correctly")
+
+    def test_chain_multiple_params(self):
+        self.assertEqual(self.qs.filters, {"init": "value"}, "test assumptions failed")
+        
+        # Test 2 new filters
+        qs4 = self.qs._chain(filters={"another_new_filter": 456, "third_new_filter": 123})
+        self.assertIsInstance(qs4, StandardQuerySet, "chain did not return a queryset instance when 2 filters were passed")
+        self.assertIsNot(qs4, self.qs, "chain did not return a NEW queryset when 2 filters were passed")
+        self.assertEqual(qs4.filters, {"init": "value", "another_new_filter": 456, "third_new_filter": 123}, "chain did not add 2 new filters correctly")
+
+        # Do it again for qs4
+        qs5 = qs4._chain(filters={"fourth_new_filter": 789, "fifth_new_filter": 101112})
+        self.assertIsInstance(qs5, StandardQuerySet, "chain did not return a queryset instance when 2 filters were passed")
+        self.assertIsNot(qs5, qs4, "chain did not return a NEW queryset when 2 filters were passed")
+        self.assertEqual(qs5.filters, {"init": "value", "another_new_filter": 456, "third_new_filter": 123, "fourth_new_filter": 789, "fifth_new_filter": 101112}, "chain did not add 2 new filters correctly")
+
+    def test_chain_update_filter(self):
+        self.assertEqual(self.qs.filters, {"init": "value"}, "test assumptions failed")
+        # Test update filter
+        qs5 = self.qs._chain(filters={"init": "new_value"})
+        self.assertIsInstance(qs5, StandardQuerySet, "chain did not return a queryset instance when updating a filter")
+        self.assertIsNot(qs5, self.qs, "chain did not return a NEW queryset when updating a filter")
+        self.assertEqual(qs5.filters, {"init": "new_value"}, "chain did not update the filter correctly")
+
+        # Do it again for qs5
+        qs6 = qs5._chain(filters={"init": "another_new_value"})
+        self.assertIsInstance(qs6, StandardQuerySet, "chain did not return a queryset instance when updating a filter")
+        self.assertIsNot(qs6, qs5, "chain did not return a NEW queryset when updating a filter")
+        self.assertEqual(qs6.filters, {"init": "another_new_value"}, "chain did not update the filter correctly")
+
+class TestFilter(TestQuerySetFilterBase):
     def test_filter_returns_new_queryset(self):
         qs2 = self.qs.filter(new_filter=123)
-        self.assertIsNot(qs2, self.qs)
+        self.assertIsNot(qs2, self.qs)                                
         expected = {"init": "value", "new_filter": 123}
         self.assertEqual(qs2.filters, expected)
 
+class TestExclude(TestQuerySetFilterBase):
     def test_exclude_returns_new_queryset(self):
         qs2 = self.qs.exclude(field=1, title__contains="invoice")
         expected = {"init": "value", "field__not": 1, "title__not_contains": "invoice"}
