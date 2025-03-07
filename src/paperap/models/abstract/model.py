@@ -59,6 +59,9 @@ class PaperlessModel(BaseModel, ABC):
     Provides automatic serialization, deserialization, and API interactions
     with minimal configuration needed.
 
+    Attributes:
+        _meta: Metadata for the model, including filtering and resource information.
+
     Examples:
         from paperap.models.abstract.model import StandardModel
         class Document(StandardModel):
@@ -67,6 +70,7 @@ class PaperlessModel(BaseModel, ABC):
 
             class Meta:
                 api_endpoint: = URL("http://localhost:8000/api/documents/")
+    """
     """
 
     _meta: "Meta[Self]" = PrivateAttr()
@@ -208,10 +212,15 @@ class PaperlessModel(BaseModel, ABC):
         Create a model instance from API response data.
 
         Args:
-            data (dict[str, Any]): dictionary containing the API response data.
+            data: Dictionary containing the API response data.
+            resource: The PaperlessResource instance associated with the model.
 
         Returns:
             A model instance initialized with the provided data.
+
+        Examples:
+            # Create a Document instance from API data
+            doc = Document.from_dict(api_data, resource=client.documents)
         """
         return cls.model_validate({**data, "resource": resource})
 
@@ -222,12 +231,16 @@ class PaperlessModel(BaseModel, ABC):
         Convert the model to a dictionary for API requests.
 
         Args:
-            include_read_only (bool): Whether to include read-only fields.
-            exclude_none (bool): Whether to exclude fields with None values.
-            exclude_unset (bool): Whether to exclude fields that are not set.
+            include_read_only: Whether to include read-only fields.
+            exclude_none: Whether to exclude fields with None values.
+            exclude_unset: Whether to exclude fields that are not set.
 
         Returns:
-            dict[str, Any]: dictionary with model data ready for API submission.
+            A dictionary with model data ready for API submission.
+
+        Examples:
+            # Convert a Document instance to a dictionary
+            data = doc.to_dict()
         """
         exclude = set() if include_read_only else set(self._meta.read_only_fields)
 
@@ -247,6 +260,10 @@ class PaperlessModel(BaseModel, ABC):
 
         Returns:
             A new model instance.
+
+        Examples:
+            # Create a new Document instance
+            doc = Document.create(filename="example.pdf", contents=b"PDF data")
         """
         # TODO save
         return cls(**kwargs)
@@ -260,6 +277,10 @@ class PaperlessModel(BaseModel, ABC):
 
         Returns:
             Self with updated values.
+
+        Examples:
+            # Update a Document instance
+            doc.update(filename="new_example.pdf")
         """
         # TODO save
         return self.model_copy(update=kwargs)
@@ -271,6 +292,10 @@ class PaperlessModel(BaseModel, ABC):
 
         Returns:
             True if the model is new, False otherwise.
+
+        Examples:
+            # Check if a Document instance is new
+            is_new = doc.is_new()
         """
 
     def __str__(self) -> str:

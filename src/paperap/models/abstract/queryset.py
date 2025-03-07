@@ -45,10 +45,24 @@ logger = logging.getLogger(__name__)
 
 class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
     """
+    """
     A lazy-loaded, chainable query interface for Paperless NGX resources.
 
     QuerySet provides pagination, filtering, and caching functionality similar to Django's QuerySet.
     It's designed to be lazy - only fetching data when it's actually needed.
+
+    Args:
+        resource: The PaperlessResource instance.
+        filters: Initial filter parameters.
+        _cache: Optional internal result cache.
+        _fetch_all: Whether all results have been fetched.
+        _next_url: URL for the next page of results.
+        _last_response: Optional last response from the API.
+        _iter: Optional iterator for the results.
+
+    Examples:
+        # Create a QuerySet for documents
+        docs = QuerySet(resource=client.documents)
     """
 
     resource: "PaperlessResource[_PaperlessModel]"
@@ -73,11 +87,13 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
         Initialize a new QuerySet.
 
         Args:
-            resource: The PaperlessResource instance
-            filters: Initial filter parameters
-            _cache: Optional internal result cache
-            _fetch_all: Whether all results have been fetched
-            _next_url: URL for the next page of results
+            resource: The PaperlessResource instance.
+            filters: Initial filter parameters.
+            _cache: Optional internal result cache.
+            _fetch_all: Whether all results have been fetched.
+            _next_url: URL for the next page of results.
+            _last_response: Optional last response from the API.
+            _iter: Optional iterator for the results.
         """
         self.resource = resource
         self.filters = filters or {}
@@ -406,10 +422,19 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
         Get an iterator of resources.
 
         Args:
+            url: The URL to request, if different from the resource's default.
             params: Query parameters.
 
         Returns:
-            List of resources.
+            An iterator over the resources.
+
+        Raises:
+            NotImplementedError: If the request cannot be completed.
+
+        Examples:
+            # Iterate over documents
+            for doc in queryset._request_iter():
+                print(doc)
         """
         if not (response := self.resource._request_raw(url=url, params=params)):
             logger.debug("No response from request.")

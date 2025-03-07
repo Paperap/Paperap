@@ -44,12 +44,38 @@ _PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel", default="Pa
 
 
 class Parser(Generic[_PaperlessModel]):
-    model: type[_PaperlessModel]
+    """
+    Parser for converting API data into model instances.
+
+    Args:
+        model: The model class to parse data into.
+
+    Examples:
+        # Create a parser for a Document model
+        parser = Parser(Document)
+    """
 
     def __init__(self, model: type[_PaperlessModel]):
         self.model = model
 
     def parse(self, value: Any, target_type: type[_T]) -> _T | None:
+        """
+        Parse a value into the specified target type.
+
+        Args:
+            value: The value to parse.
+            target_type: The type to parse the value into.
+
+        Returns:
+            The parsed value, or None if parsing fails.
+
+        Raises:
+            TypeError: If the target type is unsupported.
+
+        Examples:
+            # Parse a string into an integer
+            result = parser.parse("123", int)
+        """
         if target_type is None:
             raise TypeError("Cannot parse to None type")
 
