@@ -38,6 +38,23 @@ if TYPE_CHECKING:
 class DocumentType(StandardModel):
     """
     Represents a document type in Paperless-NgX.
+
+    Attributes:
+        name: The name of the document type.
+        slug: A unique identifier for the document type.
+        match: The pattern used for matching documents.
+        matching_algorithm: The algorithm used for matching.
+        is_insensitive: Whether the matching is case insensitive.
+        document_count: The number of documents of this type.
+        owner: The owner of the document type.
+        user_can_change: Whether the user can change the document type.
+
+    Returns:
+        A new instance of DocumentType.
+
+    Examples:
+        # Create a new DocumentType instance
+        doc_type = DocumentType(name="Invoice", slug="invoice", match="INV-*")
     """
 
     name: str
@@ -57,6 +74,14 @@ class DocumentType(StandardModel):
     @property
     def documents(self) -> "DocumentQuerySet":
         """
+        Get documents with this document type.
+
+        Returns:
+            A DocumentQuerySet containing documents of this type.
+
+        Examples:
+            # Get all documents of this type
+            documents = doc_type.documents
         Get documents with this document type.
         """
         return self._client.documents().all().document_type_id(self.id)

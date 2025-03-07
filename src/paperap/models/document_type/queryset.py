@@ -39,10 +39,89 @@ logger = logging.getLogger(__name__)
 class DocumentTypeQuerySet(StandardQuerySet["DocumentType"], HasOwner, HasDocumentCount):
     """
     QuerySet for Paperless-ngx document types with specialized filtering methods.
+
+    Returns:
+        A new instance of DocumentTypeQuerySet.
+
+    Examples:
+        # Create a DocumentTypeQuerySet instance
+        queryset = DocumentTypeQuerySet()
     """
 
     def name(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
+        Filter document types by user change permission.
+
+        Args:
+            value: If True, get document types where users can change.
+
+        Returns:
+            Filtered DocumentTypeQuerySet.
+
+        Examples:
+            # Filter document types by user change permission
+            filtered = queryset.user_can_change(True)
+        Filter document types by case sensitivity setting.
+
+        Args:
+            value: If True, get document types with case insensitive matching.
+
+        Returns:
+            Filtered DocumentTypeQuerySet.
+
+        Examples:
+            # Filter document types by case sensitivity
+            filtered = queryset.case_insensitive(True)
+        Filter document types by matching algorithm.
+
+        Args:
+            value: The matching algorithm ID.
+
+        Returns:
+            Filtered DocumentTypeQuerySet.
+
+        Examples:
+            # Filter document types by matching algorithm
+            filtered = queryset.matching_algorithm(1)
+        Filter document types by match pattern.
+
+        Args:
+            value: The pattern to search for in match.
+            exact: If True, match the exact pattern, otherwise use contains.
+            case_insensitive: If True, perform a case insensitive match.
+
+        Returns:
+            Filtered DocumentTypeQuerySet.
+
+        Examples:
+            # Filter document types by match pattern
+            filtered = queryset.match("INV-*")
+        Filter document types by slug.
+
+        Args:
+            value: The slug to filter by.
+            exact: If True, match the exact slug, otherwise use contains.
+            case_insensitive: If True, perform a case insensitive match.
+
+        Returns:
+            Filtered DocumentTypeQuerySet.
+
+        Examples:
+            # Filter document types by slug
+            filtered = queryset.slug("invoice")
+        Filter document types by name.
+
+        Args:
+            value: The document type name to filter by.
+            exact: If True, match the exact name, otherwise use contains.
+            case_insensitive: If True, perform a case insensitive match.
+
+        Returns:
+            Filtered DocumentTypeQuerySet.
+
+        Examples:
+            # Filter document types by name
+            filtered = queryset.name("Invoice")
         Filter document types by name.
 
         Args:
