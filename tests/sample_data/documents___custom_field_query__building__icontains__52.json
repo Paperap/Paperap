@@ -1,0 +1,719 @@
+{
+	"count": 9,
+	"next": null,
+	"previous": null,
+	"all": [
+		7276,
+		7304,
+		7311,
+		4942,
+		4945,
+		4948,
+		4968,
+		230,
+		7036
+	],
+	"results": [
+		{
+			"id": 7276,
+			"correspondent": 1,
+			"document_type": 8,
+			"storage_path": null,
+			"title": "Bldg. #52 - Fairmount",
+			"content": "AI IMAGE DESCRIPTION (v0.2.2): \n            The following description was provided by an Artificial Intelligence (GPT-4o by OpenAI).\n            It may not be fully accurate. Its purpose is to provide keywords and context\n            so that the document can be more easily searched.\n            Suggested Title: Bldg. #52 - Fairmount Campus Abandonment\n            Inferred Date: None\n            Suggested Tags: ['building exterior', 'graffiti']\n            Previous Title: Bldg. #52 - Fairmount\n            Previous Date: 2025-02-25 00:00:00-05:00\n        \n\nDescription: This image shows Building #52 on the Fairmount campus, captured in a state of disrepair. The photograph is monochromatic, emphasizing the building's weathered brick façade and looming presence. The structure features multiple layers, including a distinctive round turret that dominates the skyline. Many windows are boarded up or show signs of being cracked, with remnants of frames visible. The lower-level walls have noticeable blemishes, including peeling paint and varying shades of discoloration, likely due to weather exposure over time. The roof is partially intact, though signs of decay are evident, particularly around the chimney area, where bricks are crumbling. Snow is present on the rooftops, indicating a possibly cold season. The surrounding area is barren, with no visible vegetation, suggesting a neglected environment. The parking lot in the foreground is empty, underlining the building's abandonment. Keywords: historical documentation, Fairmount campus, Building #52, architectural decay, urban exploration, photograph, dilapidated structures, weathering, snow.",
+			"tags": [
+				38,
+				6,
+				46,
+				162,
+				159,
+				191
+			],
+			"created": "2025-02-25T00:00:00-05:00",
+			"created_date": "2025-02-25",
+			"modified": "2025-03-04T04:59:33.060587-05:00",
+			"added": "2025-02-25T17:05:12.154040-05:00",
+			"deleted_at": null,
+			"archive_serial_number": null,
+			"original_file_name": "BingBldg52(2).png",
+			"archived_file_name": "2025-02-25 CRIS Bldg. #52 - Fairmount.pdf",
+			"owner": 10,
+			"user_can_change": true,
+			"is_shared_by_requester": false,
+			"notes": [],
+			"custom_fields": [
+				{
+					"value": null,
+					"field": 32
+				},
+				{
+					"value": null,
+					"field": 11
+				},
+				{
+					"value": null,
+					"field": 12
+				},
+				{
+					"value": null,
+					"field": 13
+				},
+				{
+					"value": null,
+					"field": 25
+				},
+				{
+					"value": null,
+					"field": 28
+				},
+				{
+					"value": null,
+					"field": 29
+				},
+				{
+					"value": null,
+					"field": 30
+				},
+				{
+					"value": null,
+					"field": 31
+				},
+				{
+					"value": null,
+					"field": 16
+				},
+				{
+					"value": "52",
+					"field": 3
+				},
+				{
+					"value": null,
+					"field": 19
+				}
+			],
+			"page_count": null
+		},
+		{
+			"id": 7304,
+			"correspondent": 1,
+			"document_type": 8,
+			"storage_path": null,
+			"title": "Bldg. #52 - Fairmount",
+			"content": "AI IMAGE DESCRIPTION (v0.2.2): \n            The following description was provided by an Artificial Intelligence (GPT-4o by OpenAI).\n            It may not be fully accurate. Its purpose is to provide keywords and context\n            so that the document can be more easily searched.\n            Suggested Title: Exterior of Building #52 - Fairmount Campus\n            Inferred Date: None\n            Suggested Tags: ['building exterior']\n            Previous Title: Bldg. #52 - Fairmount\n            Previous Date: 2025-02-25 00:00:00-05:00\n        \n\nDescription: This black-and-white photograph depicts Building #52 of the Fairmount Campus, showcasing its architectural design and condition at the time. The structure features a large central porch supported by white columns, leading to an entrance flanked by large, multi-pane windows. The building has a mix of brick and wooden elements, with several distinctly visible architectural details including gabled roofs and peaked dormers. The exterior appears to show signs of aging, with some evidence of peeling paint and weathering on the wooden sections. The surrounding area appears overgrown, with tall grass visible in the foreground, indicating neglect and abandonment. The sky above is clear, suggesting a bright day, yet the monochrome nature of the image gives it a somber, desolate quality. The overall tone conveys a sense of history and loss, documenting the current state of the structure prior to potential decay or restoration. Keywords: historical documentation, abandoned campus, Fairmount, architectural details, building condition, weathered structures, historical architecture.",
+			"tags": [
+				38,
+				6,
+				46,
+				162,
+				159,
+				191
+			],
+			"created": "2025-02-25T00:00:00-05:00",
+			"created_date": "2025-02-25",
+			"modified": "2025-02-28T20:33:29.574655-05:00",
+			"added": "2025-02-25T17:08:47.978034-05:00",
+			"deleted_at": null,
+			"archive_serial_number": null,
+			"original_file_name": "BingBldg52(1).png",
+			"archived_file_name": "2025-02-25 CRIS Bldg. #52 - Fairmount.pdf",
+			"owner": 10,
+			"user_can_change": true,
+			"is_shared_by_requester": false,
+			"notes": [],
+			"custom_fields": [
+				{
+					"value": null,
+					"field": 32
+				},
+				{
+					"value": null,
+					"field": 11
+				},
+				{
+					"value": null,
+					"field": 12
+				},
+				{
+					"value": null,
+					"field": 13
+				},
+				{
+					"value": null,
+					"field": 25
+				},
+				{
+					"value": null,
+					"field": 28
+				},
+				{
+					"value": null,
+					"field": 29
+				},
+				{
+					"value": null,
+					"field": 30
+				},
+				{
+					"value": null,
+					"field": 31
+				},
+				{
+					"value": null,
+					"field": 16
+				},
+				{
+					"value": "52",
+					"field": 3
+				},
+				{
+					"value": null,
+					"field": 19
+				}
+			],
+			"page_count": null
+		},
+		{
+			"id": 7311,
+			"correspondent": 1,
+			"document_type": 8,
+			"storage_path": null,
+			"title": "Bldg. #52 - Fairmount",
+			"content": "AI IMAGE DESCRIPTION (v0.2.2): \n            The following description was provided by an Artificial Intelligence (GPT-4o by OpenAI).\n            It may not be fully accurate. Its purpose is to provide keywords and context\n            so that the document can be more easily searched.\n            Suggested Title: Vacant Fairmount Building - Historic Documentation\n            Inferred Date: None\n            Suggested Tags: ['building exterior', 'historical documentation']\n            Previous Title: Bldg. #52 - Fairmount\n            Previous Date: 2025-02-25 00:00:00-05:00\n        \n\nDescription: This image depicts the exterior of Bldg. #52, known as Fairmount, captured as part of an ongoing documentation project. The photograph shows a large, multi-story structure set against a sparse winter landscape, with leafless trees framing the property. The building itself exhibits several architectural features including large windows, tall chimneys, and a distinctive overall shape. Visible is the front entrance, where a set of steps leads up to what appears to be a porch area. The grounds are overgrown with tall grass, indicating years of neglect, and there are no noticeable signs of recent maintenance. The photograph, taken in black and white, enhances the mood of desolation and time's passage, with soft contrasts between light and shadow. The sky is clear, suggesting a bright day despite the starkness of the season. The overall tone is somber, emphasizing the building's abandoned state and invoking a sense of nostalgia. Keywords: historical preservation, Fairmount building, architectural features, abandoned structure, multi-story, winter landscape, documentation photography, neglect, overgrown grass.",
+			"tags": [
+				38,
+				6,
+				46,
+				162,
+				159,
+				191
+			],
+			"created": "2025-02-25T00:00:00-05:00",
+			"created_date": "2025-02-25",
+			"modified": "2025-02-28T20:34:38.087249-05:00",
+			"added": "2025-02-25T17:09:45.139449-05:00",
+			"deleted_at": null,
+			"archive_serial_number": null,
+			"original_file_name": "BingBldg52.png",
+			"archived_file_name": "2025-02-25 CRIS Bldg. #52 - Fairmount.pdf",
+			"owner": 10,
+			"user_can_change": true,
+			"is_shared_by_requester": false,
+			"notes": [],
+			"custom_fields": [
+				{
+					"value": null,
+					"field": 32
+				},
+				{
+					"value": null,
+					"field": 11
+				},
+				{
+					"value": null,
+					"field": 12
+				},
+				{
+					"value": null,
+					"field": 13
+				},
+				{
+					"value": null,
+					"field": 25
+				},
+				{
+					"value": null,
+					"field": 28
+				},
+				{
+					"value": null,
+					"field": 29
+				},
+				{
+					"value": null,
+					"field": 30
+				},
+				{
+					"value": null,
+					"field": 31
+				},
+				{
+					"value": null,
+					"field": 16
+				},
+				{
+					"value": "52",
+					"field": 3
+				},
+				{
+					"value": null,
+					"field": 19
+				}
+			],
+			"page_count": null
+		},
+		{
+			"id": 4942,
+			"correspondent": null,
+			"document_type": 8,
+			"storage_path": null,
+			"title": "HRSH Documentation Pic - Hartgen Survey -  - Greenhouse 1",
+			"content": "AI IMAGE DESCRIPTION (v0.2.2): \n            The following description was provided by an Artificial Intelligence (GPT-4o by OpenAI).\n            It may not be fully accurate. Its purpose is to provide keywords and context\n            so that the document can be more easily searched.\n            Suggested Title: Abandoned Greenhouse Structure - HRSH Documentation\n            Inferred Date: None\n            Suggested Tags: ['building exterior', 'abandoned building']\n            Previous Title: HRSH Documentation Pic - Hartgen Survey -  - Greenhouse 1\n            Previous Date: 2015-12-23 00:00:00-05:00\n        \n\nDescription: The image depicts an abandoned greenhouse structure located on the grounds of the former Hudson River State Hospital (HRSH). The building's exterior features weathered red brick walls that exhibit signs of decay, with parts of the surface showing discoloration and erosion. A chain-link fence surrounds the entrance, suggesting attempts to restrict access. The fenced area is overgrown with vegetation, with green leaves and vines weaving through the openings of the fence and creeping towards the doorway. The entrance is framed by a wooden overhang, which appears to be partially intact, although some structural elements indicate potential deterioration. The door is painted white, but weathering has caused the paint to peel, exposing the wood beneath. The area immediately surrounding the structure is littered with leaves, indicative of neglect. Sunlight filters through the foliage above, casting dappled light on the scene, creating a contrast between the bright greens of the vegetation and the muted tones of the bricks. The overall atmosphere conveys a sense of abandonment and decay, evoking a historical narrative of the site’s past utility. Keywords: historical documentation, abandoned greenhouse, HRSH, decay, overgrowth, chain-link fence, architectural deterioration, vegetation.",
+			"tags": [
+				6,
+				162,
+				159,
+				2
+			],
+			"created": "2015-12-23T00:00:00-05:00",
+			"created_date": "2015-12-23",
+			"modified": "2025-03-01T15:28:47.422785-05:00",
+			"added": "2025-02-05T16:23:40.189599-05:00",
+			"deleted_at": null,
+			"archive_serial_number": null,
+			"original_file_name": "Photo - 138 - Entry - to - Building - 152 - looking - southeast.jpeg",
+			"archived_file_name": "2015-12-23 HRSH Documentation Pic - Hartgen Survey -  - Greenhouse 1.pdf",
+			"owner": 3,
+			"user_can_change": true,
+			"is_shared_by_requester": true,
+			"notes": [],
+			"custom_fields": [
+				{
+					"value": "Hartgen Archeological Associates, Inc",
+					"field": 25
+				},
+				{
+					"value": "STRUCTURES SURVEY - Hudson Heritage",
+					"field": 11
+				},
+				{
+					"value": null,
+					"field": 12
+				},
+				{
+					"value": "Hartgen Archeological Associates, Inc",
+					"field": 13
+				},
+				{
+					"value": null,
+					"field": 16
+				},
+				{
+					"value": "(152) - Greenhouse 1",
+					"field": 3
+				},
+				{
+					"value": null,
+					"field": 19
+				},
+				{
+					"value": null,
+					"field": 28
+				},
+				{
+					"value": null,
+					"field": 29
+				},
+				{
+					"value": null,
+					"field": 30
+				},
+				{
+					"value": null,
+					"field": 31
+				},
+				{
+					"value": null,
+					"field": 32
+				}
+			],
+			"page_count": null
+		},
+		{
+			"id": 4945,
+			"correspondent": null,
+			"document_type": 8,
+			"storage_path": null,
+			"title": "HRSH Documentation Pic - Hartgen Survey -  - Greenhouse 1",
+			"content": "AI IMAGE DESCRIPTION (v0.2.2): \n            The following description was provided by an Artificial Intelligence (GPT-4o by OpenAI).\n            It may not be fully accurate. Its purpose is to provide keywords and context\n            so that the document can be more easily searched.\n            Suggested Title: Abandoned Greenhouse Structure at HRSH\n            Inferred Date: None\n            Suggested Tags: ['building exterior', 'urban exploration']\n            Previous Title: HRSH Documentation Pic - Hartgen Survey -  - Greenhouse 1\n            Previous Date: 2015-12-23 00:00:00-05:00\n        \n\nDescription: This image shows an abandoned greenhouse structure located within the grounds of Hudson River State Hospital (HRSH). The building, constructed with brick, is partially obscured by overgrown vegetation and a deteriorating chain-link fence that surrounds the property. The roof appears to have a sloped design and is covered with sections of corrugated material that are aging and may be starting to fail. The glass panels, once used for sunlight, seem to be missing or broken, allowing natural decay to infiltrate the interior. Surrounding the structure, the ground is covered with a thick layer of fallen leaves, indicating the passage of time and lack of maintenance. Sparse tree branches frame the scene, many of them bare of leaves, giving an overall skeletal appearance due to the winter season. The light in the image is overcast, contributing to a muted color palette of grays and browns, which amplifies the sense of neglect and abandonment. Signs of decay, such as rusting metal and crumbling brickwork, are evident, suggesting that the structure has not been in use for an extended period. The area is tranquil yet eerie, embodying the historical context of an abandoned site and hinting at the stories it could tell. Keywords: Hudson River State Hospital, greenhouse, abandoned structure, decay, urban exploration, historical documentation, overgrown vegetation, chain-link fence.",
+			"tags": [
+				6,
+				162,
+				159,
+				2
+			],
+			"created": "2015-12-23T00:00:00-05:00",
+			"created_date": "2015-12-23",
+			"modified": "2025-03-01T15:29:30.676911-05:00",
+			"added": "2025-02-05T16:24:21.233266-05:00",
+			"deleted_at": null,
+			"archive_serial_number": null,
+			"original_file_name": "Photo - 137 - Building - 152 - a - greenhouse - looking - east.jpeg",
+			"archived_file_name": "2015-12-23 HRSH Documentation Pic - Hartgen Survey -  - Greenhouse 1.pdf",
+			"owner": 3,
+			"user_can_change": true,
+			"is_shared_by_requester": true,
+			"notes": [],
+			"custom_fields": [
+				{
+					"value": "Hartgen Archeological Associates, Inc",
+					"field": 25
+				},
+				{
+					"value": "STRUCTURES SURVEY - Hudson Heritage",
+					"field": 11
+				},
+				{
+					"value": null,
+					"field": 12
+				},
+				{
+					"value": "Hartgen Archeological Associates, Inc",
+					"field": 13
+				},
+				{
+					"value": null,
+					"field": 16
+				},
+				{
+					"value": "(152) - Greenhouse 1",
+					"field": 3
+				},
+				{
+					"value": null,
+					"field": 19
+				},
+				{
+					"value": null,
+					"field": 28
+				},
+				{
+					"value": null,
+					"field": 29
+				},
+				{
+					"value": null,
+					"field": 30
+				},
+				{
+					"value": null,
+					"field": 31
+				},
+				{
+					"value": null,
+					"field": 32
+				}
+			],
+			"page_count": null
+		},
+		{
+			"id": 4948,
+			"correspondent": null,
+			"document_type": 8,
+			"storage_path": null,
+			"title": "HRSH Documentation Pic - Hartgen Survey -  - Greenhouse",
+			"content": "AI IMAGE DESCRIPTION (v0.2.2): \n            The following description was provided by an Artificial Intelligence (GPT-4o by OpenAI).\n            It may not be fully accurate. Its purpose is to provide keywords and context\n            so that the document can be more easily searched.\n            Suggested Title: Interior of Abandoned Greenhouse at HRSH\n            Inferred Date: None\n            Suggested Tags: ['building interior', 'abandoned building']\n            Previous Title: HRSH Documentation Pic - Hartgen Survey -  - Greenhouse\n            Previous Date: 2015-12-23 00:00:00-05:00\n        \n\nDescription: This image depicts the interior of an abandoned greenhouse located within the Hudson River State Hospital campus. The structure, once vibrant with plant life, is now overtaken by nature as vines and weeds intertwine with the building’s framing. The slanted roof, made of glass panels, shows significant wear, with some panes missing or cracked, allowing sunlight to filter through but also letting in the elements. The frame is supported by rusted metal beams that highlight signs of corrosion and neglect. The floor is cluttered with dried leaves and remnants of what was once cultivated here. Long, narrow planting beds are visible, now left untended and overgrown, surrounded by creeping vines that drape from the roof. The atmosphere conveys a sense of desolation and decay, with an overall muted color palette dominated by shades of brown, green, and rust. Light filtering through the glass creates a soft glow, contrasting with the dark, damp corners of the greenhouse. This image serves as a historical documentation of the evolving state of the greenhouse and its surroundings, preserving its visual history amidst continuing deterioration. Keywords: abandoned greenhouse, HRSH, historical documentation, decay, overgrown vegetation, rusted beams, deteriorating glass, nature reclaiming structures.",
+			"tags": [
+				162,
+				2,
+				160
+			],
+			"created": "2015-12-23T00:00:00-05:00",
+			"created_date": "2015-12-23",
+			"modified": "2025-03-01T15:30:13.287180-05:00",
+			"added": "2025-02-05T16:25:00.943196-05:00",
+			"deleted_at": null,
+			"archive_serial_number": null,
+			"original_file_name": "Photo - 139 - Building - 152 - looking - southwest.jpeg",
+			"archived_file_name": "2015-12-23 HRSH Documentation Pic - Hartgen Survey -  - Greenhouse.pdf",
+			"owner": 3,
+			"user_can_change": true,
+			"is_shared_by_requester": true,
+			"notes": [],
+			"custom_fields": [
+				{
+					"value": "Hartgen Archeological Associates, Inc",
+					"field": 25
+				},
+				{
+					"value": "STRUCTURES SURVEY - Hudson Heritage",
+					"field": 11
+				},
+				{
+					"value": null,
+					"field": 12
+				},
+				{
+					"value": "Hartgen Archeological Associates, Inc",
+					"field": 13
+				},
+				{
+					"value": null,
+					"field": 16
+				},
+				{
+					"value": "(152) - Greenhouse 1",
+					"field": 3
+				},
+				{
+					"value": null,
+					"field": 19
+				},
+				{
+					"value": null,
+					"field": 14
+				},
+				{
+					"value": null,
+					"field": 15
+				},
+				{
+					"value": null,
+					"field": 28
+				},
+				{
+					"value": null,
+					"field": 29
+				},
+				{
+					"value": null,
+					"field": 30
+				},
+				{
+					"value": null,
+					"field": 31
+				},
+				{
+					"value": null,
+					"field": 32
+				}
+			],
+			"page_count": null
+		},
+		{
+			"id": 4968,
+			"correspondent": null,
+			"document_type": 8,
+			"storage_path": null,
+			"title": "HRSH Documentation Pic - Hartgen Survey -",
+			"content": "AI IMAGE DESCRIPTION (v0.2.2): \n            The following description was provided by an Artificial Intelligence (GPT-4o by OpenAI).\n            It may not be fully accurate. Its purpose is to provide keywords and context\n            so that the document can be more easily searched.\n            Suggested Title: Overgrown Structure at HRSH - Documentation Photo\n            Inferred Date: None\n            Suggested Tags: ['building exterior', 'urban exploration']\n            Previous Title: HRSH Documentation Pic - Hartgen Survey -\n            Previous Date: 2015-12-23 00:00:00-05:00\n        \n\nDescription: The image depicts an overgrown area at the Hudson River State Hospital site, featuring a partially visible structure surrounded by a thick layer of fallen leaves and underbrush. The foreground is dominated by a carpet of brown, decaying foliage, indicating late autumn or early winter conditions. In the background, the structure appears to be an old building or enclosure, partially obscured by entangled vines and branches. Its walls are made of a faded green material, possibly metal, and show signs of rust and neglect. The framework of the structure is barely discernible due to the dense growth of vegetation. Surrounding trees are leafless, their branches reaching out in various directions, adding to the desolate atmosphere of the scene. The overall color tone of the image leans towards muted browns and grays, contributing to a somber aesthetic. The lack of human presence and signs of abandonment suggest long-term neglect. Keywords: abandoned campus, Hudson River State Hospital, overgrown area, historical documentation, decaying structures, seasonal change, nature reclaiming space, neglect.",
+			"tags": [
+				6,
+				162,
+				159,
+				2
+			],
+			"created": "2015-12-23T00:00:00-05:00",
+			"created_date": "2015-12-23",
+			"modified": "2025-03-01T15:34:55.014759-05:00",
+			"added": "2025-02-05T16:29:36.906075-05:00",
+			"deleted_at": null,
+			"archive_serial_number": null,
+			"original_file_name": "Photo - 140 - Building - 152a - looking - northwest.jpeg",
+			"archived_file_name": "2015-12-23 HRSH Documentation Pic - Hartgen Survey -.pdf",
+			"owner": 3,
+			"user_can_change": true,
+			"is_shared_by_requester": true,
+			"notes": [],
+			"custom_fields": [
+				{
+					"value": "Hartgen Archeological Associates, Inc",
+					"field": 25
+				},
+				{
+					"value": "STRUCTURES SURVEY - Hudson Heritage",
+					"field": 11
+				},
+				{
+					"value": null,
+					"field": 12
+				},
+				{
+					"value": "Hartgen Archeological Associates, Inc",
+					"field": 13
+				},
+				{
+					"value": null,
+					"field": 16
+				},
+				{
+					"value": "(152a) - Unknown",
+					"field": 3
+				},
+				{
+					"value": null,
+					"field": 19
+				},
+				{
+					"value": null,
+					"field": 28
+				},
+				{
+					"value": null,
+					"field": 29
+				},
+				{
+					"value": null,
+					"field": 30
+				},
+				{
+					"value": null,
+					"field": 31
+				},
+				{
+					"value": null,
+					"field": 32
+				}
+			],
+			"page_count": null
+		},
+		{
+			"id": 230,
+			"correspondent": 1,
+			"document_type": 8,
+			"storage_path": null,
+			"title": "Greenhouse at Hudson River State Hospital",
+			"content": "IMAGE DESCRIPTION: \n            Suggested Title: Greenhouse at Hudson River State Hospital\n            Inferred Date: Date unknown\n            Suggested Tags: ['building exterior', 'historical architecture', 'black and white', 'asylum patients', 'therapeutic gardening']\n            Description: The image depicts a greenhouse located at the Hudson River State Hospital in Poughkeepsie, New York. This structure, with a sloped glass roof and large panes, has visible wear and tear, indicating its age. Surrounding the greenhouse are sparse patches of grass and a well-maintained row of flowering plants, primarily daffodils, which add a touch of color to the otherwise monochrome scene. The greenhouse itself shows signs of previous maintenance but appears to be largely unused, suggesting a historical significance as part of the hospital’s therapeutic activities or horticultural therapy programs.\n\nThe photograph has a slightly faded quality, with soft grays and whites dominating the color palette, typical of black and white images from the mid-20th century. Tree branches from nearby deciduous trees are visible in the background, hinting at the changing seasons. The atmosphere is tranquil and reflective, providing a glimpse into the quieter, perhaps more serene aspects of institutional life.\n\nNoteworthy details include the doorway to the greenhouse, which is slightly ajar, possibly inviting exploration of the interior, although no people are visible in the frame. The marker '#152' is hand-written in the upper area of the image, suggesting this could be part of a series or inventory of photographs. The ground shows signs of recent care, with tilled earth and remnants of gardening activity. This scene could have been a space of rehabilitation or recreation for patients during its operational years.\n\nKeywords: greenhouse, horticulture, institutional therapy, historical architecture, Poughkeepsie, serene environment, patient activities, botanical therapy.\n            Previous Title: 152 - GREENHOUSE-topaz\n            Previous Date: 1991-01-07",
+			"tags": [
+				6,
+				162,
+				18,
+				159,
+				2
+			],
+			"created": "1991-01-07T00:00:00-05:00",
+			"created_date": "1991-01-07",
+			"modified": "2025-02-08T19:42:52.786490-05:00",
+			"added": "2025-01-15T14:07:11.557205-05:00",
+			"deleted_at": null,
+			"archive_serial_number": null,
+			"original_file_name": "152 - GREENHOUSE-topaz.png",
+			"archived_file_name": "1991-01-07 CRIS Greenhouse at Hudson River State Hospital.pdf",
+			"owner": 3,
+			"user_can_change": true,
+			"is_shared_by_requester": true,
+			"notes": [],
+			"custom_fields": [
+				{
+					"value": null,
+					"field": 11
+				},
+				{
+					"value": null,
+					"field": 12
+				},
+				{
+					"value": null,
+					"field": 13
+				},
+				{
+					"value": "152",
+					"field": 3
+				},
+				{
+					"value": "CD-AB",
+					"field": 16
+				},
+				{
+					"value": null,
+					"field": 25
+				},
+				{
+					"value": null,
+					"field": 28
+				},
+				{
+					"value": null,
+					"field": 29
+				},
+				{
+					"value": null,
+					"field": 30
+				},
+				{
+					"value": null,
+					"field": 31
+				},
+				{
+					"value": null,
+					"field": 32
+				}
+			],
+			"page_count": null
+		},
+		{
+			"id": 7036,
+			"correspondent": 1,
+			"document_type": 2,
+			"storage_path": null,
+			"title": "BPC - Building-Structure Inventory Form - Building 52",
+			"content": ": ‘ FOR OFFICE USE ONLY\n,) BUILDING-STRUCTURE INVENTORY FORM\ny UNIQUE SITE NO. - YO- 5266\nDIVISION FOR HISTORIC PRESERVATION QUAD\nNEW YORK STATE PARKS AND RECREATION SERIES\nALBANY, NEW YORK (518) 474-0479 NEG. NO.\nYOUR NAME: _M- Gallagher DATE: December 20, 1982\n\nYOUR ADDRESS: 36 Clifton Blvd. ,BinghamtortELEPHONE: 607-723-6934\n\nORGANIZATION (if any): Siow) 9D 2 e, Q2OX Ch\n\nRE ER RS Ee RE eee, a ee ee ek ee\n\nIDENTIFICATION BINGHIMTIW PSYCHIATRIC CEwRR *\n1. BUILDING NAME(S):. (Fairmount¥ (Mo 52 a\n2. COUNTY: Broome TOWN/CITY:_ Binghamton _ VILLAGE:\n3. STREET LOCATION:, —__ . Youngs Lom *\n4. OWNERSHIP: a. public x] b. private L)\n5. PRESENT OWNER:NYState (Dept. Mental HygiADGRESS: 44 Holland Ave.. Alhanv. NY\n6. USE: Original: patient residence Present: vacant\n7. ACCESSIBILITY TO PUBLIC: Exterior visible from public road: Yes &el No O\nInterior accessible: Explain no, locked/vacant\nDESCRIPTION\n8. BUILDING a. clapboard] b. stone 1) c. brick GJ d. board and batten 1)\nMATERIAL: e. cobblestone (] f. shingles] g. stucco L] other:\n9. STRUCTURAL a. wood frame with interlocking joints [1]\nSYSTEM: b. wood frame with light members []\n(if known) c. masonry load bearing walls &]\nd. metal (explain)\ne. other\n\n10. CONDITION: a. excellent (1 ~—_b. good c. fair [t d. deteriorated\n11. INTEGRITY: a. original site Gl b. moved [] if so,when?\n\nc. list major alterations and dates (if known): z\nTwo story east and west wings added in 1929; one story brick transformer\n\nvault added to east portion or rear (north) in 1958; one-half story\nbrick addition to west portion of rear (and subsequent alterations to\n\n12. PHOTO: one window and door on it)ymg ! door (continued next page)\nsee also next page p\n\n\\\n\nPhoto CA: front (south)\nand east facades\n\nIls\n\nSIGN\n19.\n\n21.\n\nTHREATS TO BUILDING: a. none known LJ b. zoning ec. roads 0)\nd. developers CO e. deterioration &]\nf. other: planned for demolition\nRELATED OUTBUILDINGS AND PROPERTY:\na. barn] b. carriage house L) c. garage L)\nd. privy e. shed f. greenhouse L]\ng.shop 1) ___h. gardens\ni. landscape features:\nj. other:\n\nSURROUNDINGS OF THE BUILDING (check more than one if necessary):\na. open land &] b. woodland 1\n\nc. scattered buildings &]\n\nd.densely builtup 1] __e. commercial C1\nf. industrial 1) g. residential D)\n\nh. other:\n\nINTERRELATIONSHIP OF BUILDING AND SURROUNDINGS:\n(Indicate if building or structure is in an historic district)\n\nFairmount is situated near the western boundary of the Psychiatric Center on\na plateau of the hill sloping upwards from the Susquehanna River. The site\ncommands a dramatic view of the city. A drive encircles the building. To the\nsouth is open land; to the north and northeast are two large-scale, modern hos-\n\nOTRER-NOPABLEPERTURESHR SCH BIR ANE spre AhRiming REM remerdurKnewAEL residence.\n\nThe two and one-half story building (with full basement) is constructed pri-\nmarily of red brick. The top story, rear (north) towers, quoins, and some\nwindow heads are tan brick. Light colored, rock-faced stone lintels, sills and\nkeystones appear around some windows; a light colored rock-faced stone course\nruns along the top of the secong story. The foundation is a red, rock-faced\nIFICARCE (probably sandstone). Two story front (south) corridors flanking the\n\nDATE OF INITIAL CONSTRUCTION:_1906 (continued next page)\n\nARCHITECT: _probably New York State Architect's Office\n\nBUILDER:\n\nHISTORICAL AND ARCHITECTURAL IMPORTANCE:\n\nFairmount is one of the Binghamton Psychiatric Center's most distinguished\nbuildings. It is the only large-scale example of its style in the city. The\nbuilding's manor-like massing and its hilltop setting contribute to its signif-\nicance.\n\nFairmount was one of several large structures built at the hospital in 1908.\nAnnual reports of the hospital from 1897 to 1906 indicate the need for and re-\nquest for the construction of a building for the acutely mental ill. Fairmount\nwas constructed especially for \"acute\" patients in response to this request.\nThe building originally housed four wards (two for women and two for men), a\npharmacy, and physicians’ quarters. The building was well over two years in\nconstruction according to a newspaper article of the period. A 1908 news-\n\nSOURCES: (continued next page)\nAnnual Reports of the Binghamton State Hospital. (For the years 1897-1906, 1911,\nand 1961.) é z\n\n\"Binghamton State Hospital.\" (66pp., no author or date provided; copies in\nTHEMMedical Library at BPC and the SHPO.) :\nNew York State Office of General Services. Department of Mental Hygiene Build-\ning Inventory: Binghamton State Hospital. A\\how4 \\W1S069,Te-4475 J.\nSanborn Map Co. Map of Binghamton. NY: Sanborn Map Co., 1918. (Updated per-\niodically to October 1949.)\n\"State Hospital Managers Meet.\" Broome Republican, 26 September 1908.\n\nLic.\n\n18.\n\n20.\n\nNo. 52 (Fairmount) p.2\nBinghamton, NY, Psychiatric Center\n\ncon inugd x A 5 4\nreplaced central second story window on east side of east wing; central first\n\nstory window or door on east side of east wing partially bricked in and boarded\nover.\n\ncontinued\nthree bay central portion of the building are of frame construction with clap-\nboard exteriors. The three bay front porch with paired doric columns and balcony\nis of wood construction with the exception of corner posts which are brick. A\ncornerstone (1908) appears under the eastern most column of the front porch.\nThe rear square towers are distinguished with corbelling and crenulation. The\nhipped roof has wall dormers on the front facade and hipped roof dormers on the\nrear. Simple wood vergeboards and corner brackets decorate the gabled dormers.\nRafters appear under the eaves. Several barn-like ventilators and skylights\nare located on the roof,\n\ncontinued\npaper article mentions that the State Architect was in the process of preparing\nplans for other buildings at the hospital so that it seems likely the State\nArchitect also designed Fairmount.\n\nThe building was closed from August 1918 to March 1919 due to a flu epidemic.\nAbout 1929 the two story, five bay east and west wings were added to the build-\ning. The wings continue the character and design of the original building. Some-\ntime prior to 1961 the building was transformed to a Childrens' Unit. A small\nsign over one of the building's doorways indicates it housed a school as well.\nThe building was vacated and closed in 1976.\n\nFairmount displays influences of the Neo-Classical Style as well as Victorian\npolychromy. The building's massive, bilaterally symmetrical front facade,\nhighlighted by a projecting, balconied porch, is a typical Classical motif. Re-\nceeding and projecting planes contribute a visual complexity to the structure's\nmassing. Different colored and textured stone and brick for window trim, quoins,\nbelt courses, upper story and foundation are characteristic of the Victorian\nGothic Style. The structure's two large, rear brick towers lend a castellic\nappearance to side and north views of the building and were perhaps intended to\ncomplement the \"Castellic Gothic\" stylization of the original inebriate asylum\n(bldg. no. 47).\n\nNo. 52 (Fairmount)\nBinghamton, NY, Psychiatric Center\n\nPhoto CD: part of front (south) facade\n\na eee\n\nPhoto BZ: east and rear (north) facades\n\nAe\n\r\n\rAI IMAGE DESCRIPTION (v0.2.2): \n            The following description was provided by an Artificial Intelligence (GPT-4o by OpenAI).\n            It may not be fully accurate. Its purpose is to provide keywords and context\n            so that the document can be more easily searched.\n            Suggested Title: Building-Structure Inventory Form - Building 52\n            Inferred Date: 1982-12-20\n            Suggested Tags: ['building exterior', 'historic preservation', 'asylum patients']\n            Previous Title: BPC - Building-Structure Inventory Form - Building 52\n            Previous Date: 1982-12-20\n        \n\nSummary: This document is a Building-Structure Inventory Form for the Binghamton Psychiatric Center, specifically for the building known as Fairmount. It details the historical preservation status of the building, including its ownership, condition, accessibility, and significant alterations made over the years. The date recorded is December 20, 1982, and the document includes the name of M. Gallagher as the submitter.\n\nContent: The form includes sections for identification, description, and condition of the building. Key details extracted include: Building Name: Fairmount (No. 52), Ownership: Public, Use: Original - patient residence, and construction materials used. The document is typed and utilizes official letterhead from the New York State Parks and Recreation. The tone is formal and procedural. The document features institutional markings including a unique site number and contact information. There are no visible anomalies, and it appears to be in good condition with a date noted at the top. Keywords: building inventory, historic preservation, Binghamton Psychiatric Center, Fairmount, architecture.",
+			"tags": [
+				38,
+				6,
+				46,
+				162,
+				159,
+				58
+			],
+			"created": "1982-12-20T00:00:00-05:00",
+			"created_date": "1982-12-20",
+			"modified": "2025-02-28T17:00:19.470143-05:00",
+			"added": "2025-02-24T17:13:27.301997-05:00",
+			"deleted_at": null,
+			"archive_serial_number": null,
+			"original_file_name": "BPC - Building-Structure Inventory Form - Building 52.pdf",
+			"archived_file_name": "1982-12-20 CRIS BPC - Building-Structure Inventory Form - Building 52.pdf",
+			"owner": 10,
+			"user_can_change": true,
+			"is_shared_by_requester": false,
+			"notes": [],
+			"custom_fields": [
+				{
+					"value": null,
+					"field": 32
+				},
+				{
+					"value": null,
+					"field": 11
+				},
+				{
+					"value": null,
+					"field": 12
+				},
+				{
+					"value": null,
+					"field": 13
+				},
+				{
+					"value": null,
+					"field": 25
+				},
+				{
+					"value": null,
+					"field": 28
+				},
+				{
+					"value": null,
+					"field": 29
+				},
+				{
+					"value": null,
+					"field": 30
+				},
+				{
+					"value": null,
+					"field": 31
+				},
+				{
+					"value": "52",
+					"field": 3
+				},
+				{
+					"value": null,
+					"field": 19
+				}
+			],
+			"page_count": 4
+		}
+	]
+}

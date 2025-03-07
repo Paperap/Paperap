@@ -330,7 +330,7 @@ class TestStoragePath(BaseQuerySetTest):
 class TestContent(BaseQuerySetTest):
     def test_content_contains(self):
         sample_data = load_sample_data('documents___content__contains.json')
-        search_string = "do eiusmod tempor incididunt ut labore et dolore magna"
+        search_string = "ample-cont"
         self.assert_queryset_results(
             self.queryset.content, 
             search_string, 
@@ -380,36 +380,16 @@ class TestCreated(BaseQuerySetTest):
 
 class TestCustomFields(BaseQuerySetTest):
     def test_search_no_response(self):
-        self._test_no_results(self.queryset.custom_field_search, 'Zoom')
+        self._test_no_results(self.queryset.custom_field_fullsearch, 'Zoom')
         
     def test_search(self):
         sample_data = load_sample_data('documents___custom_fields__icontains__zoom.json')
         self.assert_queryset_results(
-            self.queryset.custom_field_search, 
+            self.queryset.custom_field_fullsearch, 
             'zoom', 
             sample_data, 
             sample_data['count']
         )
-         
-    def test_search_case_sensitive(self):
-        #sample_data = load_sample_data('documents___custom_fields__icontains__zoom.json')
-        #expected_count = sample_data['count']
-        #with patch('paperap.client.PaperlessClient.request') as mock_request:
-        #    mock_request.return_value = sample_data
-        qs = self.queryset.custom_field_search('ZOOM', case_insensitive=False)
-        self.assertIsInstance(qs, DocumentQuerySet)
-        #self.assertEqual(qs.count(), expected_count)
-        count = 0
-        for document in qs:
-            count += 1
-            self.assertIsInstance(document, Document)
-            found_ids = document.custom_field_ids
-            self.assertIn(27, found_ids)
-                
-            # Avoid requesting next url (infinitely)
-            break
-
-        self.assertEqual(count, 1, "Documents were not iterated over.")
 
     def test_has_id(self):
         sample_data = load_sample_data('documents___custom_fields__icontains__zoom.json')
@@ -544,12 +524,29 @@ class TestCustomFields(BaseQuerySetTest):
                 result = self.queryset._normalize_custom_field_query(query)
                 self.assertEqual(result, expected, f'Subtest {count}: Expected {expected}')
 
-    def test_custom_field_query(self):
-        sample_data = load_sample_data('documents___custom_field_query__building_52.json')
+    def test_query_exact(self):
+        sample_data = load_sample_data('documents___custom_field_query__building__exact__52.json')
         expected_count = sample_data['count']
         with patch('paperap.client.PaperlessClient.request') as mock_request:
             mock_request.return_value = sample_data
             qs = self.queryset.custom_field_query("Building #", "exact", 52)
+            self.assertIsInstance(qs, DocumentQuerySet)
+            self.assertEqual(qs.count(), expected_count)
+            count = 0
+            for document in qs:
+                count += 1
+                self.assertIsInstance(document, Document)
+                # Avoid requesting next url (infinitely)
+                break
+
+            self.assertEqual(count, 1, "Documents were not iterated over.")
+            
+    def test_query_icontains(self):
+        sample_data = load_sample_data('documents___custom_field_query__building__icontains__52.json')
+        expected_count = sample_data['count']
+        with patch('paperap.client.PaperlessClient.request') as mock_request:
+            mock_request.return_value = sample_data
+            qs = self.queryset.custom_field_query("Building #", "icontains", "52")
             self.assertIsInstance(qs, DocumentQuerySet)
             self.assertEqual(qs.count(), expected_count)
             count = 0
@@ -586,6 +583,59 @@ class TestCustomFields(BaseQuerySetTest):
 
         self.assertEqual(count, 1, "Documents were not iterated over.")
 
+
+class TestCustomFieldAccess(BaseQuerySetTest):
+    def test_custom_field_noparams(self):
+        sample_data = load_sample_data('documents___custom_field_query__building__icontains__52.json')
+        expected_count = sample_data['count']
+        with patch('paperap.client.PaperlessClient.request') as mock_request:
+            mock_request.return_value = sample_data
+            qs = self.queryset.custom_field("Building #", 52)
+            self.assertIsInstance(qs, DocumentQuerySet)
+            self.assertEqual(qs.count(), expected_count)
+            count = 0
+            for document in qs:
+                count += 1
+                self.assertIsInstance(document, Document)
+                # Avoid requesting next url (infinitely)
+                break
+
+        self.assertEqual(count, 1, "Documents were not iterated over.")
+
+    def test_custom_field_exact(self):
+        sample_data = load_sample_data('documents___custom_field_query__building__exact__52.json')
+        expected_count = sample_data['count']
+        with patch('paperap.client.PaperlessClient.request') as mock_request:
+            mock_request.return_value = sample_data
+            qs = self.queryset.custom_field("Building #", 52, exact=True, case_insensitive=False)
+            self.assertIsInstance(qs, DocumentQuerySet)
+            self.assertEqual(qs.count(), expected_count)
+            count = 0
+            for document in qs:
+                count += 1
+                self.assertIsInstance(document, Document)
+                # Avoid requesting next url (infinitely)
+                break
+
+        self.assertEqual(count, 1, "Documents were not iterated over.")
+
+    def test_custom_field_iexact(self):
+        sample_data = load_sample_data('documents___custom_field_query__building__exact__52.json')
+        expected_count = sample_data['count']
+        with patch('paperap.client.PaperlessClient.request') as mock_request:
+            mock_request.return_value = sample_data
+            qs = self.queryset.custom_field("Building #", 52, exact=True)
+            self.assertIsInstance(qs, DocumentQuerySet)
+            self.assertEqual(qs.count(), expected_count)
+            count = 0
+            for document in qs:
+                count += 1
+                self.assertIsInstance(document, Document)
+                # Avoid requesting next url (infinitely)
+                break
+
+        self.assertEqual(count, 1, "Documents were not iterated over.")
+    
                              
 if __name__ == "__main__":
     unittest.main()

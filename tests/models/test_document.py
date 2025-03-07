@@ -297,7 +297,7 @@ class TestRequestDocument(TestCase):
 class TestCustomFieldAccess(TestCase):
 
     def setUp(self):
-        self.document = MagicMock(spec=Document)
+        super().setUp()
         self.custom_fields = [
             {"field": 1, "value": "Test Value 1"},
             {"field": 2, "value": "Test Value 2"},
@@ -308,7 +308,17 @@ class TestCustomFieldAccess(TestCase):
             {"field": 57, "value": False},
             {"field": 58, "value": None},
         ]
-        self.document.custom_fields = self.custom_fields
+        self.resource = DocumentResource(self.client)
+        self.document = Document.from_dict({
+            "id": 1,
+            "created": "2025-03-01T12:00:00Z",
+            "updated": "2025-03-02T12:00:00Z",
+            "title": "Test Document",
+            "correspondent": 1,
+            "document_type": 1,
+            "tags": [1, 2, 3],
+            "custom_fields": self.custom_fields
+        }, self.resource)
 
     def test_custom_field_success(self):
         for field in self.custom_fields:

@@ -426,13 +426,12 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter(user_can_change=value)
 
-    def custom_field_search(self, value: str, *, case_insensitive: bool = True) -> Self:
+    def custom_field_fullsearch(self, value: str, *, case_insensitive: bool = True) -> Self:
         """ 
-        Filter documents by custom field name or value.
+        Filter documents by searching through both custom field name and value.
 
         Args:
-            field_name: The name of the custom field
-            value: The value to filter by
+            value: The search string
 
         Returns:
             Filtered DocumentQuerySet
@@ -440,6 +439,26 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         if case_insensitive:
             return self.filter(custom_fields__icontains=value)
         raise NotImplementedError("Case-sensitive custom field search is not supported by Paperless NGX")
+
+    def custom_field(self, field : str, value : Any, *, exact : bool = False, case_insensitive : bool = True) -> Self:
+        """
+        Filter documents by custom field.
+
+        Args:
+            field: The name of the custom field
+            value: The value to filter by
+            exact: If True, match the exact value, otherwise use contains
+
+        Returns:
+            Filtered DocumentQuerySet
+        """
+        if exact:
+            if case_insensitive:
+                return self.custom_field_query(field, "iexact", value)
+            return self.custom_field_query(field, "exact", value)
+        if case_insensitive:
+            return self.custom_field_query(field, "icontains", value)
+        return self.custom_field_query(field, "contains", value)
 
     def has_custom_field_id(self, id : int | list[int], *, exact : bool = False) -> Self:
         """
