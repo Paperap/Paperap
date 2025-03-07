@@ -44,7 +44,6 @@ _PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel", default="Pa
 
 
 class Parser(Generic[_PaperlessModel]):
-    model: type[_PaperlessModel]
     """
     Parser for converting API data into model instances.
 
@@ -61,6 +60,8 @@ class Parser(Generic[_PaperlessModel]):
         # Create a parser for a Document model
         parser = Parser(Document)
     """
+
+    model: type[_PaperlessModel]
 
     def __init__(self, model: type[_PaperlessModel]):
         self.model = model
@@ -128,6 +129,19 @@ class Parser(Generic[_PaperlessModel]):
     def parse_datetime(self, value: datetime.datetime) -> datetime.datetime: ...
 
     def parse_datetime(self, value: str | datetime.datetime | None) -> datetime.datetime | None:
+        """
+        Parse a value into a datetime.
+
+        Args:
+            value: The value to parse.
+
+        Returns:
+            The parsed datetime, or None if parsing fails.
+
+        Examples:
+            # Parse a string into a datetime
+            result = parser.parse_datetime("2025-03-04T12:00:00Z")
+        """
         if isinstance(value, datetime.datetime):
             return value
         if isinstance(value, str):
@@ -147,6 +161,19 @@ class Parser(Generic[_PaperlessModel]):
     def parse_date(self, value: datetime.datetime) -> datetime.date: ...
 
     def parse_date(self, value: str | datetime.datetime | None) -> datetime.date | None:
+        """
+        Parse a value into a date.
+
+        Args:
+            value: The value to parse.
+
+        Returns:
+            The parsed date, or None if parsing fails.
+
+        Examples:
+            # Parse a string into a date
+            result = parser.parse_date("2025-03-04")
+        """
         if isinstance(value, datetime.datetime):
             return value.date()
         if isinstance(value, datetime.date):
@@ -167,6 +194,20 @@ class Parser(Generic[_PaperlessModel]):
     def parse_enum(self, value: None, enum_type: type[Enum]) -> None: ...
 
     def parse_enum(self, value: Enum | str | int | None, enum_type: type[Enum]) -> Enum | None:
+        """
+        Parse a value into an enum.
+
+        Args:
+            value: The value to parse.
+            enum_type: The enum type to parse the value into.
+
+        Returns:
+            The parsed enum, or None if parsing fails.
+
+        Examples:
+            # Parse a string into an enum
+            result = parser.parse_enum("ENUM_VALUE", MyEnum)
+        """
         if value is None:
             return None
 
@@ -192,6 +233,19 @@ class Parser(Generic[_PaperlessModel]):
     def parse_bool(self, value: None) -> None: ...
 
     def parse_bool(self, value: str | int | bool | None) -> bool | None:
+        """
+        Parse a value into a boolean.
+
+        Args:
+            value: The value to parse.
+
+        Returns:
+            The parsed boolean, or None if parsing fails.
+
+        Examples:
+            # Parse a string into a boolean
+            result = parser.parse_bool("true")
+        """
         if value is None:
             return None
 
@@ -222,6 +276,19 @@ class Parser(Generic[_PaperlessModel]):
     def parse_int(self, value: None) -> None: ...
 
     def parse_int(self, value: int | float | Decimal | str | None) -> int | None:
+        """
+        Parse a value into an integer.
+
+        Args:
+            value: The value to parse.
+
+        Returns:
+            The parsed integer, or None if parsing fails.
+
+        Examples:
+            # Parse a string into an integer
+            result = parser.parse_int("123")
+        """
         if value is None:
             return None
 
@@ -240,6 +307,19 @@ class Parser(Generic[_PaperlessModel]):
     def parse_float(self, value: None) -> None: ...
 
     def parse_float(self, value: int | float | Decimal | str | None) -> float | None:
+        """
+        Parse a value into a float.
+
+        Args:
+            value: The value to parse.
+
+        Returns:
+            The parsed float, or None if parsing fails.
+
+        Examples:
+            # Parse a string into a float
+            result = parser.parse_float("123.45")
+        """
         if value is None:
             return None
 
@@ -249,6 +329,19 @@ class Parser(Generic[_PaperlessModel]):
         raise TypeError(f"Unsupported type: {type(value)}")
 
     def parse_data(self, data: dict[str, Any]) -> dict[str, Any]:
+        """
+        Parse a dictionary of data into the appropriate types.
+
+        Args:
+            data: The data to parse.
+
+        Returns:
+            The parsed data.
+
+        Examples:
+            # Parse a dictionary of data
+            parsed_data = parser.parse_data(api_data)
+        """
         fields = self._get_model_fields()
         for field, value in data.items():
             if field in fields:
@@ -256,7 +349,12 @@ class Parser(Generic[_PaperlessModel]):
         return data
 
     def _get_model_fields(self) -> dict[str, type]:
-        """Get all fields in the model."""
+        """
+        Get all fields in the model.
+
+        Returns:
+            A dictionary of field names and their types.
+        """
         hints = get_type_hints(self.model)
         fields = {}
 

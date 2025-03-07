@@ -62,12 +62,14 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
     Returns:
         A new instance of QuerySet.
 
-    Raises:
-        FilterDisabledError: If a filter is not allowed by the resource.
-
     Examples:
         # Create a QuerySet for documents
-        docs = QuerySet(resource=client.documents)
+        >>> docs = client.documents()
+        >>> for doc in docs:
+        ...    print(doc.id)
+        1
+        2
+        3
     """
 
     resource: "PaperlessResource[_PaperlessModel]"
@@ -98,10 +100,31 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
 
     @property
     def _model(self) -> type[_PaperlessModel]:
+        """
+        Return the model class associated with the resource.
+
+        Returns:
+            The model class
+
+        Examples:
+            # Create a model instance
+            >>> model = queryset._model(**params)
+        """
         return self.resource.model_class
 
     @property
     def _meta(self) -> "PaperlessModel.Meta":
+        """
+        Return the model's metadata.
+
+        Returns:
+            The model's metadata
+
+        Examples:
+            # Get the model's metadata
+            >>> queryset._meta.read_only_fields
+            {'id', 'added', 'modified'}
+        """
         return self._model._meta
 
     def _reset(self) -> None:

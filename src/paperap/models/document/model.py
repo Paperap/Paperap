@@ -45,6 +45,35 @@ if TYPE_CHECKING:
 class Document(StandardModel):
     """
     Represents a Paperless-NgX document.
+
+    Attributes:
+        added: The timestamp when the document was added to the system.
+        archive_serial_number: The serial number of the archive.
+        archived_file_name: The name of the archived file.
+        content: The content of the document.
+        correspondent: The correspondent associated with the document.
+        created: The timestamp when the document was created.
+        created_date: The date when the document was created.
+        updated: The timestamp when the document was last updated.
+        custom_fields: Custom fields associated with the document.
+        deleted_at: The timestamp when the document was deleted.
+        document_type: The document type associated with the document.
+        is_shared_by_requester: Whether the document is shared by the requester.
+        notes: Notes associated with the document.
+        original_file_name: The original file name of the document.
+        owner: The owner of the document.
+        page_count: The number of pages in the document.
+        storage_path: The storage path of the document.
+        tags: The tags associated with the document.
+        title: The title of the document.
+        user_can_change: Whether the user can change the document.
+
+    Examples:
+        >>> document = client.documents().get(id=1)
+        >>> document.title = 'Example Document'
+        >>> document.save()
+        >>> document.title
+        'Example Document'
     """
 
     added: datetime | None = None
@@ -189,6 +218,15 @@ class Document(StandardModel):
 
         Returns:
             List of tags associated with this document.
+
+        Examples:
+            >>> document = client.documents().get(id=1)
+            >>> tags = document.get_tags()
+            >>> for tag in tags:
+            ...     print(f'{tag.name} # {tag.id}')
+            'Tag 1 # 1'
+            'Tag 2 # 2'
+            'Tag 3 # 3'
         """
         if not self.tags:
             return self._meta.resource.client.tags().none()
@@ -203,6 +241,12 @@ class Document(StandardModel):
 
         Returns:
             The correspondent or None if not set.
+
+        Examples:
+            >>> document = client.documents().get(id=1)
+            >>> correspondent = document.get_correspondent()
+            >>> correspondent.name
+            'Example Correspondent'
         """
         if not self.correspondent:
             return None
@@ -214,6 +258,12 @@ class Document(StandardModel):
 
         Returns:
             The document type or None if not set.
+
+        Examples:
+            >>> document = client.documents().get(id=1)
+            >>> document_type = document.get_document_type()
+            >>> document_type.name
+            'Example Document Type
         """
         if not self.document_type:
             return None
@@ -225,6 +275,12 @@ class Document(StandardModel):
 
         Returns:
             The storage path or None if not set.
+
+        Examples:
+            >>> document = client.documents().get(id=1)
+            >>> storage_path = document.get_storage_path()
+            >>> storage_path.name
+            'Example Storage Path'
         """
         if not self.storage_path:
             return None

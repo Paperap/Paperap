@@ -81,6 +81,25 @@ class PaperlessModel(BaseModel, ABC):
     _meta: "Meta[Self]" = PrivateAttr()
 
     class Meta(Generic[_Self]):
+        """
+        Metadata for the PaperlessModel.
+
+        Attributes:
+            name: The name of the model.
+            read_only_fields: Fields that should not be modified.
+            filtering_disabled: Fields disabled for filtering.
+            filtering_fields: Fields allowed for filtering.
+            supported_filtering_params: Params allowed during queryset filtering.
+            blaclist_filtering_params: Params disallowed during queryset filtering.
+            filtering_strategies: Strategies for filtering.
+            parser: The type of parser for API data.
+            resource: The PaperlessResource instance.
+            queryset: The type of QuerySet for the model.
+
+        Raises:
+            ValueError: If both ALLOW_ALL and ALLOW_NONE filtering strategies are set.
+        """
+
         # The name of the model.
         # It will default to the classname
         name: str
@@ -117,6 +136,15 @@ class PaperlessModel(BaseModel, ABC):
                 )
 
         def filter_allowed(self, filter_param: str) -> bool:
+            """
+            Check if a filter is allowed based on the filtering strategies.
+
+            Args:
+                filter_param: The filter parameter to check.
+
+            Returns:
+                True if the filter is allowed, False otherwise.
+            """
             if FilteringStrategies.ALLOW_ALL in self.filtering_strategies:
                 return True
 
@@ -151,6 +179,12 @@ class PaperlessModel(BaseModel, ABC):
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
+        """
+        Initialize subclass and set up metadata.
+
+        Args:
+            **kwargs: Additional keyword arguments.
+        """
         super().__init_subclass__(**kwargs)
 
         # Append read_only_fields from all parents to Meta
@@ -198,13 +232,35 @@ class PaperlessModel(BaseModel, ABC):
 
     @property
     def _resource(self) -> "PaperlessResource":
+        """
+        Get the resource associated with this model.
+
+        Returns:
+            The PaperlessResource instance.
+        """
         return self._meta.resource
 
     @property
     def _client(self) -> "PaperlessClient":
+        """
+        Get the client associated with this model.
+
+        Returns:
+            The PaperlessClient instance.
+        """
         return self._meta.resource.client
 
     def __init__(self, resource: "PaperlessResource", **data):
+        """
+        Initialize the model with resource and data.
+
+        Args:
+            resource: The PaperlessResource instance.
+            **data: Additional data to initialize the model.
+
+        Raises:
+            ValueError: If resource is not provided.
+        """
         if resource is None:
             raise ValueError("Resource is required for PaperlessModel")
 
@@ -314,9 +370,33 @@ class PaperlessModel(BaseModel, ABC):
 
 
 class StandardModel(PaperlessModel, ABC):
+    """
+    Standard model for Paperless-ngx API objects with an ID field.
+
+    Attributes:
+        id: Unique identifier for the model.
+
+    Returns:
+        A new instance of StandardModel.
+
+    Examples:
+        from paperap.models.abstract.model import StandardModel
+        class Document(StandardModel):
+            filename: str
+            contents : bytes
+    """
+
     id: int = Field(description="Unique identifier", default=0)
 
     class Meta(PaperlessModel.Meta[_Self], Generic[_Self]):
+        """
+        Metadata for the StandardModel.
+
+        Attributes:
+            read_only_fields: Fields that should not be modified.
+            whitelist_filtering_params: Params allowed during queryset filtering.
+        """
+
         # Fields that should not be modified
         read_only_fields: ClassVar[set[str]] = {"id"}
         whitelist_filtering_params = {
@@ -330,6 +410,10 @@ class StandardModel(PaperlessModel, ABC):
 
         Returns:
             True if the model is new, False otherwise.
+
+        Examples:
+            # Check if a Document instance is new
+            is_new = doc.is_new()
         """
         return self.id == 0
 

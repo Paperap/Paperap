@@ -10,7 +10,7 @@
        File:    profile.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -48,6 +48,8 @@ class Profile(StandardModel):
         >>> profile = Profile(email="example@example.com", password="securepassword", first_name="John", last_name="Doe")
         >>> print(profile.email)
     """
+
+    email: str
     password: str
     first_name: str
     last_name: str

@@ -10,7 +10,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -63,62 +63,31 @@ class ProfileQuerySet(StandardQuerySet["Profile"]):
         Examples:
             >>> profiles = ProfileQuerySet()
             >>> profiles = profiles.email("example@example.com")
-        Filter by email.
-
-        Args:
-            email: The email to filter by.
-            exact: Whether to filter by an exact match.
-
-        Returns:
-            A new ProfileQuerySet instance with the filter applied.
-        """Filter by first name.
-
-        Args:
-            value: The first name to filter by.
-            exact: Whether to filter by an exact match.
-            case_insensitive: Whether the match should be case insensitive.
-
-        Returns:
-            A new ProfileQuerySet instance with the filter applied.
 
         Examples:
-            >>> profiles = ProfileQuerySet()
-            >>> profiles = profiles.first_name("John")
+            >>> profiles = client.profiles().email("john.doe@gmail.com")
+            >>> profiles = client.profiles().email("gmail.com", exact=False)
+            >>> profiles = client.profiles().email("jOhN.DOE@gmail.com", case_insensitive=True)
+        """
         return self.filter_field_by_str("email", value, exact=exact, case_insensitive=case_insensitive)
 
     def first_name(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> ProfileQuerySet:
-        """Filter by last name.
-
-        Args:
-            value: The last name to filter by.
-            exact: Whether to filter by an exact match.
-            case_insensitive: Whether the match should be case insensitive.
-
-        Returns:
-            A new ProfileQuerySet instance with the filter applied.
-
-        Examples:
-            >>> profiles = ProfileQuerySet()
-            >>> profiles = profiles.last_name("Doe")
+        """
         Filter by first name.
 
         Args:
             first_name: The first name to filter by.
             exact: Whether to filter by an exact match.
-
-        Returns:
-            A new ProfileQuerySet instance with the filter applied.
-        """Filter by has usable password.
-
-        Args:
-            value: Whether the profile should have a usable password.
+            case_insensitive: Whether the match should be case insensitive.
 
         Returns:
             A new ProfileQuerySet instance with the filter applied.
 
         Examples:
-            >>> profiles = ProfileQuerySet()
-            >>> profiles = profiles.has_usable_password(True)
+            >>> profiles = client.profiles().first_name("John")
+            >>> profiles = client.profiles().first_name("John", exact=False)
+            >>> profiles = client.profiles().first_name("JOHN", case_insensitive=False)
+        """
         return self.filter_field_by_str("first_name", value, exact=exact, case_insensitive=case_insensitive)
 
     def last_name(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> ProfileQuerySet:
@@ -131,6 +100,11 @@ class ProfileQuerySet(StandardQuerySet["Profile"]):
 
         Returns:
             A new ProfileQuerySet instance with the filter applied.
+
+        Examples:
+            >>> profiles = client.profiles().last_name("Doe")
+            >>> profiles = client.profiles().last_name("Doe", exact=False)
+            >>> profiles = client.profiles().last_name("DOE", case_insensitive=False)
         """
         return self.filter_field_by_str("last_name", value, exact=exact, case_insensitive=case_insensitive)
 
@@ -143,5 +117,9 @@ class ProfileQuerySet(StandardQuerySet["Profile"]):
 
         Returns:
             A new ProfileQuerySet instance with the filter applied.
+
+        Examples:
+            >>> profiles = client.profiles().has_usable_password()
+            >>> profiles = client.profiles().has_usable_password(False)
         """
         return self.filter(has_usable_password=value)
