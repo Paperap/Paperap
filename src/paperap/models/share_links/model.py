@@ -52,9 +52,9 @@ class ShareLinks(StandardModel):
     class Meta(StandardModel.Meta):
         queryset = ShareLinksQuerySet
 
-    @field_serializer('expiration', 'created')
+    @field_serializer("expiration", "created")
     def serialize_datetime(self, value: datetime | None, _info):
         return value.isoformat() if value else None
-    
+
     def get_document(self) -> "Document":
         return self._client.documents().get(id=self.document)

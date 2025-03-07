@@ -36,7 +36,14 @@ from paperap.models.tag import Tag, TagQuerySet
 from paperap.models.task import Task, TaskQuerySet
 from paperap.models.ui_settings import UISettings, UISettingsQuerySet
 from paperap.models.user import Group, User, UserQuerySet, GroupQuerySet
-from paperap.models.workflow import Workflow, WorkflowAction, WorkflowTrigger, WorkflowQuerySet, WorkflowActionQuerySet, WorkflowTriggerQuerySet
+from paperap.models.workflow import (
+    Workflow,
+    WorkflowAction,
+    WorkflowTrigger,
+    WorkflowQuerySet,
+    WorkflowActionQuerySet,
+    WorkflowTriggerQuerySet,
+)
 
 __all__ = [
     "PaperlessModel",

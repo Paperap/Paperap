@@ -45,6 +45,7 @@ class Document(StandardModel):
     """
     Represents a Paperless-NgX document.
     """
+
     added: datetime | None = None
     archive_serial_number: str | None = None
     archived_file_name: str | None = None
@@ -69,8 +70,8 @@ class Document(StandardModel):
     class Meta(StandardModel.Meta):
         # NOTE: Filtering appears to be disabled by paperless on page_count
         queryset = DocumentQuerySet
-        read_only_fields = {'page_count', 'deleted_at', 'updated', 'is_shared_by_requester'}
-        filtering_disabled = {'page_count', 'deleted_at', 'updated', 'is_shared_by_requester'}
+        read_only_fields = {"page_count", "deleted_at", "updated", "is_shared_by_requester"}
+        filtering_disabled = {"page_count", "deleted_at", "updated", "is_shared_by_requester"}
         filtering_strategies = {FilteringStrategies.WHITELIST}
         whitelist_filtering_params = {
             "id__in",
@@ -89,7 +90,7 @@ class Document(StandardModel):
             "archive_serial_number__lt",
             "archive_serial_number__lte",
             "archive_serial_number__isnull",
-            "content__contains",       # maybe?
+            "content__contains",  # maybe?
             "correspondent__isnull",
             "correspondent__id__in",
             "correspondent__id",
@@ -97,7 +98,7 @@ class Document(StandardModel):
             "correspondent__name__iendswith",
             "correspondent__name__icontains",
             "correspondent__name__iexact",
-            "correspondent__slug__iexact",     # maybe?
+            "correspondent__slug__iexact",  # maybe?
             "created__year",
             "created__month",
             "created__day",
@@ -161,26 +162,26 @@ class Document(StandardModel):
             "owner__id__none",
             "custom_fields__icontains",
             "custom_fields__id__all",
-            "custom_fields__id__none",   # ??
+            "custom_fields__id__none",  # ??
             "custom_fields__id__in",
-            "custom_field_query",        # ??
+            "custom_field_query",  # ??
             "has_custom_fields",
             "shared_by__id",
             "shared_by__id__in",
         }
 
-    @field_serializer('added', 'created', 'updated', 'deleted_at')
+    @field_serializer("added", "created", "updated", "deleted_at")
     def serialize_datetime(self, value: datetime | None, _info):
         return value.isoformat() if value else None
 
     @property
     def custom_field_ids(self) -> list[int]:
-        return [field['field'] for field in self.custom_fields]
+        return [field["field"] for field in self.custom_fields]
 
     @property
     def custom_field_values(self) -> list[Any]:
-        return [field['value'] for field in self.custom_fields]
-    
+        return [field["value"] for field in self.custom_fields]
+
     def get_tags(self) -> TagQuerySet:
         """
         Get the tags for this document.
@@ -228,7 +229,7 @@ class Document(StandardModel):
             return None
         return self._meta.resource.client.storage_paths.get(self.storage_path)
 
-    def custom_field(self, field_id: int, default : Any = None, *, raise_errors : bool = False) -> Any:
+    def custom_field(self, field_id: int, default: Any = None, *, raise_errors: bool = False) -> Any:
         """
         Get the value of a custom field by ID.
 
@@ -238,19 +239,19 @@ class Document(StandardModel):
             raise_errors: Whether to raise an error if the field is not found.
         """
         for field in self.custom_fields:
-            if field['field'] == field_id:
-                return field['value']
+            if field["field"] == field_id:
+                return field["value"]
 
         if raise_errors:
             raise ValueError(f"Custom field {field_id} not found")
         return default
-            
+
     """
     def __getattr__(self, name: str) -> Any:
         # Allow easy access to custom fields
         for custom_field in self.custom_fields:
             if custom_field['field'] == name:
                 return custom_field['value']
-            
+
         raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
     """

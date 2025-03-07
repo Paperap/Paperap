@@ -38,10 +38,15 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+_OperationType = Union[str, "_QueryParam"]
+_QueryParam = Union["CustomFieldQuery", tuple[str, _OperationType, Any]]
+
+
 class CustomFieldQuery(NamedTuple):
     field: str
-    operation: str | CustomFieldQuery
+    operation: _OperationType
     value: Any
+
 
 class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
     """
@@ -427,7 +432,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         return self.filter(user_can_change=value)
 
     def custom_field_fullsearch(self, value: str, *, case_insensitive: bool = True) -> Self:
-        """ 
+        """
         Filter documents by searching through both custom field name and value.
 
         Args:
@@ -440,7 +445,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             return self.filter(custom_fields__icontains=value)
         raise NotImplementedError("Case-sensitive custom field search is not supported by Paperless NGX")
 
-    def custom_field(self, field : str, value : Any, *, exact : bool = False, case_insensitive : bool = True) -> Self:
+    def custom_field(self, field: str, value: Any, *, exact: bool = False, case_insensitive: bool = True) -> Self:
         """
         Filter documents by custom field.
 
@@ -460,7 +465,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             return self.custom_field_query(field, "icontains", value)
         return self.custom_field_query(field, "contains", value)
 
-    def has_custom_field_id(self, id : int | list[int], *, exact : bool = False) -> Self:
+    def has_custom_field_id(self, id: int | list[int], *, exact: bool = False) -> Self:
         """
         Filter documents that have a custom field with the specified ID(s).
 
@@ -475,7 +480,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             return self.filter(custom_fields__id__all=id)
         return self.filter(custom_fields__id__in=id)
 
-    def _normalize_custom_field_query_item(self, value : Any) -> str:
+    def _normalize_custom_field_query_item(self, value: Any) -> str:
         if isinstance(value, tuple):
             # Check if it's a CustomFieldQuery
             try:
@@ -489,26 +494,26 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             return f'"{value}"'
         if isinstance(value, (list, tuple)):
             values = [str(self._normalize_custom_field_query_item(v)) for v in value]
-            return f'[{", ".join(values)}]'
+            return f"[{', '.join(values)}]"
         if isinstance(value, bool):
             return str(value).lower()
-        
+
         return str(value)
 
-    def _normalize_custom_field_query(self, query: CustomFieldQuery | tuple) -> str:
+    def _normalize_custom_field_query(self, query: _QueryParam) -> str:
         try:
             if not isinstance(query, CustomFieldQuery):
                 query = CustomFieldQuery(*query)
         except TypeError:
             raise TypeError("Invalid custom field query format")
-        
+
         field, operation, value = query
-        operation = self._normalize_custom_field_query_item(operation)    
+        operation = self._normalize_custom_field_query_item(operation)
         value = self._normalize_custom_field_query_item(value)
         return f'["{field}", {operation}, {value}]'
 
     @overload
-    def custom_field_query(self, query: CustomFieldQuery) -> Self:
+    def custom_field_query(self, query: _QueryParam) -> Self:
         """
         Filter documents by custom field query.
 
@@ -521,7 +526,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         ...
 
     @overload
-    def custom_field_query(self, field: str, operation: str | CustomFieldQuery, value: Any) -> Self:
+    def custom_field_query(self, field: str, operation: _OperationType, value: Any) -> Self:
         """
         Filter documents by custom field query.
 
@@ -545,7 +550,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         return self.filter(custom_field_query=query_str)
 
     @custom_field_query.register
-    def _(self, field: str, operation: str | CustomFieldQuery, value: Any) -> Self:
+    def _(self, field: str, operation: str | CustomFieldQuery | tuple[str, Any, Any], value: Any) -> Self:
         query = CustomFieldQuery(field, operation, value)
         query_str = self._normalize_custom_field_query(query)
         return self.filter(custom_field_query=query_str)
@@ -600,7 +605,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         Returns:
             Filtered DocumentQuerySet
         """
-        return self.custom_field_query("OR", [field, "isnull", True], [field, "exact", ""])
+        return self.custom_field_query("OR", (field, "isnull", True), [field, "exact", ""])
 
     def custom_field_exists(self, field: str, exists: bool = True) -> Self:
         """
@@ -687,5 +692,5 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             start = start.strftime("%Y-%m-%d")
         if isinstance(end, datetime):
             end = end.strftime("%Y-%m-%d")
-            
+
         return self.filter(created__range=(start, end))

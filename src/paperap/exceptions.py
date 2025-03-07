@@ -53,11 +53,14 @@ class APIError(PaperlessException):
 class AuthenticationError(APIError):
     """Raised when authentication fails."""
 
+
 class FeatureNotAvailableError(APIError):
     """Raised when a feature is not available."""
 
+
 class FilterDisabledError(FeatureNotAvailableError):
     """Raised when a filter is not available."""
+
 
 class RequestError(APIError):
     """Raised when an error occurs while making a request."""

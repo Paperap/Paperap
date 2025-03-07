@@ -45,6 +45,7 @@ logger = logging.getLogger(__name__)
 
 sanitize_pattern = re.compile(r"[^a-zA-Z0-9_-]")
 
+
 class TestDataCollector(Plugin):
     """
     Plugin to collect test data from API responses.
@@ -125,7 +126,15 @@ class TestDataCollector(Plugin):
 
         return item
 
-    def save_parsed_response(self, sender, parsed_response: dict[str, Any], params : dict[str, Any] | None, json_response : bool, endpoint : str, **kwargs) -> dict[str, Any]:
+    def save_parsed_response(
+        self,
+        sender,
+        parsed_response: dict[str, Any],
+        params: dict[str, Any] | None,
+        json_response: bool,
+        endpoint: str,
+        **kwargs,
+    ) -> dict[str, Any]:
         """
         Save the request data to a JSON file.
 
@@ -135,11 +144,11 @@ class TestDataCollector(Plugin):
             return parsed_response
 
         # Strip url to final path segment
-        resource_name = '.'.join(endpoint.split("/")[-2:])
+        resource_name = ".".join(endpoint.split("/")[-2:])
         resource_name = sanitize_pattern.sub("_", resource_name)
 
         combined_params = list(params.keys())
-        params_str = '|'.join(combined_params)
+        params_str = "|".join(combined_params)
         params_str = sanitize_pattern.sub("_", params_str)
         filename = f"{resource_name}__{params_str}.json"
 

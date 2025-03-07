@@ -165,9 +165,9 @@ class TestGetRelationships(TestCase):
                 for field, field_type in fields.items():
                     value = getattr(tag, field)
                     self.assertIsInstance(value, field_type, f"Expected tag.{field} to be a {field_type}, got {type(value)}")
-                    
+
                 self.assertGreater(tag.document_count, 0, f"Expected tag.document_count to be greater than 0, got {tag.document_count}")
-                self.assertTrue(tag.id in self.document.tags, f"Expected tag.id to be in document.tags. {tag.id} not in {self.document.tags}")                
+                self.assertTrue(tag.id in self.document.tags, f"Expected tag.id to be in document.tags. {tag.id} not in {self.document.tags}")
 
             self.assertEqual(count, expected_count, f"Expected to iterate over {expected_count} tags, only saw {count}")
 
@@ -198,7 +198,7 @@ class TestGetRelationships(TestCase):
                 else:
                     self.assertIsInstance(value, field_type, f"Expected correspondent.{field} to be a {field_type}, got {type(value)}")
                     self.assertEqual(value, sample_data[field], f"Expected correspondent.{field} to match sample data")
-                
+
     def test_get_document_type(self):
         sample_data = load_sample_data('document_types_item.json')
         with patch("paperap.client.PaperlessClient.request") as mock_request:
@@ -226,7 +226,7 @@ class TestGetRelationships(TestCase):
                 else:
                     self.assertIsInstance(value, field_type, f"Expected document_type.{field} to be a {field_type}, got {type(value)}")
                     self.assertEqual(value, sample_data[field], f"Expected document_type.{field} to match sample data")
-            
+
 
     def test_get_storage_path(self):
         sample_data = load_sample_data('storage_paths_item.json')
@@ -253,7 +253,7 @@ class TestGetRelationships(TestCase):
                 value = getattr(storage_path, field)
                 self.assertIsInstance(value, field_type, f"Expected storage_path.{field} to be a {field_type}, got {type(value)}")
                 self.assertEqual(value, sample_data[field], f"Expected storage_path.{field} to match sample data")
-                
+
 class TestRequestDocumentList(DocumentTestCase):
     def test_get_documents(self):
         with patch("paperap.client.PaperlessClient.request") as mock_request:
@@ -337,6 +337,6 @@ class TestCustomFieldAccess(TestCase):
             self.document.custom_field(3, raise_errors=True)
         with self.assertRaises(ValueError):
             self.document.custom_field(3, default="Some Default", raise_errors=True)
-        
+
 if __name__ == "__main__":
     unittest.main()

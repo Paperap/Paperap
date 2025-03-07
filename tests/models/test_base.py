@@ -56,7 +56,7 @@ class ExampleResource(StandardResource):
 class TestBase(TestCase):
     def setUp(self):
         super().setUp()
-        
+
         self.resource = ExampleResource(self.client)
         self.model_data = {
             "id": 1,
@@ -68,13 +68,13 @@ class TestBase(TestCase):
         }
 
 class TestWithModel(TestBase):
-    
+
     def setUp(self):
         super().setUp()
         self.model = ExampleModel.from_dict(self.model_data, self.resource)
 
 class TestModelFromDict(TestBase):
-        
+
     def test_from_dict(self):
         # Test if the model can be created from a dictionary
         model_data = {
@@ -92,7 +92,7 @@ class TestModelFromDict(TestBase):
         self.assertIsInstance(model.an_int, int)
         self.assertIsInstance(model.a_float, float)
         self.assertIsInstance(model.a_bool, bool)
-        
+
         self.assertEqual(model.id, model_data["id"])
         self.assertEqual(model.a_str, model_data["a_str"])
         self.assertEqual(model.an_int, model_data["an_int"])
@@ -101,7 +101,7 @@ class TestModelFromDict(TestBase):
         # TODO datetime
 
 class TestModelToDict(TestWithModel):
-        
+
     def test_to_dict_options(self):
         # Test if the model can be converted to a dictionary with different options
         model_dict = self.model.to_dict(include_read_only=False)
@@ -295,7 +295,7 @@ class TestClassAttributes(TestCase):
 class TestFilters(TestCase):
     def setUp(self):
         super().setUp()
-        
+
         class DisabledInheritedModel(StandardModel):
             a_str: str
             an_int : int
@@ -303,14 +303,14 @@ class TestFilters(TestCase):
 
             class Meta(StandardModel.Meta):
                 filtering_disabled = {"a_str", "an_int", "a_date"}
-                
+
         class SampleResource(StandardResource):
             name = "sample"
             model_class = DisabledInheritedModel
 
         self.resource = SampleResource(self.client)
         self.qs = StandardQuerySet(self.resource)
-            
+
     def test_calling_a_disabled_filter_raises(self):
         disabled_filters = {
             'a_str': 'example',

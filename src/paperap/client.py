@@ -404,7 +404,6 @@ class PaperlessClient:
         files: dict[str, Any] | None = None,
         json_response: bool = True,
     ) -> dict[str, Any] | bytes | None:
-
         kwargs = {
             "method": method,
             "endpoint": endpoint,
@@ -413,21 +412,18 @@ class PaperlessClient:
             "files": files,
             "json_response": json_response,
         }
-        
+
         SignalRegistry.emit(
-            "client.request__before",
-            "Before a request is sent to the Paperless server",
-            args = [self],
-            kwargs=kwargs
+            "client.request__before", "Before a request is sent to the Paperless server", args=[self], kwargs=kwargs
         )
-        
+
         if not (response := self._request(method, endpoint, params=params, data=data, files=files)):
             return None
 
         SignalRegistry.emit(
             "client.request__response",
             "After a response is received, before it is parsed",
-            args = [self],
+            args=[self],
             kwargs={
                 **kwargs,
                 "response": response,
@@ -439,7 +435,7 @@ class PaperlessClient:
         SignalRegistry.emit(
             "client.request__after",
             "After a request is parsed.",
-            args = [self],
+            args=[self],
             kwargs={
                 **kwargs,
                 "parsed_response": parsed_response,

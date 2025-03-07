@@ -50,6 +50,7 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
     QuerySet provides pagination, filtering, and caching functionality similar to Django's QuerySet.
     It's designed to be lazy - only fetching data when it's actually needed.
     """
+
     resource: "PaperlessResource[_PaperlessModel]"
     filters: dict[str, Any]
     _last_response: dict[str, Any] | None = None
@@ -97,8 +98,10 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
     def _update_filters(self, values: dict[str, Any]) -> None:
         for key, _value in values.items():
             if not self._meta.filter_allowed(key):
-                raise FilterDisabledError(f"Filtering by {key} for {self.resource.name} does not appear to be supported by the API.")
-            
+                raise FilterDisabledError(
+                    f"Filtering by {key} for {self.resource.name} does not appear to be supported by the API."
+                )
+
         self.filters.update(**values)
 
     def filter(self, **kwargs) -> Self:

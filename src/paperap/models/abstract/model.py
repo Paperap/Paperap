@@ -44,11 +44,13 @@ if TYPE_CHECKING:
 
 _Self = TypeVar("_Self", bound="PaperlessModel")
 
+
 class FilteringStrategies(StrEnum):
     WHITELIST = "whitelist"
     BLACKLIST = "blacklist"
     ALLOW_ALL = "allow_all"
     ALLOW_NONE = "allow_none"
+
 
 class PaperlessModel(BaseModel, ABC):
     """
@@ -76,37 +78,42 @@ class PaperlessModel(BaseModel, ABC):
         # Fields that should not be modified. These will be appended to read_only_fields for all parent classes.
         read_only_fields: ClassVar[set[str]] = {"id", "created", "updated"}
         # Fields that are disabled by Paperless NGX for filtering. These will be appended to filtering_disabled for all parent classes.
-        filtering_disabled : ClassVar[set[str]] = set()
+        filtering_disabled: ClassVar[set[str]] = set()
         # Fields allowed for filtering. Generated automatically during class init.
-        filtering_fields : ClassVar[set[str]] = set()
+        filtering_fields: ClassVar[set[str]] = set()
         # If set, only these params will be allowed during queryset filtering. (e.g. {"content__icontains", "id__gt"})
         # These will be appended to whitelist_filtering_params for all parent classes.
-        supported_filtering_params : ClassVar[set[str]] = set()
+        supported_filtering_params: ClassVar[set[str]] = set()
         # If set, these params will be disallowed during queryset filtering (e.g. {"content__icontains", "id__gt"})
         # These will be appended to blaclist_filtering_params for all parent classes.
-        blaclist_filtering_params : ClassVar[set[str]] = set()
+        blaclist_filtering_params: ClassVar[set[str]] = set()
         # Strategies for filtering. This determines which of the above lists will be used to allow or deny filters to QuerySets.
-        filtering_strategies : ClassVar[set[FilteringStrategies]] = {FilteringStrategies.BLACKLIST}
+        filtering_strategies: ClassVar[set[FilteringStrategies]] = {FilteringStrategies.BLACKLIST}
         # the type of parser, which parses api data into appropriate types
         # this will usually not need to be overridden
         parser: type[Parser[_Self]] = Parser[_Self]
         resource: "PaperlessResource[_Self]"
         queryset: type[QuerySet[_Self]] = QuerySet
 
-        def __init__(self, model : type[_Self]):
+        def __init__(self, model: type[_Self]):
             self.model = model
 
             # Validate filtering strategies
-            if FilteringStrategies.ALLOW_ALL in self.filtering_strategies and FilteringStrategies.ALLOW_NONE in self.filtering_strategies:
-                raise ValueError(f"Cannot have both ALLOW_ALL and ALLOW_NONE filtering strategies. Model {self.model.__name__}")
+            if (
+                FilteringStrategies.ALLOW_ALL in self.filtering_strategies
+                and FilteringStrategies.ALLOW_NONE in self.filtering_strategies
+            ):
+                raise ValueError(
+                    f"Cannot have both ALLOW_ALL and ALLOW_NONE filtering strategies. Model {self.model.__name__}"
+                )
 
-        def filter_allowed(self, filter_param : str) -> bool:
+        def filter_allowed(self, filter_param: str) -> bool:
             if FilteringStrategies.ALLOW_ALL in self.filtering_strategies:
                 return True
 
             if FilteringStrategies.ALLOW_NONE in self.filtering_strategies:
                 return False
-            
+
             # If we have a whitelist, check if the filter_param is in it
             if FilteringStrategies.WHITELIST in self.filtering_strategies:
                 if self.supported_filtering_params and filter_param not in self.supported_filtering_params:
@@ -125,7 +132,7 @@ class PaperlessModel(BaseModel, ABC):
                 field, _lookup = split_key[-2:]
             else:
                 field, _lookup = filter_param, None
-                
+
             # If key is in filtering_disabled, throw an error
             if field in self.filtering_disabled:
                 return False
@@ -146,7 +153,7 @@ class PaperlessModel(BaseModel, ABC):
         whitelist_filtering_params = cls.Meta.supported_filtering_params
         blaclist_filtering_params = cls.Meta.blaclist_filtering_params
         for base in cls.__bases__:
-            _meta : PaperlessModel.Meta | None
+            _meta: PaperlessModel.Meta | None
             if _meta := getattr(base, "Meta", None):
                 if hasattr(_meta, "read_only_fields"):
                     read_only_fields.update(_meta.read_only_fields)
@@ -165,7 +172,7 @@ class PaperlessModel(BaseModel, ABC):
         cls.Meta.filtering_fields = filtering_fields - filtering_disabled
         cls.Meta.supported_filtering_params = whitelist_filtering_params
         cls.Meta.blaclist_filtering_params = blaclist_filtering_params
-        
+
         # Instantiate _meta
         cls._meta = cls.Meta(cls)
 
@@ -191,7 +198,7 @@ class PaperlessModel(BaseModel, ABC):
     def __init__(self, resource: "PaperlessResource", **data):
         if resource is None:
             raise ValueError("Resource is required for PaperlessModel")
-        
+
         super().__init__(**data)
         self._meta.resource = resource
 

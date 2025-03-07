@@ -43,7 +43,9 @@ if TYPE_CHECKING:
 _PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel", covariant=True)
 _StandardModel = TypeVar("_StandardModel", bound="StandardModel", covariant=True, default="StandardModel")
 _QuerySet = TypeVar("_QuerySet", bound="QuerySet", covariant=True, default="QuerySet[_PaperlessModel]")
-_StandardQuerySet = TypeVar("_StandardQuerySet", bound="StandardQuerySet", covariant=True, default="StandardQuerySet[_StandardModel]")
+_StandardQuerySet = TypeVar(
+    "_StandardQuerySet", bound="StandardQuerySet", covariant=True, default="StandardQuerySet[_StandardModel]"
+)
 
 logger = logging.getLogger(__name__)
 
@@ -159,11 +161,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
         """
         # Signal before creating resource
         signal_params = {"resource": self.name, "data": data}
-        SignalRegistry.emit(
-            "pre_create",
-            "Emitted before creating a resource",
-            kwargs=signal_params
-        )
+        SignalRegistry.emit("pre_create", "Emitted before creating a resource", kwargs=signal_params)
 
         if not (template := self.endpoints.get("create")):
             raise ConfigurationError(f"Create endpoint not defined for resource {self.name}")
@@ -176,10 +174,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         # Signal after creating resource
         SignalRegistry.emit(
-            "post_create",
-            "Emitted after creating a resource",
-            args=[self],
-            kwargs={"model": model, **signal_params}
+            "post_create", "Emitted after creating a resource", args=[self], kwargs={"model": model, **signal_params}
         )
 
         return model
@@ -197,11 +192,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
         """
         # Signal before updating resource
         signal_params = {"resource": self.name, "resource_id": resource_id, "data": data}
-        SignalRegistry.emit(
-            "pre_update", 
-            "Emitted before updating a resource", 
-            kwargs=signal_params
-        )
+        SignalRegistry.emit("pre_update", "Emitted before updating a resource", kwargs=signal_params)
 
         if not (template := self.endpoints.get("update")):
             raise ConfigurationError(f"Update endpoint not defined for resource {self.name}")
@@ -214,10 +205,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         # Signal after updating resource
         SignalRegistry.emit(
-            "post_update",
-            "Emitted after updating a resource",
-            args=[self],
-            kwargs={**signal_params, "model": model}
+            "post_update", "Emitted after updating a resource", args=[self], kwargs={**signal_params, "model": model}
         )
 
         return model
@@ -231,12 +219,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
         """
         # Signal before deleting resource
         signal_params = {"resource": self.name, "resource_id": resource_id}
-        SignalRegistry.emit(
-            "pre_delete",
-            "Emitted before deleting a resource",
-            args=[self],
-            kwargs=signal_params
-        )
+        SignalRegistry.emit("pre_delete", "Emitted before deleting a resource", args=[self], kwargs=signal_params)
 
         if not (template := self.endpoints.get("delete")):
             raise ConfigurationError(f"Delete endpoint not defined for resource {self.name}")
@@ -245,12 +228,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
         self.client.request("DELETE", url)
 
         # Signal after deleting resource
-        SignalRegistry.emit(
-            "post_delete",
-            "Emitted after deleting a resource",
-            args=[self],
-            kwargs=signal_params
-        )
+        SignalRegistry.emit("post_delete", "Emitted after deleting a resource", args=[self], kwargs=signal_params)
 
     def parse_to_model(self, item: dict[str, Any]) -> _PaperlessModel:
         """
@@ -303,9 +281,9 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
         SignalRegistry.emit(
             "pre_list",
             "Emitted before listing resources",
-            return_type = dict[str, Any],
+            return_type=dict[str, Any],
             args=[self],
-            kwargs={"response": response, "resource": self.name}
+            kwargs={"response": response, "resource": self.name},
         )
         if not (results := response.get("results", response)):
             return 0
@@ -315,7 +293,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
             "post_list_response",
             "Emitted after list response, before processing",
             args=[self],
-            kwargs={"response": response, "resource": self.name, "results": results}
+            kwargs={"response": response, "resource": self.name, "results": results},
         )
 
         yield from self._handle_results(results)
@@ -331,7 +309,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
                 "post_list_item",
                 "Emitted for each item in a list response",
                 args=[self],
-                kwargs={"resource": self.name, "item": item}
+                kwargs={"resource": self.name, "item": item},
             )
             yield self.parse_to_model(item)
 
@@ -377,12 +355,7 @@ class StandardResource(
         """
         # Signal before getting resource
         signal_params = {"resource": self.name, "resource_id": resource_id}
-        SignalRegistry.emit(
-            "pre_get",
-            "Emitted before getting a resource",
-            args=[self],
-            kwargs=signal_params
-        )
+        SignalRegistry.emit("pre_get", "Emitted before getting a resource", args=[self], kwargs=signal_params)
 
         if not (template := self.endpoints.get("detail")):
             raise ConfigurationError(f"Get detail endpoint not defined for resource {self.name}")
@@ -405,7 +378,7 @@ class StandardResource(
             "post_get",
             "Emitted after getting a single resource by id",
             args=[self],
-            kwargs={**signal_params, "model": model}
+            kwargs={**signal_params, "model": model},
         )
 
         return model

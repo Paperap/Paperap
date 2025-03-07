@@ -99,7 +99,7 @@ class TestChain(TestQuerySetFilterBase):
 
     def test_chain_one_parm(self):
         self.assertEqual(self.qs.filters, {"init": "value"}, "test assumptions failed")
-        
+
         # Test new filter
         qs3 = self.qs._chain(filters={"new_filter": 123})
         self.assertIsInstance(qs3, StandardQuerySet, "chain did not return a queryset instance when filters were passed")
@@ -114,7 +114,7 @@ class TestChain(TestQuerySetFilterBase):
 
     def test_chain_multiple_params(self):
         self.assertEqual(self.qs.filters, {"init": "value"}, "test assumptions failed")
-        
+
         # Test 2 new filters
         qs4 = self.qs._chain(filters={"another_new_filter": 456, "third_new_filter": 123})
         self.assertIsInstance(qs4, StandardQuerySet, "chain did not return a queryset instance when 2 filters were passed")
@@ -144,7 +144,7 @@ class TestChain(TestQuerySetFilterBase):
 class TestFilter(TestQuerySetFilterBase):
     def test_filter_returns_new_queryset(self):
         qs2 = self.qs.filter(new_filter=123)
-        self.assertIsNot(qs2, self.qs)                                
+        self.assertIsNot(qs2, self.qs)
         expected = {"init": "value", "new_filter": 123}
         self.assertEqual(qs2.filters, expected)
 

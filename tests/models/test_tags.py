@@ -137,7 +137,7 @@ class TestTag(TestCase):
             value = model_dict[field]
             self.assertIsInstance(value, field_type, f"Expected {field} to be a {field_type}, got {type(value)}")
             self.assertEqual(value, self.model_data[field], f"Expected {field} to match sample data")
-       
+
 class TestRelationships(TestCase):
     mock_env = True
 
@@ -186,6 +186,6 @@ class TestRelationships(TestCase):
                     self.assertIsInstance(value, field_type, f"Expected document.{field} to be a {field_type}, got {type(value)}")
                     self.assertEqual(value, sample_data["results"][i][field], f"Expected document.{field} to match sample data")
 
-                self.assertTrue(self.model.id in document.tags, f"Expected tag.id to be in document.tags. {self.model.id} not in {document.tags}")                
+                self.assertTrue(self.model.id in document.tags, f"Expected tag.id to be in document.tags. {self.model.id} not in {document.tags}")
 
             self.assertEqual(count, expected_count, f"Expected to iterate over {expected_count} documents, only saw {count}")
