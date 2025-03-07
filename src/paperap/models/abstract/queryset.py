@@ -63,7 +63,6 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
         # Create a QuerySet for documents
         docs = QuerySet(resource=client.documents)
     """
-    """
 
     resource: "PaperlessResource[_PaperlessModel]"
     filters: dict[str, Any]
@@ -83,18 +82,6 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
         _last_response: Optional[dict[str, Any]] = None,
         _iter: Optional[Iterator[_PaperlessModel]] = None,
     ):
-        """
-        Initialize a new QuerySet.
-
-        Args:
-            resource: The PaperlessResource instance.
-            filters: Initial filter parameters.
-            _cache: Optional internal result cache.
-            _fetch_all: Whether all results have been fetched.
-            _next_url: URL for the next page of results.
-            _last_response: Optional last response from the API.
-            _iter: Optional iterator for the results.
-        """
         self.resource = resource
         self.filters = filters or {}
         self._result_cache = _cache or []
@@ -111,14 +98,48 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
     def _meta(self) -> "PaperlessModel.Meta":
         return self._model._meta
 
+    def _reset(self) -> None:
+        """
+        Reset the QuerySet to its initial state.
+
+        This clears the result cache and resets the fetch state.
+        """
+        self._result_cache = []
+        self._fetch_all = False
+        self._next_url = None
+        self._last_response = None
+        self._iter = None
+
     def _update_filters(self, values: dict[str, Any]) -> None:
+        """
+        Update the current filters with new values.
+
+        This updates the current queryset instance. It does not return a new instance. For that reason,
+        do not call this directly. Call filter() or exclude() instead.
+
+        Args:
+            values: New filter values to add
+
+        Raises:
+            FilterDisabledError: If a filter is not allowed by the resource
+
+        Examples:
+            # Update filters with new values
+            queryset._update_filters({"correspondent": 1})
+
+            # Update filters with multiple values
+            queryset._update_filters({"correspondent": 1, "document_type": 2})
+        """
         for key, _value in values.items():
             if not self._meta.filter_allowed(key):
                 raise FilterDisabledError(
                     f"Filtering by {key} for {self.resource.name} does not appear to be supported by the API."
                 )
 
-        self.filters.update(**values)
+        if values:
+            # Reset the cache if filters change
+            self._reset()
+            self.filters.update(**values)
 
     def filter(self, **kwargs) -> Self:
         """
@@ -203,8 +224,8 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
             A single object matching the query
 
         Raises:
-            NotImplementedError: If the method is not implemented by the subclass
             ObjectNotFoundError: If no object or multiple objects are found
+            NotImplementedError: If the method is not implemented by the subclass
 
         Examples:
             # Get document with ID 123
@@ -218,6 +239,9 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
 
         Returns:
             The total count of objects matching the filters
+
+        Raises:
+            NotImplementedError: If the response does not have a count attribute
         """
         # If we have a last response, we can use the "count" field
         if self._last_response:
@@ -248,6 +272,9 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
 
         Returns:
             The count of objects on the current page
+
+        Raises:
+            NotImplementedError: If _last_response is not set
         """
         # If we have a last response, we can count it without a new request
         if self._last_response:
@@ -393,7 +420,12 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
         return self.filter(**{lookup: value})
 
     def _fetch_all_results(self) -> None:
-        """Fetch all results from the API and populate the cache."""
+        """
+        Fetch all results from the API and populate the cache.
+
+        Returns:
+            None
+        """
         if self._fetch_all:
             return
 

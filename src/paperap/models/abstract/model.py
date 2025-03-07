@@ -71,7 +71,6 @@ class PaperlessModel(BaseModel, ABC):
             class Meta:
                 api_endpoint: = URL("http://localhost:8000/api/documents/")
     """
-    """
 
     _meta: "Meta[Self]" = PrivateAttr()
 
