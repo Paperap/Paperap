@@ -10,7 +10,7 @@
         File:    test_tags.py
         Project: paperap
         Created: 2025-03-05
-        Version: 0.0.1
+        Version: 0.0.2
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -29,20 +29,16 @@ from typing import Iterable
 from unittest.mock import patch, MagicMock
 from datetime import datetime
 from paperap.models import *
-from paperap.client import PaperlessClient
 from paperap.resources.tags import TagResource
 from paperap.models.document import DocumentQuerySet
-from paperap.tests import TestCase, load_sample_data
+from paperap.tests import TestCase, load_sample_data, TagTest
 
 sample_tag_list = load_sample_data('tags_list.json')
 sample_tag = load_sample_data('tags_item.json')
 
-class TestTagsInit(TestCase):
-    mock_env = True
+class TestTagsInit(TagTest):
 
-    def setUp(self):
-        super().setUp()
-        self.resource = self.client.tags
+    def setup_model_data(self):
         self.model_data = {
             "id": 1,
             "name": "Test Tag",
@@ -77,12 +73,9 @@ class TestTagsInit(TestCase):
             self.assertIsInstance(value, field_type, f"Expected {field} to be a {field_type}, got {type(value)}")
             self.assertEqual(value, self.model_data[field], f"Expected {field} to match sample data")
 
-class TestTag(TestCase):
-    mock_env = True
+class TestTag(TagTest):
 
-    def setUp(self):
-        super().setUp()
-        self.resource = self.client.tags
+    def setup_model_data(self):
         self.model_data = {
             "id": 1,
             "name": "Test Tag",
@@ -96,7 +89,6 @@ class TestTag(TestCase):
             "owner": 1,
             "user_can_change": False
         }
-        self.model = Tag.from_dict(self.model_data, self.resource)
 
     def test_model_string_parsing(self):
         # Test if string fields are parsed correctly
@@ -138,12 +130,9 @@ class TestTag(TestCase):
             self.assertIsInstance(value, field_type, f"Expected {field} to be a {field_type}, got {type(value)}")
             self.assertEqual(value, self.model_data[field], f"Expected {field} to match sample data")
 
-class TestRelationships(TestCase):
-    mock_env = True
+class TestRelationships(TagTest):
 
-    def setUp(self):
-        super().setUp()
-        self.resource = self.client.tags
+    def setup_model_data(self):
         self.model_data = {
             "id": 1337,
             "name": "Test Tag",
@@ -157,7 +146,6 @@ class TestRelationships(TestCase):
             "owner": 1,
             "user_can_change": False
         }
-        self.model = Tag.from_dict(self.model_data, self.resource)
 
     def test_get_documents(self):
         sample_data = load_sample_data('documents_list_id__in_6342,6332,1244.json')

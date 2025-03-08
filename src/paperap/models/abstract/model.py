@@ -45,6 +45,7 @@ if TYPE_CHECKING:
 
 _Self = TypeVar("_Self", bound="PaperlessModel")
 
+
 class PaperlessModel(BaseModel, ABC):
     """
     Base model for all Paperless-ngx API objects.
@@ -103,7 +104,7 @@ class PaperlessModel(BaseModel, ABC):
         # Fields allowed for filtering. Generated automatically during class init.
         filtering_fields: ClassVar[set[str]] = set()
         # If set, only these params will be allowed during queryset filtering. (e.g. {"content__icontains", "id__gt"})
-        # These will be appended to whitelist_filtering_params for all parent classes.
+        # These will be appended to supported_filtering_params for all parent classes.
         supported_filtering_params: ClassVar[set[str]] = set()
         # If set, these params will be disallowed during queryset filtering (e.g. {"content__icontains", "id__gt"})
         # These will be appended to blacklist_filtering_params for all parent classes.
@@ -116,13 +117,16 @@ class PaperlessModel(BaseModel, ABC):
         resource: "PaperlessResource[_Self]"
         queryset: type[QuerySet[_Self]] = QuerySet
         # Updating attributes will not trigger save()
-        status : ModelStatus = ModelStatus.INITIALIZING
+        status: ModelStatus = ModelStatus.INITIALIZING
+        original_data: dict[str, Any] = {}
 
         def __init__(self, model: type[_Self]):
             self.model = model
 
             # Validate filtering strategies
-            if (all(x in self.filtering_strategies for x in (FilteringStrategies.ALLOW_ALL, FilteringStrategies.ALLOW_NONE))):
+            if all(
+                x in self.filtering_strategies for x in (FilteringStrategies.ALLOW_ALL, FilteringStrategies.ALLOW_NONE)
+            ):
                 raise ValueError(f"Cannot have ALLOW_ALL and ALLOW_NONE filtering strategies in {self.model.__name__}")
 
         def filter_allowed(self, filter_param: str) -> bool:
@@ -183,7 +187,7 @@ class PaperlessModel(BaseModel, ABC):
         read_only_fields = (cls.Meta.read_only_fields or set()).copy()
         filtering_disabled = (cls.Meta.filtering_disabled or set()).copy()
         filtering_fields = set(cls.__annotations__.keys())
-        whitelist_filtering_params = cls.Meta.supported_filtering_params
+        supported_filtering_params = cls.Meta.supported_filtering_params
         blacklist_filtering_params = cls.Meta.blacklist_filtering_params
         for base in cls.__bases__:
             _meta: PaperlessModel.Meta | None
@@ -195,7 +199,7 @@ class PaperlessModel(BaseModel, ABC):
                 if hasattr(_meta, "filtering_fields"):
                     filtering_fields.update(_meta.filtering_fields)
                 if hasattr(_meta, "supported_filtering_params"):
-                    whitelist_filtering_params.update(_meta.supported_filtering_params)
+                    supported_filtering_params.update(_meta.supported_filtering_params)
                 if hasattr(_meta, "blacklist_filtering_params"):
                     blacklist_filtering_params.update(_meta.blacklist_filtering_params)
 
@@ -203,7 +207,7 @@ class PaperlessModel(BaseModel, ABC):
         cls.Meta.filtering_disabled = filtering_disabled
         # excluding filtering_disabled from filtering_fields
         cls.Meta.filtering_fields = filtering_fields - filtering_disabled
-        cls.Meta.supported_filtering_params = whitelist_filtering_params
+        cls.Meta.supported_filtering_params = supported_filtering_params
         cls.Meta.blacklist_filtering_params = blacklist_filtering_params
 
         # Instantiate _meta
@@ -240,7 +244,7 @@ class PaperlessModel(BaseModel, ABC):
         """
         return self._meta.resource.client
 
-    def __init__(self, resource: "PaperlessResource", **data):
+    def __init__(self, resource: "PaperlessResource | None" = None, **data):
         """
         Initialize the model with resource and data.
 
@@ -251,14 +255,19 @@ class PaperlessModel(BaseModel, ABC):
         Raises:
             ValueError: If resource is not provided.
         """
-        if resource is None:
-            raise ValueError("Resource is required for PaperlessModel")
-
         super().__init__(**data)
-        self._meta.resource = resource
+
+        if resource:
+            self._meta.resource = resource
+
+        if not getattr(self._meta, 'resource', None):
+            raise ValueError("Resource is required for PaperlessModel. Initialize the resource before instantiating models.")
 
     def model_post_init(self, __context):
         super().model_post_init(__context)
+
+        # Save original_data to support dirty fields
+        self._meta.original_data = self.model_dump()
 
         # Allow updating attributes to trigger save() automatically
         self._meta.status = ModelStatus.READY
@@ -282,10 +291,10 @@ class PaperlessModel(BaseModel, ABC):
         return cls.model_validate({**data, "resource": resource})
 
     def to_dict(
-        self, 
-        *, 
-        include_read_only: bool = True, 
-        exclude_none: bool = True, 
+        self,
+        *,
+        include_read_only: bool = True,
+        exclude_none: bool = True,
         exclude_unset: bool = True,
     ) -> dict[str, Any]:
         """
@@ -311,6 +320,28 @@ class PaperlessModel(BaseModel, ABC):
             exclude_unset=exclude_unset,
         )
 
+    def dirty_fields(self) -> dict[str, Any]:
+        """
+        Shows which fields have changed since last update from the paperless ngx db.
+
+        Returns:
+            A dictionary of fields that have changed since last update from the paperless ngx db.
+        """
+        return {
+            field: value
+            for field, value in self.model_dump().items()
+            if field in self._meta.original_data and self._meta.original_data[field] != value
+        }
+
+    def is_dirty(self) -> bool:
+        """
+        Check if any field has changed since last update from the paperless ngx db.
+
+        Returns:
+            True if any field has changed.
+        """
+        return bool(self.dirty_fields())
+
     @classmethod
     def create(cls, **kwargs: Any) -> Self:
         """
@@ -329,22 +360,43 @@ class PaperlessModel(BaseModel, ABC):
         # TODO save
         return cls(**kwargs)
 
-    def update(self, **kwargs: Any) -> Self:
+    def silent_update(self, **kwargs) -> None:
+        """
+        Update model attributes without triggering automatic save.
+
+        Args:
+            **kwargs: Field values to update
+
+        Returns:
+            Self with updated values
+        """
+        from_db = kwargs.pop("from_db", False)
+        
+        with StatusContext(self, ModelStatus.UPDATING):
+            for name, value in kwargs.items():
+                setattr(self, name, value)
+
+        # Dirty has been reset
+        if from_db:
+            self._meta.original_data = self.model_dump()
+
+    def update(self, **kwargs: Any) -> None:
         """
         Update this model with new values.
 
+        Subclasses implement this with auto-saving features.
+        However, base PaperlessModel instances simply call silent_update.
+
         Args:
             **kwargs: New field values.
-
-        Returns:
-            Self with updated values.
 
         Examples:
             # Update a Document instance
             doc.update(filename="new_example.pdf")
         """
-        # TODO save
-        return self.model_copy(update=kwargs)
+        # Since we have no id, we can't save. Therefore, all updates are silent updates
+        # subclasses may implement this.
+        self.silent_update(**kwargs)
 
     @abstractmethod
     def is_new(self) -> bool:
@@ -386,7 +438,7 @@ class StandardModel(PaperlessModel, ABC):
             contents : bytes
     """
 
-    id: int = Field(description="Unique identifier", default=0)
+    id: int = Field(description="Unique identifier from Paperless NGX", default=0)
 
     class Meta(PaperlessModel.Meta[_Self], Generic[_Self]):
         """
@@ -394,77 +446,31 @@ class StandardModel(PaperlessModel, ABC):
 
         Attributes:
             read_only_fields: Fields that should not be modified.
-            whitelist_filtering_params: Params allowed during queryset filtering.
+            supported_filtering_params: Params allowed during queryset filtering.
         """
 
         # Fields that should not be modified
         read_only_fields: ClassVar[set[str]] = {"id"}
-        whitelist_filtering_params = {
+        supported_filtering_params = {
             "id__in",
             "id",
         }
 
-    def __setattr__(self, name, value):
-        """
-        Override attribute setting to automatically call save when attributes change.
-        
-        Args:
-            name: Attribute name
-            value: New attribute value
-        """
-        # Call parent's setattr
-        super().__setattr__(name, value)
-        
-        # Skip for private attributes (those starting with underscore)
-        if name.startswith('_'):
-            return
-
-        # Check if the model is initialized or is new
-        if not hasattr(self, '_meta') or self.is_new():
-            return
-
-        # Settings may override this behavior
-        if not self._meta.resource.client.settings.save_immediately:
-            return
-        
-        # Only trigger a save if the model is in normal status
-        if self._meta.status != ModelStatus.READY:
-            return
-
-        # All attribute changes trigger a save automatically
-        self.save()
-
-    def silent_update(self, **kwargs) -> Self:
-        """
-        Update model attributes without triggering automatic save.
-        
-        Args:
-            **kwargs: Field values to update
-            
-        Returns:
-            Self with updated values
-        """
-        with StatusContext(self, ModelStatus.UPDATING):
-            for name, value in kwargs.items():
-                setattr(self, name, value)
-            return self
-
-    def update(self, **kwargs: Any) -> Self:
+    def update(self, **kwargs: Any) -> None:
         """
         Update this model with new values and save changes.
 
+        NOTE: new instances will not be saved automatically.
+        (I'm not sure if that's the right design decision or not)
+
         Args:
             **kwargs: New field values.
-
-        Returns:
-            Self with updated values.
-        """
+        """        
         # Hold off on saving until all updates are complete
         self.silent_update(**kwargs)
         if not self.is_new():
             self.save()
-        return self
-    
+
     def save(self) -> None:
         """
         Save this model instance within paperless ngx.
@@ -482,18 +488,18 @@ class StandardModel(PaperlessModel, ABC):
         # this check shouldn't strictly be necessary, but it future proofs this feature
         if self._meta.status == ModelStatus.SAVING:
             return
-        
+
         with StatusContext(self, ModelStatus.SAVING):
             current_data = self.to_dict(include_read_only=False, exclude_none=False, exclude_unset=True)
             new_model = self._meta.resource.update(self.id, current_data)
             new_data = new_model.to_dict()
-            self.silent_update(**new_data)
+            self.silent_update(from_db=True, **new_data)
 
     def is_new(self) -> bool:
         """
         Check if this model represents a new (unsaved) object.
 
-        Returns: 
+        Returns:
             True if the model is new, False otherwise.
 
         Examples:
@@ -501,6 +507,36 @@ class StandardModel(PaperlessModel, ABC):
             is_new = doc.is_new()
         """
         return self.id == 0
+
+    def __setattr__(self, name, value):
+        """
+        Override attribute setting to automatically call save when attributes change.
+
+        Args:
+            name: Attribute name
+            value: New attribute value
+        """
+        # Call parent's setattr
+        super().__setattr__(name, value)
+
+        # Skip for private attributes (those starting with underscore)
+        if name.startswith("_"):
+            return
+
+        # Check if the model is initialized or is new
+        if not hasattr(self, "_meta") or self.is_new():
+            return
+
+        # Settings may override this behavior
+        if not self._meta.resource.client.settings.save_immediately:
+            return
+
+        # Only trigger a save if the model is in normal status
+        if self._meta.status != ModelStatus.READY:
+            return
+
+        # All attribute changes trigger a save automatically
+        self.save()
 
     def __str__(self) -> str:
         """

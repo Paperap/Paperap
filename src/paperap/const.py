@@ -49,12 +49,13 @@ class Endpoints(TypedDict, total=False):
     update: Template
     delete: Template
 
-    
+
 class FilteringStrategies(StrEnum):
     WHITELIST = "whitelist"
     BLACKLIST = "blacklist"
     ALLOW_ALL = "allow_all"
     ALLOW_NONE = "allow_none"
+
 
 class ModelStatus(StrEnum):
     INITIALIZING = "initializing"
@@ -62,6 +63,7 @@ class ModelStatus(StrEnum):
     SAVING = "saving"
     READY = "ready"
     ERROR = "error"
+
 
 # API endpoint paths
 API_PATH: dict[str, str] = {

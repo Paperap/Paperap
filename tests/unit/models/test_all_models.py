@@ -50,7 +50,6 @@ from paperap.models.user import Group, User
 from paperap.models.workflow import Workflow, WorkflowAction, WorkflowTrigger
 
 from paperap.tests import TestCase
-from paperap.client import PaperlessClient
 
 logger = logging.getLogger(__name__)
 
@@ -58,10 +57,9 @@ logger = logging.getLogger(__name__)
 class ModelTestCase(TestCase):
     MAX_RECURSION_DEPTH = 2
     model_to_resource : dict[type[PaperlessModel], PaperlessResource]
-    client : PaperlessClient
 
     def setUp(self):
-        self.setup_client()
+        super().setUp()
         self.model_to_resource = {
             Correspondent: self.client.correspondents,
             CustomField: self.client.custom_fields,
@@ -156,11 +154,6 @@ class ModelTestCase(TestCase):
         return fields
 
 class TestModelFromDict(ModelTestCase):
-    def setup_client(self):
-        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123', 'PAPERLESS_SAVE_IMMEDIATELY': 'False'}
-        with patch.dict(os.environ, env_data, clear=True):
-            self.client = PaperlessClient()
-
     def test_all_models_from_dict(self):
         for model_class, resource in self.model_to_resource.items():
             with self.subTest(model=model_class.__name__):
@@ -172,7 +165,7 @@ class TestModelFromDict(ModelTestCase):
                     self.fail(f"Failed to instantiate {model_class.__name__}.from_dict: {ex}")
 
                 self.assertIsInstance(model, model_class, f"Expected {model_class.__name__}, got {type(model)}")
-                if id := getattr(model, 'id'):
+                if id := getattr(model, 'id', None):
                     self.assertEqual(id, sample_data.get("id"), f"{model_class.__name__} id mismatch")
 
                 model_fields = self._get_model_fields(model)
@@ -195,18 +188,6 @@ class TestModelFromDict(ModelTestCase):
                             continue
                         actual_value = getattr(model, attr_name)
                         self.assertIsNotNone(actual_value, f"{model_class.__name__}.{attr_name} was not set correctly. Expected {expected_value}, got {actual_value}")
-
-    """
-    # ID is not currently required, since the model can be instantiated before saving.
-    def test_missing_required_fields(self):
-        for model_class, resource in self.model_to_resource.items():
-            with self.subTest(model=model_class.__name__):
-                sample_data = self.generate_sample_data(model_class)
-                if "id" in sample_data:
-                    del sample_data["id"]
-                with self.assertRaises(ValidationError, msg=f"{model_class.__name__} should raise ValidationError when 'id' is missing"):
-                    model_class.from_dict(sample_data, resource)
-    """
 
     def test_invalid_field_types(self):
         for model_class, resource in self.model_to_resource.items():
@@ -241,15 +222,11 @@ class TestModelFromDict(ModelTestCase):
 
 
 class TestRequest(ModelTestCase):
-    def setup_client(self):
-        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123', 'PAPERLESS_SAVE_IMMEDIATELY': 'False'}
-        with patch.dict(os.environ, env_data, clear=True):
-            self.client = PaperlessClient()
 
     def test_request(self):
         for model_class, resource in self.model_to_resource.items():
             with self.subTest(model=model_class.__name__):
-                models = self.list_resource(resource)
+                models = self.list_resource(resource) # type: ignore
                 self.assertIsInstance(models, QuerySet, f"Expected QuerySet after list, got {type(models)}")
                 total = models.count()
                 self.assertIsInstance(total, int, f"Expected int for count, got {type(total)}")

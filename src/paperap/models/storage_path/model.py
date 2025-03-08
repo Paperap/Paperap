@@ -10,7 +10,7 @@
        File:    storage_path.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -40,14 +40,14 @@ class StoragePath(StandardModel):
     """
 
     name: str
-    slug: str
-    path: str = "{{ created_year }}/{{ correspondent }}/{{ title }}"
-    match: str = ".*"
-    matching_algorithm: int = 0
-    is_insensitive: bool = True
+    slug: str | None = None
+    path: str | None = None
+    match: str | None = None
+    matching_algorithm: int
+    is_insensitive: bool
     document_count: int = 0
     owner: int | None = None
-    user_can_change: bool = True
+    user_can_change: bool
 
     class Meta(StandardModel.Meta):
         # Fields that should not be modified

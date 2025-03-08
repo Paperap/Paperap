@@ -81,9 +81,9 @@ class Document(StandardModel):
     archived_file_name: str | None = None
     content: str | None = None
     correspondent: int | None = None
-    created: datetime = Field(description="Creation timestamp", default_factory=datetime.now, alias="created_on")
+    created: datetime | None = Field(description="Creation timestamp", default=None, alias="created_on")
     created_date: str | None = None
-    updated: datetime = Field(description="Last update timestamp", default_factory=datetime.now, alias="updated_on")
+    updated: datetime | None = Field(description="Last update timestamp", default=None, alias="updated_on")
     custom_fields: list[dict[str, Any]] = Field(default_factory=list)
     deleted_at: datetime | None = None
     document_type: int | None = None
@@ -94,8 +94,8 @@ class Document(StandardModel):
     page_count: int | None = None
     storage_path: int | None = None
     tags: list[int] = Field(default_factory=list)
-    title: str
-    user_can_change: bool = True
+    title: str | None = None
+    user_can_change: bool | None = None
 
     class Meta(StandardModel.Meta):
         # NOTE: Filtering appears to be disabled by paperless on page_count
@@ -103,7 +103,7 @@ class Document(StandardModel):
         read_only_fields = {"page_count", "deleted_at", "updated", "is_shared_by_requester"}
         filtering_disabled = {"page_count", "deleted_at", "updated", "is_shared_by_requester"}
         filtering_strategies = {FilteringStrategies.WHITELIST}
-        whitelist_filtering_params = {
+        supported_filtering_params = {
             "id__in",
             "id",
             "title__istartswith",

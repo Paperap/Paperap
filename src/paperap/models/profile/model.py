@@ -55,7 +55,7 @@ class Profile(StandardModel):
     last_name: str
     auth_token: str
     social_accounts: list[Any] = Field(default_factory=list)  # TODO unknown subtype
-    has_usable_password: bool = True
+    has_usable_password: bool
 
     class Meta(StandardModel.Meta):
         queryset = ProfileQuerySet

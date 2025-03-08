@@ -10,7 +10,7 @@
        File:    task.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -42,7 +42,7 @@ class Task(StandardModel):
     type: str | None = None
     status: str
     result: str | None = None
-    acknowledged: bool = False
+    acknowledged: bool
     related_document: int | None = None
 
     class Meta(StandardModel.Meta):

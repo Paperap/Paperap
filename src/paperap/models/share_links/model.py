@@ -46,8 +46,8 @@ class ShareLinks(StandardModel):
     expiration: datetime | None = None
     slug: str
     document: int
-    created: datetime = Field(description="Creation timestamp", default_factory=datetime.now, alias="created_on")
-    file_version: str = "original"
+    created: datetime = Field(description="Creation timestamp", alias="created_on")
+    file_version: str
 
     class Meta(StandardModel.Meta):
         queryset = ShareLinksQuerySet

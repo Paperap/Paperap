@@ -38,16 +38,15 @@ from paperap.models import (
     Profile, ProfileQuerySet,
     User, UserQuerySet,
 )
-from paperap.client import PaperlessClient
 from paperap.resources.documents import DocumentResource
 from paperap.models.tag import Tag, TagQuerySet
-from paperap.tests import TestCase, load_sample_data
+from paperap.tests import TestCase, load_sample_data, DocumentTest
 from paperap.exceptions import FilterDisabledError
 
 sample_document_list = load_sample_data('documents_list.json')
 sample_document = load_sample_data('documents_item.json')
 
-class BaseTest(TestCase):
+class BaseTest(DocumentTest):
     def setUp(self):
         super().setUp()
         self.queryset = self.client.documents()

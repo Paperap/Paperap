@@ -27,13 +27,13 @@ import os
 import unittest
 from datetime import datetime, timezone
 from unittest.mock import patch
+from pydantic import field_serializer
 from paperap.exceptions import FilterDisabledError
 from paperap.models.abstract.queryset import StandardQuerySet
 from paperap.tests import TestCase
 from unittest.mock import patch
 from paperap.tests import TestCase
 from paperap.models import StandardModel
-from paperap.client import PaperlessClient
 from paperap.resources.base import PaperlessResource, StandardResource, StandardResource
 
 class ExampleModel(StandardModel):
@@ -45,6 +45,10 @@ class ExampleModel(StandardModel):
     an_int : int
     a_float : float
     a_bool : bool
+
+    @field_serializer("a_date")
+    def serialize_datetime(self, value: datetime | None, _info):
+        return value.isoformat() if value else None
 
 class ExampleResource(StandardResource):
     """
@@ -126,8 +130,8 @@ class TestModelToDict(TestWithModel):
 
     def test_update_method(self):
         # Test if the model can be updated
-        updated_model = self.model.update(a_str="Updated String")
-        self.assertEqual(updated_model.a_str, "Updated String")
+        self.model.update(a_str="Updated String")
+        self.assertEqual(self.model.a_str, "Updated String")
 
     def test_is_new_method(self):
         # Test if the is_new method works correctly
@@ -177,8 +181,8 @@ class TestModel(TestWithModel):
             ({"an_int": -1}, -1),
         ]
         for update_data, expected_value in test_cases:
-            updated_model = self.model.update(**update_data)
-            self.assertEqual(updated_model.an_int, expected_value)
+            self.model.update(**update_data)
+            self.assertEqual(self.model.an_int, expected_value)
 
     def test_model_update_str(self):
         test_cases = [
@@ -187,8 +191,8 @@ class TestModel(TestWithModel):
             ({"a_str": " "}, " "),
         ]
         for update_data, expected_value in test_cases:
-            updated_model = self.model.update(**update_data)
-            self.assertEqual(updated_model.a_str, expected_value)
+            self.model.update(**update_data)
+            self.assertEqual(self.model.a_str, expected_value)
 
     def test_model_update_float(self):
         test_cases = [
@@ -197,8 +201,8 @@ class TestModel(TestWithModel):
             ({"a_float": -1.0}, -1.0),
         ]
         for update_data, expected_value in test_cases:
-            updated_model = self.model.update(**update_data)
-            self.assertEqual(updated_model.a_float, expected_value)
+            self.model.update(**update_data)
+            self.assertEqual(self.model.a_float, expected_value)
 
     def test_model_update_bool(self):
         test_cases = [
@@ -206,8 +210,8 @@ class TestModel(TestWithModel):
             ({"a_bool": True}, True),
         ]
         for update_data, expected_value in test_cases:
-            updated_model = self.model.update(**update_data)
-            self.assertEqual(updated_model.a_bool, expected_value)
+            self.model.update(**update_data)
+            self.assertEqual(self.model.a_bool, expected_value)
 
 class TestClassAttributes(TestCase):
     def test_filtering_fields(self):

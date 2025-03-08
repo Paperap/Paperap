@@ -22,6 +22,7 @@
        2025-03-04     By Jess Mann
 
 """
+
 from __future__ import annotations
 
 from abc import ABC, ABCMeta
@@ -83,6 +84,9 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
         # Allow templating
         for key, value in self.endpoints.items():
             self.endpoints[key] = Template(value.safe_substitute(resource=self.name))  # type: ignore # endpoints is always dict[str, Template]
+
+        # Ensure the model has a link back to this resource
+        self.model_class._meta.resource = self
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
@@ -173,7 +177,10 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         # Signal after creating resource
         SignalRegistry.emit(
-            "resource.create:after", "Emitted after creating a resource", args=[self], kwargs={"model": model, **signal_params}
+            "resource.create:after",
+            "Emitted after creating a resource",
+            args=[self],
+            kwargs={"model": model, **signal_params},
         )
 
         return model
@@ -207,7 +214,10 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         # Signal after updating resource
         SignalRegistry.emit(
-            "resource.update:after", "Emitted after updating a resource", args=[self], kwargs={**signal_params, "model": model}
+            "resource.update:after",
+            "Emitted after updating a resource",
+            args=[self],
+            kwargs={**signal_params, "model": model},
         )
 
         return model
@@ -221,7 +231,9 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
         """
         # Signal before deleting resource
         signal_params = {"resource": self.name, "resource_id": resource_id}
-        SignalRegistry.emit("resource.delete:before", "Emitted before deleting a resource", args=[self], kwargs=signal_params)
+        SignalRegistry.emit(
+            "resource.delete:before", "Emitted before deleting a resource", args=[self], kwargs=signal_params
+        )
 
         if not (template := self.endpoints.get("delete")):
             raise ConfigurationError(f"Delete endpoint not defined for resource {self.name}")
@@ -230,7 +242,9 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
         self.client.request("DELETE", url)
 
         # Signal after deleting resource
-        SignalRegistry.emit("resource.delete:after", "Emitted after deleting a resource", args=[self], kwargs=signal_params)
+        SignalRegistry.emit(
+            "resource.delete:after", "Emitted after deleting a resource", args=[self], kwargs=signal_params
+        )
 
     def parse_to_model(self, item: dict[str, Any]) -> _PaperlessModel:
         """
@@ -244,6 +258,9 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
         """
         parsed_data = self.parser.parse_data(item)
         return self.model_class.from_dict(parsed_data, self)
+
+    def create_model(self, **kwargs) -> _PaperlessModel:
+        return self.model_class(**kwargs, resource=self)
 
     def _request_raw(
         self,
@@ -358,10 +375,7 @@ class StandardResource(
         # Signal before getting resource
         signal_params = {"resource": self.name, "resource_id": resource_id}
         SignalRegistry.emit(
-            "resource.get:before", 
-            "Emitted before getting a resource", 
-            args=[self], 
-            kwargs=signal_params
+            "resource.get:before", "Emitted before getting a resource", args=[self], kwargs=signal_params
         )
 
         if not (template := self.endpoints.get("detail")):

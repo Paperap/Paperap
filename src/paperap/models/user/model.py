@@ -10,7 +10,7 @@
        File:    user.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -64,9 +64,9 @@ class User(StandardModel):
     first_name: str
     last_name: str
     date_joined: str
-    is_staff: bool = False
-    is_active: bool = True
-    is_superuser: bool = False
+    is_staff: bool
+    is_active: bool
+    is_superuser: bool
     groups: list[int] = Field(default_factory=list)
     user_permissions: list[str] = Field(default_factory=list)
     inherited_permissions: list[str] = Field(default_factory=list)

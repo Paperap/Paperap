@@ -10,7 +10,7 @@
        File:    workflow.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -43,7 +43,7 @@ class WorkflowTrigger(StandardModel):
     filter_mailrule: str | None = None
     matching_algorithm: int
     match: str
-    is_insensitive: bool = True
+    is_insensitive: bool
     filter_has_tags: list[int] = Field(default_factory=list)
     filter_has_correspondent: int | None = None
     filter_has_document_type: int | None = None
@@ -69,19 +69,19 @@ class WorkflowAction(StandardModel):
     assign_change_users: list[int] = Field(default_factory=list)
     assign_change_groups: list[int] = Field(default_factory=list)
     assign_custom_fields: list[int] = Field(default_factory=list)
-    remove_all_tags: bool = False
+    remove_all_tags: bool
     remove_tags: list[int] = Field(default_factory=list)
-    remove_all_correspondents: bool = False
+    remove_all_correspondents: bool
     remove_correspondents: list[int] = Field(default_factory=list)
-    remove_all_document_types: bool = False
+    remove_all_document_types: bool
     remove_document_types: list[int] = Field(default_factory=list)
-    remove_all_storage_paths: bool = False
+    remove_all_storage_paths: bool
     remove_storage_paths: list[int] = Field(default_factory=list)
     remove_custom_fields: list[int] = Field(default_factory=list)
-    remove_all_custom_fields: bool = False
-    remove_all_owners: bool = False
+    remove_all_custom_fields: bool
+    remove_all_owners: bool
     remove_owners: list[int] = Field(default_factory=list)
-    remove_all_permissions: bool = False
+    remove_all_permissions: bool
     remove_view_users: list[int] = Field(default_factory=list)
     remove_view_groups: list[int] = Field(default_factory=list)
     remove_change_users: list[int] = Field(default_factory=list)
@@ -97,8 +97,8 @@ class Workflow(StandardModel):
     """
 
     name: str
-    order: int = 0
-    enabled: bool = True
+    order: int
+    enabled: bool
     triggers: list[dict[str, Any]] = Field(default_factory=list)
     actions: list[dict[str, Any]] = Field(default_factory=list)
 

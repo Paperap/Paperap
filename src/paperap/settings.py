@@ -41,7 +41,7 @@ class SettingsArgs(TypedDict, total=False):
     password: str | None
     timeout: int
     require_ssl: bool
-    save_immediately : bool
+    save_immediately: bool
 
 
 class Settings(BaseSettings):

@@ -29,21 +29,14 @@ import unittest
 from unittest.mock import MagicMock, patch
 from datetime import datetime, timezone
 from paperap.models.tag import Tag
-from paperap.client import PaperlessClient
 from paperap.resources.tags import TagResource
-from paperap.tests import TestCase, load_sample_data
+from paperap.tests import TestCase, load_sample_data, TagTest
 
 # Load sample response from tests/sample_data/tags_list.json
 sample_data = load_sample_data('tags_list.json')
 
-class TestTagInit(unittest.TestCase):
-
-    def setUp(self):
-        # Setup a sample model instance
-        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123', 'PAPERLESS_SAVE_IMMEDIATELY': 'False'}
-        with patch.dict(os.environ, env_data, clear=True):
-            self.client = PaperlessClient()
-        self.resource = self.client.tags
+class TestTagInit(TagTest):
+    def setup_model_data(self):
         self.model_data = {
             "id": 1,
             "name": "Test Tag",
@@ -56,24 +49,18 @@ class TestTagInit(unittest.TestCase):
         }
 
     def test_from_dict(self):
-        model = Tag.from_dict(self.model_data, self.resource)
-        self.assertIsInstance(model, Tag, f"Expected Tag, got {type(model)}")
-        self.assertEqual(model.id, self.model_data["id"], f"Tag id is wrong when created from dict: {model.id}")
-        self.assertEqual(model.name, self.model_data["name"], f"Tag name is wrong when created from dict: {model.name}")
-        self.assertEqual(model.slug, self.model_data["slug"], f"Tag slug is wrong when created from dict: {model.slug}")
-        self.assertEqual(model.colour, self.model_data["color"], f"Tag color is wrong when created from dict: {model.colour}")
-        self.assertEqual(model.match, self.model_data["match"], f"Tag match is wrong when created from dict: {model.match}")
-        self.assertEqual(model.matching_algorithm, self.model_data["matching_algorithm"], f"Tag matching_algorithm is wrong when created from dict: {model.matching_algorithm}")
-        self.assertEqual(model.is_insensitive, self.model_data["is_insensitive"], f"Tag is_insensitive is wrong when created from dict: {model.is_insensitive}")
-        self.assertEqual(model.is_inbox_tag, self.model_data["is_inbox_tag"], f"Tag is_inbox_tag is wrong when created from dict: {model.is_inbox_tag}")
+        self.assertIsInstance(self.model, Tag, f"Expected Tag, got {type(self.model)}")
+        self.assertEqual(self.model.id, self.model_data["id"], f"Tag id is wrong when created from dict: {self.model.id}")
+        self.assertEqual(self.model.name, self.model_data["name"], f"Tag name is wrong when created from dict: {self.model.name}")
+        self.assertEqual(self.model.slug, self.model_data["slug"], f"Tag slug is wrong when created from dict: {self.model.slug}")
+        self.assertEqual(self.model.colour, self.model_data["color"], f"Tag color is wrong when created from dict: {self.model.colour}")
+        self.assertEqual(self.model.match, self.model_data["match"], f"Tag match is wrong when created from dict: {self.model.match}")
+        self.assertEqual(self.model.matching_algorithm, self.model_data["matching_algorithm"], f"Tag matching_algorithm is wrong when created from dict: {self.model.matching_algorithm}")
+        self.assertEqual(self.model.is_insensitive, self.model_data["is_insensitive"], f"Tag is_insensitive is wrong when created from dict: {self.model.is_insensitive}")
+        self.assertEqual(self.model.is_inbox_tag, self.model_data["is_inbox_tag"], f"Tag is_inbox_tag is wrong when created from dict: {self.model.is_inbox_tag}")
 
-class TestTag(unittest.TestCase):
-    def setUp(self):
-        # Setup a sample model instance
-        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123', 'PAPERLESS_SAVE_IMMEDIATELY': 'False'}
-        with patch.dict(os.environ, env_data, clear=True):
-            self.client = PaperlessClient()
-        self.resource = self.client.tags
+class TestTag(TagTest):
+    def setup_model_data(self):
         self.model_data = {
             "id": 1,
             "created": "2025-03-01T12:00:00Z",
@@ -86,7 +73,6 @@ class TestTag(unittest.TestCase):
             "is_insensitive": True,
             "is_inbox_tag": True,
         }
-        self.model = Tag.from_dict(self.model_data, self.resource)
 
     def test_model_string_parsing(self):
         # Test if string fields are parsed correctly

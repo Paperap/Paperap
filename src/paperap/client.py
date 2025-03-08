@@ -282,7 +282,7 @@ class PaperlessClient:
             # TODO: Temporary hack
             params = params.get("params", params) if params else params
 
-            #logger.critical("Request (%s) url %s, params %s, data %s, files %s", method, url, params, data, files)
+            # logger.critical("Request (%s) url %s, params %s, data %s, files %s", method, url, params, data, files)
             response = self.session.request(
                 method=method,
                 url=url,

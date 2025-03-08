@@ -38,7 +38,7 @@ from paperap.models.document import Document
 from paperap.resources import PaperlessResource, StandardResource
 from paperap.client import PaperlessClient
 from paperap.resources.documents import DocumentResource
-from paperap.tests import load_sample_data, TestCase
+from paperap.tests import load_sample_data, TestCase, DocumentTest
 
 MockClient = MagicMock(PaperlessClient)
 
@@ -60,9 +60,10 @@ class DummyResource(StandardResource[DummyModel]):
     def __init__(self):
         self.name = "dummy"
 
-class TestQuerySetFilterBase(unittest.TestCase):
+class TestQuerySetFilterBase(TestCase):
     @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
+        super().setUp()
         self.mock_request = mock_request
         self.mock_request.return_value = sample_document_list
         self.resource = DummyResource()
@@ -154,9 +155,10 @@ class TestExclude(TestQuerySetFilterBase):
         expected = {"init": "value", "field__not": 1, "title__not_contains": "invoice"}
         self.assertEqual(qs2.filters, expected)
 
-class TestQuerySetGetNoCache(unittest.TestCase):
+class TestQuerySetGetNoCache(DocumentTest):
     @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
+        super().setUp()
         mock_request.return_value = sample_document
         self.resource = DocumentResource(MockClient)
         self.resource.client.request = mock_request
@@ -169,12 +171,9 @@ class TestQuerySetGetNoCache(unittest.TestCase):
         self.assertEqual(result.id, doc_id)
         self.assertEqual(result.title, sample_document["title"])
 
-class TestQuerySetGetNoCacheFailure(unittest.TestCase):
+class TestQuerySetGetNoCacheFailure(DocumentTest):
     def setUp(self):
-        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123', 'PAPERLESS_SAVE_IMMEDIATELY': 'False'}
-        with patch.dict(os.environ, env_data, clear=True):
-            self.client = PaperlessClient()
-        self.resource = DocumentResource(self.client)
+        super().setUp()
         self.qs = StandardQuerySet(self.resource)
 
     @patch("paperap.client.PaperlessClient.request")
@@ -183,9 +182,10 @@ class TestQuerySetGetNoCacheFailure(unittest.TestCase):
         with self.assertRaises(ObjectNotFoundError):
             self.qs.get(999999)
 
-class TestQuerySetGetCache(unittest.TestCase):
+class TestQuerySetGetCache(DocumentTest):
     @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
+        super().setUp()
         mock_request.return_value = sample_document
         self.resource = DocumentResource(MockClient)
         self.resource.client.request = mock_request
@@ -204,12 +204,9 @@ class TestQuerySetGetCache(unittest.TestCase):
         self.assertEqual(result.id, self.modified_doc_id)
         self.assertEqual(result.title, self.modified_doc_title)
 
-class TestQuerySetGetCacheFailure(unittest.TestCase):
+class TestQuerySetGetCacheFailure(DocumentTest):
     def setUp(self):
-        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123', 'PAPERLESS_SAVE_IMMEDIATELY': 'False'}
-        with patch.dict(os.environ, env_data, clear=True):
-            self.client = PaperlessClient()
-        self.resource = DocumentResource(self.client)
+        super().setUp()
         self.qs = StandardQuerySet(self.resource)
 
         self.modified_doc_id = 1337
@@ -225,9 +222,10 @@ class TestQuerySetGetCacheFailure(unittest.TestCase):
         with self.assertRaises(ObjectNotFoundError):
             self.qs.get(999999)
 
-class TestQuerySetAll(unittest.TestCase):
+class TestQuerySetAll(TestCase):
     @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
+        super().setUp()
         self.mock_request = mock_request
         self.mock_request.return_value = sample_document_list
         self.resource = DummyResource()
@@ -241,9 +239,10 @@ class TestQuerySetAll(unittest.TestCase):
         self.assertEqual(qs_all.filters, self.qs.filters)
 
 
-class TestQuerySetOrderBy(unittest.TestCase):
+class TestQuerySetOrderBy(TestCase):
     @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
+        super().setUp()
         self.mock_request = mock_request
         self.mock_request.return_value = sample_document_list
         self.resource = DummyResource()
@@ -256,9 +255,10 @@ class TestQuerySetOrderBy(unittest.TestCase):
         expected_order = "name,-date"
         self.assertEqual(qs_ordered.filters.get("ordering"), expected_order)
 
-class TestQuerySetFirst(unittest.TestCase):
+class TestQuerySetFirst(TestCase):
     @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
+        super().setUp()
         self.mock_request = mock_request
         self.mock_request.return_value = sample_document_list
         self.resource = DummyResource()
@@ -278,9 +278,10 @@ class TestQuerySetFirst(unittest.TestCase):
             self.assertEqual(result, "chain_item")
             mock_chain.assert_called_once()
 
-class TestQuerySetLast(unittest.TestCase):
+class TestQuerySetLast(TestCase):
     @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
+        super().setUp()
         self.mock_request = mock_request
         self.mock_request.return_value = sample_document_list
         self.resource = DummyResource()
@@ -295,9 +296,10 @@ class TestQuerySetLast(unittest.TestCase):
         self.qs._result_cache = []
         self.assertIsNone(self.qs.last())
 
-class TestQuerySetExists(unittest.TestCase):
+class TestQuerySetExists(TestCase):
     @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
+        super().setUp()
         self.mock_request = mock_request
         self.mock_request.return_value = sample_document_list
         self.resource = DummyResource()
@@ -312,9 +314,10 @@ class TestQuerySetExists(unittest.TestCase):
         self.qs._result_cache = []
         self.assertFalse(self.qs.exists())
 
-class TestQuerySetIter(unittest.TestCase):
+class TestQuerySetIter(TestCase):
     @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
+        super().setUp()
         self.mock_request = mock_request
         self.mock_request.return_value = sample_document_list
         self.resource = DummyResource()
@@ -328,8 +331,9 @@ class TestQuerySetIter(unittest.TestCase):
         result = list(iter(self.qs))
         self.assertEqual(result, ["a", "b"])
 
-class TestQuerySetGetItem(unittest.TestCase):
+class TestQuerySetGetItem(TestCase):
     def setUp(self):
+        super().setUp()
         self.resource = DummyResource()
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.

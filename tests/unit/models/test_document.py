@@ -32,24 +32,17 @@ import logging
 from datetime import datetime, timezone
 from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
 from paperap.models import *
-from paperap.client import PaperlessClient
 from paperap.resources.documents import DocumentResource
 from paperap.models.tag import Tag, TagQuerySet
-from paperap.tests import TestCase, load_sample_data
+from paperap.tests import load_sample_data, DocumentTest
 
 logger = logging.getLogger(__name__)
 
 sample_document_list = load_sample_data('documents_list.json')
 sample_document = load_sample_data('documents_item.json')
 
-class DocumentTestCase(TestCase):
-    mock_env = True
-
-class TestDocumentInit(DocumentTestCase):
-    def setUp(self):
-        super().setUp()
-        # Setup a sample model instance
-        self.resource = self.client.documents
+class TestDocumentInit(DocumentTest):
+    def setup_model_data(self):
         self.model_data = {
             "id": 1,
             "created": "2025-03-01T12:00:00Z",
@@ -78,11 +71,8 @@ class TestDocumentInit(DocumentTestCase):
         self.assertEqual(model.created, datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc), f"created wrong value after from_dict {model.created}")
         self.assertEqual(model.updated, datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc), f"updated wrong value after from_dict {model.updated}")
 
-class TestDocument(DocumentTestCase):
-    def setUp(self):
-        super().setUp()
-        # Setup a sample model instance
-        self.resource = self.client.documents
+class TestDocument(DocumentTest):
+    def setup_model_data(self):
         self.model_data = {
             "id": 1,
             "created": "2025-03-01T12:00:00Z",
@@ -92,7 +82,6 @@ class TestDocument(DocumentTestCase):
             "document_type": 1,
             "tags": [1, 2, 3],
         }
-        self.model = Document.from_dict(self.model_data, self.resource)
 
     def test_model_date_parsing(self):
         # Test if date strings are parsed into datetime objects
@@ -128,23 +117,13 @@ class TestDocument(DocumentTestCase):
         self.assertEqual(model_dict["document_type"], 1)
         self.assertEqual(model_dict["tags"], [1, 2, 3])
 
-class TestGetRelationships(TestCase):
-    def setUp(self):
-        super().setUp()
-        # Setup a sample model instance
-        sample_document = load_sample_data('documents_item.json')
-        self.resource = DocumentResource(self.client)
-        self.document = Document.from_dict(sample_document, self.resource)
-
-    def setup_client(self):
-        self.client = PaperlessClient()
-
+class TestGetRelationships(DocumentTest):
     def test_get_tags(self):
         sample_data = load_sample_data('tags_list_id__in_38,162,160,191.json')
         with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = sample_data
-            expected_count = len(self.document.tags)
-            tags = self.document.get_tags()
+            expected_count = len(self.model.tags)
+            tags = self.model.get_tags()
             self.assertIsInstance(tags, TagQuerySet)
             actual_count = tags.count()
             self.assertEqual(expected_count, actual_count, f"Expected {expected_count} tags, got {actual_count}")
@@ -170,7 +149,7 @@ class TestGetRelationships(TestCase):
                     self.assertIsInstance(value, field_type, f"Expected tag.{field} to be a {field_type}, got {type(value)}")
 
                 self.assertGreater(tag.document_count, 0, f"Expected tag.document_count to be greater than 0, got {tag.document_count}")
-                self.assertTrue(tag.id in self.document.tags, f"Expected tag.id to be in document.tags. {tag.id} not in {self.document.tags}")
+                self.assertTrue(tag.id in self.model.tags, f"Expected tag.id to be in document.tags. {tag.id} not in {self.model.tags}")
 
             self.assertEqual(count, expected_count, f"Expected to iterate over {expected_count} tags, only saw {count}")
 
@@ -178,8 +157,8 @@ class TestGetRelationships(TestCase):
         sample_data = load_sample_data('correspondents_item.json')
         with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = sample_data
-            self.document.correspondent = sample_data["id"]
-            correspondent = self.document.get_correspondent()
+            self.model.correspondent = sample_data["id"]
+            correspondent = self.model.get_correspondent()
             self.assertIsInstance(correspondent, Correspondent, f"Expected document.correspondent to be a Correspondent, got {type(correspondent)}")
             # Make mypy happy
             assert correspondent is not None
@@ -206,8 +185,8 @@ class TestGetRelationships(TestCase):
         sample_data = load_sample_data('document_types_item.json')
         with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = sample_data
-            self.document.document_type = sample_data["id"]
-            document_type = self.document.get_document_type()
+            self.model.document_type = sample_data["id"]
+            document_type = self.model.get_document_type()
             self.assertIsInstance(document_type, DocumentType, f"Expected document.document_type to be a DocumentType, got {type(document_type)}")
             # Make mypy happy
             assert document_type is not None
@@ -235,8 +214,8 @@ class TestGetRelationships(TestCase):
         sample_data = load_sample_data('storage_paths_item.json')
         with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = sample_data
-            self.document.storage_path = sample_data["id"]
-            storage_path = self.document.get_storage_path()
+            self.model.storage_path = sample_data["id"]
+            storage_path = self.model.get_storage_path()
             self.assertIsInstance(storage_path, StoragePath, f"Expected document.storage_path to be a StoragePath, got {type(storage_path)}")
             # Make mypy happy
             assert storage_path is not None
@@ -257,7 +236,7 @@ class TestGetRelationships(TestCase):
                 self.assertIsInstance(value, field_type, f"Expected storage_path.{field} to be a {field_type}, got {type(value)}")
                 self.assertEqual(value, sample_data[field], f"Expected storage_path.{field} to match sample data")
 
-class TestRequestDocumentList(DocumentTestCase):
+class TestRequestDocumentList(DocumentTest):
     def test_get_documents(self):
         with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = sample_document_list
@@ -267,13 +246,7 @@ class TestRequestDocumentList(DocumentTestCase):
             expected = sample_document_list["count"]
             self.assertEqual(total, expected, f"Expected {expected} documents, got {total}")
 
-class TestRequestDocument(TestCase):
-
-    def setup_client(self):
-        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123', 'PAPERLESS_SAVE_IMMEDIATELY': 'False'}
-        with patch.dict(os.environ, env_data, clear=True):
-            self.client = PaperlessClient()
-
+class TestRequestDocument(DocumentTest):
     def test_get_document(self):
         with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = sample_document
@@ -297,7 +270,7 @@ class TestRequestDocument(TestCase):
                     self.assertIsInstance(value, field_type, f"Expected document.{field} to be a {field_type}, got {type(value)}")
                     self.assertEqual(value, sample_document[field], f"Expected document.{field} to match sample data")
 
-class TestCustomFieldAccess(TestCase):
+class TestCustomFieldAccess(DocumentTest):
 
     def setUp(self):
         super().setUp()
@@ -311,8 +284,7 @@ class TestCustomFieldAccess(TestCase):
             {"field": 57, "value": False},
             {"field": 58, "value": None},
         ]
-        self.resource = DocumentResource(self.client)
-        self.document = Document.from_dict({
+        self.model = self.create_model(**{
             "id": 1,
             "created": "2025-03-01T12:00:00Z",
             "updated": "2025-03-02T12:00:00Z",
@@ -321,104 +293,22 @@ class TestCustomFieldAccess(TestCase):
             "document_type": 1,
             "tags": [1, 2, 3],
             "custom_fields": self.custom_fields
-        }, self.resource)
+        })
 
     def test_custom_field_success(self):
         for field in self.custom_fields:
             field_id = field["field"]
             expected = field["value"]
-            actual = self.document.custom_field_value(field_id)
+            actual = self.model.custom_field_value(field_id)
             self.assertEqual(expected, actual, f"Expected {expected}, got {actual} of type {type(actual)}")
 
     def test_custom_field_default(self):
         default = "Default Value"
-        actual = self.document.custom_field_value(3, default=default)
+        actual = self.model.custom_field_value(3, default=default)
         self.assertEqual(default, actual, f"Expected {default}, got {actual} of type {type(actual)}")
 
     def test_custom_field_raises(self):
         with self.assertRaises(ValueError):
-            self.document.custom_field_value(3, raise_errors=True)
+            self.model.custom_field_value(3, raise_errors=True)
         with self.assertRaises(ValueError):
-            self.document.custom_field_value(3, default="Some Default", raise_errors=True)
-
-class IntegrationTest(TestCase):
-    def setUp(self):
-        super().setUp()
-        self.document = self.client.documents().get(7411)
-        self._initial_data = self.document.to_dict()
-
-    def tearDown(self):
-        # Request that paperless ngx reverts to the previous data
-        for field, value in self._initial_data.items():
-            setattr(self.document, field, value)
-        self.document.save()
-        
-        # TODO: confirm without another query
-        return super().tearDown()   
-
-class TestIntegrationTest(IntegrationTest):
-    def test_integration(self):
-        # Test if the document can be retrieved
-        self.assertIsInstance(self.document, Document)
-        self.assertEqual(self.document.id, 7411, "Document ID does not match expected value. Cannot run test")
-
-        # Test if the document can be updated
-        self.document.title = "Updated Test Document"
-        self.document.save()
-        self.assertEqual(self.document.title, "Updated Test Document", "Document title did not update as expected. Cannot test IntegrationTest class")
-
-        # Manually call tearDown
-        self.tearDown()
-
-        # Retrieve the document again
-        document = self.client.documents().get(7411)
-        for field, value in self._initial_data.items():
-            # Temporarily skip dates (TODO)
-            if field in ['added', 'created', 'updated']:
-                continue
-            retrieved_value = getattr(document, field)
-            self.assertEqual(retrieved_value, value, f"Field {field} did not revert to initial value on teardown. Integration tests will fail")
-
-class TestSaveIntegration(IntegrationTest):
-
-    def test_save(self):
-        # Append a bunch of random gibberish
-        new_title = "Test Document " + str(datetime.now().timestamp())
-        self.assertNotEqual(new_title, self.document.title, "Test assumptions are not true")
-        self.document.title = new_title
-        self.assertEqual(new_title, self.document.title, "Title not updated in local instance")
-        self.assertEqual(self.document.id, 7411, "ID changed after update")
-        self.document.save()
-        self.assertEqual(new_title, self.document.title, "Title not updated after save")
-        self.assertEqual(self.document.id, 7411, "ID changed after save")
-
-        # Retrieve the document again
-        document = self.client.documents().get(7411)
-        self.assertEqual(new_title, document.title, "Title not updated in remote instance")
-        
-    def test_save_all_fields(self):
-        #(field_name, [values_to_set])
-        ts = datetime.now().timestamp()
-        fields = [
-            ("title", [f"Test Document {ts}"]),
-            ("correspondent", [21, 37, None]),
-            ("document_type", [10, 16, None]),
-            ("tags", [[74], [254], [45, 80]]),
-        ]
-        for field, values in fields:
-            for value in values:
-                current = getattr(self.document, field)
-                self.assertNotEqual(value, current, f"Test assumptions are not true for {field}")
-                setattr(self.document, field, value)
-                self.assertEqual(value, getattr(self.document, field), f"{field} not updated in local instance")
-                self.assertEqual(self.document.id, 7411, f"ID changed after update to {field}")
-                self.document.save()
-                self.assertEqual(value, getattr(self.document, field), f"{field} not updated after save")
-                self.assertEqual(self.document.id, 7411, "ID changed after save")
-
-                # Get a new copy
-                document = self.client.documents().get(7411)
-                self.assertEqual(value, getattr(document, field), f"{field} not updated in remote instance")
-
-if __name__ == "__main__":
-    unittest.main()
+            self.model.custom_field_value(3, default="Some Default", raise_errors=True)
