@@ -120,10 +120,10 @@ class PaperlessModel(BaseModel, ABC):
         # Updating attributes will not trigger save()
         status: ModelStatus = ModelStatus.INITIALIZING
         original_data: dict[str, Any] = {}
-        # If true, updating attributes will trigger save(). If false, save() must be called manually 
+        # If true, updating attributes will trigger save(). If false, save() must be called manually
         # True or False will override client.settings.automatic_save (PAPERLESS_AUTOMATIC_SAVE)
         # None will respect client.settings.automatic_save
-        automatic_save : bool | None = None
+        automatic_save: bool | None = None
 
         def __init__(self, model: type[_Self]):
             self.model = model
@@ -500,31 +500,31 @@ class StandardModel(PaperlessModel, ABC):
             # Nothing has changed, so we can save ourselves a request
             if not self.is_dirty():
                 return
-            
+
             current_data = self.to_dict(include_read_only=False, exclude_none=False, exclude_unset=True)
             SignalRegistry.emit(
                 "model.save:before",
                 "Fired before the model data is sent to paperless ngx to be saved.",
-                kwargs = {
+                kwargs={
                     "model": self,
                     "current_data": current_data,
-                }
+                },
             )
-            
+
             new_model = self._meta.resource.update(self.id, current_data)
             new_data = new_model.to_dict()
             self.update_locally(from_db=True, **new_data)
-            
+
             SignalRegistry.emit(
                 "model.save:after",
                 "Fired after the model data is saved in paperless ngx.",
-                kwargs = {
+                kwargs={
                     "model": self,
                     "previous_data": current_data,
                     "updated_data": new_data,
-                }
+                },
             )
-            
+
     def is_new(self) -> bool:
         """
         Check if this model represents a new (unsaved) object.

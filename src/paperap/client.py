@@ -27,7 +27,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Any, Iterator, Literal, Unpack, overload
+from typing import Any, Iterator, Literal, Union, Unpack, overload
 import requests
 from yarl import URL
 from string import Template
@@ -416,6 +416,7 @@ class PaperlessClient:
         json_response: bool = True,
     ) -> dict[str, Any] | bytes | None:
         kwargs = {
+            "client": self,
             "method": method,
             "endpoint": endpoint,
             "params": params,
@@ -434,23 +435,17 @@ class PaperlessClient:
         SignalRegistry.emit(
             "client.request__response",
             "After a response is received, before it is parsed",
-            args=[self],
-            kwargs={
-                **kwargs,
-                "response": response,
-            },
+            args=[response],
+            kwargs=kwargs,
         )
 
         parsed_response = self._handle_response(response, json_response=json_response)
-
-        SignalRegistry.emit(
+        parsed_response = SignalRegistry.emit(
             "client.request:after",
             "After a request is parsed.",
-            args=[self],
-            kwargs={
-                **kwargs,
-                "parsed_response": parsed_response,
-            },
+            return_type=dict[str, Any],
+            args=[parsed_response],
+            kwargs=kwargs,
         )
 
         return parsed_response
