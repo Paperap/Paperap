@@ -10,7 +10,7 @@
        File:    base.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.2
+        Version: 0.0.3
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -257,7 +257,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
             The parsed model instance.
         """
         parsed_data = self.parser.parse_data(item)
-        return self.model_class.from_dict(parsed_data, self)
+        return self.model_class.from_dict(parsed_data)
 
     def create_model(self, **kwargs) -> _PaperlessModel:
         return self.model_class(**kwargs, resource=self)

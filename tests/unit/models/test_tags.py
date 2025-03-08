@@ -10,7 +10,7 @@
         File:    test_tags.py
         Project: paperap
         Created: 2025-03-05
-        Version: 0.0.2
+        Version: 0.0.3
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -54,7 +54,7 @@ class TestTagsInit(TagTest):
         }
 
     def test_from_dict(self):
-        model = Tag.from_dict(self.model_data, self.resource)
+        model = Tag.from_dict(self.model_data)
         fields = {
             "id": int,
             "name": str,

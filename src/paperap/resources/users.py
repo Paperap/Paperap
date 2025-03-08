@@ -10,7 +10,7 @@
        File:    users.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.3
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -46,7 +46,7 @@ class UserResource(StandardResource[User, UserQuerySet]):
         """
         if not (response := self.client.request("GET", "users/me/")):
             raise ObjectNotFoundError("Failed to get current user")
-        return User.from_dict(response, self)
+        return User.from_dict(response)
 
 
 class GroupResource(StandardResource[Group, GroupQuerySet]):

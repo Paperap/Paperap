@@ -10,7 +10,7 @@
        File:    saved_view.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.2
+        Version: 0.0.3
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -58,7 +58,7 @@ class SavedView(StandardModel):
     page_size: int | None = None
     display_mode: str | None = None
     display_fields: list[str] = Field(default_factory=list)
-    owner: int | None
+    owner: int | None = None
     user_can_change: bool | None = None
 
     class Meta(StandardModel.Meta):

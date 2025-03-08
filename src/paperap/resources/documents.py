@@ -10,7 +10,7 @@
        File:    documents.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.3
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -31,7 +31,7 @@ from typing import Any, BinaryIO, Iterator, Optional
 from typing_extensions import TypeVar
 
 from paperap.exceptions import APIError, BadResponseError
-from paperap.models.document import Document, DocumentQuerySet
+from paperap.models.document import Document, DocumentQuerySet, DocumentNote
 from paperap.resources.base import PaperlessResource, StandardResource
 
 
@@ -122,7 +122,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         ):
             raise BadResponseError("Failed to upload document")
 
-        return Document.from_dict(response, self)
+        return Document.from_dict(response)
 
     def download(self, document_id: int, original: bool = False) -> bytes:
         """
@@ -157,3 +157,10 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         """
         params = {"query": query}
         return self.all()._request_iter(params=params)
+
+
+class DocumentNoteResource(StandardResource[DocumentNote]):
+    """Resource for managing document notes."""
+
+    model_class = DocumentNote
+    name = "document_notes"

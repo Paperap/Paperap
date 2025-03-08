@@ -10,7 +10,7 @@
        File:    base.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.2
+        Version: 0.0.3
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -267,7 +267,7 @@ class PaperlessModel(BaseModel, ABC):
 
         if not getattr(self._meta, "resource", None):
             raise ValueError(
-                "Resource is required for PaperlessModel. Initialize the resource before instantiating models."
+                f"Resource is required for PaperlessModel. Initialize the resource for {self.__class__.__name__} before instantiating models."
             )
 
     def model_post_init(self, __context):
@@ -280,22 +280,21 @@ class PaperlessModel(BaseModel, ABC):
         self._meta.status = ModelStatus.READY
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any], resource: "PaperlessResource") -> Self:
+    def from_dict(cls, data: dict[str, Any]) -> Self:
         """
         Create a model instance from API response data.
 
         Args:
             data: Dictionary containing the API response data.
-            resource: The PaperlessResource instance associated with the model.
 
         Returns:
             A model instance initialized with the provided data.
 
         Examples:
             # Create a Document instance from API data
-            doc = Document.from_dict(api_data, resource=client.documents)
+            doc = Document.from_dict(api_data)
         """
-        return cls.model_validate({**data, "resource": resource})
+        return cls.model_validate(data)
 
     def to_dict(
         self,
@@ -417,6 +416,22 @@ class PaperlessModel(BaseModel, ABC):
             # Check if a Document instance is new
             is_new = doc.is_new()
         """
+
+    def matches_dict(self, data: dict[str, Any]) -> bool:
+        """
+        Check if the model matches the provided data.
+
+        Args:
+            data: Dictionary containing the data to compare.
+
+        Returns:
+            True if the model matches the data, False otherwise.
+
+        Examples:
+            # Check if a Document instance matches API data
+            matches = doc.matches_dict(api_data)
+        """
+        return self.to_dict() == data
 
     def __str__(self) -> str:
         """

@@ -10,7 +10,7 @@
         File:    models.py
         Project: paperap
         Created: 2025-03-07
-        Version: 0.0.2
+        Version: 0.0.3
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -27,10 +27,7 @@ import factory
 from faker import Faker
 from datetime import datetime, timezone
 from typing import Any, Generic
-from paperap.models import (
-    Correspondent, CustomField, Document, DocumentType, Profile, SavedView, ShareLinks, StoragePath,
-    Tag, Task, UISettings, Group, User, WorkflowTrigger, WorkflowAction, Workflow, PaperlessModel
-)
+from paperap.models import *
 
 fake = Faker()
 
@@ -59,6 +56,18 @@ class CustomFieldFactory(PydanticFactory):
 	extra_data = factory.Dict({"key": fake.word(), "value": fake.word()})
 	document_count = factory.Faker("random_int", min=0, max=100)
 
+class DocumentNoteFactory(PydanticFactory):
+    class Meta:
+        model = DocumentNote
+
+    note = factory.Faker("sentence")
+    created = factory.LazyFunction(datetime.now)
+    deleted_at = None
+    restored_at = None
+    transaction_id = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
+    document = factory.Faker("random_int", min=1, max=1000)
+    user = factory.Faker("random_int", min=1, max=1000)
+
 class DocumentFactory(PydanticFactory):
     class Meta:
         model = Document
@@ -74,7 +83,6 @@ class DocumentFactory(PydanticFactory):
     deleted_at = None
     document_type = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
     is_shared_by_requester = factory.Faker("boolean")
-    notes = factory.List([factory.Faker("sentence") for _ in range(3)])
     original_file_name = factory.Faker("file_name")
     owner = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
     page_count = factory.Faker("random_int", min=1, max=500)
@@ -82,6 +90,8 @@ class DocumentFactory(PydanticFactory):
     tags = factory.List([factory.Faker("random_int", min=1, max=50) for _ in range(5)])
     title = factory.Faker("sentence")
     user_can_change = factory.Faker("boolean")
+    # notes is a list of DocumentNote instances
+    notes = factory.LazyFunction(lambda: [DocumentNoteFactory() for _ in range(3)])
 
 class DocumentTypeFactory(PydanticFactory):
     class Meta:

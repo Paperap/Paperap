@@ -11,7 +11,7 @@ least a base level of testing for all models.
         File:    test_from_dict.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.2
+        Version: 0.0.3
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -48,6 +48,7 @@ from paperap.models.task import Task
 from paperap.models.ui_settings import UISettings
 from paperap.models.user import Group, User
 from paperap.models.workflow import Workflow, WorkflowAction, WorkflowTrigger
+from paperap.tests.factories import *
 
 from paperap.tests import TestCase
 
@@ -57,6 +58,7 @@ logger = logging.getLogger(__name__)
 class ModelTestCase(TestCase):
     MAX_RECURSION_DEPTH = 2
     model_to_resource : dict[type[PaperlessModel], PaperlessResource]
+    model_to_factories : dict[type[PaperlessModel], type[PydanticFactory]]
 
     def setUp(self):
         super().setUp()
@@ -77,6 +79,23 @@ class ModelTestCase(TestCase):
             WorkflowAction: self.client.workflow_actions,
             WorkflowTrigger: self.client.workflow_triggers,
         }
+        self.model_to_factories = {
+            Correspondent: CorrespondentFactory,
+            CustomField: CustomFieldFactory,
+            Document: DocumentFactory,
+            DocumentType: DocumentTypeFactory,
+            Profile: ProfileFactory,
+            SavedView: SavedViewFactory,
+            ShareLinks: ShareLinksFactory,
+            StoragePath: StoragePathFactory,
+            Tag: TagFactory,
+            Task: TaskFactory,
+            User: UserFactory,
+            Group: GroupFactory,
+            Workflow: WorkflowFactory,
+            WorkflowAction: WorkflowActionFactory,
+            WorkflowTrigger: WorkflowTriggerFactory,
+        }
 
     def get_sample_value(self, type_hint, depth: int = 0) -> Any:
         if depth > self.MAX_RECURSION_DEPTH:
@@ -91,7 +110,7 @@ class ModelTestCase(TestCase):
                     return self.get_sample_value(arg, depth)
             return None
         if isinstance(type_hint, type) and issubclass(type_hint, PaperlessModel):
-            return self.generate_sample_data(type_hint, depth + 1)
+            return self.generate_sample_data_manual(type_hint, depth + 1)
         if type_hint is str:
             return "Sample String"
         elif type_hint is int:
@@ -105,14 +124,18 @@ class ModelTestCase(TestCase):
         if origin is list:
             item_type = get_args(type_hint)[0]
             if isinstance(item_type, type) and issubclass(item_type, PaperlessModel):
-                return [self.generate_sample_data(item_type, depth + 1)]
+                return [self.generate_sample_data_manual(item_type, depth + 1)]
             return [self.get_sample_value(item_type, depth)]
         if origin is dict:
             key_type, value_type = get_args(type_hint)
             return {self.get_sample_value(key_type, depth): self.get_sample_value(value_type, depth)}
         return None
 
-    def generate_sample_data(self, model_class, depth: int = 0) -> dict[str, Any]:
+    def generate_sample_data(self, model_class : type["PaperlessModel"], factory : type[PydanticFactory], depth : int = 0) -> dict[str, Any]:
+        _instance = factory()
+        return _instance.to_dict()
+
+    def generate_sample_data_manual(self, model_class, depth: int = 0) -> dict[str, Any]:
         sample_data: dict[str, Any] = {}
         if depth == 0:
             sample_data = {"id": 1}
@@ -155,11 +178,11 @@ class ModelTestCase(TestCase):
 
 class TestModelFromDict(ModelTestCase):
     def test_all_models_from_dict(self):
-        for model_class, resource in self.model_to_resource.items():
+        for model_class, factory in self.model_to_factories.items():
             with self.subTest(model=model_class.__name__):
-                sample_data = self.generate_sample_data(model_class)
+                sample_data = self.generate_sample_data(model_class, factory)
                 try:
-                    model = model_class.from_dict(sample_data, resource)
+                    model = model_class.from_dict(sample_data)
                 except Exception as ex:
                     logger.exception("from_dict failed for %s with data: %s", model_class.__name__, sample_data)
                     self.fail(f"Failed to instantiate {model_class.__name__}.from_dict: {ex}")
@@ -190,9 +213,9 @@ class TestModelFromDict(ModelTestCase):
                         self.assertIsNotNone(actual_value, f"{model_class.__name__}.{attr_name} was not set correctly. Expected {expected_value}, got {actual_value}")
 
     def test_invalid_field_types(self):
-        for model_class, resource in self.model_to_resource.items():
+        for model_class, factory in self.model_to_factories.items():
             with self.subTest(model=model_class.__name__):
-                sample_data = self.generate_sample_data(model_class)
+                sample_data = self.generate_sample_data(model_class, factory)
                 hints = get_type_hints(model_class)
                 for attr, type_hint in hints.items():
                     if attr.startswith('_'):
@@ -206,15 +229,15 @@ class TestModelFromDict(ModelTestCase):
                         original = sample_data.get(attr)
                         sample_data[attr] = "invalid"
                         with self.assertRaises(ValidationError, msg=f"{model_class.__name__} should raise ValidationError for field {attr}"):
-                            model_class.from_dict(sample_data, resource)
+                            model_class.from_dict(sample_data)
                         sample_data[attr] = original
                         break
 
     def test_all_models_to_dict(self):
-        for model_class, resource in self.model_to_resource.items():
+        for model_class, factory in self.model_to_factories.items():
             with self.subTest(model=model_class.__name__):
-                sample_data = self.generate_sample_data(model_class)
-                model = model_class.from_dict(sample_data, resource)
+                sample_data = self.generate_sample_data(model_class, factory)
+                model = model_class.from_dict(sample_data)
 
                 model_dict = model.to_dict(exclude_none=False, exclude_unset=False, include_read_only=True)
                 missing = set(sample_data.keys()) - set(model_dict.keys())

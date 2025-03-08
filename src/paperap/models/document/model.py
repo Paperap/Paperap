@@ -10,7 +10,7 @@
        File:    document.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.2
+        Version: 0.0.3
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -26,13 +26,15 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, TYPE_CHECKING, Iterable, Iterator, Optional
+from typing import Any, TYPE_CHECKING, Iterable, Iterator, Optional, TypedDict, cast
+from typing_extensions import TypeVar
 
-from pydantic import BaseModel, Field, field_serializer
+from pydantic import BaseModel, Field, field_serializer, field_validator, model_serializer
 from yarl import URL
 
-from paperap.models.abstract.model import StandardModel, FilteringStrategies
+from paperap.models.abstract import StandardModel, FilteringStrategies, Parser
 from paperap.models.document.queryset import DocumentQuerySet
+from paperap.models.document.parser import CustomFieldDict, DocumentParser
 
 if TYPE_CHECKING:
     from paperap.models.correspondent import Correspondent
@@ -40,6 +42,46 @@ if TYPE_CHECKING:
     from paperap.models.storage_path import StoragePath
     from paperap.models.tag import Tag, TagQuerySet
     from paperap.models.custom_field import CustomField, CustomFieldQuerySet
+    from paperap.models.user import User
+
+
+class DocumentNote(StandardModel):
+    """
+    Represents a note on a Paperless-NgX document.
+    """
+
+    deleted_at: datetime | None = None
+    restored_at: datetime | None = None
+    transaction_id: int | None = None
+    note: str
+    created: datetime
+    document: int
+    user: int
+
+    class Meta(StandardModel.Meta):
+        read_only_fields = {"deleted_at", "restored_at", "transaction_id", "created"}
+
+    @field_serializer("deleted_at", "restored_at", "created")
+    def serialize_datetime(self, value: datetime | None, _info):
+        return value.isoformat() if value else None
+
+    def get_document(self) -> "Document":
+        """
+        Get the document associated with this note.
+
+        Returns:
+            The document associated with this note.
+        """
+        return self._meta.resource.client.documents().get(self.document)
+
+    def get_user(self) -> "User":
+        """
+        Get the user who created this note.
+
+        Returns:
+            The user who created this note.
+        """
+        return self._meta.resource.client.users().get(self.user)
 
 
 class Document(StandardModel):
@@ -79,22 +121,22 @@ class Document(StandardModel):
     added: datetime | None = None
     archive_serial_number: int | None = None
     archived_file_name: str | None = None
-    content: str | None = None
+    content: str = ""
     correspondent: int | None = None
     created: datetime | None = Field(description="Creation timestamp", default=None, alias="created_on")
     created_date: str | None = None
     updated: datetime | None = Field(description="Last update timestamp", default=None, alias="updated_on")
-    custom_fields: list[dict[str, Any]] = Field(default_factory=list)
+    custom_fields: list[CustomFieldDict] = Field(default_factory=list)
     deleted_at: datetime | None = None
     document_type: int | None = None
     is_shared_by_requester: bool = False
-    notes: list[Any] = Field(default_factory=list)  # TODO unknown subtype
+    notes: "list[DocumentNote]" = Field(default_factory=list)  # TODO unknown subtype
     original_file_name: str | None = None
     owner: int | None = None
     page_count: int | None = None
     storage_path: int | None = None
     tags: list[int] = Field(default_factory=list)
-    title: str | None = None
+    title: str = ""
     user_can_change: bool | None = None
 
     class Meta(StandardModel.Meta):
@@ -103,6 +145,7 @@ class Document(StandardModel):
         read_only_fields = {"page_count", "deleted_at", "updated", "is_shared_by_requester"}
         filtering_disabled = {"page_count", "deleted_at", "updated", "is_shared_by_requester"}
         filtering_strategies = {FilteringStrategies.WHITELIST}
+        parser = DocumentParser
         supported_filtering_params = {
             "id__in",
             "id",
@@ -203,6 +246,38 @@ class Document(StandardModel):
     @field_serializer("added", "created", "updated", "deleted_at")
     def serialize_datetime(self, value: datetime | None, _info):
         return value.isoformat() if value else None
+
+    @field_serializer("notes")
+    def serialize_notes(self, value: list[DocumentNote], _info):
+        return [note.to_dict() for note in value] if value else []
+
+    @field_validator("tags", mode="before")
+    def validate_tags(cls, value: list[int] | None) -> list[int]:
+        if value is None:
+            return []
+        return [int(tag) for tag in value]
+
+    @field_validator("custom_fields", mode="before")
+    def validate_custom_fields(cls, value: list[CustomFieldDict] | None) -> list[CustomFieldDict]:
+        if value is None:
+            return []
+        return value
+
+    @field_validator("content", mode="before")
+    def validate_content(cls, value: str | None) -> str:
+        return value or ""
+
+    @field_validator("title", mode="before")
+    def validate_title(cls, value: str | None) -> str:
+        return value or ""
+
+    @field_validator("notes", mode="before")
+    def validate_notes(cls, value: list[Any] | None) -> list[Any]:
+        return value or []
+
+    @field_validator("is_shared_by_requester", mode="before")
+    def validate_is_shared_by_requester(cls, value: bool | None) -> bool:
+        return value or False
 
     @property
     def custom_field_ids(self) -> list[int]:
@@ -326,3 +401,14 @@ class Document(StandardModel):
 
         raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
     """
+
+    def update_locally(self, **kwargs):
+        # Paperless does not support setting notes to None if notes is not already None
+        if self._meta.original_data["notes"]:
+            if "notes" in kwargs and not kwargs.get("notes"):
+                # TODO: Gracefully delete the notes instead of raising an error.
+                raise ValueError(
+                    f"Cannot set notes to None if notes is not already empty. Notes currently: {self._meta.original_data['notes']}"
+                )
+
+        return super().update_locally(**kwargs)

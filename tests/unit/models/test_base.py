@@ -10,7 +10,7 @@
         File:    test_base.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.2
+        Version: 0.0.3
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -75,7 +75,7 @@ class TestWithModel(TestBase):
 
     def setUp(self):
         super().setUp()
-        self.model = ExampleModel.from_dict(self.model_data, self.resource)
+        self.model = ExampleModel.from_dict(self.model_data)
 
 class TestModelFromDict(TestBase):
 
@@ -89,7 +89,7 @@ class TestModelFromDict(TestBase):
             "a_float": 3.14,
             "a_bool": True
         }
-        model = ExampleModel.from_dict(model_data, self.resource)
+        model = ExampleModel.from_dict(model_data)
         self.assertIsInstance(model, ExampleModel)
         self.assertIsInstance(model.a_date, datetime)
         self.assertIsInstance(model.a_str, str)

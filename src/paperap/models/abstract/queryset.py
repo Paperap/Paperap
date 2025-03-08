@@ -10,7 +10,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.2
+        Version: 0.0.3
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -293,7 +293,9 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
             return count
 
         # I don't think this should ever occur, but just in case.
-        raise NotImplementedError("Unexpected Error: Could not determine count of objects")
+        raise NotImplementedError(
+            f"Unexpected Error: Could not determine count of objects. Last response: {self._last_response}"
+        )
 
     def count_this_page(self) -> int:
         """

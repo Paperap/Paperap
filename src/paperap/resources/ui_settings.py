@@ -10,7 +10,7 @@
        File:    ui_settings.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.3
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -48,7 +48,7 @@ class UISettingsResource(StandardResource[UISettings, UISettingsQuerySet]):
             return None
 
         if isinstance(response, list) and len(response) > 0:
-            return UISettings.from_dict(response, self)
+            return UISettings.from_dict(response)
         return None
 
     def update_current(self, settings: dict[str, Any]) -> UISettings:

@@ -10,7 +10,7 @@
        File:    client.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.2
+        Version: 0.0.3
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -50,6 +50,7 @@ from paperap.resources import (
     CorrespondentResource,
     CustomFieldResource,
     DocumentResource,
+    DocumentNoteResource,
     DocumentTypeResource,
     GroupResource,
     ProfileResource,
@@ -114,6 +115,7 @@ class PaperlessClient:
     custom_fields: CustomFieldResource
     document_types: DocumentTypeResource
     documents: DocumentResource
+    document_notes: DocumentNoteResource
     groups: GroupResource
     profile: ProfileResource
     saved_views: SavedViewResource
@@ -172,6 +174,7 @@ class PaperlessClient:
         self.custom_fields = CustomFieldResource(self)
         self.document_types = DocumentTypeResource(self)
         self.documents = DocumentResource(self)
+        self.document_notes = DocumentNoteResource(self)
         self.groups = GroupResource(self)
         self.profile = ProfileResource(self)
         self.saved_views = SavedViewResource(self)
@@ -466,7 +469,8 @@ class PaperlessClient:
                     messages = []
                     for key, value in error_data.items():
                         if isinstance(value, list):
-                            messages.append(f"{key}: {', '.join(value)}")
+                            values = [str(i) for i in value]
+                            messages.append(f"{key}: {', '.join(values)}")
                         else:
                             messages.append(f"{key}: {value}")
                     return "; ".join(messages)

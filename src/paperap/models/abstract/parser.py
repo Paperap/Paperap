@@ -10,7 +10,7 @@
        File:    parser.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.2
+        Version: 0.0.3
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -120,6 +120,21 @@ class Parser(Generic[_PaperlessModel]):
         if issubclass(target_type, Enum):
             return self.parse_enum(value, target_type)
 
+        # Allow subclasses to implement custom logic
+        return self.parse_other(value, target_type)
+
+    def parse_other(self, value: Any, target_type: type[_T]) -> _T | None:
+        """
+        Parse a value into the specified target type.
+
+        Subclasses may implement this. Raises a TypeError by default.
+
+        Returns:
+            The parsed value, or None if parsing fails.
+
+        Raises:
+            TypeError: If the target type is unsupported.
+        """
         raise TypeError(f"Unsupported type: {target_type}")
 
     @overload
