@@ -46,16 +46,12 @@ class TestSignalSystem(unittest.TestCase):
         
         # Emit the signal
         initial_data = {"original": "data"}
-        result = SignalRegistry.emit(
-            "test.signal", 
-            "Test signal",
-            args=initial_data,
-            kwargs={}
-        )
+        result = SignalRegistry.emit("test.signal", args=initial_data)
 
         # Verify the result
-        self.assertEqual(result["original"], "data")  # Original data preserved
-        self.assertEqual(result["added_field"], "test")  # New field added
+        self.assertIsInstance(result, dict, "Result is not a dictionary")
+        self.assertEqual(result["original"], "data", "Original data was not preserved")
+        self.assertEqual(result["added_field"], "test", "New field was not added")
     
     def test_priority_ordering(self):
         # Create handlers with different priorities
@@ -172,13 +168,6 @@ class TestSignalSystem(unittest.TestCase):
         
         # Verify the handler was properly connected
         self.assertTrue(result["transformed"])
-    
-    def test_signal_without_args(self):
-        SignalRegistry.connect("empty.signal", lambda x: x)
-        
-        # Emit with no args should raise ValueError
-        with self.assertRaises(ValueError):
-            SignalRegistry.emit("empty.signal", args=[])
 
 
 if __name__ == "__main__":

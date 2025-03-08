@@ -377,11 +377,9 @@ class SignalRegistry:
         if not (signal := cls.get(name)):
             signal = cls.create(name, description, return_type)
 
-        args = args or tuple()
-        if not isinstance(args, tuple):
-            args = (args,)
+        arg_tuple = (args,)
         kwargs = kwargs or {}
-        return signal.emit(*args, **kwargs)
+        return signal.emit(*arg_tuple, **kwargs)
 
     @classmethod
     def connect(cls, name: str, handler: Callable[..., T], priority: int = SignalPriority.NORMAL) -> None:
