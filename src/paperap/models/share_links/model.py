@@ -44,10 +44,10 @@ if TYPE_CHECKING:
 
 class ShareLinks(StandardModel):
     expiration: datetime | None = None
-    slug: str
-    document: int
-    created: datetime = Field(description="Creation timestamp", alias="created_on")
-    file_version: str
+    slug: str | None = None
+    document: int | None = None
+    created: datetime | None = Field(description="Creation timestamp", default=None, alias="created_on")
+    file_version: str | None = None
 
     class Meta(StandardModel.Meta):
         queryset = ShareLinksQuerySet
@@ -57,4 +57,6 @@ class ShareLinks(StandardModel):
         return value.isoformat() if value else None
 
     def get_document(self) -> "Document":
+        if not self.document:
+            raise ValueError("Document ID not set")
         return self._client.documents().get(id=self.document)

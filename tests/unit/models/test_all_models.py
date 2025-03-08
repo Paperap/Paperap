@@ -241,7 +241,8 @@ class TestRequest(ModelTestCase):
                     for date_field in ['created', 'updated', 'added']:
                         if hasattr(model, date_field):
                             field_value = getattr(model, date_field)
-                            self.assertIsInstance(field_value, datetime, f"{model_class.__name__}.{date_field} should be datetime")
+                            if field_value is not None:
+                                self.assertIsInstance(field_value, datetime, f"{model_class.__name__}.{date_field} should be datetime")
                     for attr_name, expected_value in model.to_dict().items():
                         if attr_name in ['id', 'created', 'updated', 'added']:
                             continue

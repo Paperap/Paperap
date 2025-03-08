@@ -36,7 +36,7 @@ class Group(StandardModel):
     Represents a user group in Paperless-NgX.
     """
 
-    name: str
+    name: str | None = None
     permissions: list[str] = Field(default_factory=list)
 
     class Meta(StandardModel.Meta):
@@ -58,15 +58,15 @@ class User(StandardModel):
     Represents a user in Paperless-NgX.
     """
 
-    username: str
-    email: str
-    password: str
-    first_name: str
-    last_name: str
-    date_joined: str
-    is_staff: bool
-    is_active: bool
-    is_superuser: bool
+    username: str | None = None
+    email: str | None = None
+    password: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+    date_joined: str | None = None
+    is_staff: bool | None = None
+    is_active: bool | None = None
+    is_superuser: bool | None = None
     groups: list[int] = Field(default_factory=list)
     user_permissions: list[str] = Field(default_factory=list)
     inherited_permissions: list[str] = Field(default_factory=list)

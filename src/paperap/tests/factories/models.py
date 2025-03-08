@@ -28,7 +28,7 @@ from faker import Faker
 from datetime import datetime, timezone
 from typing import Any, Generic
 from paperap.models import (
-    Correspondent, CustomField, Document, DocumentType, Profile, SavedView, ShareLinks, StoragePath, 
+    Correspondent, CustomField, Document, DocumentType, Profile, SavedView, ShareLinks, StoragePath,
     Tag, Task, UISettings, Group, User, WorkflowTrigger, WorkflowAction, Workflow, PaperlessModel
 )
 
@@ -174,7 +174,7 @@ class SavedViewFactory(PydanticFactory):
     display_fields = factory.List([factory.Faker("word") for _ in range(5)])
     owner = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
     user_can_change = factory.Faker("boolean")
-    
+
 class ShareLinksFactory(PydanticFactory):
     class Meta:
         model = ShareLinks
@@ -184,7 +184,7 @@ class ShareLinksFactory(PydanticFactory):
     document = factory.Faker("random_int", min=1, max=1000)
     created = factory.LazyFunction(datetime.now)
     file_version = factory.Faker("word")
-    
+
 class TaskFactory(PydanticFactory):
     class Meta:
         model = Task
@@ -197,7 +197,7 @@ class TaskFactory(PydanticFactory):
     result = factory.Maybe(factory.Faker("boolean"), factory.Faker("sentence"), None)
     acknowledged = factory.Faker("boolean")
     related_document = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=1000), None)
-    
+
 class UISettingsFactory(PydanticFactory):
     class Meta:
         model = UISettings
@@ -205,14 +205,14 @@ class UISettingsFactory(PydanticFactory):
     user = factory.Dict({"theme": "dark", "language": "en"})
     settings = factory.Dict({"dashboard_layout": "grid", "notification_settings": {"email": True}})
     permissions = factory.List([factory.Faker("word") for _ in range(5)])
-    
+
 class GroupFactory(PydanticFactory):
     class Meta:
         model = Group
 
     name = factory.Faker("word")
     permissions = factory.List([factory.Faker("word") for _ in range(5)])
-    
+
 class WorkflowTriggerFactory(PydanticFactory):
     class Meta:
         model = WorkflowTrigger
@@ -228,7 +228,7 @@ class WorkflowTriggerFactory(PydanticFactory):
     filter_has_tags = factory.List([factory.Faker("random_int", min=1, max=50) for _ in range(5)])
     filter_has_correspondent = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
     filter_has_document_type = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
-    
+
 class WorkflowActionFactory(PydanticFactory):
     class Meta:
         model = WorkflowAction
@@ -244,7 +244,7 @@ class WorkflowActionFactory(PydanticFactory):
     assign_view_groups = factory.List([factory.Faker("random_int", min=1, max=10) for _ in range(3)])
     remove_all_tags = factory.Faker("boolean")
     remove_all_custom_fields = factory.Faker("boolean")
-    
+
 class WorkflowFactory(PydanticFactory):
     class Meta:
         model = Workflow

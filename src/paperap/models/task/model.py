@@ -37,10 +37,10 @@ class Task(StandardModel):
     """
 
     task_id: str
-    task_file_name: str
+    task_file_name: str | None = None
     date_done: str | None = None  # ISO format date
     type: str | None = None
-    status: str
+    status: str | None = None
     result: str | None = None
     acknowledged: bool
     related_document: int | None = None

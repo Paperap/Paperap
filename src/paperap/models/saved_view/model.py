@@ -50,16 +50,16 @@ class SavedView(StandardModel):
     """
 
     name: str
-    show_on_dashboard: bool
-    show_in_sidebar: bool
-    sort_field: str
-    sort_reverse: bool
+    show_on_dashboard: bool | None = None
+    show_in_sidebar: bool | None = None
+    sort_field: str | None = None
+    sort_reverse: bool | None = None
     filter_rules: list[dict[str, Any]] = Field(default_factory=list)
     page_size: int | None = None
-    display_mode: str
+    display_mode: str | None = None
     display_fields: list[str] = Field(default_factory=list)
     owner: int | None
-    user_can_change: bool
+    user_can_change: bool | None = None
 
     class Meta(StandardModel.Meta):
         # Fields that should not be modified

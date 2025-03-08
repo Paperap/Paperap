@@ -130,7 +130,7 @@ class TestModelToDict(TestWithModel):
 
     def test_update_method(self):
         # Test if the model can be updated
-        self.model.update(a_str="Updated String")
+        self.model.update_locally(a_str="Updated String")
         self.assertEqual(self.model.a_str, "Updated String")
 
     def test_is_new_method(self):
@@ -172,7 +172,7 @@ class TestModel(TestWithModel):
         self.assertEqual(model_dict["a_float"], self.model_data["a_float"])
         self.assertEqual(model_dict["a_bool"], self.model_data["a_bool"])
 
-        self.assertEqual(model_dict["a_date"], datetime(2020, 5, 12, 12, 0, 0, tzinfo=timezone.utc))
+        self.assertEqual(model_dict["a_date"], "2020-05-12T12:00:00+00:00")
 
     def test_model_update_int(self):
         test_cases = [
@@ -181,7 +181,7 @@ class TestModel(TestWithModel):
             ({"an_int": -1}, -1),
         ]
         for update_data, expected_value in test_cases:
-            self.model.update(**update_data)
+            self.model.update_locally(**update_data)
             self.assertEqual(self.model.an_int, expected_value)
 
     def test_model_update_str(self):
@@ -191,7 +191,7 @@ class TestModel(TestWithModel):
             ({"a_str": " "}, " "),
         ]
         for update_data, expected_value in test_cases:
-            self.model.update(**update_data)
+            self.model.update_locally(**update_data)
             self.assertEqual(self.model.a_str, expected_value)
 
     def test_model_update_float(self):
@@ -201,7 +201,7 @@ class TestModel(TestWithModel):
             ({"a_float": -1.0}, -1.0),
         ]
         for update_data, expected_value in test_cases:
-            self.model.update(**update_data)
+            self.model.update_locally(**update_data)
             self.assertEqual(self.model.a_float, expected_value)
 
     def test_model_update_bool(self):
@@ -210,7 +210,7 @@ class TestModel(TestWithModel):
             ({"a_bool": True}, True),
         ]
         for update_data, expected_value in test_cases:
-            self.model.update(**update_data)
+            self.model.update_locally(**update_data)
             self.assertEqual(self.model.a_bool, expected_value)
 
 class TestClassAttributes(TestCase):

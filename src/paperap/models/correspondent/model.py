@@ -39,14 +39,14 @@ class Correspondent(StandardModel):
     Represents a correspondent in Paperless-NgX.
     """
 
-    slug: str
-    name: str
-    match: str
-    matching_algorithm: int
+    slug: str | None = None
+    name: str | None = None
+    match: str | None = None
+    matching_algorithm: int | None = None
     is_insensitive: bool
-    document_count: int
+    document_count: int = 0
     owner: int | None = None
-    user_can_change: bool
+    user_can_change: bool | None = None
 
     class Meta(StandardModel.Meta):
         # Fields that should not be modified

@@ -40,9 +40,9 @@ class CustomField(StandardModel):
     """
 
     name: str
-    data_type: str
-    extra_data: dict[str, Any]
-    document_count: int
+    data_type: str | None = None
+    extra_data: dict[str, Any] = Field(default_factory=dict)
+    document_count: int = 0
 
     model_config = {
         "arbitrary_types_allowed": True,
@@ -56,4 +56,4 @@ class CustomField(StandardModel):
 
     @property
     def documents(self) -> "DocumentQuerySet":
-        return self._client.documents().all().has_custom_field(self.name)
+        return self._client.documents().all().has_custom_field_id(self.id)

@@ -44,7 +44,7 @@ sample_document = load_sample_data('documents_item.json')
 
 class IntegrationTest(DocumentTest):
     mock_env = False
-    
+
     def setUp(self):
         super().setUp()
         self.model = self.client.documents().get(7411)

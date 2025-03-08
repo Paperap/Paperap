@@ -49,11 +49,11 @@ class Profile(StandardModel):
         >>> print(profile.email)
     """
 
-    email: str
-    password: str
-    first_name: str
-    last_name: str
-    auth_token: str
+    email: str | None = None
+    password: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+    auth_token: str | None = None
     social_accounts: list[Any] = Field(default_factory=list)  # TODO unknown subtype
     has_usable_password: bool
 

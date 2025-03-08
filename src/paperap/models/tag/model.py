@@ -39,16 +39,16 @@ class Tag(StandardModel):
     Represents a tag in Paperless-NgX.
     """
 
-    name: str
-    slug: str
-    colour: str = Field(alias="color")
-    match: str
-    matching_algorithm: int
-    is_insensitive: bool
-    is_inbox_tag: bool
+    name: str | None = None
+    slug: str | None = None
+    colour: str | None = Field(alias="color", default=None)
+    match: str | None = None
+    matching_algorithm: int | None = None
+    is_insensitive: bool | None = None
+    is_inbox_tag: bool | None = None
     document_count: int = 0
     owner: int | None = None
-    user_can_change: bool
+    user_can_change: bool | None = None
 
     class Meta(StandardModel.Meta):
         # Fields that should not be modified

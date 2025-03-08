@@ -38,6 +38,7 @@ from paperap.const import FilteringStrategies, ModelStatus
 from paperap.models.abstract.meta import StatusContext
 from paperap.models.abstract.parser import Parser
 from paperap.models.abstract.queryset import QuerySet
+from paperap.signals import SignalRegistry
 
 if TYPE_CHECKING:
     from paperap.resources.base import PaperlessResource, StandardResource
@@ -119,6 +120,10 @@ class PaperlessModel(BaseModel, ABC):
         # Updating attributes will not trigger save()
         status: ModelStatus = ModelStatus.INITIALIZING
         original_data: dict[str, Any] = {}
+        # If true, updating attributes will trigger save(). If false, save() must be called manually 
+        # True or False will override client.settings.automatic_save (PAPERLESS_AUTOMATIC_SAVE)
+        # None will respect client.settings.automatic_save
+        automatic_save : bool | None = None
 
         def __init__(self, model: type[_Self]):
             self.model = model
@@ -260,8 +265,10 @@ class PaperlessModel(BaseModel, ABC):
         if resource:
             self._meta.resource = resource
 
-        if not getattr(self._meta, 'resource', None):
-            raise ValueError("Resource is required for PaperlessModel. Initialize the resource before instantiating models.")
+        if not getattr(self._meta, "resource", None):
+            raise ValueError(
+                "Resource is required for PaperlessModel. Initialize the resource before instantiating models."
+            )
 
     def model_post_init(self, __context):
         super().model_post_init(__context)
@@ -360,7 +367,7 @@ class PaperlessModel(BaseModel, ABC):
         # TODO save
         return cls(**kwargs)
 
-    def silent_update(self, **kwargs) -> None:
+    def update_locally(self, **kwargs) -> None:
         """
         Update model attributes without triggering automatic save.
 
@@ -371,7 +378,7 @@ class PaperlessModel(BaseModel, ABC):
             Self with updated values
         """
         from_db = kwargs.pop("from_db", False)
-        
+
         with StatusContext(self, ModelStatus.UPDATING):
             for name, value in kwargs.items():
                 setattr(self, name, value)
@@ -385,7 +392,7 @@ class PaperlessModel(BaseModel, ABC):
         Update this model with new values.
 
         Subclasses implement this with auto-saving features.
-        However, base PaperlessModel instances simply call silent_update.
+        However, base PaperlessModel instances simply call update_locally.
 
         Args:
             **kwargs: New field values.
@@ -396,7 +403,7 @@ class PaperlessModel(BaseModel, ABC):
         """
         # Since we have no id, we can't save. Therefore, all updates are silent updates
         # subclasses may implement this.
-        self.silent_update(**kwargs)
+        self.update_locally(**kwargs)
 
     @abstractmethod
     def is_new(self) -> bool:
@@ -465,9 +472,9 @@ class StandardModel(PaperlessModel, ABC):
 
         Args:
             **kwargs: New field values.
-        """        
+        """
         # Hold off on saving until all updates are complete
-        self.silent_update(**kwargs)
+        self.update_locally(**kwargs)
         if not self.is_new():
             self.save()
 
@@ -490,11 +497,34 @@ class StandardModel(PaperlessModel, ABC):
             return
 
         with StatusContext(self, ModelStatus.SAVING):
+            # Nothing has changed, so we can save ourselves a request
+            if not self.is_dirty():
+                return
+            
             current_data = self.to_dict(include_read_only=False, exclude_none=False, exclude_unset=True)
+            SignalRegistry.emit(
+                "model.save:before",
+                "Fired before the model data is sent to paperless ngx to be saved.",
+                kwargs = {
+                    "model": self,
+                    "current_data": current_data,
+                }
+            )
+            
             new_model = self._meta.resource.update(self.id, current_data)
             new_data = new_model.to_dict()
-            self.silent_update(from_db=True, **new_data)
-
+            self.update_locally(from_db=True, **new_data)
+            
+            SignalRegistry.emit(
+                "model.save:after",
+                "Fired after the model data is saved in paperless ngx.",
+                kwargs = {
+                    "model": self,
+                    "previous_data": current_data,
+                    "updated_data": new_data,
+                }
+            )
+            
     def is_new(self) -> bool:
         """
         Check if this model represents a new (unsaved) object.
@@ -528,10 +558,10 @@ class StandardModel(PaperlessModel, ABC):
             return
 
         # Settings may override this behavior
-        if not self._meta.resource.client.settings.save_immediately:
+        if self._meta.automatic_save is False or self._meta.resource.client.settings.automatic_save is False:
             return
 
-        # Only trigger a save if the model is in normal status
+        # Only trigger a save if the model is in a ready status
         if self._meta.status != ModelStatus.READY:
             return
 
