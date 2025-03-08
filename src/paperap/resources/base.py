@@ -22,7 +22,6 @@
        2025-03-04     By Jess Mann
 
 """
-
 from __future__ import annotations
 
 from abc import ABC, ABCMeta
@@ -161,7 +160,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
         """
         # Signal before creating resource
         signal_params = {"resource": self.name, "data": data}
-        SignalRegistry.emit("pre_create", "Emitted before creating a resource", kwargs=signal_params)
+        SignalRegistry.emit("resource.create:before", "Emitted before creating a resource", kwargs=signal_params)
 
         if not (template := self.endpoints.get("create")):
             raise ConfigurationError(f"Create endpoint not defined for resource {self.name}")
@@ -174,7 +173,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         # Signal after creating resource
         SignalRegistry.emit(
-            "post_create", "Emitted after creating a resource", args=[self], kwargs={"model": model, **signal_params}
+            "resource.create:after", "Emitted after creating a resource", args=[self], kwargs={"model": model, **signal_params}
         )
 
         return model
@@ -187,17 +186,20 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
             resource_id: ID of the resource.
             data: Resource data.
 
+        Raises:
+            ResourceNotFoundError: If the resource with the given id is not found
+
         Returns:
             The updated resource.
         """
         # Signal before updating resource
         signal_params = {"resource": self.name, "resource_id": resource_id, "data": data}
-        SignalRegistry.emit("pre_update", "Emitted before updating a resource", kwargs=signal_params)
+        SignalRegistry.emit("resource.update:before", "Emitted before updating a resource", kwargs=signal_params)
 
         if not (template := self.endpoints.get("update")):
             raise ConfigurationError(f"Update endpoint not defined for resource {self.name}")
 
-        url = template.safe_substitute(resource=self.name)
+        url = template.safe_substitute(resource=self.name, pk=resource_id)
         if not (response := self.client.request("PUT", url, data=data)):
             raise ResourceNotFoundError("Resource {resource} not found after update.", resource_type=self.name)
 
@@ -205,7 +207,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         # Signal after updating resource
         SignalRegistry.emit(
-            "post_update", "Emitted after updating a resource", args=[self], kwargs={**signal_params, "model": model}
+            "resource.update:after", "Emitted after updating a resource", args=[self], kwargs={**signal_params, "model": model}
         )
 
         return model
@@ -219,7 +221,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
         """
         # Signal before deleting resource
         signal_params = {"resource": self.name, "resource_id": resource_id}
-        SignalRegistry.emit("pre_delete", "Emitted before deleting a resource", args=[self], kwargs=signal_params)
+        SignalRegistry.emit("resource.delete:before", "Emitted before deleting a resource", args=[self], kwargs=signal_params)
 
         if not (template := self.endpoints.get("delete")):
             raise ConfigurationError(f"Delete endpoint not defined for resource {self.name}")
@@ -228,7 +230,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
         self.client.request("DELETE", url)
 
         # Signal after deleting resource
-        SignalRegistry.emit("post_delete", "Emitted after deleting a resource", args=[self], kwargs=signal_params)
+        SignalRegistry.emit("resource.delete:after", "Emitted after deleting a resource", args=[self], kwargs=signal_params)
 
     def parse_to_model(self, item: dict[str, Any]) -> _PaperlessModel:
         """
@@ -279,7 +281,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
         Override in subclasses to implement custom response logic.
         """
         SignalRegistry.emit(
-            "pre_list",
+            "resource._handle_response:before",
             "Emitted before listing resources",
             return_type=dict[str, Any],
             args=[self],
@@ -290,7 +292,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         # Signal after receiving response
         SignalRegistry.emit(
-            "post_list_response",
+            "resource._handle_response:after",
             "Emitted after list response, before processing",
             args=[self],
             kwargs={"response": response, "resource": self.name, "results": results},
@@ -306,7 +308,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
         """
         for item in results:
             SignalRegistry.emit(
-                "post_list_item",
+                "resource._handle_results:before",
                 "Emitted for each item in a list response",
                 args=[self],
                 kwargs={"resource": self.name, "item": item},
@@ -355,7 +357,12 @@ class StandardResource(
         """
         # Signal before getting resource
         signal_params = {"resource": self.name, "resource_id": resource_id}
-        SignalRegistry.emit("pre_get", "Emitted before getting a resource", args=[self], kwargs=signal_params)
+        SignalRegistry.emit(
+            "resource.get:before", 
+            "Emitted before getting a resource", 
+            args=[self], 
+            kwargs=signal_params
+        )
 
         if not (template := self.endpoints.get("detail")):
             raise ConfigurationError(f"Get detail endpoint not defined for resource {self.name}")
@@ -375,7 +382,7 @@ class StandardResource(
 
         # Signal after getting resource
         SignalRegistry.emit(
-            "post_get",
+            "resource.get:after",
             "Emitted after getting a single resource by id",
             args=[self],
             kwargs={**signal_params, "model": model},

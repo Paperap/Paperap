@@ -13,7 +13,7 @@
        File:    collect_test_data.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -45,7 +45,6 @@ logger = logging.getLogger(__name__)
 
 sanitize_pattern = re.compile(r"[^a-zA-Z0-9_-]")
 
-
 class TestDataCollector(Plugin):
     """
     Plugin to collect test data from API responses.
@@ -66,15 +65,15 @@ class TestDataCollector(Plugin):
 
     def setup(self):
         """Register signal handlers."""
-        SignalRegistry.connect("post_list_response", self.save_list_response, SignalPriority.LOW)
-        SignalRegistry.connect("post_list_item", self.save_first_item, SignalPriority.LOW)
-        SignalRegistry.connect("client.request__after", self.save_parsed_response, SignalPriority.LOW)
+        SignalRegistry.connect("resource._handle_response:after", self.save_list_response, SignalPriority.LOW)
+        SignalRegistry.connect("resource._handle_results:before", self.save_first_item, SignalPriority.LOW)
+        SignalRegistry.connect("client.request:after", self.save_parsed_response, SignalPriority.LOW)
 
     def teardown(self):
         """Unregister signal handlers."""
-        SignalRegistry.disconnect("post_list_response", self.save_list_response)
-        SignalRegistry.disconnect("post_list_item", self.save_first_item)
-        SignalRegistry.disconnect("client.request__after", self.save_parsed_response)
+        SignalRegistry.disconnect("resource._handle_response:after", self.save_list_response)
+        SignalRegistry.disconnect("resource._handle_results:before", self.save_first_item)
+        SignalRegistry.disconnect("client.request:after", self.save_parsed_response)
 
     @staticmethod
     def _json_serializer(obj: Any) -> Any:
@@ -119,7 +118,7 @@ class TestDataCollector(Plugin):
                 with filepath.open("w") as f:
                     f.write(json.dumps(item))
                 # Disable this handler after saving the first item
-                SignalRegistry.disable("post_list_item", self.save_first_item)
+                SignalRegistry.disable("resource._handle_results:before", self.save_first_item)
         except (TypeError, OverflowError, OSError) as e:
             # Don't allow the plugin to interfere with normal operations in the event of failure
             logger.error(f"Error saving first item to file: {e}")
@@ -129,6 +128,7 @@ class TestDataCollector(Plugin):
     def save_parsed_response(
         self,
         sender,
+        method : str,
         parsed_response: dict[str, Any],
         params: dict[str, Any] | None,
         json_response: bool,
@@ -138,7 +138,7 @@ class TestDataCollector(Plugin):
         """
         Save the request data to a JSON file.
 
-        Connects to client.request__after signal.
+        Connects to client.request:after signal.
         """
         if not json_response or not params:
             return parsed_response
@@ -150,7 +150,10 @@ class TestDataCollector(Plugin):
         combined_params = list(params.keys())
         params_str = "|".join(combined_params)
         params_str = sanitize_pattern.sub("_", params_str)
-        filename = f"{resource_name}__{params_str}.json"
+        filename_prefix = ''
+        if method.lower() != "get":
+            filename_prefix = f"{method.lower()}__"
+        filename = f"{filename_prefix}{resource_name}__{params_str}.json"
 
         try:
             filepath = self.test_dir / filename

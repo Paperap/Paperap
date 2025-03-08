@@ -53,6 +53,9 @@ class APIError(PaperlessException):
 class AuthenticationError(APIError):
     """Raised when authentication fails."""
 
+class InsufficientPermissionError(APIError):
+    """Raised when a user does not have permission to perform an action."""
+
 
 class FeatureNotAvailableError(APIError):
     """Raised when a feature is not available."""

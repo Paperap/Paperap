@@ -28,6 +28,7 @@ import os
 from typing import Iterable
 import unittest
 from unittest.mock import patch, MagicMock
+import logging
 from datetime import datetime, timezone
 from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
 from paperap.models import *
@@ -35,6 +36,8 @@ from paperap.client import PaperlessClient
 from paperap.resources.documents import DocumentResource
 from paperap.models.tag import Tag, TagQuerySet
 from paperap.tests import TestCase, load_sample_data
+
+logger = logging.getLogger(__name__)
 
 sample_document_list = load_sample_data('documents_list.json')
 sample_document = load_sample_data('documents_item.json')
@@ -267,7 +270,7 @@ class TestRequestDocumentList(DocumentTestCase):
 class TestRequestDocument(TestCase):
 
     def setup_client(self):
-        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123', 'PAPERLESS_SAVE_IMMEDIATELY': 'False'}
         with patch.dict(os.environ, env_data, clear=True):
             self.client = PaperlessClient()
 
@@ -337,6 +340,85 @@ class TestCustomFieldAccess(TestCase):
             self.document.custom_field_value(3, raise_errors=True)
         with self.assertRaises(ValueError):
             self.document.custom_field_value(3, default="Some Default", raise_errors=True)
+
+class IntegrationTest(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.document = self.client.documents().get(7411)
+        self._initial_data = self.document.to_dict()
+
+    def tearDown(self):
+        # Request that paperless ngx reverts to the previous data
+        for field, value in self._initial_data.items():
+            setattr(self.document, field, value)
+        self.document.save()
+        
+        # TODO: confirm without another query
+        return super().tearDown()   
+
+class TestIntegrationTest(IntegrationTest):
+    def test_integration(self):
+        # Test if the document can be retrieved
+        self.assertIsInstance(self.document, Document)
+        self.assertEqual(self.document.id, 7411, "Document ID does not match expected value. Cannot run test")
+
+        # Test if the document can be updated
+        self.document.title = "Updated Test Document"
+        self.document.save()
+        self.assertEqual(self.document.title, "Updated Test Document", "Document title did not update as expected. Cannot test IntegrationTest class")
+
+        # Manually call tearDown
+        self.tearDown()
+
+        # Retrieve the document again
+        document = self.client.documents().get(7411)
+        for field, value in self._initial_data.items():
+            # Temporarily skip dates (TODO)
+            if field in ['added', 'created', 'updated']:
+                continue
+            retrieved_value = getattr(document, field)
+            self.assertEqual(retrieved_value, value, f"Field {field} did not revert to initial value on teardown. Integration tests will fail")
+
+class TestSaveIntegration(IntegrationTest):
+
+    def test_save(self):
+        # Append a bunch of random gibberish
+        new_title = "Test Document " + str(datetime.now().timestamp())
+        self.assertNotEqual(new_title, self.document.title, "Test assumptions are not true")
+        self.document.title = new_title
+        self.assertEqual(new_title, self.document.title, "Title not updated in local instance")
+        self.assertEqual(self.document.id, 7411, "ID changed after update")
+        self.document.save()
+        self.assertEqual(new_title, self.document.title, "Title not updated after save")
+        self.assertEqual(self.document.id, 7411, "ID changed after save")
+
+        # Retrieve the document again
+        document = self.client.documents().get(7411)
+        self.assertEqual(new_title, document.title, "Title not updated in remote instance")
+        
+    def test_save_all_fields(self):
+        #(field_name, [values_to_set])
+        ts = datetime.now().timestamp()
+        fields = [
+            ("title", [f"Test Document {ts}"]),
+            ("correspondent", [21, 37, None]),
+            ("document_type", [10, 16, None]),
+            ("tags", [[74], [254], [45, 80]]),
+        ]
+        for field, values in fields:
+            for value in values:
+                current = getattr(self.document, field)
+                self.assertNotEqual(value, current, f"Test assumptions are not true for {field}")
+                setattr(self.document, field, value)
+                self.assertEqual(value, getattr(self.document, field), f"{field} not updated in local instance")
+                self.assertEqual(self.document.id, 7411, f"ID changed after update to {field}")
+                self.document.save()
+                self.assertEqual(value, getattr(self.document, field), f"{field} not updated after save")
+                self.assertEqual(self.document.id, 7411, "ID changed after save")
+
+                # Get a new copy
+                document = self.client.documents().get(7411)
+                self.assertEqual(value, getattr(document, field), f"{field} not updated in remote instance")
 
 if __name__ == "__main__":
     unittest.main()

@@ -11,7 +11,7 @@ least a base level of testing for all models.
         File:    test_from_dict.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -157,7 +157,7 @@ class ModelTestCase(TestCase):
 
 class TestModelFromDict(ModelTestCase):
     def setup_client(self):
-        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123', 'PAPERLESS_SAVE_IMMEDIATELY': 'False'}
         with patch.dict(os.environ, env_data, clear=True):
             self.client = PaperlessClient()
 
@@ -172,8 +172,8 @@ class TestModelFromDict(ModelTestCase):
                     self.fail(f"Failed to instantiate {model_class.__name__}.from_dict: {ex}")
 
                 self.assertIsInstance(model, model_class, f"Expected {model_class.__name__}, got {type(model)}")
-                if hasattr(model, 'id'):
-                    self.assertEqual(model.id, sample_data.get("id"), f"{model_class.__name__} id mismatch")
+                if id := getattr(model, 'id'):
+                    self.assertEqual(id, sample_data.get("id"), f"{model_class.__name__} id mismatch")
 
                 model_fields = self._get_model_fields(model)
 
@@ -242,7 +242,7 @@ class TestModelFromDict(ModelTestCase):
 
 class TestRequest(ModelTestCase):
     def setup_client(self):
-        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123', 'PAPERLESS_SAVE_IMMEDIATELY': 'False'}
         with patch.dict(os.environ, env_data, clear=True):
             self.client = PaperlessClient()
 

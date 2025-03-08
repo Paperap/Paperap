@@ -31,10 +31,11 @@ from decimal import Decimal
 from enum import StrEnum
 from typing import Any, ClassVar, Generic, Literal, Self, TYPE_CHECKING
 from typing_extensions import TypeVar
-
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 from yarl import URL
 
+from paperap.const import FilteringStrategies, ModelStatus
+from paperap.models.abstract.meta import StatusContext
 from paperap.models.abstract.parser import Parser
 from paperap.models.abstract.queryset import QuerySet
 
@@ -43,14 +44,6 @@ if TYPE_CHECKING:
     from paperap.client import PaperlessClient
 
 _Self = TypeVar("_Self", bound="PaperlessModel")
-
-
-class FilteringStrategies(StrEnum):
-    WHITELIST = "whitelist"
-    BLACKLIST = "blacklist"
-    ALLOW_ALL = "allow_all"
-    ALLOW_NONE = "allow_none"
-
 
 class PaperlessModel(BaseModel, ABC):
     """
@@ -90,7 +83,7 @@ class PaperlessModel(BaseModel, ABC):
             filtering_disabled: Fields disabled for filtering.
             filtering_fields: Fields allowed for filtering.
             supported_filtering_params: Params allowed during queryset filtering.
-            blaclist_filtering_params: Params disallowed during queryset filtering.
+            blacklist_filtering_params: Params disallowed during queryset filtering.
             filtering_strategies: Strategies for filtering.
             parser: The type of parser for API data.
             resource: The PaperlessResource instance.
@@ -113,8 +106,8 @@ class PaperlessModel(BaseModel, ABC):
         # These will be appended to whitelist_filtering_params for all parent classes.
         supported_filtering_params: ClassVar[set[str]] = set()
         # If set, these params will be disallowed during queryset filtering (e.g. {"content__icontains", "id__gt"})
-        # These will be appended to blaclist_filtering_params for all parent classes.
-        blaclist_filtering_params: ClassVar[set[str]] = set()
+        # These will be appended to blacklist_filtering_params for all parent classes.
+        blacklist_filtering_params: ClassVar[set[str]] = set()
         # Strategies for filtering. This determines which of the above lists will be used to allow or deny filters to QuerySets.
         filtering_strategies: ClassVar[set[FilteringStrategies]] = {FilteringStrategies.BLACKLIST}
         # the type of parser, which parses api data into appropriate types
@@ -122,18 +115,15 @@ class PaperlessModel(BaseModel, ABC):
         parser: type[Parser[_Self]] = Parser[_Self]
         resource: "PaperlessResource[_Self]"
         queryset: type[QuerySet[_Self]] = QuerySet
+        # Updating attributes will not trigger save()
+        status : ModelStatus = ModelStatus.INITIALIZING
 
         def __init__(self, model: type[_Self]):
             self.model = model
 
             # Validate filtering strategies
-            if (
-                FilteringStrategies.ALLOW_ALL in self.filtering_strategies
-                and FilteringStrategies.ALLOW_NONE in self.filtering_strategies
-            ):
-                raise ValueError(
-                    f"Cannot have both ALLOW_ALL and ALLOW_NONE filtering strategies. Model {self.model.__name__}"
-                )
+            if (all(x in self.filtering_strategies for x in (FilteringStrategies.ALLOW_ALL, FilteringStrategies.ALLOW_NONE))):
+                raise ValueError(f"Cannot have ALLOW_ALL and ALLOW_NONE filtering strategies in {self.model.__name__}")
 
         def filter_allowed(self, filter_param: str) -> bool:
             """
@@ -159,7 +149,7 @@ class PaperlessModel(BaseModel, ABC):
 
             # If we have a blacklist, check if the filter_param is in it
             if FilteringStrategies.BLACKLIST in self.filtering_strategies:
-                if self.blaclist_filtering_params and filter_param in self.blaclist_filtering_params:
+                if self.blacklist_filtering_params and filter_param in self.blacklist_filtering_params:
                     return False
                 # Allow other rules to fire
 
@@ -194,7 +184,7 @@ class PaperlessModel(BaseModel, ABC):
         filtering_disabled = (cls.Meta.filtering_disabled or set()).copy()
         filtering_fields = set(cls.__annotations__.keys())
         whitelist_filtering_params = cls.Meta.supported_filtering_params
-        blaclist_filtering_params = cls.Meta.blaclist_filtering_params
+        blacklist_filtering_params = cls.Meta.blacklist_filtering_params
         for base in cls.__bases__:
             _meta: PaperlessModel.Meta | None
             if _meta := getattr(base, "Meta", None):
@@ -206,15 +196,15 @@ class PaperlessModel(BaseModel, ABC):
                     filtering_fields.update(_meta.filtering_fields)
                 if hasattr(_meta, "supported_filtering_params"):
                     whitelist_filtering_params.update(_meta.supported_filtering_params)
-                if hasattr(_meta, "blaclist_filtering_params"):
-                    blaclist_filtering_params.update(_meta.blaclist_filtering_params)
+                if hasattr(_meta, "blacklist_filtering_params"):
+                    blacklist_filtering_params.update(_meta.blacklist_filtering_params)
 
         cls.Meta.read_only_fields = read_only_fields
         cls.Meta.filtering_disabled = filtering_disabled
         # excluding filtering_disabled from filtering_fields
         cls.Meta.filtering_fields = filtering_fields - filtering_disabled
         cls.Meta.supported_filtering_params = whitelist_filtering_params
-        cls.Meta.blaclist_filtering_params = blaclist_filtering_params
+        cls.Meta.blacklist_filtering_params = blacklist_filtering_params
 
         # Instantiate _meta
         cls._meta = cls.Meta(cls)
@@ -267,6 +257,12 @@ class PaperlessModel(BaseModel, ABC):
         super().__init__(**data)
         self._meta.resource = resource
 
+    def model_post_init(self, __context):
+        super().model_post_init(__context)
+
+        # Allow updating attributes to trigger save() automatically
+        self._meta.status = ModelStatus.READY
+
     @classmethod
     def from_dict(cls, data: dict[str, Any], resource: "PaperlessResource") -> Self:
         """
@@ -286,7 +282,11 @@ class PaperlessModel(BaseModel, ABC):
         return cls.model_validate({**data, "resource": resource})
 
     def to_dict(
-        self, *, include_read_only: bool = True, exclude_none: bool = True, exclude_unset: bool = True
+        self, 
+        *, 
+        include_read_only: bool = True, 
+        exclude_none: bool = True, 
+        exclude_unset: bool = True,
     ) -> dict[str, Any]:
         """
         Convert the model to a dictionary for API requests.
@@ -404,11 +404,96 @@ class StandardModel(PaperlessModel, ABC):
             "id",
         }
 
+    def __setattr__(self, name, value):
+        """
+        Override attribute setting to automatically call save when attributes change.
+        
+        Args:
+            name: Attribute name
+            value: New attribute value
+        """
+        # Call parent's setattr
+        super().__setattr__(name, value)
+        
+        # Skip for private attributes (those starting with underscore)
+        if name.startswith('_'):
+            return
+
+        # Check if the model is initialized or is new
+        if not hasattr(self, '_meta') or self.is_new():
+            return
+
+        # Settings may override this behavior
+        if not self._meta.resource.client.settings.save_immediately:
+            return
+        
+        # Only trigger a save if the model is in normal status
+        if self._meta.status != ModelStatus.READY:
+            return
+
+        # All attribute changes trigger a save automatically
+        self.save()
+
+    def silent_update(self, **kwargs) -> Self:
+        """
+        Update model attributes without triggering automatic save.
+        
+        Args:
+            **kwargs: Field values to update
+            
+        Returns:
+            Self with updated values
+        """
+        with StatusContext(self, ModelStatus.UPDATING):
+            for name, value in kwargs.items():
+                setattr(self, name, value)
+            return self
+
+    def update(self, **kwargs: Any) -> Self:
+        """
+        Update this model with new values and save changes.
+
+        Args:
+            **kwargs: New field values.
+
+        Returns:
+            Self with updated values.
+        """
+        # Hold off on saving until all updates are complete
+        self.silent_update(**kwargs)
+        if not self.is_new():
+            self.save()
+        return self
+    
+    def save(self) -> None:
+        """
+        Save this model instance within paperless ngx.
+
+        Raises:
+            ResourceNotFoundError: If the resource with the given id is not found
+
+        Examples:
+            # Save a Document instance
+            doc = client.documents().get(1)
+            doc.title = "New Title"
+            doc.save()
+        """
+        # Safety measure to ensure we don't fall into an infinite loop of saving and updating
+        # this check shouldn't strictly be necessary, but it future proofs this feature
+        if self._meta.status == ModelStatus.SAVING:
+            return
+        
+        with StatusContext(self, ModelStatus.SAVING):
+            current_data = self.to_dict(include_read_only=False, exclude_none=False, exclude_unset=True)
+            new_model = self._meta.resource.update(self.id, current_data)
+            new_data = new_model.to_dict()
+            self.silent_update(**new_data)
+
     def is_new(self) -> bool:
         """
         Check if this model represents a new (unsaved) object.
 
-        Returns:
+        Returns: 
             True if the model is new, False otherwise.
 
         Examples:

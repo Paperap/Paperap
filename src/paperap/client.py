@@ -35,7 +35,9 @@ from paperap.auth import BasicAuth, TokenAuth, AuthBase
 from paperap.exceptions import (
     APIError,
     AuthenticationError,
+    InsufficientPermissionError,
     PaperlessException,
+    ConfigurationError,
     ResourceNotFoundError,
     ResponseParsingError,
     RequestError,
@@ -280,7 +282,7 @@ class PaperlessClient:
             # TODO: Temporary hack
             params = params.get("params", params) if params else params
 
-            logger.critical("Request (%s) url %s, params %s, data %s, files %s", method, url, params, data, files)
+            #logger.critical("Request (%s) url %s, params %s, data %s, files %s", method, url, params, data, files)
             response = self.session.request(
                 method=method,
                 url=url,
@@ -297,10 +299,19 @@ class PaperlessClient:
             if response.status_code >= 400:
                 error_message = self._extract_error_message(response)
 
+                if response.status_code == 400:
+                    if "This field is required" in error_message:
+                        raise ValueError(f"Required field missing: {error_message}")
                 if response.status_code == 401:
                     raise AuthenticationError(f"Authentication failed: {error_message}")
+                if response.status_code == 403:
+                    if "this site requires a CSRF" in error_message:
+                        raise ConfigurationError(f"Response claims CSRF token required. Is the url correct? {url}")
+                    raise InsufficientPermissionError(f"Permission denied: {error_message}")
                 if response.status_code == 404:
                     raise ResourceNotFoundError(f"Paperless returned 404 for {endpoint}")
+
+                # All else...
                 raise BadResponseError(error_message, response.status_code)
 
             # No content
@@ -414,7 +425,7 @@ class PaperlessClient:
         }
 
         SignalRegistry.emit(
-            "client.request__before", "Before a request is sent to the Paperless server", args=[self], kwargs=kwargs
+            "client.request:before", "Before a request is sent to the Paperless server", args=[self], kwargs=kwargs
         )
 
         if not (response := self._request(method, endpoint, params=params, data=data, files=files)):
@@ -433,7 +444,7 @@ class PaperlessClient:
         parsed_response = self._handle_response(response, json_response=json_response)
 
         SignalRegistry.emit(
-            "client.request__after",
+            "client.request:after",
             "After a request is parsed.",
             args=[self],
             kwargs={

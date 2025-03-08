@@ -87,6 +87,9 @@ class Parser(Generic[_PaperlessModel]):
         if target_type is None:
             raise TypeError("Cannot parse to None type")
 
+        if value is None:
+            return None
+
         # Handle generic types (list[T], dict[K, V], set[T], tuple[T, ...])
         origin = get_origin(target_type)
         args = get_args(target_type)

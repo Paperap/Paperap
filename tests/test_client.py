@@ -10,7 +10,7 @@
         File:    test_client.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -40,7 +40,7 @@ sample_data = load_sample_data('documents_list.json')
 
 class TestClient(TestCase):
     def setUp(self):
-        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123', 'PAPERLESS_SAVE_IMMEDIATELY': 'False'}
         with patch.dict(os.environ, env_data, clear=True):
             self.client = PaperlessClient()
 

@@ -77,7 +77,7 @@ class Document(StandardModel):
     """
 
     added: datetime | None = None
-    archive_serial_number: str | None = None
+    archive_serial_number: int | None = None
     archived_file_name: str | None = None
     content: str | None = None
     correspondent: int | None = None
