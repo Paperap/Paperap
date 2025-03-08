@@ -443,8 +443,7 @@ class PaperlessClient:
         parsed_response = SignalRegistry.emit(
             "client.request:after",
             "After a request is parsed.",
-            return_type=dict[str, Any],
-            args=[parsed_response],
+            args=parsed_response,
             kwargs=kwargs,
         )
 

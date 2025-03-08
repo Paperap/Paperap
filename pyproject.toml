@@ -11,6 +11,7 @@ dependencies = [
     "dateparser>=1.2.1",
     "pydantic>=2.10.6",
     "pydantic-settings>=2.8.1",
+    "pydispatcher>=2.0.7",
     "requests>=2.32.3",
     "typing-extensions>=4.12.2",
     "yarl>=1.18.3",
