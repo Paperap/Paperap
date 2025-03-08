@@ -128,9 +128,8 @@ class TestDataCollector(Plugin):
 
     def save_parsed_response(
         self,
-        sender,
-        method: str,
         parsed_response: dict[str, Any],
+        method: str,
         params: dict[str, Any] | None,
         json_response: bool,
         endpoint: str,
@@ -141,6 +140,7 @@ class TestDataCollector(Plugin):
 
         Connects to client.request:after signal.
         """
+
         if not json_response or not params:
             return parsed_response
 

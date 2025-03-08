@@ -52,9 +52,7 @@ class IntegrationTest(DocumentTest):
 
     def tearDown(self):
         # Request that paperless ngx reverts to the previous data
-        for field, value in self._initial_data.items():
-            setattr(self.model, field, value)
-        self.model.save()
+        self.model.update(**self._initial_data)
 
         # TODO: confirm without another query
         return super().tearDown()
@@ -82,7 +80,10 @@ class TestIntegrationTest(IntegrationTest):
             retrieved_value = getattr(document, field)
             self.assertEqual(retrieved_value, value, f"Field {field} did not revert to initial value on teardown. Integration tests will fail")
 
-class TestSaveIntegration(IntegrationTest):
+class TestSaveManual(IntegrationTest):
+    def setup_model(self):
+        super().setup_model()
+        self.model._meta.save_on_write = False
 
     def test_save(self):
         # Append a bunch of random gibberish
@@ -98,6 +99,17 @@ class TestSaveIntegration(IntegrationTest):
         # Retrieve the document again
         document = self.client.documents().get(7411)
         self.assertEqual(new_title, document.title, "Title not updated in remote instance")
+
+    def test_save_on_write_off(self):
+        # Test that the document is not saved when a field is written to
+        new_title = "Test Document " + str(datetime.now().timestamp())
+        self.assertNotEqual(new_title, self.model.title, "Test assumptions are not true")
+        self.model.title = new_title
+        self.assertEqual(new_title, self.model.title, "Title not updated in local instance")
+
+        # Retrieve the document again
+        document = self.client.documents().get(7411)
+        self.assertNotEqual(new_title, document.title, "Title updated in remote instance without calling write")
 
     def test_save_all_fields(self):
         #(field_name, [values_to_set])
@@ -122,6 +134,47 @@ class TestSaveIntegration(IntegrationTest):
                 # Get a new copy
                 document = self.client.documents().get(7411)
                 self.assertEqual(value, getattr(document, field), f"{field} not updated in remote instance")
+
+    def test_update_one_field(self):
+        # Test that the document is saved when a field is written to
+        new_title = "Test Document " + str(datetime.now().timestamp())
+        self.assertNotEqual(new_title, self.model.title, "Test assumptions are not true")
+        self.model.update(title=new_title)
+        self.assertEqual(new_title, self.model.title, "Title not updated in local instance")
+
+        # Retrieve the document again
+        document = self.client.documents().get(7411)
+        self.assertEqual(new_title, document.title, "Title not updated in remote instance")
+
+    def test_update_all_fields(self):
+        #(field_name, [values_to_set])
+        ts = datetime.now().timestamp()
+        fields = {
+            "title": f"Test Document {ts}",
+            "correspondent": 21,
+            "document_type": 10,
+            "tags": [74],
+        }
+        self.model.update(**fields)
+        for field, value in fields.items():
+            self.assertEqual(value, getattr(self.model, field), f"{field} not updated in local instance")
+            self.assertEqual(self.model.id, 7411, f"ID changed after update to {field}")
+
+class TestSaveOnWrite(IntegrationTest):
+    def setup_model(self):
+        super().setup_model()
+        self.model._meta.save_on_write = True
+
+    def test_save_on_write(self):
+        # Test that the document is saved when a field is written to
+        new_title = "Test Document " + str(datetime.now().timestamp())
+        self.assertNotEqual(new_title, self.model.title, "Test assumptions are not true")
+        self.model.title = new_title
+        self.assertEqual(new_title, self.model.title, "Title not updated in local instance")
+
+        # Retrieve the document again
+        document = self.client.documents().get(7411)
+        self.assertEqual(new_title, document.title, "Title not updated in remote instance")
 
 if __name__ == "__main__":
     unittest.main()

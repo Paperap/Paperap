@@ -121,9 +121,9 @@ class PaperlessModel(BaseModel, ABC):
         status: ModelStatus = ModelStatus.INITIALIZING
         original_data: dict[str, Any] = {}
         # If true, updating attributes will trigger save(). If false, save() must be called manually
-        # True or False will override client.settings.automatic_save (PAPERLESS_AUTOMATIC_SAVE)
-        # None will respect client.settings.automatic_save
-        automatic_save: bool | None = None
+        # True or False will override client.settings.save_on_write (PAPERLESS_SAVE_ON_WRITE)
+        # None will respect client.settings.save_on_write
+        save_on_write: bool | None = None
 
         def __init__(self, model: type[_Self]):
             self.model = model
@@ -558,7 +558,7 @@ class StandardModel(PaperlessModel, ABC):
             return
 
         # Settings may override this behavior
-        if self._meta.automatic_save is False or self._meta.resource.client.settings.automatic_save is False:
+        if self._meta.save_on_write is False or self._meta.resource.client.settings.save_on_write is False:
             return
 
         # Only trigger a save if the model is in a ready status

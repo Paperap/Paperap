@@ -102,7 +102,7 @@ _StandardResource = TypeVar("_StandardResource", bound="StandardResource", defau
 class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource]):
     client : "PaperlessClient"
     mock_env : bool = True
-    env_data : dict[str, Any] = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123', 'PAPERLESS_AUTOMATIC_SAVE': 'False'}
+    env_data : dict[str, Any] = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123', 'PAPERLESS_SAVE_ON_WRITE': 'False'}
     resource : _StandardResource
     resource_class : type[_StandardResource]
     factory : PydanticFactory

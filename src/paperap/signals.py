@@ -142,6 +142,7 @@ class Signal(Generic[T]):
             for handler in self._handlers[priority]:
                 if handler not in self._disabled_handlers:
                     # Pass the current value as the first argument, along with any other args
+                    # print(f'Calling handler with: cv: {current_value}, remaining: {remaining_args}')
                     current_value = handler(current_value, *remaining_args, **kwargs)
 
         return current_value
@@ -379,6 +380,7 @@ class SignalRegistry:
 
         arg_tuple = (args,)
         kwargs = kwargs or {}
+        # print(f'Calling signal with args: {arg_tuple} and kwargs: {kwargs}')
         return signal.emit(*arg_tuple, **kwargs)
 
     @classmethod

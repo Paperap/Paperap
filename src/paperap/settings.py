@@ -41,7 +41,7 @@ class SettingsArgs(TypedDict, total=False):
     password: str | None
     timeout: int
     require_ssl: bool
-    automatic_save: bool
+    save_on_write: bool
 
 
 class Settings(BaseSettings):
@@ -55,7 +55,7 @@ class Settings(BaseSettings):
     base_url: URL
     timeout: int = 60
     require_ssl: bool = False
-    automatic_save: bool = True
+    save_on_write: bool = True
 
     model_config = SettingsConfigDict(env_prefix="PAPERLESS_")
 
