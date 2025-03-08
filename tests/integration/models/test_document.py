@@ -322,4 +322,3 @@ class TestTag(IntegrationTest):
 
 if __name__ == "__main__":
     unittest.main()
-
