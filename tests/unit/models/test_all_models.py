@@ -11,7 +11,7 @@ least a base level of testing for all models.
         File:    test_from_dict.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.3
+        Version: 0.0.4
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -132,7 +132,7 @@ class ModelTestCase(TestCase):
         return None
 
     def generate_sample_data(self, model_class : type["PaperlessModel"], factory : type[PydanticFactory], depth : int = 0) -> dict[str, Any]:
-        _instance = factory()
+        _instance = factory.build()
         return _instance.to_dict()
 
     def generate_sample_data_manual(self, model_class, depth: int = 0) -> dict[str, Any]:

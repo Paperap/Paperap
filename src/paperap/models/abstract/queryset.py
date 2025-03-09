@@ -662,7 +662,7 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
             raise IndexError(f"QuerySet index {key} out of range")
         return results[0]
 
-    def __contains__(self, item: "PaperlessModel") -> bool:
+    def __contains__(self, item: Any) -> bool:
         """
         Return True if the QuerySet contains the given object.
 
@@ -672,6 +672,9 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
         Returns:
             True if the object is in the QuerySet
         """
+        if not isinstance(item, self._model):
+            return False
+        
         return any(obj == item for obj in self)
 
 

@@ -561,7 +561,7 @@ class Document(StandardModel):
             return
 
         if isinstance(value, Iterable):
-            new_list = []
+            new_list : list[CustomFieldDict] = []
             for field in value:
                 # Check against StandardModel to avoid circular imports
                 # If it is another type of standard model, pydantic validators will complain
