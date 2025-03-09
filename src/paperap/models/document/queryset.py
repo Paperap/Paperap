@@ -10,7 +10,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.2
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -540,16 +540,16 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         ...
 
-    @singledispatchmethod
+    @singledispatchmethod  # type: ignore # mypy does not handle singledispatchmethod with overloads correctly
     def custom_field_query(self, *args, **kwargs) -> Self:
         raise TypeError("Invalid custom field query format")
 
-    @custom_field_query.register
+    @custom_field_query.register  # type: ignore # mypy does not handle singledispatchmethod with overloads correctly
     def _(self, query: CustomFieldQuery) -> Self:
         query_str = self._normalize_custom_field_query(query)
         return self.filter(custom_field_query=query_str)
 
-    @custom_field_query.register
+    @custom_field_query.register  # type: ignore # mypy does not handle singledispatchmethod with overloads correctly
     def _(self, field: str, operation: str | CustomFieldQuery | tuple[str, Any, Any], value: Any) -> Self:
         query = CustomFieldQuery(field, operation, value)
         query_str = self._normalize_custom_field_query(query)

@@ -10,7 +10,7 @@
         File:    testcase.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.2
+        Version: 0.0.4
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -105,7 +105,7 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource]):
     env_data : dict[str, Any] = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123', 'PAPERLESS_SAVE_ON_WRITE': 'False'}
     resource : _StandardResource
     resource_class : type[_StandardResource]
-    factory : PydanticFactory
+    factory : type[PydanticFactory]
     model_data : dict[str, Any]
     list_data : dict[str, Any]
 
@@ -136,7 +136,7 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource]):
             self.model = self.create_model(**self.model_data)
 
     def create_model(self, *args, **kwargs) -> _StandardModel:
-        return self.factory(*args, **kwargs)
+        return self.factory.build(*args, **kwargs)
 
     def create_list(self, count : int, *args, **kwargs) -> list[_StandardModel]:
         return [self.create_model(*args, **kwargs) for _ in range(count)]

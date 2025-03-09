@@ -10,7 +10,7 @@
        File:    base.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.3
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -114,7 +114,7 @@ class PaperlessModel(BaseModel, ABC):
         filtering_strategies: ClassVar[set[FilteringStrategies]] = {FilteringStrategies.BLACKLIST}
         # the type of parser, which parses api data into appropriate types
         # this will usually not need to be overridden
-        parser: type[Parser[_Self]] = Parser[_Self]
+        parser: type[Parser[_Self]] = Parser
         resource: "PaperlessResource[_Self]"
         queryset: type[QuerySet[_Self]] = QuerySet
         # Updating attributes will not trigger save()
@@ -177,7 +177,7 @@ class PaperlessModel(BaseModel, ABC):
             return True
 
     @classmethod
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, **kwargs) -> None:
         """
         Initialize subclass and set up metadata.
 

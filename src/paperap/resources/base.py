@@ -10,7 +10,7 @@
        File:    base.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.3
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -305,7 +305,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
             kwargs={"response": response, "resource": self.name},
         )
         if not (results := response.get("results", response)):
-            return 0
+            return
 
         # Signal after receiving response
         SignalRegistry.emit(

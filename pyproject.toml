@@ -791,10 +791,13 @@ show_error_context = true
 show_column_numbers = true
 show_error_code_links = true
 pretty = true
+# The Factory Boy type stubs don't play well with mypy, and this is used exclusively for tests.
+exclude = [
+    'paperap/tests/factories/models\.py$'
+]
 plugins = [
 ]
 ignore_missing_imports = false
-exclude = []
 implicit_optional = true
 disable_error_code = ["unused-ignore"]
 
@@ -815,5 +818,6 @@ dev = [
     "pytype>=2024.10.11",
     "ruff>=0.9.9",
     "types-dateparser>=1.2.0.20250208",
+    "types-factory-boy>=0.4.1",
     "types-requests>=2.32.0.20241016",
 ]

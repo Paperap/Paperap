@@ -10,7 +10,7 @@
        File:    signals.py
         Project: paperap
        Created: 2025-03-08
-        Version: 0.0.2
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -93,7 +93,7 @@ class Signal(Generic[T]):
         self._handlers[priority].append(handler)
 
         # Check if the handler was temporarily disabled in the registry
-        if handler in SignalRegistry._instance._queue["disable"].get(self.name, set()):
+        if handler in SignalRegistry.get_instance()._queue["disable"].get(self.name, set()):
             self._disabled_handlers.add(handler)
 
     def disconnect(self, handler: Callable[..., T]) -> None:
@@ -310,7 +310,7 @@ class SignalRegistry:
         Returns:
             The new signal instance.
         """
-        signal = Signal[return_type](name, description)
+        signal = Signal[type[T]](name, description)
         cls.register(signal)
         return signal
 

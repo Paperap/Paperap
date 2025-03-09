@@ -10,7 +10,7 @@
         File:    models.py
         Project: paperap
         Created: 2025-03-07
-        Version: 0.0.3
+        Version: 0.0.4
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -22,20 +22,25 @@
         2025-03-07     By Jess Mann
 
 """
+from typing import Any, Generic
+from typing_extensions import TypeVar
 from abc import ABC
 import factory
 from faker import Faker
 from datetime import datetime, timezone
-from typing import Any, Generic
 from paperap.models import *
 
 fake = Faker()
 
+_PaperlessModel = TypeVar("_PaperlessModel", bound=PaperlessModel, default=PaperlessModel, covariant=True)
+
 class PydanticFactory(factory.Factory):
     """Base factory for Pydantic models."""
+    class Meta(factory.Factory.Meta, Generic[_PaperlessModel]):
+        model : type[_PaperlessModel]
 
 class CorrespondentFactory(PydanticFactory):
-    class Meta:
+    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
         model = Correspondent
 
     slug = factory.LazyFunction(lambda: fake.slug())
@@ -48,16 +53,16 @@ class CorrespondentFactory(PydanticFactory):
     user_can_change = factory.Faker("boolean")
 
 class CustomFieldFactory(PydanticFactory):
-	class Meta:
-		model = CustomField
+    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
+        model = CustomField
 
-	name = factory.Faker("word")
-	data_type = factory.Faker("word")
-	extra_data = factory.Dict({"key": fake.word(), "value": fake.word()})
-	document_count = factory.Faker("random_int", min=0, max=100)
+    name = factory.Faker("word")
+    data_type = factory.Faker("word")
+    extra_data = factory.Dict({"key": fake.word(), "value": fake.word()})
+    document_count = factory.Faker("random_int", min=0, max=100)
 
 class DocumentNoteFactory(PydanticFactory):
-    class Meta:
+    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
         model = DocumentNote
 
     note = factory.Faker("sentence")
@@ -69,7 +74,7 @@ class DocumentNoteFactory(PydanticFactory):
     user = factory.Faker("random_int", min=1, max=1000)
 
 class DocumentFactory(PydanticFactory):
-    class Meta:
+    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
         model = Document
 
     added = factory.LazyFunction(datetime.now)
@@ -94,7 +99,7 @@ class DocumentFactory(PydanticFactory):
     notes = factory.LazyFunction(lambda: [DocumentNoteFactory() for _ in range(3)])
 
 class DocumentTypeFactory(PydanticFactory):
-    class Meta:
+    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
         model = DocumentType
 
     name = factory.Faker("word")
@@ -108,7 +113,7 @@ class DocumentTypeFactory(PydanticFactory):
 
 
 class TagFactory(PydanticFactory):
-    class Meta:
+    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
         model = Tag
 
     name = factory.Faker("word")
@@ -124,7 +129,7 @@ class TagFactory(PydanticFactory):
 
 
 class ProfileFactory(PydanticFactory):
-    class Meta:
+    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
         model = Profile
 
     email = factory.Faker("email")
@@ -137,7 +142,7 @@ class ProfileFactory(PydanticFactory):
 
 
 class UserFactory(PydanticFactory):
-    class Meta:
+    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
         model = User
 
     username = factory.Faker("user_name")
@@ -155,7 +160,7 @@ class UserFactory(PydanticFactory):
 
 
 class StoragePathFactory(PydanticFactory):
-    class Meta:
+    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
         model = StoragePath
 
     name = factory.Faker("word")
@@ -170,7 +175,7 @@ class StoragePathFactory(PydanticFactory):
 
 
 class SavedViewFactory(PydanticFactory):
-    class Meta:
+    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
         model = SavedView
 
     name = factory.Faker("sentence", nb_words=3)
@@ -186,7 +191,7 @@ class SavedViewFactory(PydanticFactory):
     user_can_change = factory.Faker("boolean")
 
 class ShareLinksFactory(PydanticFactory):
-    class Meta:
+    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
         model = ShareLinks
 
     expiration = factory.Maybe(factory.Faker("boolean"), factory.Faker("future_datetime"), None)
@@ -196,7 +201,7 @@ class ShareLinksFactory(PydanticFactory):
     file_version = factory.Faker("word")
 
 class TaskFactory(PydanticFactory):
-    class Meta:
+    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
         model = Task
 
     task_id = factory.Faker("uuid4")
@@ -209,7 +214,7 @@ class TaskFactory(PydanticFactory):
     related_document = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=1000), None)
 
 class UISettingsFactory(PydanticFactory):
-    class Meta:
+    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
         model = UISettings
 
     user = factory.Dict({"theme": "dark", "language": "en"})
@@ -217,14 +222,14 @@ class UISettingsFactory(PydanticFactory):
     permissions = factory.List([factory.Faker("word") for _ in range(5)])
 
 class GroupFactory(PydanticFactory):
-    class Meta:
+    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
         model = Group
 
     name = factory.Faker("word")
     permissions = factory.List([factory.Faker("word") for _ in range(5)])
 
 class WorkflowTriggerFactory(PydanticFactory):
-    class Meta:
+    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
         model = WorkflowTrigger
 
     sources = factory.List([factory.Faker("word") for _ in range(3)])
@@ -240,7 +245,7 @@ class WorkflowTriggerFactory(PydanticFactory):
     filter_has_document_type = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
 
 class WorkflowActionFactory(PydanticFactory):
-    class Meta:
+    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
         model = WorkflowAction
 
     type = factory.Faker("word")
@@ -256,7 +261,7 @@ class WorkflowActionFactory(PydanticFactory):
     remove_all_custom_fields = factory.Faker("boolean")
 
 class WorkflowFactory(PydanticFactory):
-    class Meta:
+    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
         model = Workflow
 
     name = factory.Faker("sentence", nb_words=3)
