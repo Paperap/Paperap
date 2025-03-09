@@ -1,6 +1,6 @@
 [project]
 name = "paperap"
-version = "0.0.1"
+version = "0.0.4"
 description = "Python library for interacting with the Paperless NGX REST API"
 readme = "README.md"
 authors = [
@@ -791,10 +791,13 @@ show_error_context = true
 show_column_numbers = true
 show_error_code_links = true
 pretty = true
+# The Factory Boy type stubs don't play well with mypy, and this is used exclusively for tests.
+exclude = [
+    'paperap/tests/factories/models\.py$'
+]
 plugins = [
 ]
 ignore_missing_imports = false
-exclude = []
 implicit_optional = true
 disable_error_code = ["unused-ignore"]
 
@@ -805,6 +808,7 @@ members = ["tmp"]
 dev = [
     "bandit>=1.8.3",
     "black>=25.1.0",
+    "factory-boy>=3.3.3",
     "mypy>=1.15.0",
     "pre-commit>=4.1.0",
     "prospector>=1.15.2",
@@ -814,5 +818,6 @@ dev = [
     "pytype>=2024.10.11",
     "ruff>=0.9.9",
     "types-dateparser>=1.2.0.20250208",
+    "types-factory-boy>=0.4.1",
     "types-requests>=2.32.0.20241016",
 ]

@@ -10,7 +10,7 @@
         File:    test_client.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -29,20 +29,17 @@ from typing import Iterator
 import unittest
 from unittest.mock import MagicMock, patch
 from pathlib import Path
+from paperap.resources.documents import DocumentResource
 from paperap.tests import TestCase, load_sample_data
 from paperap.models.abstract import QuerySet
 from paperap.models.document import Document
 from paperap.models.tag import Tag
-from paperap.client import PaperlessClient
 
 # Load sample response from tests/sample_data/documents_list.json
 sample_data = load_sample_data('documents_list.json')
 
 class TestClient(TestCase):
-    def setUp(self):
-        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
-        with patch.dict(os.environ, env_data, clear=True):
-            self.client = PaperlessClient()
+    resource_class = DocumentResource
 
     @patch("paperap.client.PaperlessClient.request")
     def test_get_documents(self, mock_request):

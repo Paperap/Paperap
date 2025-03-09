@@ -25,11 +25,11 @@
 
 from __future__ import annotations
 
-from paperap.models.profile import Profile
-from paperap.resources.base import PaperlessResource
+from paperap.models.profile import Profile, ProfileQuerySet
+from paperap.resources.base import PaperlessResource, StandardResource
 
 
-class ProfileResource(PaperlessResource[Profile]):
+class ProfileResource(StandardResource[Profile, ProfileQuerySet]):
     """Resource for managing profiles."""
 
     model_class = Profile

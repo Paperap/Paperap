@@ -24,25 +24,32 @@
 """
 
 from __future__ import annotations
-from paperap.models.workflow import Workflow, WorkflowAction, WorkflowTrigger
-from paperap.resources.base import PaperlessResource
+from paperap.models.workflow import (
+    Workflow,
+    WorkflowAction,
+    WorkflowTrigger,
+    WorkflowActionQuerySet,
+    WorkflowQuerySet,
+    WorkflowTriggerQuerySet,
+)
+from paperap.resources.base import PaperlessResource, StandardResource
 
 
-class WorkflowResource(PaperlessResource[Workflow]):
+class WorkflowResource(StandardResource[Workflow, WorkflowQuerySet]):
     """Resource for managing workflows."""
 
     model_class = Workflow
     name = "workflows"
 
 
-class WorkflowTriggerResource(PaperlessResource[WorkflowTrigger]):
+class WorkflowTriggerResource(StandardResource[WorkflowTrigger, WorkflowTriggerQuerySet]):
     """Resource for managing workflow triggers."""
 
     model_class = WorkflowTrigger
     name = "workflow_triggers"
 
 
-class WorkflowActionResource(PaperlessResource[WorkflowAction]):
+class WorkflowActionResource(StandardResource[WorkflowAction, WorkflowActionQuerySet]):
     """Resource for managing workflow actions."""
 
     model_class = WorkflowAction

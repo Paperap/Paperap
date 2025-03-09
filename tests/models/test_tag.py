@@ -10,7 +10,7 @@
         File:    test_tag.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.4
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -58,7 +58,7 @@ class TestTagInit(unittest.TestCase):
         }
 
     def test_from_dict(self):
-        model = Tag.from_dict(self.model_data, self.resource)
+        model = Tag.from_dict(self.model_data)
         self.assertIsInstance(model, Tag, f"Expected Tag, got {type(model)}")
         self.assertEqual(model.id, self.model_data["id"], f"Tag id is wrong when created from dict: {model.id}")
         self.assertIsInstance(model.created, datetime, f"created wrong type after from_dict {type(model.created)}")

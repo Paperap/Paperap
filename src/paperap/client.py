@@ -10,7 +10,7 @@
        File:    client.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.3
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -27,7 +27,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Any, Iterator, Literal, Unpack, overload
+from typing import Any, Iterator, Literal, Union, Unpack, overload
 import requests
 from yarl import URL
 from string import Template
@@ -35,7 +35,9 @@ from paperap.auth import BasicAuth, TokenAuth, AuthBase
 from paperap.exceptions import (
     APIError,
     AuthenticationError,
+    InsufficientPermissionError,
     PaperlessException,
+    ConfigurationError,
     ResourceNotFoundError,
     ResponseParsingError,
     RequestError,
@@ -48,6 +50,7 @@ from paperap.resources import (
     CorrespondentResource,
     CustomFieldResource,
     DocumentResource,
+    DocumentNoteResource,
     DocumentTypeResource,
     GroupResource,
     ProfileResource,
@@ -62,6 +65,7 @@ from paperap.resources import (
     WorkflowResource,
     WorkflowTriggerResource,
 )
+from paperap.signals import SignalRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -111,6 +115,7 @@ class PaperlessClient:
     custom_fields: CustomFieldResource
     document_types: DocumentTypeResource
     documents: DocumentResource
+    document_notes: DocumentNoteResource
     groups: GroupResource
     profile: ProfileResource
     saved_views: SavedViewResource
@@ -169,6 +174,7 @@ class PaperlessClient:
         self.custom_fields = CustomFieldResource(self)
         self.document_types = DocumentTypeResource(self)
         self.documents = DocumentResource(self)
+        self.document_notes = DocumentNoteResource(self)
         self.groups = GroupResource(self)
         self.profile = ProfileResource(self)
         self.saved_views = SavedViewResource(self)
@@ -279,7 +285,7 @@ class PaperlessClient:
             # TODO: Temporary hack
             params = params.get("params", params) if params else params
 
-            logger.debug("Request (%s) url %s, params %s, data %s, files %s", method, url, params, data, files)
+            # logger.critical("Request (%s) url %s, params %s, data %s, files %s", method, url, params, data, files)
             response = self.session.request(
                 method=method,
                 url=url,
@@ -296,10 +302,19 @@ class PaperlessClient:
             if response.status_code >= 400:
                 error_message = self._extract_error_message(response)
 
+                if response.status_code == 400:
+                    if "This field is required" in error_message:
+                        raise ValueError(f"Required field missing: {error_message}")
                 if response.status_code == 401:
                     raise AuthenticationError(f"Authentication failed: {error_message}")
+                if response.status_code == 403:
+                    if "this site requires a CSRF" in error_message:
+                        raise ConfigurationError(f"Response claims CSRF token required. Is the url correct? {url}")
+                    raise InsufficientPermissionError(f"Permission denied: {error_message}")
                 if response.status_code == 404:
                     raise ResourceNotFoundError(f"Paperless returned 404 for {endpoint}")
+
+                # All else...
                 raise BadResponseError(error_message, response.status_code)
 
             # No content
@@ -403,10 +418,39 @@ class PaperlessClient:
         files: dict[str, Any] | None = None,
         json_response: bool = True,
     ) -> dict[str, Any] | bytes | None:
+        kwargs = {
+            "client": self,
+            "method": method,
+            "endpoint": endpoint,
+            "params": params,
+            "data": data,
+            "files": files,
+            "json_response": json_response,
+        }
+
+        SignalRegistry.emit(
+            "client.request:before", "Before a request is sent to the Paperless server", args=[self], kwargs=kwargs
+        )
+
         if not (response := self._request(method, endpoint, params=params, data=data, files=files)):
             return None
 
-        return self._handle_response(response, json_response=json_response)
+        SignalRegistry.emit(
+            "client.request__response",
+            "After a response is received, before it is parsed",
+            args=[response],
+            kwargs=kwargs,
+        )
+
+        parsed_response = self._handle_response(response, json_response=json_response)
+        parsed_response = SignalRegistry.emit(
+            "client.request:after",
+            "After a request is parsed.",
+            args=parsed_response,
+            kwargs=kwargs,
+        )
+
+        return parsed_response
 
     def _extract_error_message(self, response: requests.Response) -> str:
         """Extract error message from response."""
@@ -425,7 +469,8 @@ class PaperlessClient:
                     messages = []
                     for key, value in error_data.items():
                         if isinstance(value, list):
-                            messages.append(f"{key}: {', '.join(value)}")
+                            values = [str(i) for i in value]
+                            messages.append(f"{key}: {', '.join(values)}")
                         else:
                             messages.append(f"{key}: {value}")
                     return "; ".join(messages)
@@ -464,6 +509,12 @@ class PaperlessClient:
 
         url = f"{base_url.rstrip('/')}/api/token/"
 
+        SignalRegistry.emit(
+            "client.generate_token__before",
+            "Before a new token is generated",
+            kwargs={"url": url, "username": username},
+        )
+
         try:
             response = requests.post(
                 url,
@@ -474,6 +525,12 @@ class PaperlessClient:
 
             response.raise_for_status()
             data = response.json()
+
+            SignalRegistry.emit(
+                "client.generate_token__after",
+                "After a new token is generated",
+                kwargs={"url": url, "username": username, "response": data},
+            )
 
             if "token" not in data:
                 raise ResponseParsingError("Token not found in response")

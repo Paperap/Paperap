@@ -10,7 +10,7 @@
        File:    settings.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -41,6 +41,7 @@ class SettingsArgs(TypedDict, total=False):
     password: str | None
     timeout: int
     require_ssl: bool
+    save_on_write: bool
 
 
 class Settings(BaseSettings):
@@ -54,6 +55,7 @@ class Settings(BaseSettings):
     base_url: URL
     timeout: int = 60
     require_ssl: bool = False
+    save_on_write: bool = True
 
     model_config = SettingsConfigDict(env_prefix="PAPERLESS_")
 

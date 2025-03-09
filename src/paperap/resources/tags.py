@@ -25,11 +25,11 @@
 
 from __future__ import annotations
 
-from paperap.models.tag import Tag
-from paperap.resources.base import PaperlessResource
+from paperap.models.tag import Tag, TagQuerySet
+from paperap.resources.base import PaperlessResource, StandardResource
 
 
-class TagResource(PaperlessResource[Tag]):
+class TagResource(StandardResource[Tag, TagQuerySet]):
     """Resource for managing tags."""
 
     model_class = Tag

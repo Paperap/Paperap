@@ -8,12 +8,12 @@
    METADATA:
 
        File:    queryset.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.1
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -25,10 +25,10 @@
 
 from __future__ import annotations
 
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, Self
 import logging
 
-from paperap.models.abstract.queryset import QuerySet
+from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
 
 if TYPE_CHECKING:
     from paperap.models.ui_settings.model import UISettings
@@ -36,10 +36,22 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class UISettingsQuerySet(QuerySet["UISettings"]):
+class UISettingsQuerySet(StandardQuerySet["UISettings"]):
     """
     A lazy-loaded, chainable query interface for Paperless NGX resources.
 
     QuerySet provides pagination, filtering, and caching functionality similar to Django's QuerySet.
     It's designed to be lazy - only fetching data when it's actually needed.
     """
+
+    def has_permission(self, value: str) -> Self:
+        """
+        Filter UI settings by permissions.
+
+        Args:
+            value (str): The permissions to filter by
+
+        Returns:
+            UISettingsQuerySet: The filtered queryset
+        """
+        return self.filter(permissions__contains=value)

@@ -11,12 +11,12 @@
    METADATA:
 
        File:    collect_test_data.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.3
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -31,17 +31,39 @@ import datetime
 from decimal import Decimal
 import json
 from pathlib import Path
+import re
 from typing import Any, TYPE_CHECKING
 import logging
-
+from pydantic import BaseModel
 from paperap.plugins.base import Plugin
-from paperap.signals import post_list_response, post_list_item
-from paperap.signals import SignalPriority
+from paperap.signals import SignalPriority, SignalRegistry
+from paperap.models import PaperlessModel
+from faker import Faker
 
 if TYPE_CHECKING:
     from paperap.client import PaperlessClient
 
 logger = logging.getLogger(__name__)
+
+sanitize_pattern = re.compile(r"[^a-zA-Z0-9_-]")
+
+
+SANITIZE_KEYS = [
+    "email",
+    "first_name",
+    "last_name",
+    "name",
+    "phone",
+    "username",
+    "content",
+    "filename",
+    "title",
+    "slug",
+    "original_file_name",
+    "archived_file_name",
+    "task_file_name",
+    "filename",
+]
 
 
 class TestDataCollector(Plugin):
@@ -51,7 +73,8 @@ class TestDataCollector(Plugin):
 
     name = "test_data_collector"
     description = "Collects sample data from API responses for testing purposes"
-    version = "0.0.1"
+    version = "0.0.2"
+    fake = Faker()
 
     def __init__(self, client: "PaperlessClient", test_dir=None, **kwargs):
         # Convert string path to Path object if needed
@@ -64,13 +87,15 @@ class TestDataCollector(Plugin):
 
     def setup(self):
         """Register signal handlers."""
-        post_list_response.connect(self.save_list_response, SignalPriority.LOW)
-        post_list_item.connect(self.save_first_item, SignalPriority.LOW)
+        SignalRegistry.connect("resource._handle_response:after", self.save_list_response, SignalPriority.LOW)
+        SignalRegistry.connect("resource._handle_results:before", self.save_first_item, SignalPriority.LOW)
+        SignalRegistry.connect("client.request:after", self.save_parsed_response, SignalPriority.LOW)
 
     def teardown(self):
         """Unregister signal handlers."""
-        post_list_response.disconnect(self.save_list_response)
-        post_list_item.disconnect(self.save_first_item)
+        SignalRegistry.disconnect("resource._handle_response:after", self.save_list_response)
+        SignalRegistry.disconnect("resource._handle_results:before", self.save_first_item)
+        SignalRegistry.disconnect("client.request:after", self.save_parsed_response)
 
     @staticmethod
     def _json_serializer(obj: Any) -> Any:
@@ -81,24 +106,66 @@ class TestDataCollector(Plugin):
             return str(obj)
         if isinstance(obj, Decimal):
             return float(obj)
+        if isinstance(obj, PaperlessModel):
+            return obj.to_dict()
+        if isinstance(obj, BaseModel):
+            return obj.model_dump()
+        if isinstance(obj, set):
+            return list(obj)
+        if isinstance(obj, bytes):
+            return obj.decode("utf-8")
         raise TypeError(f"Type {type(obj).__name__} is not JSON serializable")
+
+    def _sanitize_response(self, response: dict[str, Any]) -> dict[str, Any]:
+        """
+        Sanitize the response data to replace any strings with potentially personal information with dummy data
+        """
+        for key, value in response.items():
+            response[key] = self._sanitize_value_recursive(key, value)
+
+        # Replace "next" domain using regex
+        if "next" in response and isinstance(response["next"], str):
+            response["next"] = re.sub(r"https?://.*?/", "https://example.com/", response["next"])
+
+        return response
+
+    def _sanitize_value_recursive(self, key: str, value: Any) -> Any:
+        """
+        Recursively sanitize the value to replace any strings with potentially personal information with dummy data
+        """
+        if isinstance(value, dict):
+            return {k: self._sanitize_value_recursive(k, v) for k, v in value.items()}
+
+        if key in SANITIZE_KEYS:
+            if isinstance(value, str):
+                return self.fake.word()
+            if isinstance(value, list):
+                return [self.fake.word() for _ in value]
+
+        return
+
+    def save_response(self, filepath: Path, response: dict[str, Any], **kwargs) -> None:
+        """
+        Save the response to a JSON file.
+        """
+        if filepath.exists():
+            return
+
+        try:
+            response = self._sanitize_response(response)
+            with filepath.open("w") as f:
+                json.dump(response, f, indent=4, sort_keys=True, ensure_ascii=False, default=self._json_serializer)
+        except (TypeError, OverflowError, OSError) as e:
+            # Don't allow the plugin to interfere with normal operations in the event of failure
+            logger.error(f"Error saving response to file: {e}")
 
     def save_list_response(self, sender, response: dict[str, Any], **kwargs) -> dict[str, Any]:
         """Save the list response to a JSON file."""
         if not response or not (resource_name := kwargs.get("resource")):
             return response
 
-        try:
-            if not (content := json.dumps(response, default=self._json_serializer)):
-                return response
-
-            filepath = self.test_dir / f"{resource_name}_list.json"
-            if not filepath.exists():
-                with filepath.open("w") as f:
-                    f.write(content)
-        except (TypeError, OverflowError, OSError) as e:
-            # Don't allow the plugin to interfere with normal operations in the event of failure
-            logger.error(f"Error saving list response to file: {e}")
+        filepath = self.test_dir / f"{resource_name}_list.json"
+        self.save_response(filepath, response)
 
         return response
 
@@ -108,19 +175,48 @@ class TestDataCollector(Plugin):
         if not resource_name:
             return item
 
-        try:
-            # Only save the first item we encounter
-            filepath = self.test_dir / f"{resource_name}_item.json"
-            if not filepath.exists():
-                with filepath.open("w") as f:
-                    f.write(json.dumps(item))
-                # Disable this handler after saving the first item
-                post_list_item.temporarily_disable(self.save_first_item)
-        except (TypeError, OverflowError, OSError) as e:
-            # Don't allow the plugin to interfere with normal operations in the event of failure
-            logger.error(f"Error saving first item to file: {e}")
+        filepath = self.test_dir / f"{resource_name}_item.json"
+        self.save_response(filepath, item)
+
+        # Disable this handler after saving the first item
+        SignalRegistry.disable("resource._handle_results:before", self.save_first_item)
 
         return item
+
+    def save_parsed_response(
+        self,
+        parsed_response: dict[str, Any],
+        method: str,
+        params: dict[str, Any] | None,
+        json_response: bool,
+        endpoint: str,
+        **kwargs,
+    ) -> dict[str, Any]:
+        """
+        Save the request data to a JSON file.
+
+        Connects to client.request:after signal.
+        """
+
+        if not json_response or not params:
+            return parsed_response
+
+        # Strip url to final path segment
+        resource_name = ".".join(endpoint.split("/")[-2:])
+        resource_name = sanitize_pattern.sub("_", resource_name)
+
+        combined_params = list(params.keys())
+        params_str = "|".join(combined_params)
+        params_str = sanitize_pattern.sub("_", params_str)
+        filename_prefix = ""
+        if method.lower() != "get":
+            filename_prefix = f"{method.lower()}__"
+        filename = f"{filename_prefix}{resource_name}__{params_str}.json"
+
+        filepath = self.test_dir / filename
+        self.save_response(filepath, parsed_response)
+
+        return parsed_response
 
     @classmethod
     def get_config_schema(cls) -> dict[str, Any]:

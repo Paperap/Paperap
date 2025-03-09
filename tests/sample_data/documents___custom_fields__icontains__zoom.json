@@ -1,0 +1,472 @@
+{
+  "count": 5,
+  "next": null,
+  "previous": null,
+  "all": [
+    1480,
+    3544,
+    3618,
+    3588,
+    3665
+  ],
+  "results": [
+    {
+      "id": 1480,
+      "correspondent": 21,
+      "document_type": 8,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        2,
+        160,
+        191
+      ],
+      "created": "2025-01-16T00:00:00-05:00",
+      "created_date": "2025-01-16",
+      "modified": "2025-02-08T19:41:43.509725-05:00",
+      "added": "2025-01-16T22:30:20.946653-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 3,
+      "user_can_change": true,
+      "is_shared_by_requester": true,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": "Jess Mann",
+          "field": 25
+        },
+        {
+          "value": "45",
+          "field": 3
+        },
+        {
+          "value": "AB-CD",
+          "field": 16
+        },
+        {
+          "value": "1",
+          "field": 14
+        },
+        {
+          "value": "Morgue",
+          "field": 15
+        },
+        {
+          "value": "Middle",
+          "field": 27
+        },
+        {
+          "value": null,
+          "field": 19
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 3544,
+      "correspondent": 21,
+      "document_type": 8,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        77,
+        162,
+        2,
+        198,
+        160,
+        191,
+        52,
+        208
+      ],
+      "created": "2024-07-27T00:00:00-04:00",
+      "created_date": "2024-07-27",
+      "modified": "2025-02-08T19:42:06.683743-05:00",
+      "added": "2025-01-30T15:22:12.748146-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 3,
+      "user_can_change": true,
+      "is_shared_by_requester": true,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": "C-A",
+          "field": 16
+        },
+        {
+          "value": "45",
+          "field": 3
+        },
+        {
+          "value": "2",
+          "field": 14
+        },
+        {
+          "value": "Vine Lab",
+          "field": 15
+        },
+        {
+          "value": null,
+          "field": 19
+        },
+        {
+          "value": "Middle",
+          "field": 27
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 3618,
+      "correspondent": 21,
+      "document_type": 8,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        77,
+        162,
+        2,
+        198,
+        160,
+        191,
+        52
+      ],
+      "created": "2024-07-27T00:00:00-04:00",
+      "created_date": "2024-07-27",
+      "modified": "2025-02-08T19:42:03.748770-05:00",
+      "added": "2025-01-30T19:24:34.608998-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 3,
+      "user_can_change": true,
+      "is_shared_by_requester": true,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": "B-D",
+          "field": 16
+        },
+        {
+          "value": "45",
+          "field": 3
+        },
+        {
+          "value": "2",
+          "field": 14
+        },
+        {
+          "value": "Long Lab",
+          "field": 15
+        },
+        {
+          "value": null,
+          "field": 19
+        },
+        {
+          "value": "Middle",
+          "field": 27
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 3588,
+      "correspondent": 21,
+      "document_type": 8,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        77,
+        162,
+        2,
+        198,
+        160,
+        191,
+        52
+      ],
+      "created": "2024-06-08T00:00:00-04:00",
+      "created_date": "2024-06-08",
+      "modified": "2025-02-08T19:42:12.173990-05:00",
+      "added": "2025-01-30T17:29:11.377983-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 3,
+      "user_can_change": true,
+      "is_shared_by_requester": true,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": "C-A - Countertop",
+          "field": 16
+        },
+        {
+          "value": "45",
+          "field": 3
+        },
+        {
+          "value": "2",
+          "field": 14
+        },
+        {
+          "value": "Long Lab",
+          "field": 15
+        },
+        {
+          "value": null,
+          "field": 19
+        },
+        {
+          "value": "Middle",
+          "field": 27
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 3665,
+      "correspondent": 21,
+      "document_type": 8,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        77,
+        162,
+        2,
+        198,
+        160,
+        191,
+        52
+      ],
+      "created": "2024-03-03T00:00:00-05:00",
+      "created_date": "2024-03-03",
+      "modified": "2025-02-08T19:42:17.681437-05:00",
+      "added": "2025-01-30T22:43:51.216034-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 3,
+      "user_can_change": true,
+      "is_shared_by_requester": true,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": "Jess Mann",
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": "Jess Mann",
+          "field": 25
+        },
+        {
+          "value": "AD-BC",
+          "field": 16
+        },
+        {
+          "value": "45",
+          "field": 3
+        },
+        {
+          "value": "1",
+          "field": 14
+        },
+        {
+          "value": "Morgue",
+          "field": 15
+        },
+        {
+          "value": null,
+          "field": 19
+        },
+        {
+          "value": "Middle",
+          "field": 27
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+	"count": 4,
+	"next": null,
+	"previous": null,
+	"all": [
+		38,
+		162,
+		160,
+		191
+	],
+	"results": [
+		{
+			"id": 38,
+			"slug": "example-slug",
+			"name": "example-name",
+			"colour": 1,
+			"match": "",
+			"matching_algorithm": 0,
+			"is_insensitive": true,
+			"is_inbox_tag": false,
+			"document_count": 169,
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 162,
+			"slug": "example-slug",
+			"name": "example-name",
+			"colour": 1,
+			"match": "",
+			"matching_algorithm": 0,
+			"is_insensitive": true,
+			"is_inbox_tag": false,
+			"document_count": 5947,
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 160,
+			"slug": "example-slug",
+			"name": "example-name",
+			"colour": 1,
+			"match": "",
+			"matching_algorithm": 6,
+			"is_insensitive": true,
+			"is_inbox_tag": false,
+			"document_count": 2287,
+			"owner": 3,
+			"user_can_change": true
+		},
+		{
+			"id": 191,
+			"slug": "example-slug",
+			"name": "example-name",
+			"colour": 1,
+			"match": "",
+			"matching_algorithm": 0,
+			"is_insensitive": true,
+			"is_inbox_tag": false,
+			"document_count": 4658,
+			"owner": 3,
+			"user_can_change": true
+		}
+	]
+}

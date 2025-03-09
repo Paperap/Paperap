@@ -1,0 +1,629 @@
+{
+  "count": 22,
+  "next": null,
+  "previous": null,
+  "all": [
+    1194,
+    1204,
+    1205,
+    1206,
+    1207,
+    1209,
+    1210,
+    1190,
+    1191,
+    1193,
+    1199,
+    1192,
+    1200,
+    1212,
+    1195,
+    1197,
+    1198,
+    1196,
+    1203,
+    1211,
+    1202,
+    1201
+  ],
+  "results": [
+    {
+      "id": 1194,
+      "correspondent": null,
+      "document_type": 8,
+      "storage_path": 52,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        13,
+        2,
+        251,
+        191
+      ],
+      "created": "2025-01-16T00:00:00-05:00",
+      "created_date": "2025-01-16",
+      "modified": "2025-02-11T11:09:08.923833-05:00",
+      "added": "2025-01-16T11:30:18.492819-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 3,
+      "user_can_change": true,
+      "is_shared_by_requester": true,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        },
+        {
+          "value": null,
+          "field": 16
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 1204,
+      "correspondent": null,
+      "document_type": 14,
+      "storage_path": 52,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        191,
+        148,
+        15
+      ],
+      "created": "2025-01-16T00:00:00-05:00",
+      "created_date": "2025-01-16",
+      "modified": "2025-03-01T08:12:06.817137-05:00",
+      "added": "2025-01-16T13:38:57.938060-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 3,
+      "user_can_change": true,
+      "is_shared_by_requester": true,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": "NPS",
+          "field": 11
+        },
+        {
+          "value": "https://www.nps.gov/articles/000/finding-olmsted-in-the-restoration-of-the-u-s-capitol-grounds.htm",
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 21
+        },
+        {
+          "value": null,
+          "field": 22
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 1205,
+      "correspondent": null,
+      "document_type": 14,
+      "storage_path": 52,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        191,
+        148,
+        15
+      ],
+      "created": "2025-01-16T00:00:00-05:00",
+      "created_date": "2025-01-16",
+      "modified": "2025-03-01T08:12:40.611950-05:00",
+      "added": "2025-01-16T13:39:09.434974-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 3,
+      "user_can_change": true,
+      "is_shared_by_requester": true,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": "NPS",
+          "field": 11
+        },
+        {
+          "value": "https://www.nps.gov/articles/000/finding-olmsted-in-the-restoration-of-the-u-s-capitol-grounds.htm",
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 21
+        },
+        {
+          "value": null,
+          "field": 22
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 1206,
+      "correspondent": null,
+      "document_type": 14,
+      "storage_path": 52,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        191,
+        148,
+        15
+      ],
+      "created": "2025-01-16T00:00:00-05:00",
+      "created_date": "2025-01-16",
+      "modified": "2025-03-01T08:13:16.712438-05:00",
+      "added": "2025-01-16T13:39:32.546734-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 3,
+      "user_can_change": true,
+      "is_shared_by_requester": true,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": "NPS",
+          "field": 11
+        },
+        {
+          "value": "https://www.nps.gov/articles/000/frederick-law-olmsted-jr-and-the-improvement-of-boulder-colorado-peter-pollack-faicp-lincoln-institute.htm",
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 21
+        },
+        {
+          "value": null,
+          "field": 22
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 1207,
+      "correspondent": null,
+      "document_type": 14,
+      "storage_path": 52,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        191,
+        148,
+        15
+      ],
+      "created": "2025-01-16T00:00:00-05:00",
+      "created_date": "2025-01-16",
+      "modified": "2025-03-01T08:13:51.713274-05:00",
+      "added": "2025-01-16T13:39:44.359542-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 3,
+      "user_can_change": true,
+      "is_shared_by_requester": true,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": "NPS",
+          "field": 11
+        },
+        {
+          "value": "https://www.nps.gov/articles/000/adapting-washington-s-capitol-campus-while-preserving-the-olmsted-landscape-legacy.htm",
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 21
+        },
+        {
+          "value": null,
+          "field": 22
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 1209,
+      "correspondent": null,
+      "document_type": 14,
+      "storage_path": 52,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        191,
+        148,
+        15
+      ],
+      "created": "2025-01-16T00:00:00-05:00",
+      "created_date": "2025-01-16",
+      "modified": "2025-03-01T08:14:25.739806-05:00",
+      "added": "2025-01-16T13:53:42.261933-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 3,
+      "user_can_change": true,
+      "is_shared_by_requester": true,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": "NPS",
+          "field": 11
+        },
+        {
+          "value": "https://www.nps.gov/articles/000/the-olmsted-brothers-1918-report-on-washington-d-c-s-rock-creek-park-america-s-first-national-park-general-management-plan.htm",
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 21
+        },
+        {
+          "value": null,
+          "field": 22
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 1210,
+      "correspondent": null,
+      "document_type": 14,
+      "storage_path": 52,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        6,
+        162,
+        191,
+        148,
+        15
+      ],
+      "created": "2025-01-16T00:00:00-05:00",
+      "created_date": "2025-01-16",
+      "modified": "2025-03-01T08:15:10.422062-05:00",
+      "added": "2025-01-16T13:53:50.384001-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 3,
+      "user_can_change": true,
+      "is_shared_by_requester": true,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": "NPS",
+          "field": 11
+        },
+        {
+          "value": "https://www.nps.gov/articles/000/adapting-washington-s-capitol-campus-while-preserving-the-olmsted-landscape-legacy.htm",
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 21
+        },
+        {
+          "value": null,
+          "field": 22
+        },
+        {
+          "value": null,
+          "field": 3
+        },
+        {
+          "value": null,
+          "field": 16
+        },
+        {
+          "value": null,
+          "field": 19
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 1190,
+      "correspondent": null,
+      "document_type": 8,
+      "storage_path": 52,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        6,
+        162,
+        159,
+        87
+      ],
+      "created": "2022-01-26T00:00:00-05:00",
+      "created_date": "2022-01-26",
+      "modified": "2025-03-01T14:05:20.728958-05:00",
+      "added": "2025-01-16T10:58:41.490633-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 3,
+      "user_can_change": true,
+      "is_shared_by_requester": false,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": "Jess Mann",
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 3
+        },
+        {
+          "value": null,
+          "field": 16
+        },
+        {
+          "value": "Jess Mann",
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        },
+        {
+          "value": null,
+          "field": 19
+        }
+      ],
+      "page_count": null
+    }
+  ]
+}

@@ -1,0 +1,1858 @@
+{
+  "count": 158,
+  "next": "http://example.com/api/documents/?added__lt=2025-01-01&page=2",
+  "previous": null,
+  "all": [
+    138,
+    119,
+    116,
+    114,
+    115,
+    113,
+    111,
+    110,
+    109,
+    106,
+    105,
+    101,
+    100,
+    99,
+    90,
+    82,
+    83,
+    75,
+    62,
+    49,
+    44,
+    2,
+    45,
+    50,
+    60,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    76,
+    77,
+    86,
+    88,
+    92,
+    93,
+    103,
+    104,
+    107,
+    112,
+    125,
+    127,
+    142,
+    145,
+    147,
+    148,
+    149,
+    150,
+    151,
+    152,
+    153,
+    154,
+    155,
+    156,
+    157,
+    158,
+    159,
+    163,
+    85,
+    20,
+    12,
+    14,
+    11,
+    15,
+    18,
+    19,
+    17,
+    27,
+    47,
+    108,
+    133,
+    130,
+    84,
+    28,
+    29,
+    66,
+    91,
+    95,
+    5,
+    117,
+    31,
+    40,
+    43,
+    129,
+    87,
+    135,
+    97,
+    21,
+    137,
+    146,
+    143,
+    34,
+    160,
+    8,
+    162,
+    96,
+    1,
+    9,
+    89,
+    4,
+    6,
+    33,
+    46,
+    134,
+    7,
+    121,
+    80,
+    94,
+    3,
+    102,
+    39,
+    42,
+    36,
+    37,
+    38,
+    41,
+    98,
+    63,
+    78,
+    144,
+    32,
+    35,
+    61,
+    161,
+    53,
+    65,
+    131,
+    139,
+    141,
+    30,
+    22,
+    48,
+    13,
+    54,
+    64,
+    67,
+    126,
+    136,
+    59,
+    57,
+    58,
+    10,
+    68,
+    81,
+    118,
+    120,
+    122,
+    123,
+    124,
+    128,
+    140,
+    52,
+    55,
+    51,
+    56,
+    79,
+    132
+  ],
+  "results": [
+    {
+      "id": 138,
+      "correspondent": null,
+      "document_type": 4,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        2,
+        191,
+        190,
+        61
+      ],
+      "created": "2024-12-21T19:40:28-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-08T19:41:52.926733-05:00",
+      "added": "2024-12-22T02:44:25.537603-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 8,
+      "user_can_change": true,
+      "is_shared_by_requester": false,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 119,
+      "correspondent": null,
+      "document_type": 4,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        2,
+        191,
+        190,
+        61
+      ],
+      "created": "2024-12-21T19:39:44-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-08T19:41:52.947924-05:00",
+      "added": "2024-12-22T01:40:21.729276-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 8,
+      "user_can_change": true,
+      "is_shared_by_requester": false,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 116,
+      "correspondent": null,
+      "document_type": 4,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        2,
+        191,
+        190,
+        61
+      ],
+      "created": "2024-12-21T19:39:31-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-08T19:41:52.969869-05:00",
+      "added": "2024-12-22T01:36:30.458600-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 8,
+      "user_can_change": true,
+      "is_shared_by_requester": false,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 114,
+      "correspondent": null,
+      "document_type": 4,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        2,
+        191,
+        190,
+        61
+      ],
+      "created": "2024-12-21T19:39:24-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-08T19:41:52.992235-05:00",
+      "added": "2024-12-22T01:34:29.401611-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 8,
+      "user_can_change": true,
+      "is_shared_by_requester": false,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 115,
+      "correspondent": null,
+      "document_type": 4,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        2,
+        191,
+        190,
+        61
+      ],
+      "created": "2024-12-21T19:39:24-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-08T19:41:53.014205-05:00",
+      "added": "2024-12-22T01:34:49.246143-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 8,
+      "user_can_change": true,
+      "is_shared_by_requester": false,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 113,
+      "correspondent": null,
+      "document_type": 6,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        14,
+        2,
+        191,
+        61
+      ],
+      "created": "2024-12-21T19:39:05-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-08T19:41:53.036926-05:00",
+      "added": "2024-12-22T01:32:42.556667-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 8,
+      "user_can_change": true,
+      "is_shared_by_requester": false,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 16
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 111,
+      "correspondent": null,
+      "document_type": 7,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        6,
+        162,
+        2,
+        191
+      ],
+      "created": "2024-12-21T19:39:03-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-08T19:41:53.068971-05:00",
+      "added": "2024-12-22T01:32:24.603635-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 3,
+      "user_can_change": true,
+      "is_shared_by_requester": true,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 3
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 19
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 110,
+      "correspondent": null,
+      "document_type": 4,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        2,
+        191,
+        190,
+        61
+      ],
+      "created": "2024-12-21T19:39:01-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-08T19:41:53.094065-05:00",
+      "added": "2024-12-22T01:32:14.116036-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 8,
+      "user_can_change": true,
+      "is_shared_by_requester": false,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 109,
+      "correspondent": null,
+      "document_type": 4,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        2,
+        191,
+        190,
+        61
+      ],
+      "created": "2024-12-21T19:39:00-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-08T19:41:53.114422-05:00",
+      "added": "2024-12-22T01:31:07.580201-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 8,
+      "user_can_change": true,
+      "is_shared_by_requester": false,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 106,
+      "correspondent": null,
+      "document_type": 7,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        6,
+        162,
+        2,
+        191
+      ],
+      "created": "2024-12-21T19:38:49-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-08T19:41:53.136252-05:00",
+      "added": "2024-12-22T01:27:38.930166-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 3,
+      "user_can_change": true,
+      "is_shared_by_requester": true,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 3
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 19
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 105,
+      "correspondent": null,
+      "document_type": 4,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        2,
+        191,
+        190,
+        61
+      ],
+      "created": "2024-12-21T19:38:45-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-08T19:41:53.157961-05:00",
+      "added": "2024-12-22T01:27:30.227814-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 8,
+      "user_can_change": true,
+      "is_shared_by_requester": false,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 101,
+      "correspondent": null,
+      "document_type": 4,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        2,
+        191,
+        190,
+        61
+      ],
+      "created": "2024-12-21T19:38:33-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-08T19:41:53.179397-05:00",
+      "added": "2024-12-22T01:23:49.082888-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 8,
+      "user_can_change": true,
+      "is_shared_by_requester": false,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 100,
+      "correspondent": null,
+      "document_type": 4,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        2,
+        191
+      ],
+      "created": "2024-12-21T19:38:29-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-08T19:41:53.200143-05:00",
+      "added": "2024-12-22T01:23:06.750431-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 3,
+      "user_can_change": true,
+      "is_shared_by_requester": true,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 99,
+      "correspondent": null,
+      "document_type": 4,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        2,
+        191,
+        190,
+        61
+      ],
+      "created": "2024-12-21T19:38:25-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-08T19:41:53.240074-05:00",
+      "added": "2024-12-22T01:22:59.556086-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 8,
+      "user_can_change": true,
+      "is_shared_by_requester": false,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 90,
+      "correspondent": null,
+      "document_type": 4,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        2,
+        191
+      ],
+      "created": "2024-12-21T19:38:04-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-08T19:41:53.260730-05:00",
+      "added": "2024-12-22T01:13:51.029292-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 3,
+      "user_can_change": true,
+      "is_shared_by_requester": true,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 82,
+      "correspondent": null,
+      "document_type": 4,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        2,
+        191,
+        190,
+        61
+      ],
+      "created": "2024-12-21T19:37:48-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-08T19:41:53.301679-05:00",
+      "added": "2024-12-22T01:11:15.545061-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 8,
+      "user_can_change": true,
+      "is_shared_by_requester": false,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 83,
+      "correspondent": null,
+      "document_type": 7,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        6,
+        162,
+        2,
+        191
+      ],
+      "created": "2024-12-21T19:37:48-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-08T19:41:53.281091-05:00",
+      "added": "2024-12-22T01:11:21.739798-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 3,
+      "user_can_change": true,
+      "is_shared_by_requester": true,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 3
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 19
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 75,
+      "correspondent": null,
+      "document_type": 4,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        2,
+        191,
+        190,
+        61
+      ],
+      "created": "2024-12-21T19:37:38-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-08T19:41:53.373748-05:00",
+      "added": "2024-12-22T01:08:54.008891-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 8,
+      "user_can_change": true,
+      "is_shared_by_requester": false,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 62,
+      "correspondent": null,
+      "document_type": 5,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        2,
+        191,
+        61
+      ],
+      "created": "2024-12-21T19:36:03-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-11T11:12:44.174061-05:00",
+      "added": "2024-12-22T01:00:07.007108-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 8,
+      "user_can_change": true,
+      "is_shared_by_requester": false,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 49,
+      "correspondent": null,
+      "document_type": 5,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        2,
+        191,
+        190,
+        61
+      ],
+      "created": "2024-12-21T19:35:06-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-11T11:12:44.540890-05:00",
+      "added": "2024-12-22T00:45:51.496663-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 8,
+      "user_can_change": true,
+      "is_shared_by_requester": false,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": 1
+    },
+    {
+      "id": 44,
+      "correspondent": null,
+      "document_type": 5,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        2,
+        191,
+        190,
+        61
+      ],
+      "created": "2024-12-21T19:33:15-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-11T11:13:25.832525-05:00",
+      "added": "2024-12-22T00:44:52.734087-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 8,
+      "user_can_change": true,
+      "is_shared_by_requester": false,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": 2
+    },
+    {
+      "id": 2,
+      "correspondent": null,
+      "document_type": 3,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        28,
+        162,
+        2,
+        191,
+        15
+      ],
+      "created": "2024-12-21T00:00:00-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-08T19:41:54.130712-05:00",
+      "added": "2024-12-21T19:15:08.807094-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 3,
+      "user_can_change": true,
+      "is_shared_by_requester": true,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 21
+        },
+        {
+          "value": null,
+          "field": 22
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    },
+    {
+      "id": 45,
+      "correspondent": null,
+      "document_type": 10,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        38,
+        6,
+        162,
+        2,
+        191,
+        190,
+        61
+      ],
+      "created": "2024-12-21T00:00:00-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-08T19:41:53.742778-05:00",
+      "added": "2024-12-22T00:44:56.238878-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 8,
+      "user_can_change": true,
+      "is_shared_by_requester": false,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": "Reception",
+          "field": 3
+        },
+        {
+          "value": null,
+          "field": 16
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 19
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": 1
+    },
+    {
+      "id": 50,
+      "correspondent": null,
+      "document_type": 5,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        2,
+        191,
+        190,
+        61
+      ],
+      "created": "2024-12-21T00:00:00-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-11T11:12:44.897529-05:00",
+      "added": "2024-12-22T00:47:06.795774-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 8,
+      "user_can_change": true,
+      "is_shared_by_requester": false,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": 2
+    },
+    {
+      "id": 60,
+      "correspondent": null,
+      "document_type": 5,
+      "storage_path": null,
+      "title": "example-title",
+      "content": "example-content",
+      "tags": [
+        162,
+        2,
+        191,
+        61
+      ],
+      "created": "2024-12-21T00:00:00-05:00",
+      "created_date": "2024-12-21",
+      "modified": "2025-02-11T11:12:45.368566-05:00",
+      "added": "2024-12-22T00:58:11.326975-05:00",
+      "deleted_at": null,
+      "archive_serial_number": null,
+      "original_file_name": "example-original_file_name",
+      "archived_file_name": "example-archived_file_name",
+      "owner": 8,
+      "user_can_change": true,
+      "is_shared_by_requester": false,
+      "notes": [],
+      "custom_fields": [
+        {
+          "value": null,
+          "field": 13
+        },
+        {
+          "value": null,
+          "field": 11
+        },
+        {
+          "value": null,
+          "field": 12
+        },
+        {
+          "value": null,
+          "field": 25
+        },
+        {
+          "value": null,
+          "field": 28
+        },
+        {
+          "value": null,
+          "field": 29
+        },
+        {
+          "value": null,
+          "field": 30
+        },
+        {
+          "value": null,
+          "field": 31
+        },
+        {
+          "value": null,
+          "field": 32
+        }
+      ],
+      "page_count": null
+    }
+  ]
+}

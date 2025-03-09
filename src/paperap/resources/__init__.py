@@ -10,7 +10,7 @@
        File:    __init__.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.3
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,11 +25,11 @@
 
 from __future__ import annotations
 
-from paperap.resources.base import PaperlessResource
+from paperap.resources.base import PaperlessResource, StandardResource
 from paperap.resources.correspondents import CorrespondentResource
 from paperap.resources.custom_fields import CustomFieldResource
 from paperap.resources.document_types import DocumentTypeResource
-from paperap.resources.documents import DocumentResource
+from paperap.resources.documents import DocumentResource, DocumentNoteResource
 from paperap.resources.share_links import ShareLinksResource
 from paperap.resources.profile import ProfileResource
 from paperap.resources.saved_views import SavedViewResource
@@ -41,6 +41,7 @@ from paperap.resources.users import GroupResource, UserResource
 from paperap.resources.workflows import WorkflowActionResource, WorkflowResource, WorkflowTriggerResource
 
 __all__ = [
+    "DocumentNoteResource",
     "DocumentResource",
     "CorrespondentResource",
     "TagResource",

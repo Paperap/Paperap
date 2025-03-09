@@ -23,15 +23,15 @@
 
 """
 
-from typing import Any, Dict
+from typing import Any
 
 from pydantic import BaseModel, Field
 
-from paperap.models.abstract.model import PaperlessModel
+from paperap.models.abstract.model import StandardModel
 from paperap.models.ui_settings.queryset import UISettingsQuerySet
 
 
-class UISettings(PaperlessModel):
+class UISettings(StandardModel):
     """
     Represents UI settings in Paperless-NgX.
     """
@@ -40,5 +40,5 @@ class UISettings(PaperlessModel):
     settings: dict[str, Any]
     permissions: list[str] = Field(default_factory=list)
 
-    class Meta(PaperlessModel.Meta):
+    class Meta(StandardModel.Meta):
         queryset = UISettingsQuerySet

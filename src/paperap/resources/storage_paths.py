@@ -25,11 +25,11 @@
 
 from __future__ import annotations
 
-from paperap.models.storage_path import StoragePath
-from paperap.resources.base import PaperlessResource
+from paperap.models.storage_path import StoragePath, StoragePathQuerySet
+from paperap.resources.base import PaperlessResource, StandardResource
 
 
-class StoragePathResource(PaperlessResource[StoragePath]):
+class StoragePathResource(StandardResource[StoragePath, StoragePathQuerySet]):
     """Resource for managing storage paths."""
 
     model_class = StoragePath

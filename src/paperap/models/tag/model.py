@@ -10,7 +10,7 @@
        File:    tag.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.2
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -24,30 +24,43 @@
 """
 
 from datetime import datetime
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 from pydantic import BaseModel, Field
 
-from paperap.models.abstract.model import PaperlessModel
+from paperap.models.abstract.model import StandardModel
 from paperap.models.tag.queryset import TagQuerySet
 
+if TYPE_CHECKING:
+    from paperap.models.document import Document, DocumentQuerySet
 
-class Tag(PaperlessModel):
+
+class Tag(StandardModel):
     """
     Represents a tag in Paperless-NgX.
     """
 
-    name: str
-    slug: str
-    colour: str = Field(alias="color")
-    match: str
-    matching_algorithm: int
-    is_insensitive: bool = True
-    is_inbox_tag: bool = False
+    name: str | None = None
+    slug: str | None = None
+    colour: str | None = Field(alias="color", default=None)
+    match: str | None = None
+    matching_algorithm: int | None = None
+    is_insensitive: bool | None = None
+    is_inbox_tag: bool | None = None
     document_count: int = 0
     owner: int | None = None
-    user_can_change: bool = True
+    user_can_change: bool | None = None
 
-    class Meta(PaperlessModel.Meta):
+    class Meta(StandardModel.Meta):
         # Fields that should not be modified
         read_only_fields = {"slug", "document_count"}
         queryset = TagQuerySet
+
+    @property
+    def documents(self) -> "DocumentQuerySet":
+        """
+        Get documents with this tag.
+
+        Returns:
+            List of documents.
+        """
+        return self._client.documents().all().tag_id(self.id)

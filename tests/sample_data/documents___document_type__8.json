@@ -1,0 +1,787 @@
+{
+	"count": 4614,
+	"next": "http://example.com/api/documents/?document_type__id=8&page=2",
+	"previous": null,
+	"all": [
+		7389,
+		7381,
+		7383,
+		7379,
+		7382,
+		7380,
+		7374,
+		7377,
+		7378,
+		7384,
+		7385,
+		7363,
+		7364,
+		7365,
+		7366,
+		7367,
+		7368,
+		7369,
+		7370,
+		7371,
+		7372,
+		7313,
+		7314,
+		7315,
+		7316,
+		7317,
+		7318,
+		7319,
+		7320,
+		7321,
+		7322,
+		7323,
+		7324,
+		7325,
+		7326,
+		7327,
+		7328,
+		7331,
+		7332,
+		7333,
+		7334,
+		7335,
+		7336,
+		7337,
+		7338,
+		7339,
+		7340,
+		7341,
+		7342,
+		7343,
+		7344,
+		7345,
+		7346,
+		7347,
+		7348,
+		7349,
+		7350,
+		7351,
+		7352,
+		7353,
+		7354,
+		7355,
+		7356,
+		7357,
+		7358,
+		7359,
+		7360,
+		7361,
+		7240,
+		7241,
+		7242,
+		7243,
+		7244,
+		7245,
+		7246,
+		7247
+	],
+	"results": [
+		{
+			"id": 7389,
+			"correspondent": null,
+			"document_type": 8,
+			"storage_path": null,
+			"title": "example-title",
+			"content": "example-content",
+			"tags": [
+				161
+			],
+			"created": "2025-03-05T16:55:24-05:00",
+			"created_date": "2025-03-05",
+			"modified": "2025-03-05T17:01:39.331409-05:00",
+			"added": "2025-03-05T17:01:38.084047-05:00",
+			"deleted_at": null,
+			"archive_serial_number": null,
+			"original_file_name": "example-original_file_name",
+			"archived_file_name": "example-archived_file_name",
+			"owner": 10,
+			"user_can_change": true,
+			"is_shared_by_requester": false,
+			"notes": [],
+			"custom_fields": [
+				{
+					"value": null,
+					"field": 32
+				},
+				{
+					"value": null,
+					"field": 11
+				},
+				{
+					"value": null,
+					"field": 12
+				},
+				{
+					"value": null,
+					"field": 13
+				},
+				{
+					"value": null,
+					"field": 25
+				},
+				{
+					"value": null,
+					"field": 28
+				},
+				{
+					"value": null,
+					"field": 29
+				},
+				{
+					"value": null,
+					"field": 30
+				},
+				{
+					"value": null,
+					"field": 31
+				},
+				{
+					"value": null,
+					"field": 16
+				}
+			],
+			"page_count": null
+		},
+		{
+			"id": 7381,
+			"correspondent": null,
+			"document_type": 8,
+			"storage_path": null,
+			"title": "example-title",
+			"content": "example-content",
+			"tags": [
+				161
+			],
+			"created": "2025-03-05T16:09:04-05:00",
+			"created_date": "2025-03-05",
+			"modified": "2025-03-05T16:59:19.950543-05:00",
+			"added": "2025-03-05T16:22:50.646912-05:00",
+			"deleted_at": null,
+			"archive_serial_number": null,
+			"original_file_name": "example-original_file_name",
+			"archived_file_name": "example-archived_file_name",
+			"owner": 10,
+			"user_can_change": true,
+			"is_shared_by_requester": false,
+			"notes": [],
+			"custom_fields": [
+				{
+					"value": null,
+					"field": 32
+				},
+				{
+					"value": null,
+					"field": 11
+				},
+				{
+					"value": null,
+					"field": 12
+				},
+				{
+					"value": null,
+					"field": 13
+				},
+				{
+					"value": null,
+					"field": 25
+				},
+				{
+					"value": null,
+					"field": 28
+				},
+				{
+					"value": null,
+					"field": 29
+				},
+				{
+					"value": null,
+					"field": 30
+				},
+				{
+					"value": null,
+					"field": 31
+				},
+				{
+					"value": null,
+					"field": 16
+				}
+			],
+			"page_count": null
+		},
+		{
+			"id": 7383,
+			"correspondent": null,
+			"document_type": 8,
+			"storage_path": null,
+			"title": "example-title",
+			"content": "example-content",
+			"tags": [
+				161
+			],
+			"created": "2025-03-05T16:09:04-05:00",
+			"created_date": "2025-03-05",
+			"modified": "2025-03-05T16:59:20.264200-05:00",
+			"added": "2025-03-05T16:23:05.302417-05:00",
+			"deleted_at": null,
+			"archive_serial_number": null,
+			"original_file_name": "example-original_file_name",
+			"archived_file_name": "example-archived_file_name",
+			"owner": 10,
+			"user_can_change": true,
+			"is_shared_by_requester": false,
+			"notes": [],
+			"custom_fields": [
+				{
+					"value": null,
+					"field": 32
+				},
+				{
+					"value": null,
+					"field": 11
+				},
+				{
+					"value": null,
+					"field": 12
+				},
+				{
+					"value": null,
+					"field": 13
+				},
+				{
+					"value": null,
+					"field": 25
+				},
+				{
+					"value": null,
+					"field": 28
+				},
+				{
+					"value": null,
+					"field": 29
+				},
+				{
+					"value": null,
+					"field": 30
+				},
+				{
+					"value": null,
+					"field": 31
+				},
+				{
+					"value": null,
+					"field": 16
+				}
+			],
+			"page_count": null
+		},
+		{
+			"id": 7379,
+			"correspondent": null,
+			"document_type": 8,
+			"storage_path": null,
+			"title": "example-title",
+			"content": "example-content",
+			"tags": [
+				161
+			],
+			"created": "2025-03-05T16:09:03-05:00",
+			"created_date": "2025-03-05",
+			"modified": "2025-03-05T16:59:21.121680-05:00",
+			"added": "2025-03-05T16:22:27.936309-05:00",
+			"deleted_at": null,
+			"archive_serial_number": null,
+			"original_file_name": "example-original_file_name",
+			"archived_file_name": "example-archived_file_name",
+			"owner": 10,
+			"user_can_change": true,
+			"is_shared_by_requester": false,
+			"notes": [],
+			"custom_fields": [
+				{
+					"value": null,
+					"field": 32
+				},
+				{
+					"value": null,
+					"field": 11
+				},
+				{
+					"value": null,
+					"field": 12
+				},
+				{
+					"value": null,
+					"field": 13
+				},
+				{
+					"value": null,
+					"field": 25
+				},
+				{
+					"value": null,
+					"field": 28
+				},
+				{
+					"value": null,
+					"field": 29
+				},
+				{
+					"value": null,
+					"field": 30
+				},
+				{
+					"value": null,
+					"field": 31
+				},
+				{
+					"value": null,
+					"field": 16
+				}
+			],
+			"page_count": null
+		},
+		{
+			"id": 7382,
+			"correspondent": null,
+			"document_type": 8,
+			"storage_path": null,
+			"title": "example-title",
+			"content": "example-content",
+			"tags": [
+				161
+			],
+			"created": "2025-03-05T16:09:03-05:00",
+			"created_date": "2025-03-05",
+			"modified": "2025-03-05T16:59:20.673475-05:00",
+			"added": "2025-03-05T16:22:57.800270-05:00",
+			"deleted_at": null,
+			"archive_serial_number": null,
+			"original_file_name": "example-original_file_name",
+			"archived_file_name": "example-archived_file_name",
+			"owner": 10,
+			"user_can_change": true,
+			"is_shared_by_requester": false,
+			"notes": [],
+			"custom_fields": [
+				{
+					"value": null,
+					"field": 32
+				},
+				{
+					"value": null,
+					"field": 11
+				},
+				{
+					"value": null,
+					"field": 12
+				},
+				{
+					"value": null,
+					"field": 13
+				},
+				{
+					"value": null,
+					"field": 25
+				},
+				{
+					"value": null,
+					"field": 28
+				},
+				{
+					"value": null,
+					"field": 29
+				},
+				{
+					"value": null,
+					"field": 30
+				},
+				{
+					"value": null,
+					"field": 31
+				},
+				{
+					"value": null,
+					"field": 16
+				}
+			],
+			"page_count": null
+		},
+		{
+			"id": 7380,
+			"correspondent": null,
+			"document_type": 8,
+			"storage_path": null,
+			"title": "example-title",
+			"content": "example-content",
+			"tags": [
+				161
+			],
+			"created": "2025-03-05T16:09:02-05:00",
+			"created_date": "2025-03-05",
+			"modified": "2025-03-05T16:59:21.588096-05:00",
+			"added": "2025-03-05T16:22:34.377993-05:00",
+			"deleted_at": null,
+			"archive_serial_number": null,
+			"original_file_name": "example-original_file_name",
+			"archived_file_name": "example-archived_file_name",
+			"owner": 10,
+			"user_can_change": true,
+			"is_shared_by_requester": false,
+			"notes": [],
+			"custom_fields": [
+				{
+					"value": null,
+					"field": 32
+				},
+				{
+					"value": null,
+					"field": 11
+				},
+				{
+					"value": null,
+					"field": 12
+				},
+				{
+					"value": null,
+					"field": 13
+				},
+				{
+					"value": null,
+					"field": 25
+				},
+				{
+					"value": null,
+					"field": 28
+				},
+				{
+					"value": null,
+					"field": 29
+				},
+				{
+					"value": null,
+					"field": 30
+				},
+				{
+					"value": null,
+					"field": 31
+				},
+				{
+					"value": null,
+					"field": 16
+				}
+			],
+			"page_count": null
+		},
+		{
+			"id": 7374,
+			"correspondent": null,
+			"document_type": 8,
+			"storage_path": null,
+			"title": "example-title",
+			"content": "example-content",
+			"tags": [
+				38,
+				6
+			],
+			"created": "2025-03-05T00:00:00-05:00",
+			"created_date": "2025-03-05",
+			"modified": "2025-03-05T15:45:26.725173-05:00",
+			"added": "2025-03-05T15:31:26.069961-05:00",
+			"deleted_at": null,
+			"archive_serial_number": null,
+			"original_file_name": "example-original_file_name",
+			"archived_file_name": "example-archived_file_name",
+			"owner": 10,
+			"user_can_change": true,
+			"is_shared_by_requester": false,
+			"notes": [],
+			"custom_fields": [
+				{
+					"value": null,
+					"field": 32
+				},
+				{
+					"value": null,
+					"field": 11
+				},
+				{
+					"value": null,
+					"field": 12
+				},
+				{
+					"value": null,
+					"field": 13
+				},
+				{
+					"value": null,
+					"field": 25
+				},
+				{
+					"value": null,
+					"field": 28
+				},
+				{
+					"value": null,
+					"field": 29
+				},
+				{
+					"value": null,
+					"field": 30
+				},
+				{
+					"value": null,
+					"field": 31
+				},
+				{
+					"value": null,
+					"field": 16
+				},
+				{
+					"value": null,
+					"field": 3
+				},
+				{
+					"value": null,
+					"field": 19
+				}
+			],
+			"page_count": null
+		},
+		{
+			"id": 7377,
+			"correspondent": null,
+			"document_type": 8,
+			"storage_path": null,
+			"title": "example-title",
+			"content": "example-content",
+			"tags": [
+				38,
+				6,
+				46,
+				159
+			],
+			"created": "2025-03-05T00:00:00-05:00",
+			"created_date": "2025-03-05",
+			"modified": "2025-03-05T16:05:04.082760-05:00",
+			"added": "2025-03-05T15:59:09.213944-05:00",
+			"deleted_at": null,
+			"archive_serial_number": null,
+			"original_file_name": "example-original_file_name",
+			"archived_file_name": "example-archived_file_name",
+			"owner": 10,
+			"user_can_change": true,
+			"is_shared_by_requester": false,
+			"notes": [],
+			"custom_fields": [
+				{
+					"value": null,
+					"field": 32
+				},
+				{
+					"value": null,
+					"field": 11
+				},
+				{
+					"value": null,
+					"field": 12
+				},
+				{
+					"value": null,
+					"field": 13
+				},
+				{
+					"value": null,
+					"field": 25
+				},
+				{
+					"value": null,
+					"field": 28
+				},
+				{
+					"value": null,
+					"field": 29
+				},
+				{
+					"value": null,
+					"field": 30
+				},
+				{
+					"value": null,
+					"field": 31
+				},
+				{
+					"value": null,
+					"field": 16
+				},
+				{
+					"value": "40, 47",
+					"field": 3
+				},
+				{
+					"value": null,
+					"field": 19
+				}
+			],
+			"page_count": null
+		},
+		{
+			"id": 7378,
+			"correspondent": null,
+			"document_type": 8,
+			"storage_path": null,
+			"title": "example-title",
+			"content": "example-content",
+			"tags": [
+				38,
+				6,
+				159
+			],
+			"created": "2025-03-05T00:00:00-05:00",
+			"created_date": "2025-03-05",
+			"modified": "2025-03-05T16:04:38.949536-05:00",
+			"added": "2025-03-05T15:59:20.534315-05:00",
+			"deleted_at": null,
+			"archive_serial_number": null,
+			"original_file_name": "example-original_file_name",
+			"archived_file_name": "example-archived_file_name",
+			"owner": 10,
+			"user_can_change": true,
+			"is_shared_by_requester": false,
+			"notes": [],
+			"custom_fields": [
+				{
+					"value": null,
+					"field": 32
+				},
+				{
+					"value": null,
+					"field": 11
+				},
+				{
+					"value": null,
+					"field": 12
+				},
+				{
+					"value": null,
+					"field": 13
+				},
+				{
+					"value": null,
+					"field": 25
+				},
+				{
+					"value": null,
+					"field": 28
+				},
+				{
+					"value": null,
+					"field": 29
+				},
+				{
+					"value": null,
+					"field": 30
+				},
+				{
+					"value": null,
+					"field": 31
+				},
+				{
+					"value": null,
+					"field": 16
+				},
+				{
+					"value": "47",
+					"field": 3
+				},
+				{
+					"value": null,
+					"field": 19
+				}
+			],
+			"page_count": null
+		},
+		{
+			"id": 7384,
+			"correspondent": 41,
+			"document_type": 8,
+			"storage_path": null,
+			"title": "example-title",
+			"content": "example-content",
+			"tags": [
+				6,
+				46,
+				159,
+				36
+			],
+			"created": "2025-03-05T00:00:00-05:00",
+			"created_date": "2025-03-05",
+			"modified": "2025-03-05T16:59:43.805304-05:00",
+			"added": "2025-03-05T16:44:12.573037-05:00",
+			"deleted_at": null,
+			"archive_serial_number": null,
+			"original_file_name": "example-original_file_name",
+			"archived_file_name": "example-archived_file_name",
+			"owner": 10,
+			"user_can_change": true,
+			"is_shared_by_requester": false,
+			"notes": [],
+			"custom_fields": [
+				{
+					"value": null,
+					"field": 32
+				},
+				{
+					"value": null,
+					"field": 11
+				},
+				{
+					"value": null,
+					"field": 12
+				},
+				{
+					"value": null,
+					"field": 13
+				},
+				{
+					"value": null,
+					"field": 25
+				},
+				{
+					"value": null,
+					"field": 28
+				},
+				{
+					"value": null,
+					"field": 29
+				},
+				{
+					"value": null,
+					"field": 30
+				},
+				{
+					"value": null,
+					"field": 31
+				},
+				{
+					"value": null,
+					"field": 16
+				},
+				{
+					"value": "31",
+					"field": 3
+				},
+				{
+					"value": null,
+					"field": 19
+				}
+			],
+			"page_count": null
+		}
+		
+	]
+}

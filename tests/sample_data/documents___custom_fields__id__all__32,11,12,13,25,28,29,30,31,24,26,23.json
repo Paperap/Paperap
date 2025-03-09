@@ -1,0 +1,181 @@
+{
+	"count": 2,
+	"next": null,
+	"previous": null,
+	"all": [
+		7373,
+		1607
+	],
+	"results": [
+		{
+			"id": 7373,
+			"correspondent": null,
+			"document_type": 1,
+			"storage_path": null,
+			"title": "example-title",
+			"content": "example-content",
+			"tags": [
+				179,
+				38,
+				60
+			],
+			"created": "2025-03-05T00:00:00-05:00",
+			"created_date": "2025-03-05",
+			"modified": "2025-03-05T15:45:26.326981-05:00",
+			"added": "2025-03-05T15:31:17.682577-05:00",
+			"deleted_at": null,
+			"archive_serial_number": null,
+			"original_file_name": "example-original_file_name",
+			"archived_file_name": "example-archived_file_name",
+			"owner": 10,
+			"user_can_change": true,
+			"is_shared_by_requester": false,
+			"notes": [],
+			"custom_fields": [
+				{
+					"value": null,
+					"field": 32
+				},
+				{
+					"value": null,
+					"field": 11
+				},
+				{
+					"value": null,
+					"field": 12
+				},
+				{
+					"value": null,
+					"field": 13
+				},
+				{
+					"value": null,
+					"field": 25
+				},
+				{
+					"value": null,
+					"field": 28
+				},
+				{
+					"value": null,
+					"field": 29
+				},
+				{
+					"value": null,
+					"field": 30
+				},
+				{
+					"value": null,
+					"field": 31
+				},
+				{
+					"value": null,
+					"field": 24
+				},
+				{
+					"value": null,
+					"field": 26
+				},
+				{
+					"value": null,
+					"field": 23
+				}
+			],
+			"page_count": null
+		},
+		{
+			"id": 1607,
+			"correspondent": null,
+			"document_type": 3,
+			"storage_path": null,
+			"title": "example-title",
+			"content": "example-content",
+			"tags": [
+				60,
+				162,
+				13,
+				191,
+				15
+			],
+			"created": "2025-01-16T00:00:00-05:00",
+			"created_date": "2025-01-16",
+			"modified": "2025-03-01T08:42:00.485185-05:00",
+			"added": "2025-01-17T02:05:01.457282-05:00",
+			"deleted_at": null,
+			"archive_serial_number": null,
+			"original_file_name": "example-original_file_name",
+			"archived_file_name": "example-archived_file_name",
+			"owner": 3,
+			"user_can_change": true,
+			"is_shared_by_requester": true,
+			"notes": [],
+			"custom_fields": [
+				{
+					"value": null,
+					"field": 11
+				},
+				{
+					"value": null,
+					"field": 12
+				},
+				{
+					"value": null,
+					"field": 13
+				},
+				{
+					"value": null,
+					"field": 25
+				},
+				{
+					"value": null,
+					"field": 24
+				},
+				{
+					"value": null,
+					"field": 26
+				},
+				{
+					"value": null,
+					"field": 3
+				},
+				{
+					"value": null,
+					"field": 16
+				},
+				{
+					"value": null,
+					"field": 21
+				},
+				{
+					"value": null,
+					"field": 22
+				},
+				{
+					"value": null,
+					"field": 23
+				},
+				{
+					"value": null,
+					"field": 28
+				},
+				{
+					"value": null,
+					"field": 29
+				},
+				{
+					"value": null,
+					"field": 30
+				},
+				{
+					"value": null,
+					"field": 31
+				},
+				{
+					"value": null,
+					"field": 32
+				}
+			],
+			"page_count": null
+		}
+	]
+}

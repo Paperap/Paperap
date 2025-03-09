@@ -25,11 +25,11 @@
 
 from __future__ import annotations
 
-from paperap.models.share_links import ShareLinks
-from paperap.resources.base import PaperlessResource
+from paperap.models.share_links import ShareLinks, ShareLinksQuerySet
+from paperap.resources.base import PaperlessResource, StandardResource
 
 
-class ShareLinksResource(PaperlessResource[ShareLinks]):
+class ShareLinksResource(StandardResource[ShareLinks, ShareLinksQuerySet]):
     """Resource for managing share links."""
 
     model_class = ShareLinks

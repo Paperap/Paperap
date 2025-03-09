@@ -8,12 +8,12 @@
    METADATA:
 
        File:    const.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.2
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -38,8 +38,8 @@ class URLS:
     list: Template = Template("/api/${resource}/")
     detail: Template = Template("/api/${resource}/${pk}/")
     create: Template = Template("/api/${resource}/")
-    update: Template = Template("/api/${resource}/${pk}")
-    delete: Template = Template("/api/${resource}/${pk}")
+    update: Template = Template("/api/${resource}/${pk}/")
+    delete: Template = Template("/api/${resource}/${pk}/")
 
 
 class Endpoints(TypedDict, total=False):
@@ -48,6 +48,21 @@ class Endpoints(TypedDict, total=False):
     create: Template
     update: Template
     delete: Template
+
+
+class FilteringStrategies(StrEnum):
+    WHITELIST = "whitelist"
+    BLACKLIST = "blacklist"
+    ALLOW_ALL = "allow_all"
+    ALLOW_NONE = "allow_none"
+
+
+class ModelStatus(StrEnum):
+    INITIALIZING = "initializing"
+    UPDATING = "updating"
+    SAVING = "saving"
+    READY = "ready"
+    ERROR = "error"
 
 
 # API endpoint paths

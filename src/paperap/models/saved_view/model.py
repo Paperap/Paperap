@@ -10,7 +10,7 @@
        File:    saved_view.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.3
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -27,7 +27,7 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
-from paperap.models.abstract.model import PaperlessModel
+from paperap.models.abstract.model import StandardModel
 from paperap.models.saved_view.queryset import SavedViewQuerySet
 
 DEFAULT_DISPLAY_FIELDS = [
@@ -44,24 +44,24 @@ DEFAULT_DISPLAY_FIELDS = [
 ]
 
 
-class SavedView(PaperlessModel):
+class SavedView(StandardModel):
     """
     Represents a saved view in Paperless-NgX.
     """
 
     name: str
-    show_on_dashboard: bool
-    show_in_sidebar: bool
-    sort_field: str
-    sort_reverse: bool
-    filter_rules: list[dict[str, Any]]
+    show_on_dashboard: bool | None = None
+    show_in_sidebar: bool | None = None
+    sort_field: str | None = None
+    sort_reverse: bool | None = None
+    filter_rules: list[dict[str, Any]] = Field(default_factory=list)
     page_size: int | None = None
-    display_mode: str = "smallCards"
-    display_fields: list[str] = Field(default_factory=lambda: DEFAULT_DISPLAY_FIELDS)
+    display_mode: str | None = None
+    display_fields: list[str] = Field(default_factory=list)
     owner: int | None = None
-    user_can_change: bool = True
+    user_can_change: bool | None = None
 
-    class Meta(PaperlessModel.Meta):
+    class Meta(StandardModel.Meta):
         # Fields that should not be modified
         read_only_fields = {"owner", "user_can_change"}
         queryset = SavedViewQuerySet

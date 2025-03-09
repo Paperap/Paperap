@@ -10,7 +10,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.3
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -26,41 +26,50 @@
 from __future__ import annotations
 
 import copy
+from datetime import datetime
 from string import Template
-from typing import Any, Generic, Iterable, Iterator, Optional, TypeVar, Union, TYPE_CHECKING
+from typing import Any, Generic, Iterable, Iterator, Optional, Self, TypeVar, Union, TYPE_CHECKING
 import logging
 from yarl import URL
-from paperap.exceptions import MultipleObjectsFoundError, ObjectNotFoundError
-from paperap.signals import (
-    pre_list,
-    post_list_response,
-    post_list_item,
-    post_list,
-    pre_get,
-    post_get,
-    pre_create,
-    post_create,
-    pre_update,
-    post_update,
-    pre_delete,
-    post_delete,
-)
+from paperap.exceptions import MultipleObjectsFoundError, ObjectNotFoundError, FilterDisabledError
 
 if TYPE_CHECKING:
-    from paperap.models.abstract.model import PaperlessModel
-    from paperap.resources.base import PaperlessResource
+    from paperap.models.abstract.model import PaperlessModel, StandardModel
+    from paperap.resources.base import PaperlessResource, StandardResource
 
 _PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel", covariant=True)
+_StandardModel = TypeVar("_StandardModel", bound="StandardModel", covariant=True)
 
 logger = logging.getLogger(__name__)
 
 
-class QuerySet(Iterable[_PaperlessModel]):
+class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
     """
     A lazy-loaded, chainable query interface for Paperless NGX resources.
 
     QuerySet provides pagination, filtering, and caching functionality similar to Django's QuerySet.
     It's designed to be lazy - only fetching data when it's actually needed.
+
+    Args:
+        resource: The PaperlessResource instance.
+        filters: Initial filter parameters.
+        _cache: Optional internal result cache.
+        _fetch_all: Whether all results have been fetched.
+        _next_url: URL for the next page of results.
+        _last_response: Optional last response from the API.
+        _iter: Optional iterator for the results.
+
+    Returns:
+        A new instance of QuerySet.
+
+    Examples:
+        # Create a QuerySet for documents
+        >>> docs = client.documents()
+        >>> for doc in docs:
+        ...    print(doc.id)
+        1
+        2
+        3
     """
 
     resource: "PaperlessResource[_PaperlessModel]"
@@ -81,16 +90,6 @@ class QuerySet(Iterable[_PaperlessModel]):
         _last_response: Optional[dict[str, Any]] = None,
         _iter: Optional[Iterator[_PaperlessModel]] = None,
     ):
-        """
-        Initialize a new QuerySet.
-
-        Args:
-            resource: The PaperlessResource instance
-            filters: Initial filter parameters
-            _cache: Optional internal result cache
-            _fetch_all: Whether all results have been fetched
-            _next_url: URL for the next page of results
-        """
         self.resource = resource
         self.filters = filters or {}
         self._result_cache = _cache or []
@@ -99,12 +98,85 @@ class QuerySet(Iterable[_PaperlessModel]):
         self._last_response = _last_response
         self._iter = _iter
 
-    def filter(self, **kwargs) -> QuerySet[_PaperlessModel]:
+    @property
+    def _model(self) -> type[_PaperlessModel]:
+        """
+        Return the model class associated with the resource.
+
+        Returns:
+            The model class
+
+        Examples:
+            # Create a model instance
+            >>> model = queryset._model(**params)
+        """
+        return self.resource.model_class
+
+    @property
+    def _meta(self) -> "PaperlessModel.Meta":
+        """
+        Return the model's metadata.
+
+        Returns:
+            The model's metadata
+
+        Examples:
+            # Get the model's metadata
+            >>> queryset._meta.read_only_fields
+            {'id', 'added', 'modified'}
+        """
+        return self._model._meta
+
+    def _reset(self) -> None:
+        """
+        Reset the QuerySet to its initial state.
+
+        This clears the result cache and resets the fetch state.
+        """
+        self._result_cache = []
+        self._fetch_all = False
+        self._next_url = None
+        self._last_response = None
+        self._iter = None
+
+    def _update_filters(self, values: dict[str, Any]) -> None:
+        """
+        Update the current filters with new values.
+
+        This updates the current queryset instance. It does not return a new instance. For that reason,
+        do not call this directly. Call filter() or exclude() instead.
+
+        Args:
+            values: New filter values to add
+
+        Raises:
+            FilterDisabledError: If a filter is not allowed by the resource
+
+        Examples:
+            # Update filters with new values
+            queryset._update_filters({"correspondent": 1})
+
+            # Update filters with multiple values
+            queryset._update_filters({"correspondent": 1, "document_type": 2})
+        """
+        for key, _value in values.items():
+            if not self._meta.filter_allowed(key):
+                raise FilterDisabledError(
+                    f"Filtering by {key} for {self.resource.name} does not appear to be supported by the API."
+                )
+
+        if values:
+            # Reset the cache if filters change
+            self._reset()
+            self.filters.update(**values)
+
+    def filter(self, **kwargs) -> Self:
         """
         Return a new QuerySet with the given filters applied.
 
         Args:
-            **kwargs: Filters to apply, where keys are field names and values are desired values
+            **kwargs: Filters to apply, where keys are field names and values are desired values.
+                    Supports Django-style lookups like field__contains, field__in, etc.
 
         Returns:
             A new QuerySet with the additional filters applied
@@ -118,10 +190,28 @@ class QuerySet(Iterable[_PaperlessModel]):
 
             # Get documents with title containing "invoice"
             docs = client.documents.filter(title__contains="invoice")
-        """
-        return self._chain(filters={**self.filters, **kwargs})
 
-    def exclude(self, **kwargs) -> QuerySet[_PaperlessModel]:
+            # Get documents with IDs in a list
+            docs = client.documents.filter(id__in=[1, 2, 3])
+        """
+        processed_filters = {}
+
+        for key, value in kwargs.items():
+            # Handle list values for __in lookups
+            if isinstance(value, (list, set, tuple)):
+                # Convert list to comma-separated string for the API
+                processed_value = ",".join(str(item) for item in value)
+                processed_filters[key] = processed_value
+            # Handle boolean values
+            elif isinstance(value, bool):
+                processed_filters[key] = str(value).lower()
+            # Handle normal values
+            else:
+                processed_filters[key] = value
+
+        return self._chain(filters={**self.filters, **processed_filters})
+
+    def exclude(self, **kwargs) -> Self:
         """
         Return a new QuerySet excluding objects with the given filters.
 
@@ -154,6 +244,8 @@ class QuerySet(Iterable[_PaperlessModel]):
         """
         Retrieve a single object from the API.
 
+        Raises NotImplementedError. Subclasses may implement this.
+
         Args:
             id: The ID of the object to retrieve
 
@@ -162,22 +254,13 @@ class QuerySet(Iterable[_PaperlessModel]):
 
         Raises:
             ObjectNotFoundError: If no object or multiple objects are found
+            NotImplementedError: If the method is not implemented by the subclass
 
         Examples:
             # Get document with ID 123
             doc = client.documents.get(123)
-
-            # Get document with a specific title (assuming it's unique)
-            doc = client.documents.get(title="My Important Document")
         """
-        # Attempt to find it in the result cache
-        if self._result_cache:
-            for obj in self._result_cache:
-                if obj.id == id:
-                    return obj
-
-        # Direct lookup by ID - use the resource's get method
-        return self.resource.get(id)
+        raise NotImplementedError("Getting a single resource is not defined by PaperlessModels without an id.")
 
     def count(self) -> int:
         """
@@ -185,6 +268,9 @@ class QuerySet(Iterable[_PaperlessModel]):
 
         Returns:
             The total count of objects matching the filters
+
+        Raises:
+            NotImplementedError: If the response does not have a count attribute
         """
         # If we have a last response, we can use the "count" field
         if self._last_response:
@@ -207,7 +293,9 @@ class QuerySet(Iterable[_PaperlessModel]):
             return count
 
         # I don't think this should ever occur, but just in case.
-        raise NotImplementedError("Unexpected Error: Could not determine count of objects")
+        raise NotImplementedError(
+            f"Unexpected Error: Could not determine count of objects. Last response: {self._last_response}"
+        )
 
     def count_this_page(self) -> int:
         """
@@ -215,6 +303,9 @@ class QuerySet(Iterable[_PaperlessModel]):
 
         Returns:
             The count of objects on the current page
+
+        Raises:
+            NotImplementedError: If _last_response is not set
         """
         # If we have a last response, we can count it without a new request
         if self._last_response:
@@ -235,7 +326,7 @@ class QuerySet(Iterable[_PaperlessModel]):
         results = self._last_response.get("results", [])
         return len(results)
 
-    def all(self) -> QuerySet[_PaperlessModel]:
+    def all(self) -> Self:
         """
         Return a new QuerySet that copies the current one.
 
@@ -244,7 +335,7 @@ class QuerySet(Iterable[_PaperlessModel]):
         """
         return self._chain()
 
-    def order_by(self, *fields: str) -> QuerySet[_PaperlessModel]:
+    def order_by(self, *fields: str) -> Self:
         """
         Return a new QuerySet ordered by the specified fields.
 
@@ -328,7 +419,7 @@ class QuerySet(Iterable[_PaperlessModel]):
         # Check if there's at least one result
         return self.first() is not None
 
-    def none(self) -> QuerySet[_PaperlessModel]:
+    def none(self) -> Self:
         """
         Return an empty QuerySet.
 
@@ -337,8 +428,35 @@ class QuerySet(Iterable[_PaperlessModel]):
         """
         return self._chain(filters={"limit": 0})
 
+    def filter_field_by_str(self, field: str, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+        """
+        Generic method to filter a queryset based on a given field.
+
+        This allows subclasses to easily implement custom filter methods.
+
+        Args:
+            field: The field name to filter by.
+            value: The value to filter against.
+            exact: Whether to filter by an exact match.
+            case_insensitive: Whether the filter should be case-insensitive.
+
+        Returns:
+            A new QuerySet instance with the filter applied.
+        """
+        if exact:
+            lookup = f"{field}__iexact" if case_insensitive else field
+        else:
+            lookup = f"{field}__icontains" if case_insensitive else f"{field}__contains"
+
+        return self.filter(**{lookup: value})
+
     def _fetch_all_results(self) -> None:
-        """Fetch all results from the API and populate the cache."""
+        """
+        Fetch all results from the API and populate the cache.
+
+        Returns:
+            None
+        """
         if self._fetch_all:
             return
 
@@ -367,10 +485,19 @@ class QuerySet(Iterable[_PaperlessModel]):
         Get an iterator of resources.
 
         Args:
+            url: The URL to request, if different from the resource's default.
             params: Query parameters.
 
         Returns:
-            List of resources.
+            An iterator over the resources.
+
+        Raises:
+            NotImplementedError: If the request cannot be completed.
+
+        Examples:
+            # Iterate over documents
+            for doc in queryset._request_iter():
+                print(doc)
         """
         if not (response := self.resource._request_raw(url=url, params=params)):
             logger.debug("No response from request.")
@@ -380,7 +507,7 @@ class QuerySet(Iterable[_PaperlessModel]):
 
         yield from self.resource._handle_response(response)
 
-    def _chain(self, **kwargs) -> QuerySet[_PaperlessModel]:
+    def _chain(self, **kwargs) -> Self:
         """
         Return a copy of the current QuerySet with updated attributes.
 
@@ -400,7 +527,7 @@ class QuerySet(Iterable[_PaperlessModel]):
         # Update with provided kwargs
         for key, value in kwargs.items():
             if key == "filters" and value:
-                clone.filters.update(value)
+                clone._update_filters(value)
             else:
                 setattr(clone, key, value)
 
@@ -534,3 +661,73 @@ class QuerySet(Iterable[_PaperlessModel]):
         if not results:
             raise IndexError(f"QuerySet index {key} out of range")
         return results[0]
+
+
+class StandardQuerySet(QuerySet[_StandardModel], Generic[_StandardModel]):
+    """
+    A queryset for StandardModel instances (i.e. Paperless Models with standard fields, like id).
+
+    Returns:
+        A new instance of StandardModel.
+
+    Raises:
+        ValueError: If resource is not provided.
+
+    Examples:
+        # Create a StandardModel instance
+        model = StandardModel(id=1)
+
+    Args:
+        resource: The PaperlessResource instance.
+        filters: Initial filter parameters.
+
+    Returns:
+        A new instance of StandardQuerySet.
+
+    Raises:
+        ObjectNotFoundError: If no object or multiple objects are found.
+
+    Examples:
+        # Create a StandardQuerySet for documents
+        docs = StandardQuerySet(resource=client.documents)
+    """
+
+    def get(self, id: int) -> _StandardModel:
+        """
+        Retrieve a single object from the API.
+
+        Args:
+            id: The ID of the object to retrieve
+
+        Returns:
+            A single object matching the query
+
+        Raises:
+            ObjectNotFoundError: If no object or multiple objects are found
+
+        Examples:
+            # Get document with ID 123
+            doc = client.documents.get(123)
+        """
+        # Attempt to find it in the result cache
+        if self._result_cache:
+            for obj in self._result_cache:
+                if obj.id == id:
+                    return obj
+
+        # Direct lookup by ID - use the resource's get method
+        return self.resource.get(id)
+
+    def id(self, value: int | list[int]) -> Self:
+        """
+        Filter models by ID.
+
+        Args:
+            value: The ID or list of IDs to filter by
+
+        Returns:
+            Filtered QuerySet
+        """
+        if isinstance(value, list):
+            return self.filter(id__in=value)
+        return self.filter(id=value)
