@@ -9,6 +9,7 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "dateparser>=1.2.1",
+    "factory-boy>=3.3.3",
     "pydantic>=2.10.6",
     "pydantic-settings>=2.8.1",
     "requests>=2.32.3",

@@ -32,15 +32,11 @@ from paperap.models import *
 
 fake = Faker()
 
-_PaperlessModel = TypeVar("_PaperlessModel", bound=PaperlessModel, default=PaperlessModel, covariant=True)
-
 class PydanticFactory(factory.Factory):
     """Base factory for Pydantic models."""
-    class Meta(factory.Factory.Meta, Generic[_PaperlessModel]):
-        model : type[_PaperlessModel]
 
 class CorrespondentFactory(PydanticFactory):
-    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
+    class Meta: # type: ignore # pyright handles this wrong
         model = Correspondent
 
     slug = factory.LazyFunction(lambda: fake.slug())
@@ -53,7 +49,7 @@ class CorrespondentFactory(PydanticFactory):
     user_can_change = factory.Faker("boolean")
 
 class CustomFieldFactory(PydanticFactory):
-    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
+    class Meta: # type: ignore # pyright handles this wrong
         model = CustomField
 
     name = factory.Faker("word")
@@ -62,7 +58,7 @@ class CustomFieldFactory(PydanticFactory):
     document_count = factory.Faker("random_int", min=0, max=100)
 
 class DocumentNoteFactory(PydanticFactory):
-    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
+    class Meta: # type: ignore # pyright handles this wrong
         model = DocumentNote
 
     note = factory.Faker("sentence")
@@ -74,7 +70,7 @@ class DocumentNoteFactory(PydanticFactory):
     user = factory.Faker("random_int", min=1, max=1000)
 
 class DocumentFactory(PydanticFactory):
-    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
+    class Meta: # type: ignore # pyright handles this wrong
         model = Document
 
     added = factory.LazyFunction(datetime.now)
@@ -99,7 +95,7 @@ class DocumentFactory(PydanticFactory):
     notes = factory.LazyFunction(lambda: [DocumentNoteFactory() for _ in range(3)])
 
 class DocumentTypeFactory(PydanticFactory):
-    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
+    class Meta: # type: ignore # pyright handles this wrong
         model = DocumentType
 
     name = factory.Faker("word")
@@ -113,7 +109,7 @@ class DocumentTypeFactory(PydanticFactory):
 
 
 class TagFactory(PydanticFactory):
-    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
+    class Meta: # type: ignore # pyright handles this wrong
         model = Tag
 
     name = factory.Faker("word")
@@ -129,7 +125,7 @@ class TagFactory(PydanticFactory):
 
 
 class ProfileFactory(PydanticFactory):
-    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
+    class Meta: # type: ignore # pyright handles this wrong
         model = Profile
 
     email = factory.Faker("email")
@@ -142,7 +138,7 @@ class ProfileFactory(PydanticFactory):
 
 
 class UserFactory(PydanticFactory):
-    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
+    class Meta: # type: ignore # pyright handles this wrong
         model = User
 
     username = factory.Faker("user_name")
@@ -160,7 +156,7 @@ class UserFactory(PydanticFactory):
 
 
 class StoragePathFactory(PydanticFactory):
-    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
+    class Meta: # type: ignore # pyright handles this wrong
         model = StoragePath
 
     name = factory.Faker("word")
@@ -175,7 +171,7 @@ class StoragePathFactory(PydanticFactory):
 
 
 class SavedViewFactory(PydanticFactory):
-    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
+    class Meta: # type: ignore # pyright handles this wrong
         model = SavedView
 
     name = factory.Faker("sentence", nb_words=3)
@@ -191,7 +187,7 @@ class SavedViewFactory(PydanticFactory):
     user_can_change = factory.Faker("boolean")
 
 class ShareLinksFactory(PydanticFactory):
-    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
+    class Meta: # type: ignore # pyright handles this wrong
         model = ShareLinks
 
     expiration = factory.Maybe(factory.Faker("boolean"), factory.Faker("future_datetime"), None)
@@ -201,7 +197,7 @@ class ShareLinksFactory(PydanticFactory):
     file_version = factory.Faker("word")
 
 class TaskFactory(PydanticFactory):
-    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
+    class Meta: # type: ignore # pyright handles this wrong
         model = Task
 
     task_id = factory.Faker("uuid4")
@@ -214,7 +210,7 @@ class TaskFactory(PydanticFactory):
     related_document = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=1000), None)
 
 class UISettingsFactory(PydanticFactory):
-    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
+    class Meta: # type: ignore # pyright handles this wrong
         model = UISettings
 
     user = factory.Dict({"theme": "dark", "language": "en"})
@@ -222,14 +218,14 @@ class UISettingsFactory(PydanticFactory):
     permissions = factory.List([factory.Faker("word") for _ in range(5)])
 
 class GroupFactory(PydanticFactory):
-    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
+    class Meta: # type: ignore # pyright handles this wrong
         model = Group
 
     name = factory.Faker("word")
     permissions = factory.List([factory.Faker("word") for _ in range(5)])
 
 class WorkflowTriggerFactory(PydanticFactory):
-    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
+    class Meta: # type: ignore # pyright handles this wrong
         model = WorkflowTrigger
 
     sources = factory.List([factory.Faker("word") for _ in range(3)])
@@ -245,7 +241,7 @@ class WorkflowTriggerFactory(PydanticFactory):
     filter_has_document_type = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
 
 class WorkflowActionFactory(PydanticFactory):
-    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
+    class Meta: # type: ignore # pyright handles this wrong
         model = WorkflowAction
 
     type = factory.Faker("word")
@@ -261,7 +257,7 @@ class WorkflowActionFactory(PydanticFactory):
     remove_all_custom_fields = factory.Faker("boolean")
 
 class WorkflowFactory(PydanticFactory):
-    class Meta(PydanticFactory.Meta, Generic[_PaperlessModel]):
+    class Meta: # type: ignore # pyright handles this wrong
         model = Workflow
 
     name = factory.Faker("sentence", nb_words=3)
