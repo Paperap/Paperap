@@ -10,7 +10,7 @@
         File:    test_document.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.3
+        Version: 0.0.4
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -123,7 +123,7 @@ class TestGetRelationships(DocumentTest):
         with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = sample_data
             expected_count = len(self.model.tags)
-            tags = self.model.get_tags()
+            tags = self.model.tags
             self.assertIsInstance(tags, TagQuerySet)
             actual_count = tags.count()
             self.assertEqual(expected_count, actual_count, f"Expected {expected_count} tags, got {actual_count}")
@@ -149,7 +149,7 @@ class TestGetRelationships(DocumentTest):
                     self.assertIsInstance(value, field_type, f"Expected tag.{field} to be a {field_type}, got {type(value)}")
 
                 self.assertGreater(tag.document_count, 0, f"Expected tag.document_count to be greater than 0, got {tag.document_count}")
-                self.assertTrue(tag.id in self.model.tags, f"Expected tag.id to be in document.tags. {tag.id} not in {self.model.tags}")
+                self.assertTrue(tag in self.model.tags, f"Expected tag.id to be in document.tags. {tag.id} not in {self.model.tags}")
 
             self.assertEqual(count, expected_count, f"Expected to iterate over {expected_count} tags, only saw {count}")
 
@@ -157,8 +157,8 @@ class TestGetRelationships(DocumentTest):
         sample_data = load_sample_data('correspondents_item.json')
         with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = sample_data
-            self.model.correspondent = sample_data["id"]
-            correspondent = self.model.get_correspondent()
+            self.model.correspondent_id = sample_data["id"]
+            correspondent = self.model.correspondent
             self.assertIsInstance(correspondent, Correspondent, f"Expected document.correspondent to be a Correspondent, got {type(correspondent)}")
             # Make mypy happy
             assert correspondent is not None
@@ -185,8 +185,8 @@ class TestGetRelationships(DocumentTest):
         sample_data = load_sample_data('document_types_item.json')
         with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = sample_data
-            self.model.document_type = sample_data["id"]
-            document_type = self.model.get_document_type()
+            self.model.document_type_id = sample_data["id"]
+            document_type = self.model.document_type
             self.assertIsInstance(document_type, DocumentType, f"Expected document.document_type to be a DocumentType, got {type(document_type)}")
             # Make mypy happy
             assert document_type is not None
@@ -214,8 +214,8 @@ class TestGetRelationships(DocumentTest):
         sample_data = load_sample_data('storage_paths_item.json')
         with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = sample_data
-            self.model.storage_path = sample_data["id"]
-            storage_path = self.model.get_storage_path()
+            self.model.storage_path_id = sample_data["id"]
+            storage_path = self.model.storage_path
             self.assertIsInstance(storage_path, StoragePath, f"Expected document.storage_path to be a StoragePath, got {type(storage_path)}")
             # Make mypy happy
             assert storage_path is not None

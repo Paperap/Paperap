@@ -10,7 +10,7 @@
        File:    parser.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.3
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -364,6 +364,43 @@ class Parser(Generic[_PaperlessModel]):
         for field, value in data.items():
             if field in fields:
                 data[field] = self.parse(value, fields[field])
+
+        return self.transform_input_data(data)
+
+    def transform_input_data(self, data: dict[str, Any]) -> dict[str, Any]:
+        """
+        Transform the data before it is validated and parsed.
+
+        Subclasses can override this method to transform the data before it is validated and parsed.
+
+        Args:
+            data: The data to transform
+
+        Returns:
+            The transformed data
+        """
+        for key, attrib in self.model._meta.field_map.items():
+            # Change {key} to {attrib}
+            if key in data:
+                data[attrib] = data.pop(key)
+        return data
+
+    def transform_output_data(self, data: dict[str, Any]) -> dict[str, Any]:
+        """
+        Transform the data before it is serialized.
+
+        Subclasses can override this method to transform the data before it is serialized.
+
+        Args:
+            data: The data to transform
+
+        Returns:
+            The transformed data
+        """
+        for key, attrib in self.model._meta.field_map.items():
+            # Change {attrib} to {key}
+            if key in data:
+                data[key] = data.pop(attrib)
         return data
 
     def _get_model_fields(self) -> dict[str, type]:

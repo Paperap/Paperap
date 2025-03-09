@@ -10,7 +10,7 @@
         File:    test_document.py
         Project: paperap
         Created: 2025-03-08
-        Version: 0.0.3
+        Version: 0.0.4
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -185,7 +185,7 @@ class TestSaveNone(IntegrationTest):
         self.model._meta.save_on_write = False
 
         if not self.model.tags:
-            self.model.tags = [38]
+            self.model.tag_ids = [38]
             self.model.save()
 
         self.none_data = {
@@ -228,7 +228,7 @@ class TestSaveNone(IntegrationTest):
 
     def test_set_tags_to_none(self):
         # Test that the document is saved when a field is written to
-        self.model.tags = []
+        self.model.tag_ids = []
         self.model.save()
         document = self.client.documents().get(7411)
         self.assertEqual([], document.tags, "Tags not cleared in remote instance when set to empty list")
@@ -314,7 +314,7 @@ class TestTag(IntegrationTest):
         self.assertGreater(len(documents), 1000, "Incorrect number of documents retrieved")
         for i, document in enumerate(documents):
             self.assertIsInstance(document, Document)
-            tags = [tag.name for tag in document.get_tags()]
+            tags = [tag.name for tag in document.tags]
             self.assertIn("HRSH", tags, f"Document does not have HRSH tag. Tags: {tags}, tag_ids: {document.tags}")
             # avoid calling next a million times
             if i > 52:

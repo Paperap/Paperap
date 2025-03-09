@@ -10,7 +10,7 @@
         File:    test_document.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.4
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -62,7 +62,7 @@ class TestDocumentInit(DocumentTestCase):
         }
 
     def test_from_dict(self):
-        model = Document.from_dict(self.model_data, self.resource)
+        model = Document.from_dict(self.model_data)
         self.assertIsInstance(model, Document, f"Expected Document, got {type(model)}")
         self.assertEqual(model.id, self.model_data["id"], f"Document id is wrong when created from dict: {model.id}")
         self.assertEqual(model.title, self.model_data["title"], f"Document title is wrong when created from dict: {model.title}")
@@ -90,7 +90,7 @@ class TestDocument(DocumentTestCase):
             "document_type": 1,
             "tags": [1, 2, 3],
         }
-        self.model = Document.from_dict(self.model_data, self.resource)
+        self.model = Document.from_dict(self.model_data)
 
     def test_model_date_parsing(self):
         # Test if date strings are parsed into datetime objects
@@ -141,7 +141,7 @@ class TestGetTags(TestCase):
     def test_get_tags(self):
         for document in self.documents:
             self.assertIsInstance(document, Document, f"Expected Document, got {type(document)}")
-            tags = document.get_tags()
+            tags = document.tags
             self.assertIsInstance(tags, QuerySet)
             expected_count = len(document.tags)
             actual_count = tags.count()
@@ -177,7 +177,7 @@ class TestRequestDocument(TestCase):
     def test_get_document(self):
         with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = sample_document
-            document = self.get_resource(DocumentResource, 7313)
+            document : Document = self.get_resource(DocumentResource, 7313) # type: ignore
             self.assertIsInstance(document, Document)
             self.assertIsInstance(document.id, int, "Loading sample document, id wrong type")
             self.assertIsInstance(document.title, str, "Loading sample document, title wrong type")
@@ -201,8 +201,8 @@ class TestRequestDocument(TestCase):
             mock_request.return_value = sample_document
             document = self.client.documents().get(1)
 
-        tags = document.get_tags()
-        self.assertIsInstance(tags, QuerySet)
+        tags = document.tags
+        self.assertIsInstance(tags, TagQuerySet)
         for tag in tags:
             self.assertIsInstance(tag, Tag, f"Expected document.tag to be a Tag, got {type(tag)}")
             self.assertTrue(tag.id in document.tags, "Expected tag.id to be in document.tags")

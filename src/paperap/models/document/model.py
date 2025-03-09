@@ -10,7 +10,7 @@
        File:    document.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.3
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -72,7 +72,7 @@ class DocumentNote(StandardModel):
         Returns:
             The document associated with this note.
         """
-        return self._meta.resource.client.documents().get(self.document)
+        return self._client.documents().get(self.document)
 
     def get_user(self) -> "User":
         """
@@ -81,7 +81,7 @@ class DocumentNote(StandardModel):
         Returns:
             The user who created this note.
         """
-        return self._meta.resource.client.users().get(self.user)
+        return self._client.users().get(self.user)
 
 
 class Document(StandardModel):
@@ -122,22 +122,26 @@ class Document(StandardModel):
     archive_serial_number: int | None = None
     archived_file_name: str | None = None
     content: str = ""
-    correspondent: int | None = None
+    correspondent_id: int | None = None
     created: datetime | None = Field(description="Creation timestamp", default=None, alias="created_on")
     created_date: str | None = None
     updated: datetime | None = Field(description="Last update timestamp", default=None, alias="updated_on")
-    custom_fields: list[CustomFieldDict] = Field(default_factory=list)
+    custom_field_dicts: list[CustomFieldDict] = Field(default_factory=list)
     deleted_at: datetime | None = None
-    document_type: int | None = None
+    document_type_id: int | None = None
     is_shared_by_requester: bool = False
     notes: "list[DocumentNote]" = Field(default_factory=list)  # TODO unknown subtype
     original_file_name: str | None = None
     owner: int | None = None
     page_count: int | None = None
-    storage_path: int | None = None
-    tags: list[int] = Field(default_factory=list)
+    storage_path_id: int | None = None
+    tag_ids: list[int] = Field(default_factory=list)
     title: str = ""
     user_can_change: bool | None = None
+
+    _correspondent: tuple[int, Correspondent] | None = None
+    _document_type: tuple[int, DocumentType] | None = None
+    _storage_path: tuple[int, StoragePath] | None = None
 
     class Meta(StandardModel.Meta):
         # NOTE: Filtering appears to be disabled by paperless on page_count
@@ -146,6 +150,13 @@ class Document(StandardModel):
         filtering_disabled = {"page_count", "deleted_at", "updated", "is_shared_by_requester"}
         filtering_strategies = {FilteringStrategies.WHITELIST}
         parser = DocumentParser
+        field_map = {
+            "tags": "tag_ids",
+            "custom_fields": "custom_field_dicts",
+            "document_type": "document_type_id",
+            "correspondent": "correspondent_id",
+            "storage_path": "storage_path_id",
+        }
         supported_filtering_params = {
             "id__in",
             "id",
@@ -251,13 +262,13 @@ class Document(StandardModel):
     def serialize_notes(self, value: list[DocumentNote], _info):
         return [note.to_dict() for note in value] if value else []
 
-    @field_validator("tags", mode="before")
+    @field_validator("tag_ids", mode="before")
     def validate_tags(cls, value: list[int] | None) -> list[int]:
         if value is None:
             return []
         return [int(tag) for tag in value]
 
-    @field_validator("custom_fields", mode="before")
+    @field_validator("custom_field_dicts", mode="before")
     def validate_custom_fields(cls, value: list[CustomFieldDict] | None) -> list[CustomFieldDict]:
         if value is None:
             return []
@@ -281,13 +292,18 @@ class Document(StandardModel):
 
     @property
     def custom_field_ids(self) -> list[int]:
-        return [field["field"] for field in self.custom_fields]
+        return [field["field"] for field in self.custom_field_dicts]
 
     @property
     def custom_field_values(self) -> list[Any]:
-        return [field["value"] for field in self.custom_fields]
+        return [field["value"] for field in self.custom_field_dicts]
 
-    def get_tags(self) -> TagQuerySet:
+    @property
+    def tag_names(self) -> list[str]:
+        return [tag.name for tag in self.tags if tag.name]
+
+    @property
+    def tags(self) -> TagQuerySet:
         """
         Get the tags for this document.
 
@@ -296,21 +312,61 @@ class Document(StandardModel):
 
         Examples:
             >>> document = client.documents().get(id=1)
-            >>> tags = document.get_tags()
-            >>> for tag in tags:
+            >>> for tag in document.tags:
             ...     print(f'{tag.name} # {tag.id}')
             'Tag 1 # 1'
             'Tag 2 # 2'
             'Tag 3 # 3'
+
+            >>> if 5 in document.tags:
+            ...     print('Tag ID #5 is associated with this document')
+
+            >>> tag = client.tags().get(id=1)
+            >>> if tag in document.tags:
+            ...     print('Tag ID #1 is associated with this document')
+
+            >>> filtered_tags = document.tags.filter(name__icontains='example')
+            >>> for tag in filtered_tags:
+            ...     print(f'{tag.name} # {tag.id}')
         """
-        if not self.tags:
-            return self._meta.resource.client.tags().none()
+        if not self.tag_ids:
+            return self._client.tags().none()
 
         # Use the API's filtering capability to get only the tags with specific IDs
         # The paperless-ngx API supports id__in filter for retrieving multiple objects by ID
-        return self._meta.resource.client.tags().id(self.tags)
+        return self._client.tags().id(self.tag_ids)
 
-    def get_correspondent(self) -> Optional["Correspondent"]:
+    @tags.setter
+    def tags(self, value: "Iterable[Tag | int] | None"):
+        """
+        Set the tags for this document.
+
+        Args:
+            value: The tags to set.
+        """
+        if value is None:
+            self.tag_ids = []
+            return
+
+        if isinstance(value, Iterable):
+            for tag in value:
+                if isinstance(tag, int):
+                    self.tag_ids.append(tag)
+                    continue
+
+                # Check against StandardModel to avoid circular imports
+                # If it is another type of standard model, pydantic validators will complain
+                if isinstance(tag, StandardModel):
+                    self.tag_ids.append(tag.id)
+                    continue
+
+                raise TypeError(f"Invalid type for tags: {type(tag)}")
+            return
+
+        raise TypeError(f"Invalid type for tags: {type(value)}")
+
+    @property
+    def correspondent(self) -> "Correspondent | None":
         """
         Get the correspondent for this document.
 
@@ -319,15 +375,54 @@ class Document(StandardModel):
 
         Examples:
             >>> document = client.documents().get(id=1)
-            >>> correspondent = document.get_correspondent()
-            >>> correspondent.name
+            >>> document.correspondent.name
             'Example Correspondent'
         """
-        if not self.correspondent:
-            return None
-        return self._meta.resource.client.correspondents().get(self.correspondent)
+        # Return cache
+        if self._correspondent is not None:
+            id, value = self._correspondent
+            if id == self.correspondent_id:
+                return value
 
-    def get_document_type(self) -> Optional["DocumentType"]:
+        # None set to retrieve
+        if not self.correspondent_id:
+            return None
+
+        # Retrieve it
+        correspondent = self._client.correspondents().get(self.correspondent_id)
+        self._correspondent = (self.correspondent_id, correspondent)
+        return correspondent
+
+    @correspondent.setter
+    def correspondent(self, value: "Correspondent | int | None"):
+        """
+        Set the correspondent for this document.
+
+        Args:
+            value: The correspondent to set.
+        """
+        if value is None:
+            # Leave cache in place in case it changes again
+            self.correspondent_id = None
+            return
+
+        if isinstance(value, int):
+            # Leave cache in place in case id is the same, or id changes again
+            self.correspondent_id = value
+            return
+
+        # Check against StandardModel to avoid circular imports
+        # If it is another type of standard model, pydantic validators will complain
+        if isinstance(value, StandardModel):
+            self.correspondent_id = value.id
+            # Pre-populate the cache
+            self._correspondent = (value.id, value)
+            return
+
+        raise TypeError(f"Invalid type for correspondent: {type(value)}")
+
+    @property
+    def document_type(self) -> "DocumentType | None":
         """
         Get the document type for this document.
 
@@ -336,15 +431,54 @@ class Document(StandardModel):
 
         Examples:
             >>> document = client.documents().get(id=1)
-            >>> document_type = document.get_document_type()
-            >>> document_type.name
+            >>> document.document_type.name
             'Example Document Type
         """
-        if not self.document_type:
-            return None
-        return self._meta.resource.client.document_types.get(self.document_type)
+        # Return cache
+        if self._document_type is not None:
+            id, value = self._document_type
+            if id == self.document_type_id:
+                return value
 
-    def get_storage_path(self) -> Optional["StoragePath"]:
+        # None set to retrieve
+        if not self.document_type_id:
+            return None
+
+        # Retrieve it
+        document_type = self._client.document_types().get(self.document_type_id)
+        self._document_type = (self.document_type_id, document_type)
+        return document_type
+
+    @document_type.setter
+    def document_type(self, value: "DocumentType | int | None"):
+        """
+        Set the document type for this document.
+
+        Args:
+            value: The document type to set.
+        """
+        if value is None:
+            # Leave cache in place in case it changes again
+            self.document_type_id = None
+            return
+
+        if isinstance(value, int):
+            # Leave cache in place in case id is the same, or id changes again
+            self.document_type_id = value
+            return
+
+        # Check against StandardModel to avoid circular imports
+        # If it is another type of standard model, pydantic validators will complain
+        if isinstance(value, StandardModel):
+            self.document_type_id = value.id
+            # Pre-populate the cache
+            self._document_type = (value.id, value)
+            return
+
+        raise TypeError(f"Invalid type for document_type: {type(value)}")
+
+    @property
+    def storage_path(self) -> "StoragePath | None":
         """
         Get the storage path for this document.
 
@@ -353,27 +487,98 @@ class Document(StandardModel):
 
         Examples:
             >>> document = client.documents().get(id=1)
-            >>> storage_path = document.get_storage_path()
-            >>> storage_path.name
+            >>> document.storage_path.name
             'Example Storage Path'
         """
-        if not self.storage_path:
-            return None
-        return self._meta.resource.client.storage_paths.get(self.storage_path)
+        # Return cache
+        if self._storage_path is not None:
+            id, value = self._storage_path
+            if id == self.storage_path_id:
+                return value
 
-    def get_custom_fields(self) -> "CustomFieldQuerySet":
+        # None set to retrieve
+        if not self.storage_path_id:
+            return None
+
+        # Retrieve it
+        storage_path = self._client.storage_paths().get(self.storage_path_id)
+        self._storage_path = (self.storage_path_id, storage_path)
+        return storage_path
+
+    @storage_path.setter
+    def storage_path(self, value: "StoragePath | int | None"):
+        """
+        Set the storage path for this document.
+
+        Args:
+            value: The storage path to set.
+        """
+        if value is None:
+            # Leave cache in place in case it changes again
+            self.storage_path_id = None
+            return
+
+        if isinstance(value, int):
+            # Leave cache in place in case id is the same, or id changes again
+            self.storage_path_id = value
+            return
+
+        # Check against StandardModel to avoid circular imports
+        # If it is another type of standard model, pydantic validators will complain
+        if isinstance(value, StandardModel):
+            self.storage_path_id = value.id
+            # Pre-populate the cache
+            self._storage_path = (value.id, value)
+            return
+
+        raise TypeError(f"Invalid type for storage_path: {type(value)}")
+
+    @property
+    def custom_fields(self) -> "CustomFieldQuerySet":
         """
         Get the custom fields for this document.
 
         Returns:
             List of custom fields associated with this document.
         """
-        if not self.custom_fields:
-            return self._meta.resource.client.custom_fields().none()
+        if not self.custom_field_dicts:
+            return self._client.custom_fields().none()
 
         # Use the API's filtering capability to get only the custom fields with specific IDs
         # The paperless-ngx API supports id__in filter for retrieving multiple objects by ID
-        return self._meta.resource.client.custom_fields().id(self.custom_field_ids)
+        return self._client.custom_fields().id(self.custom_field_ids)
+
+    @custom_fields.setter
+    def custom_fields(self, value: "Iterable[CustomField | CustomFieldDict] | None"):
+        """
+        Set the custom fields for this document.
+
+        Args:
+            value: The custom fields to set.
+        """
+        if value is None:
+            self.custom_field_dicts = []
+            return
+
+        if isinstance(value, Iterable):
+            new_list = []
+            for field in value:
+                # Check against StandardModel to avoid circular imports
+                # If it is another type of standard model, pydantic validators will complain
+                if isinstance(field, StandardModel):
+                    new_list.append({"field": field.id, "value": None})
+                    continue
+
+                if isinstance(field, dict):
+                    new_list.append(field)
+                    continue
+
+                raise TypeError(f"Invalid type for custom fields: {type(field)}")
+
+            self.custom_field_dicts = new_list
+            return
+
+        raise TypeError(f"Invalid type for custom fields: {type(value)}")
 
     def custom_field_value(self, field_id: int, default: Any = None, *, raise_errors: bool = False) -> Any:
         """
@@ -384,7 +589,7 @@ class Document(StandardModel):
             default: The value to return if the field is not found.
             raise_errors: Whether to raise an error if the field is not found.
         """
-        for field in self.custom_fields:
+        for field in self.custom_field_dicts:
             if field["field"] == field_id:
                 return field["value"]
 

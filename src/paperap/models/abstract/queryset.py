@@ -10,7 +10,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.3
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -28,7 +28,7 @@ from __future__ import annotations
 import copy
 from datetime import datetime
 from string import Template
-from typing import Any, Generic, Iterable, Iterator, Optional, Self, TypeVar, Union, TYPE_CHECKING
+from typing import Any, Generic, Iterable, Iterator, Optional, Self, TypeVar, Union, TYPE_CHECKING, override
 import logging
 from yarl import URL
 from paperap.exceptions import MultipleObjectsFoundError, ObjectNotFoundError, FilterDisabledError
@@ -662,6 +662,18 @@ class QuerySet(Iterable[_PaperlessModel], Generic[_PaperlessModel]):
             raise IndexError(f"QuerySet index {key} out of range")
         return results[0]
 
+    def __contains__(self, item: "PaperlessModel") -> bool:
+        """
+        Return True if the QuerySet contains the given object.
+
+        Args:
+            item: The object to check for
+
+        Returns:
+            True if the object is in the QuerySet
+        """
+        return any(obj == item for obj in self)
+
 
 class StandardQuerySet(QuerySet[_StandardModel], Generic[_StandardModel]):
     """
@@ -731,3 +743,21 @@ class StandardQuerySet(QuerySet[_StandardModel], Generic[_StandardModel]):
         if isinstance(value, list):
             return self.filter(id__in=value)
         return self.filter(id=value)
+
+    @override
+    def __contains__(self, item: "StandardModel | int") -> bool:
+        """
+        Return True if the QuerySet contains the given object.
+
+        NOTE: This method only ensures a match by ID, not by full object equality.
+        This is intentional, as the object may be outdated or not fully populated.
+
+        Args:
+            item: The object or ID to check for
+
+        Returns:
+            True if the object is in the QuerySet
+        """
+        # ID means a match, even if the data is outdated
+        id = item if isinstance(item, int) else item.id
+        return any(obj.id == id for obj in self)

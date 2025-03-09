@@ -124,6 +124,10 @@ class PaperlessModel(BaseModel, ABC):
         # True or False will override client.settings.save_on_write (PAPERLESS_SAVE_ON_WRITE)
         # None will respect client.settings.save_on_write
         save_on_write: bool | None = None
+        # A map of field names to their attribute names.
+        # Parser uses this to transform input and output data.
+        # This will be populated from all parent classes.
+        field_map: dict[str, str] = {}
 
         def __init__(self, model: type[_Self]):
             self.model = model
@@ -194,6 +198,7 @@ class PaperlessModel(BaseModel, ABC):
         filtering_fields = set(cls.__annotations__.keys())
         supported_filtering_params = cls.Meta.supported_filtering_params
         blacklist_filtering_params = cls.Meta.blacklist_filtering_params
+        field_map = cls.Meta.field_map
         for base in cls.__bases__:
             _meta: PaperlessModel.Meta | None
             if _meta := getattr(base, "Meta", None):
@@ -207,6 +212,8 @@ class PaperlessModel(BaseModel, ABC):
                     supported_filtering_params.update(_meta.supported_filtering_params)
                 if hasattr(_meta, "blacklist_filtering_params"):
                     blacklist_filtering_params.update(_meta.blacklist_filtering_params)
+                if hasattr(_meta, "field_map"):
+                    field_map.update(_meta.field_map)
 
         cls.Meta.read_only_fields = read_only_fields
         cls.Meta.filtering_disabled = filtering_disabled
@@ -214,6 +221,7 @@ class PaperlessModel(BaseModel, ABC):
         cls.Meta.filtering_fields = filtering_fields - filtering_disabled
         cls.Meta.supported_filtering_params = supported_filtering_params
         cls.Meta.blacklist_filtering_params = blacklist_filtering_params
+        cls.Meta.field_map = field_map
 
         # Instantiate _meta
         cls._meta = cls.Meta(cls)
