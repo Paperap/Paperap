@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -10,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,10 +21,11 @@
 
 from __future__ import annotations
 
-from typing import Any, Self, Union, Optional, TYPE_CHECKING
 import logging
-from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
-from paperap.models.mixins.queryset import HasOwner, HasDocumentCount
+from typing import TYPE_CHECKING, Any, Optional, Self, Union
+
+from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
+from paperap.models.mixins.queryset import HasDocumentCount, HasOwner
 
 if TYPE_CHECKING:
     from paperap.models.correspondent.model import Correspondent
@@ -51,6 +48,7 @@ class CorrespondentQuerySet(StandardQuerySet["Correspondent"], HasOwner, HasDocu
 
         Returns:
             Filtered CorrespondentQuerySet
+
         """
         return self.filter_field_by_str("name", value, exact=exact, case_insensitive=case_insensitive)
 
@@ -63,6 +61,7 @@ class CorrespondentQuerySet(StandardQuerySet["Correspondent"], HasOwner, HasDocu
 
         Returns:
             Filtered CorrespondentQuerySet
+
         """
         return self.filter_field_by_str("matching_algorithm", value, exact=exact, case_insensitive=case_insensitive)
 
@@ -76,6 +75,7 @@ class CorrespondentQuerySet(StandardQuerySet["Correspondent"], HasOwner, HasDocu
 
         Returns:
             Filtered CorrespondentQuerySet
+
         """
         return self.filter_field_by_str("match", match, exact=exact, case_insensitive=case_insensitive)
 
@@ -88,6 +88,7 @@ class CorrespondentQuerySet(StandardQuerySet["Correspondent"], HasOwner, HasDocu
 
         Returns:
             Filtered CorrespondentQuerySet
+
         """
         return self.filter(is_insensitive=insensitive)
 
@@ -100,5 +101,6 @@ class CorrespondentQuerySet(StandardQuerySet["Correspondent"], HasOwner, HasDocu
 
         Returns:
             Filtered CorrespondentQuerySet
+
         """
         return self.filter(user_can_change=value)

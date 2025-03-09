@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -38,6 +34,7 @@ def datetime_to_str(dt: datetime) -> str:
 
     Returns:
         ISO 8601 formatted string.
+
     """
     if dt is None:
         return None
@@ -53,6 +50,7 @@ def parse_filter_params(**kwargs: Any) -> dict[str, Any]:
 
     Returns:
         Dictionary of filter parameters.
+
     """
     filters = {}
     for key, value in kwargs.items():

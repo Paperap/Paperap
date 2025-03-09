@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -22,32 +18,33 @@
        2025-03-04     By Jess Mann
 
 """
-
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from datetime import datetime
 from decimal import Decimal
 from enum import StrEnum
-from typing import Any, ClassVar, Generic, Literal, Self, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, Literal, Self, override
+
+import pydantic
+from pydantic import Field, PrivateAttr
 from typing_extensions import TypeVar
-from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 from yarl import URL
 
 from paperap.const import FilteringStrategies, ModelStatus
 from paperap.models.abstract.meta import StatusContext
 from paperap.models.abstract.parser import Parser
-from paperap.models.abstract.queryset import QuerySet
+from paperap.models.abstract.queryset import BaseQuerySet
 from paperap.signals import SignalRegistry
 
 if TYPE_CHECKING:
-    from paperap.resources.base import PaperlessResource, StandardResource
     from paperap.client import PaperlessClient
+    from paperap.resources.base import PaperlessResource, StandardResource
 
-_Self = TypeVar("_Self", bound="PaperlessModel")
+_Self = TypeVar("_Self", bound="BaseModel")
 
 
-class PaperlessModel(BaseModel, ABC):
+class BaseModel(pydantic.BaseModel, ABC):
     """
     Base model for all Paperless-ngx API objects.
 
@@ -58,7 +55,7 @@ class PaperlessModel(BaseModel, ABC):
         _meta: Metadata for the model, including filtering and resource information.
 
     Returns:
-        A new instance of PaperlessModel.
+        A new instance of BaseModel.
 
     Raises:
         ValueError: If resource is not provided.
@@ -71,13 +68,14 @@ class PaperlessModel(BaseModel, ABC):
 
             class Meta:
                 api_endpoint: = URL("http://localhost:8000/api/documents/")
+
     """
 
-    _meta: "Meta[Self]" = PrivateAttr()
+    _meta: "ClassVar[Meta[Self]]"
 
     class Meta(Generic[_Self]):
         """
-        Metadata for the PaperlessModel.
+        Metadata for the BaseModel.
 
         Attributes:
             name: The name of the model.
@@ -93,6 +91,7 @@ class PaperlessModel(BaseModel, ABC):
 
         Raises:
             ValueError: If both ALLOW_ALL and ALLOW_NONE filtering strategies are set.
+
         """
 
         # The name of the model.
@@ -100,7 +99,8 @@ class PaperlessModel(BaseModel, ABC):
         name: str
         # Fields that should not be modified. These will be appended to read_only_fields for all parent classes.
         read_only_fields: ClassVar[set[str]] = {"id", "created", "updated"}
-        # Fields that are disabled by Paperless NGX for filtering. These will be appended to filtering_disabled for all parent classes.
+        # Fields that are disabled by Paperless NGX for filtering.
+        # These will be appended to filtering_disabled for all parent classes.
         filtering_disabled: ClassVar[set[str]] = set()
         # Fields allowed for filtering. Generated automatically during class init.
         filtering_fields: ClassVar[set[str]] = set()
@@ -110,13 +110,14 @@ class PaperlessModel(BaseModel, ABC):
         # If set, these params will be disallowed during queryset filtering (e.g. {"content__icontains", "id__gt"})
         # These will be appended to blacklist_filtering_params for all parent classes.
         blacklist_filtering_params: ClassVar[set[str]] = set()
-        # Strategies for filtering. This determines which of the above lists will be used to allow or deny filters to QuerySets.
+        # Strategies for filtering.
+        # This determines which of the above lists will be used to allow or deny filters to QuerySets.
         filtering_strategies: ClassVar[set[FilteringStrategies]] = {FilteringStrategies.BLACKLIST}
         # the type of parser, which parses api data into appropriate types
         # this will usually not need to be overridden
         parser: type[Parser[_Self]] = Parser
         resource: "PaperlessResource[_Self]"
-        queryset: type[QuerySet[_Self]] = QuerySet
+        queryset: type[BaseQuerySet[_Self]] = BaseQuerySet
         # Updating attributes will not trigger save()
         status: ModelStatus = ModelStatus.INITIALIZING
         original_data: dict[str, Any] = {}
@@ -129,6 +130,8 @@ class PaperlessModel(BaseModel, ABC):
         # This will be populated from all parent classes.
         field_map: dict[str, str] = {}
 
+        __type_hints_cache__ : dict[str, type] = {}
+
         def __init__(self, model: type[_Self]):
             self.model = model
 
@@ -137,6 +140,8 @@ class PaperlessModel(BaseModel, ABC):
                 x in self.filtering_strategies for x in (FilteringStrategies.ALLOW_ALL, FilteringStrategies.ALLOW_NONE)
             ):
                 raise ValueError(f"Cannot have ALLOW_ALL and ALLOW_NONE filtering strategies in {self.model.__name__}")
+
+            super().__init__()
 
         def filter_allowed(self, filter_param: str) -> bool:
             """
@@ -147,6 +152,7 @@ class PaperlessModel(BaseModel, ABC):
 
             Returns:
                 True if the filter is allowed, False otherwise.
+
             """
             if FilteringStrategies.ALLOW_ALL in self.filtering_strategies:
                 return True
@@ -187,6 +193,7 @@ class PaperlessModel(BaseModel, ABC):
 
         Args:
             **kwargs: Additional keyword arguments.
+
         """
         super().__init_subclass__(**kwargs)
 
@@ -200,7 +207,7 @@ class PaperlessModel(BaseModel, ABC):
         blacklist_filtering_params = cls.Meta.blacklist_filtering_params
         field_map = cls.Meta.field_map
         for base in cls.__bases__:
-            _meta: PaperlessModel.Meta | None
+            _meta: BaseModel.Meta | None
             if _meta := getattr(base, "Meta", None):
                 if hasattr(_meta, "read_only_fields"):
                     read_only_fields.update(_meta.read_only_fields)
@@ -231,7 +238,7 @@ class PaperlessModel(BaseModel, ABC):
             cls._meta.name = cls.__name__.lower()
 
     # Configure Pydantic behavior
-    model_config = ConfigDict(
+    model_config = pydantic.ConfigDict(
         populate_by_name=True,
         validate_assignment=True,
         extra="ignore",
@@ -244,6 +251,7 @@ class PaperlessModel(BaseModel, ABC):
 
         Returns:
             The PaperlessResource instance.
+
         """
         return self._meta.resource
 
@@ -254,6 +262,7 @@ class PaperlessModel(BaseModel, ABC):
 
         Returns:
             The PaperlessClient instance.
+
         """
         return self._meta.resource.client
 
@@ -267,6 +276,7 @@ class PaperlessModel(BaseModel, ABC):
 
         Raises:
             ValueError: If resource is not provided.
+
         """
         super().__init__(**data)
 
@@ -275,9 +285,10 @@ class PaperlessModel(BaseModel, ABC):
 
         if not getattr(self._meta, "resource", None):
             raise ValueError(
-                f"Resource is required for PaperlessModel. Initialize the resource for {self.__class__.__name__} before instantiating models."
+                f"Resource required. Initialize resource for {self.__class__.__name__} before instantiating models."
             )
 
+    @override
     def model_post_init(self, __context):
         super().model_post_init(__context)
 
@@ -286,6 +297,8 @@ class PaperlessModel(BaseModel, ABC):
 
         # Allow updating attributes to trigger save() automatically
         self._meta.status = ModelStatus.READY
+
+        super().model_post_init(__context)
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Self:
@@ -301,6 +314,7 @@ class PaperlessModel(BaseModel, ABC):
         Examples:
             # Create a Document instance from API data
             doc = Document.from_dict(api_data)
+
         """
         return cls.model_validate(data)
 
@@ -325,6 +339,7 @@ class PaperlessModel(BaseModel, ABC):
         Examples:
             # Convert a Document instance to a dictionary
             data = doc.to_dict()
+
         """
         exclude = set() if include_read_only else set(self._meta.read_only_fields)
 
@@ -336,10 +351,11 @@ class PaperlessModel(BaseModel, ABC):
 
     def dirty_fields(self) -> dict[str, Any]:
         """
-        Shows which fields have changed since last update from the paperless ngx db.
+        Show which fields have changed since last update from the paperless ngx db.
 
         Returns:
             A dictionary of fields that have changed since last update from the paperless ngx db.
+
         """
         return {
             field: value
@@ -353,13 +369,14 @@ class PaperlessModel(BaseModel, ABC):
 
         Returns:
             True if any field has changed.
+
         """
         return bool(self.dirty_fields())
 
     @classmethod
     def create(cls, **kwargs: Any) -> Self:
         """
-        Factory method to create a new model instance.
+        Create a new model instance.
 
         Args:
             **kwargs: Field values to set.
@@ -370,6 +387,7 @@ class PaperlessModel(BaseModel, ABC):
         Examples:
             # Create a new Document instance
             doc = Document.create(filename="example.pdf", contents=b"PDF data")
+
         """
         # TODO save
         return cls(**kwargs)
@@ -383,6 +401,7 @@ class PaperlessModel(BaseModel, ABC):
 
         Returns:
             Self with updated values
+
         """
         from_db = kwargs.pop("from_db", False)
 
@@ -399,7 +418,7 @@ class PaperlessModel(BaseModel, ABC):
         Update this model with new values.
 
         Subclasses implement this with auto-saving features.
-        However, base PaperlessModel instances simply call update_locally.
+        However, base BaseModel instances simply call update_locally.
 
         Args:
             **kwargs: New field values.
@@ -407,6 +426,7 @@ class PaperlessModel(BaseModel, ABC):
         Examples:
             # Update a Document instance
             doc.update(filename="new_example.pdf")
+
         """
         # Since we have no id, we can't save. Therefore, all updates are silent updates
         # subclasses may implement this.
@@ -423,6 +443,7 @@ class PaperlessModel(BaseModel, ABC):
         Examples:
             # Check if a Document instance is new
             is_new = doc.is_new()
+
         """
 
     def matches_dict(self, data: dict[str, Any]) -> bool:
@@ -438,20 +459,23 @@ class PaperlessModel(BaseModel, ABC):
         Examples:
             # Check if a Document instance matches API data
             matches = doc.matches_dict(api_data)
+
         """
         return self.to_dict() == data
 
+    @override
     def __str__(self) -> str:
         """
         Human-readable string representation.
 
         Returns:
             A string representation of the model.
+
         """
         return f"{self._meta.name.capitalize()}"
 
 
-class StandardModel(PaperlessModel, ABC):
+class StandardModel(BaseModel, ABC):
     """
     Standard model for Paperless-ngx API objects with an ID field.
 
@@ -466,17 +490,19 @@ class StandardModel(PaperlessModel, ABC):
         class Document(StandardModel):
             filename: str
             contents : bytes
+
     """
 
     id: int = Field(description="Unique identifier from Paperless NGX", default=0)
 
-    class Meta(PaperlessModel.Meta[_Self], Generic[_Self]):
+    class Meta(BaseModel.Meta[_Self], Generic[_Self]):
         """
         Metadata for the StandardModel.
 
         Attributes:
             read_only_fields: Fields that should not be modified.
             supported_filtering_params: Params allowed during queryset filtering.
+
         """
 
         # Fields that should not be modified
@@ -486,6 +512,7 @@ class StandardModel(PaperlessModel, ABC):
             "id",
         }
 
+    @override
     def update(self, **kwargs: Any) -> None:
         """
         Update this model with new values and save changes.
@@ -495,6 +522,7 @@ class StandardModel(PaperlessModel, ABC):
 
         Args:
             **kwargs: New field values.
+
         """
         # Hold off on saving until all updates are complete
         self.update_locally(**kwargs)
@@ -513,6 +541,7 @@ class StandardModel(PaperlessModel, ABC):
             doc = client.documents().get(1)
             doc.title = "New Title"
             doc.save()
+
         """
         # Safety measure to ensure we don't fall into an infinite loop of saving and updating
         # this check shouldn't strictly be necessary, but it future proofs this feature
@@ -548,6 +577,7 @@ class StandardModel(PaperlessModel, ABC):
                 },
             )
 
+    @override
     def is_new(self) -> bool:
         """
         Check if this model represents a new (unsaved) object.
@@ -558,9 +588,11 @@ class StandardModel(PaperlessModel, ABC):
         Examples:
             # Check if a Document instance is new
             is_new = doc.is_new()
+
         """
         return self.id == 0
 
+    @override
     def __setattr__(self, name, value):
         """
         Override attribute setting to automatically call save when attributes change.
@@ -568,6 +600,7 @@ class StandardModel(PaperlessModel, ABC):
         Args:
             name: Attribute name
             value: New attribute value
+
         """
         # Call parent's setattr
         super().__setattr__(name, value)
@@ -591,11 +624,13 @@ class StandardModel(PaperlessModel, ABC):
         # All attribute changes trigger a save automatically
         self.save()
 
+    @override
     def __str__(self) -> str:
         """
         Human-readable string representation.
 
         Returns:
             A string representation of the model.
+
         """
         return f"{self._meta.name.capitalize()} #{self.id}"

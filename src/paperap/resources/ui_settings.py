@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -43,6 +39,7 @@ class UISettingsResource(StandardResource[UISettings, UISettingsQuerySet]):
 
         Returns:
             The current user's UI settings.
+
         """
         if not (response := self.client.request("GET", "ui_settings/")):
             return None
@@ -60,6 +57,7 @@ class UISettingsResource(StandardResource[UISettings, UISettingsQuerySet]):
 
         Returns:
             The updated UI settings.
+
         """
         ui_settings = self.get_current()
         if ui_settings:

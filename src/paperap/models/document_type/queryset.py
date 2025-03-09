@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -10,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,10 +21,11 @@
 
 from __future__ import annotations
 
-from typing import Any, Self, TYPE_CHECKING
 import logging
-from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
-from paperap.models.mixins.queryset import HasOwner, HasDocumentCount
+from typing import TYPE_CHECKING, Any, Self
+
+from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
+from paperap.models.mixins.queryset import HasDocumentCount, HasOwner
 
 if TYPE_CHECKING:
     from paperap.models.document_type.model import DocumentType
@@ -46,6 +43,7 @@ class DocumentTypeQuerySet(StandardQuerySet["DocumentType"], HasOwner, HasDocume
     Examples:
         # Create a DocumentTypeQuerySet instance
         queryset = DocumentTypeQuerySet()
+
     """
 
     def name(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
@@ -130,6 +128,7 @@ class DocumentTypeQuerySet(StandardQuerySet["DocumentType"], HasOwner, HasDocume
 
         Returns:
             Filtered DocumentTypeQuerySet
+
         """
         return self.filter_field_by_str("name", value, exact=exact, case_insensitive=case_insensitive)
 
@@ -143,6 +142,7 @@ class DocumentTypeQuerySet(StandardQuerySet["DocumentType"], HasOwner, HasDocume
 
         Returns:
             Filtered DocumentTypeQuerySet
+
         """
         return self.filter_field_by_str("slug", value, exact=exact, case_insensitive=case_insensitive)
 
@@ -156,6 +156,7 @@ class DocumentTypeQuerySet(StandardQuerySet["DocumentType"], HasOwner, HasDocume
 
         Returns:
             Filtered DocumentTypeQuerySet
+
         """
         return self.filter_field_by_str("match", value, exact=exact, case_insensitive=case_insensitive)
 
@@ -168,6 +169,7 @@ class DocumentTypeQuerySet(StandardQuerySet["DocumentType"], HasOwner, HasDocume
 
         Returns:
             Filtered DocumentTypeQuerySet
+
         """
         return self.filter(matching_algorithm=value)
 
@@ -180,6 +182,7 @@ class DocumentTypeQuerySet(StandardQuerySet["DocumentType"], HasOwner, HasDocume
 
         Returns:
             Filtered DocumentTypeQuerySet
+
         """
         return self.filter(is_insensitive=value)
 
@@ -192,5 +195,6 @@ class DocumentTypeQuerySet(StandardQuerySet["DocumentType"], HasOwner, HasDocume
 
         Returns:
             Filtered DocumentTypeQuerySet
+
         """
         return self.filter(user_can_change=value)

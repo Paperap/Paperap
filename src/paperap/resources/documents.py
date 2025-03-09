@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -10,7 +6,7 @@
        File:    documents.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.3
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -28,10 +24,11 @@ from __future__ import annotations
 import os.path
 from datetime import datetime
 from typing import Any, BinaryIO, Iterator, Optional
+
 from typing_extensions import TypeVar
 
 from paperap.exceptions import APIError, BadResponseError
-from paperap.models.document import Document, DocumentQuerySet, DocumentNote
+from paperap.models.document import Document, DocumentNote, DocumentQuerySet
 from paperap.resources.base import PaperlessResource, StandardResource
 
 
@@ -41,6 +38,8 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
     model_class = Document
     name = "documents"
 
+    """
+    # Untested functionality
     def upload(
         self,
         file_path: str,
@@ -49,19 +48,6 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         document_type: int | None = None,
         tags: Optional[list[int]] = None,
     ) -> Document:
-        """
-        Upload a document.
-
-        Args:
-            file_path: Path to the file to upload.
-            title: Document title. If None, uses the filename.
-            correspondent: Correspondent ID.
-            document_type: Document type ID.
-            tags: list of tag IDs.
-
-        Returns:
-            The created document.
-        """
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"File not found: {file_path}")
 
@@ -86,20 +72,6 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         document_type: int | None = None,
         tags: Optional[list[int]] = None,
     ) -> Document:
-        """
-        Upload a document from a file-like object.
-
-        Args:
-            fileobj: File-like object to upload.
-            filename: Name of the file.
-            title: Document title.
-            correspondent: Correspondent ID.
-            document_type: Document type ID.
-            tags: list of tag IDs.
-
-        Returns:
-            The created document.
-        """
         data: dict[str, Any] = {}
         if title:
             data["title"] = title
@@ -125,17 +97,6 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         return Document.from_dict(response)
 
     def download(self, document_id: int, original: bool = False) -> bytes:
-        """
-        Download a document.
-
-        Args:
-            document_id: Document ID.
-            original: Whether to download the original file (True) or
-                      the archived file (False).
-
-        Returns:
-            Document content as bytes.
-        """
         endpoint = f"documents/{document_id}/{'download/' if original else 'preview/'}"
         response = self.client.session.get(
             f"{self.client.base_url}{endpoint}",
@@ -145,19 +106,9 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         response.raise_for_status()
         return response.content
 
-    def search(self, query: str) -> Iterator[Document]:
-        """
-        Search for documents.
-
-        Args:
-            query: Search query.
-
-        Returns:
-            List of matching documents.
-        """
-        params = {"query": query}
-        return self.all()._request_iter(params=params)
-
+    def search(self, query: str) -> DocumentQuerySet:
+        return self.all().filter(query=query)
+    """
 
 class DocumentNoteResource(StandardResource[DocumentNote]):
     """Resource for managing document notes."""

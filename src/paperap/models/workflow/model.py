@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -10,7 +6,7 @@
        File:    workflow.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.2
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -24,11 +20,13 @@
 """
 
 from __future__ import annotations
+
 from typing import Any, Optional
-from pydantic import BaseModel, Field
+
+from pydantic import Field
 
 from paperap.models.abstract.model import StandardModel
-from paperap.models.workflow.queryset import WorkflowQuerySet, WorkflowActionQuerySet, WorkflowTriggerQuerySet
+from paperap.models.workflow.queryset import WorkflowActionQuerySet, WorkflowQuerySet, WorkflowTriggerQuerySet
 
 
 class WorkflowTrigger(StandardModel):
@@ -103,4 +101,8 @@ class Workflow(StandardModel):
     actions: list[dict[str, Any]] = Field(default_factory=list)
 
     class Meta(StandardModel.Meta):
+        """
+        Metadata for the Workflow model.
+        """
+
         queryset = WorkflowQuerySet

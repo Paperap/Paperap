@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -25,16 +21,17 @@
 
 from __future__ import annotations
 
+import logging
 from datetime import datetime
 from functools import singledispatchmethod
-from typing import Any, NamedTuple, Self, Union, Optional, TYPE_CHECKING, overload
-import logging
-from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
+from typing import TYPE_CHECKING, Any, NamedTuple, Optional, Self, Union, overload
+
+from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models.mixins.queryset import HasOwner
 
 if TYPE_CHECKING:
-    from paperap.models.document.model import Document
     from paperap.models.correspondent import Correspondent
+    from paperap.models.document.model import Document
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +59,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         if isinstance(tag_id, list):
             return self.filter(tags__id__in=tag_id)
@@ -77,6 +75,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.filter_field_by_str("tags__name", tag_name, exact=exact, case_insensitive=case_insensitive)
 
@@ -90,6 +89,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.filter_field_by_str("title", title, exact=exact, case_insensitive=case_insensitive)
 
@@ -132,6 +132,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             client.documents().all().correspondent(1, name="John Doe")
             client.documents().all().correspondent(id=1, name="John Doe")
             client.documents().all().correspondent("John Doe", id=1)
+
         """
         qs = self
         if value is not None:
@@ -164,6 +165,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.filter(correspondent__id=correspondent_id)
 
@@ -177,6 +179,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.filter_field_by_str("correspondent__name", name, exact=exact, case_insensitive=case_insensitive)
 
@@ -190,6 +193,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.filter_field_by_str("correspondent__slug", slug, exact=exact, case_insensitive=case_insensitive)
 
@@ -229,6 +233,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             client.documents().all().document_type(1, name="Invoice")
             client.documents().all().document_type(id=1, name="Invoice")
             client.documents().all().document_type("Invoice", id=1)
+
         """
         qs = self
         if value is not None:
@@ -259,6 +264,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.filter(document_type__id=document_type_id)
 
@@ -272,6 +278,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.filter_field_by_str("document_type__name", name, exact=exact, case_insensitive=case_insensitive)
 
@@ -311,6 +318,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             client.documents().all().storage_path(1, name="Invoices")
             client.documents().all().storage_path(id=1, name="Invoices")
             client.documents().all().storage_path("Invoices", id=1)
+
         """
         qs = self
         if value is not None:
@@ -341,6 +349,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.filter(storage_path__id=storage_path_id)
 
@@ -354,6 +363,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.filter_field_by_str("storage_path__name", name, exact=exact, case_insensitive=case_insensitive)
 
@@ -366,6 +376,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.filter(content__contains=text)
 
@@ -378,6 +389,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.filter(added__gt=date_str)
 
@@ -390,6 +402,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.filter(added__lt=date_str)
 
@@ -403,6 +416,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.filter_field_by_str("asn", value, exact=exact, case_insensitive=case_insensitive)
 
@@ -416,6 +430,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.filter_field_by_str("original_file_name", name, exact=exact, case_insensitive=case_insensitive)
 
@@ -428,6 +443,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.filter(user_can_change=value)
 
@@ -440,6 +456,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         if case_insensitive:
             return self.filter(custom_fields__icontains=value)
@@ -456,6 +473,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         if exact:
             if case_insensitive:
@@ -475,6 +493,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         if exact:
             return self.filter(custom_fields__id__all=id)
@@ -522,6 +541,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         ...
 
@@ -537,6 +557,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         ...
 
@@ -566,6 +587,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.custom_field_query(field, "range", [start, end])
 
@@ -579,6 +601,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.custom_field_query(field, "exact", value)
 
@@ -592,6 +615,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.custom_field_query(field, "in", values)
 
@@ -604,6 +628,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.custom_field_query("OR", (field, "isnull", True), [field, "exact", ""])
 
@@ -617,6 +642,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.custom_field_query(field, "exists", exists)
 
@@ -630,6 +656,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.custom_field_query(field, "contains", values)
         return self.filter(has_custom_fields=True)
@@ -646,6 +673,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered DocumentQuerySet
+
         """
         return self.filter(notes__contains=text)
 
@@ -658,6 +686,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered QuerySet
+
         """
         if isinstance(date, datetime):
             return self.filter(created__lt=date.strftime("%Y-%m-%d"))
@@ -672,6 +701,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered QuerySet
+
         """
         if isinstance(date, datetime):
             return self.filter(created__gt=date.strftime("%Y-%m-%d"))
@@ -687,6 +717,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Returns:
             Filtered QuerySet
+
         """
         if isinstance(start, datetime):
             start = start.strftime("%Y-%m-%d")

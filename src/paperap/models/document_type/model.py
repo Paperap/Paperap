@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -10,7 +6,7 @@
        File:    document_type.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.2
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,8 +21,6 @@
 
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Optional
-
-from pydantic import BaseModel, Field
 
 from paperap.models.abstract.model import StandardModel
 from paperap.models.document_type.queryset import DocumentTypeQuerySet
@@ -55,6 +49,7 @@ class DocumentType(StandardModel):
     Examples:
         # Create a new DocumentType instance
         doc_type = DocumentType(name="Invoice", slug="invoice", match="INV-*")
+
     """
 
     name: str
@@ -83,5 +78,6 @@ class DocumentType(StandardModel):
             # Get all documents of this type
             documents = doc_type.documents
         Get documents with this document type.
+
         """
         return self._client.documents().all().document_type_id(self.id)

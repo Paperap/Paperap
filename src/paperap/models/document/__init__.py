@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -23,6 +19,6 @@
 
 """
 
-from paperap.models.document.parser import DocumentParser, CustomFieldDict
+from paperap.models.document.model import Document, DocumentNote
+from paperap.models.document.parser import CustomFieldDict, DocumentParser
 from paperap.models.document.queryset import DocumentQuerySet
-from paperap.models.document.model import DocumentNote, Document

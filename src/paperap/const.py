@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -25,8 +21,8 @@
 
 from __future__ import annotations
 
-from string import Template
 from enum import StrEnum
+from string import Template
 from typing import TypedDict
 
 from yarl import URL

@@ -1,19 +1,15 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
 
        File:    base.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -24,8 +20,9 @@
 """
 
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from paperap.client import PaperlessClient
@@ -48,10 +45,12 @@ class Plugin(ABC):
         Args:
             client: The PaperlessClient instance.
             **kwargs: Plugin-specific configuration.
+
         """
         self.client = client
         self.config = kwargs
         self.setup()
+        super().__init__()
 
     @abstractmethod
     def setup(self):
@@ -70,5 +69,6 @@ class Plugin(ABC):
 
         Returns:
             A dictionary describing the expected configuration parameters.
+
         """
         return {}

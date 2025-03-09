@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -23,5 +19,5 @@
 
 """
 
-from paperap.models.user.queryset import UserQuerySet, GroupQuerySet
-from paperap.models.user.model import User, Group
+from paperap.models.user.model import Group, User
+from paperap.models.user.queryset import GroupQuerySet, UserQuerySet

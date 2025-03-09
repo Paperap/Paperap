@@ -29,7 +29,7 @@ from typing import Iterable
 import unittest
 from unittest.mock import patch, MagicMock
 from datetime import datetime, timezone
-from paperap.models.abstract.queryset import QuerySet
+from paperap.models.abstract.queryset import BaseQuerySet
 from paperap.models.document import Document
 from paperap.client import PaperlessClient
 from paperap.resources.documents import DocumentResource
@@ -142,7 +142,7 @@ class TestGetTags(TestCase):
         for document in self.documents:
             self.assertIsInstance(document, Document, f"Expected Document, got {type(document)}")
             tags = document.tags
-            self.assertIsInstance(tags, QuerySet)
+            self.assertIsInstance(tags, BaseQuerySet)
             expected_count = len(document.tags)
             actual_count = tags.count()
             self.assertEqual(expected_count, actual_count, f"Expected {expected_count} tags, got {actual_count}")
@@ -162,7 +162,7 @@ class TestRequestDocumentList(DocumentTestCase):
         with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = sample_document_list
             documents = self.client.documents()
-            self.assertIsInstance(documents, QuerySet)
+            self.assertIsInstance(documents, BaseQuerySet)
             total = documents.count()
             expected = sample_document_list["count"]
             self.assertEqual(total, expected, f"Expected {expected} documents, got {total}")

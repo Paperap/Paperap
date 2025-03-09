@@ -10,7 +10,7 @@
         File:    test_queryset.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.2
+        Version: 0.0.4
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -30,9 +30,9 @@ from string import Template
 import unittest
 from unittest.mock import MagicMock, patch
 
-# Import the exceptions used by QuerySet.
+# Import the exceptions used by BaseQuerySet.
 from paperap.exceptions import ObjectNotFoundError, MultipleObjectsFoundError
-from paperap.models import StandardModel, QuerySet
+from paperap.models import StandardModel, BaseQuerySet
 from paperap.models.abstract.queryset import StandardQuerySet
 from paperap.models.document import Document
 from paperap.resources import PaperlessResource, StandardResource
@@ -344,7 +344,7 @@ class TestQuerySetGetItem(TestCase):
         self.qs._fetch_all = True
         self.assertEqual(self.qs[1], "one")
 
-    @patch.object(QuerySet, "_chain", return_value=iter(["fetched_item"]))
+    @patch.object(BaseQuerySet, "_chain", return_value=iter(["fetched_item"]))
     def test_getitem_index_not_cached(self, mock_chain):
         # Reset filters to empty so that the expected filters match.
         self.qs.filters = {}
@@ -359,7 +359,7 @@ class TestQuerySetGetItem(TestCase):
         self.assertEqual(self.qs[-1], "c")
 
     def test_getitem_slice_positive(self):
-        # Use a fresh QuerySet with empty filters to test slicing optimization.
+        # Use a fresh BaseQuerySet with empty filters to test slicing optimization.
         qs_clone = StandardQuerySet(self.resource, filters={})
         with patch.object(qs_clone, "_chain", return_value=iter(["item1", "item2"])) as mock_chain:
             qs_clone._result_cache = []  # force using _chain

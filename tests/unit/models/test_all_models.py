@@ -28,12 +28,12 @@ import os
 import logging
 import types
 from datetime import datetime, timezone
-from typing import Any, Iterable, Iterator, get_type_hints, get_origin, get_args, Union
+from typing import Any, Iterable, Iterator, get_type_hints, get_origin, get_args, Union, override
 
 from unittest.mock import patch
 from pydantic import ValidationError
 
-from paperap.models.abstract import PaperlessModel, StandardModel, QuerySet
+from paperap.models.abstract import BaseModel, StandardModel, BaseQuerySet
 from paperap.resources.base import PaperlessResource, StandardResource
 from paperap.models.correspondent import Correspondent
 from paperap.models.custom_field import CustomField
@@ -57,9 +57,10 @@ logger = logging.getLogger(__name__)
 
 class ModelTestCase(TestCase):
     MAX_RECURSION_DEPTH = 2
-    model_to_resource : dict[type[PaperlessModel], PaperlessResource]
-    model_to_factories : dict[type[PaperlessModel], type[PydanticFactory]]
+    model_to_resource : dict[type[BaseModel], PaperlessResource]
+    model_to_factories : dict[type[BaseModel], type[PydanticFactory]]
 
+    @override
     def setUp(self):
         super().setUp()
         self.model_to_resource = {
@@ -109,7 +110,7 @@ class ModelTestCase(TestCase):
                 if arg is not type(None):
                     return self.get_sample_value(arg, depth)
             return None
-        if isinstance(type_hint, type) and issubclass(type_hint, PaperlessModel):
+        if isinstance(type_hint, type) and issubclass(type_hint, BaseModel):
             return self.generate_sample_data_manual(type_hint, depth + 1)
         if type_hint is str:
             return "Sample String"
@@ -123,7 +124,7 @@ class ModelTestCase(TestCase):
             return "2025-01-01T12:00:00Z"
         if origin is list:
             item_type = get_args(type_hint)[0]
-            if isinstance(item_type, type) and issubclass(item_type, PaperlessModel):
+            if isinstance(item_type, type) and issubclass(item_type, BaseModel):
                 return [self.generate_sample_data_manual(item_type, depth + 1)]
             return [self.get_sample_value(item_type, depth)]
         if origin is dict:
@@ -131,7 +132,7 @@ class ModelTestCase(TestCase):
             return {self.get_sample_value(key_type, depth): self.get_sample_value(value_type, depth)}
         return None
 
-    def generate_sample_data(self, model_class : type["PaperlessModel"], factory : type[PydanticFactory], depth : int = 0) -> dict[str, Any]:
+    def generate_sample_data(self, model_class : type["BaseModel"], factory : type[PydanticFactory], depth : int = 0) -> dict[str, Any]:
         _instance = factory.build()
         return _instance.to_dict()
 
@@ -163,7 +164,7 @@ class ModelTestCase(TestCase):
             sample_data.update(common_fields)
         return sample_data
 
-    def _get_model_fields(self, model: PaperlessModel) -> dict[str, Iterable[type]]:
+    def _get_model_fields(self, model: BaseModel) -> dict[str, Iterable[type]]:
         hints = model.__annotations__
         fields = {}
         for field, type_hint in hints.items():
@@ -250,7 +251,7 @@ class TestRequest(ModelTestCase):
         for model_class, resource in self.model_to_resource.items():
             with self.subTest(model=model_class.__name__):
                 models = self.list_resource(resource) # type: ignore
-                self.assertIsInstance(models, QuerySet, f"Expected QuerySet after list, got {type(models)}")
+                self.assertIsInstance(models, BaseQuerySet, f"Expected BaseQuerySet after list, got {type(models)}")
                 total = models.count()
                 self.assertIsInstance(total, int, f"Expected int for count, got {type(total)}")
 
@@ -266,7 +267,7 @@ class TestRequest(ModelTestCase):
                             field_value = getattr(model, date_field)
                             if field_value is not None:
                                 self.assertIsInstance(field_value, datetime, f"{model_class.__name__}.{date_field} should be datetime")
-                    for attr_name, expected_value in model.to_dict().items():
+                    for attr_name, _expected_value in model.to_dict().items():
                         if attr_name in ['id', 'created', 'updated', 'added']:
                             continue
                         if hasattr(model, attr_name):

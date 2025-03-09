@@ -1,19 +1,15 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
 
        File:    queryset.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-05
-       Version: 0.0.1
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -24,10 +20,11 @@
 """
 
 from __future__ import annotations
+
 from typing import TYPE_CHECKING, Protocol, Self
 
 if TYPE_CHECKING:
-    from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
+    from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 
 
 class QuerySetProtocol(Protocol):
@@ -52,6 +49,7 @@ class HasDocumentCount(QuerySetProtocol):
 
         Returns:
             Filtered QuerySet
+
         """
         return self.filter(document_count=count)
 
@@ -64,6 +62,7 @@ class HasDocumentCount(QuerySetProtocol):
 
         Returns:
             Filtered QuerySet
+
         """
         return self.filter(document_count__gt=count)
 
@@ -76,6 +75,7 @@ class HasDocumentCount(QuerySetProtocol):
 
         Returns:
             Filtered QuerySet
+
         """
         return self.filter(document_count__lt=count)
 
@@ -89,6 +89,7 @@ class HasDocumentCount(QuerySetProtocol):
 
         Returns:
             Filtered QuerySet
+
         """
         return self.filter(document_count__range=(lower, upper))
 
@@ -107,6 +108,7 @@ class HasOwner(QuerySetProtocol):
 
         Returns:
             Filtered QuerySet
+
         """
         if isinstance(owner, list):
             return self.filter(owner__in=owner)
@@ -129,6 +131,7 @@ class HasStandard(HasOwner, HasDocumentCount):
 
         Returns:
             Filtered QuerySet
+
         """
         return self.filter_field_by_str("name", value, exact=exact, case_insensitive=case_insensitive)
 
@@ -143,5 +146,6 @@ class HasStandard(HasOwner, HasDocumentCount):
 
         Returns:
             Filtered QuerySet
+
         """
         return self.filter_field_by_str("slug", value, exact=exact, case_insensitive=case_insensitive)

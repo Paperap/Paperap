@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -25,32 +21,33 @@
 
 from __future__ import annotations
 
+import logging
 from abc import ABC, ABCMeta
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, Iterator, Optional
+from string import Template
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, Iterator, Optional, override
+
 from typing_extensions import TypeVar
 from yarl import URL
-from string import Template
-import logging
+
 from paperap.const import URLS, Endpoints
+from paperap.exceptions import ConfigurationError, ObjectNotFoundError, ResourceNotFoundError
 from paperap.models.abstract.parser import Parser
-from paperap.exceptions import ObjectNotFoundError, ResourceNotFoundError, ConfigurationError
 from paperap.signals import SignalRegistry
 
 if TYPE_CHECKING:
     from paperap.client import PaperlessClient
-    from paperap.models.abstract import StandardModel, PaperlessModel, QuerySet, StandardQuerySet
+    from paperap.models.abstract import BaseModel, BaseQuerySet, StandardModel, StandardQuerySet
 
-_PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel", covariant=True)
+_BaseModel = TypeVar("_BaseModel", bound="BaseModel", covariant=True)
 _StandardModel = TypeVar("_StandardModel", bound="StandardModel", covariant=True, default="StandardModel")
-_QuerySet = TypeVar("_QuerySet", bound="QuerySet", covariant=True, default="QuerySet[_PaperlessModel]")
+_QuerySet = TypeVar("_QuerySet", bound="BaseQuerySet", covariant=True, default="BaseQuerySet[_BaseModel]")
 _StandardQuerySet = TypeVar(
     "_StandardQuerySet", bound="StandardQuerySet", covariant=True, default="StandardQuerySet[_StandardModel]"
 )
 
 logger = logging.getLogger(__name__)
 
-
-class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
+class PaperlessResource(ABC, Generic[_BaseModel, _QuerySet]):
     """
     Base class for API resources.
 
@@ -58,10 +55,11 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
         client: The PaperlessClient instance.
         endpoint: The API endpoint for this resource.
         model_class: The model class for this resource.
+
     """
 
     # The model class for this resource.
-    model_class: type[_PaperlessModel]
+    model_class: type[_BaseModel]
     # The PaperlessClient instance.
     client: "PaperlessClient"
     # The name of the model. This must line up with the API endpoint
@@ -79,17 +77,26 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
     def __init__(self, client: "PaperlessClient"):
         self.client = client
         if not hasattr(self, "name"):
-            self.name = f"{self.model_class._meta.name.lower()}s"
+            self.name = f"{self._meta.name.lower()}s"
 
         # Allow templating
         for key, value in self.endpoints.items():
             self.endpoints[key] = Template(value.safe_substitute(resource=self.name))  # type: ignore # endpoints is always dict[str, Template]
 
         # Ensure the model has a link back to this resource
-        self.model_class._meta.resource = self
+        self._meta.resource = self
+        
+        super().__init__()
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
+        """
+        Initialize the subclass.
+
+        Args:
+            **kwargs: Arbitrary keyword arguments
+
+        """
         super().__init_subclass__(**kwargs)
 
         # Skip processing for the base class itself. TODO: This is a hack
@@ -114,12 +121,17 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
                 "delete": URLS.delete,
             }
 
+    @property
+    def _meta(self) -> "BaseModel.Meta[_BaseModel]":
+        return self.model_class._meta # pyright: ignore[reportPrivateUsage]
+
     def all(self) -> _QuerySet:
         """
         Return a QuerySet representing all objects of this resource type.
 
         Returns:
             A QuerySet for this resource
+
         """
         return self.model_class._meta.queryset(self)  # type: ignore # _meta.queryset is always the right queryset type
 
@@ -132,27 +144,26 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         Returns:
             A filtered QuerySet
+
         """
         return self.all().filter(**kwargs)
 
-    def get(self, resource_id: int) -> _PaperlessModel:
+    def get(self, *args, **kwargs) -> _BaseModel:
         """
         Get a model by ID.
 
         Raises NotImplementedError. Subclasses may implement this.
-
-        Args:
-            resource_id: ID of the model to retrieve.
 
         Raises:
             NotImplementedError: Unless implemented by a subclass.
 
         Returns:
             The model retrieved.
+
         """
         raise NotImplementedError("get method not available for paperless resources without an id")
 
-    def create(self, data: dict[str, Any]) -> _PaperlessModel:
+    def create(self, data: dict[str, Any]) -> _BaseModel:
         """
         Create a new resource.
 
@@ -161,6 +172,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         Returns:
             The created resource.
+
         """
         # Signal before creating resource
         signal_params = {"resource": self.name, "data": data}
@@ -185,7 +197,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         return model
 
-    def update(self, resource_id: int, data: dict[str, Any]) -> _PaperlessModel:
+    def update(self, resource_id: int, data: dict[str, Any]) -> _BaseModel:
         """
         Update a resource.
 
@@ -198,6 +210,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         Returns:
             The updated resource.
+
         """
         # Signal before updating resource
         signal_params = {"resource": self.name, "resource_id": resource_id, "data": data}
@@ -228,6 +241,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         Args:
             resource_id: ID of the resource.
+
         """
         # Signal before deleting resource
         signal_params = {"resource": self.name, "resource_id": resource_id}
@@ -246,7 +260,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
             "resource.delete:after", "Emitted after deleting a resource", args=[self], kwargs=signal_params
         )
 
-    def parse_to_model(self, item: dict[str, Any]) -> _PaperlessModel:
+    def parse_to_model(self, item: dict[str, Any]) -> _BaseModel:
         """
         Parse an item dictionary into a model instance, handling date parsing.
 
@@ -255,14 +269,25 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         Returns:
             The parsed model instance.
+
         """
         parsed_data = self.parser.parse_data(item)
         return self.model_class.from_dict(parsed_data)
 
-    def create_model(self, **kwargs) -> _PaperlessModel:
+    def create_model(self, **kwargs) -> _BaseModel:
+        """
+        Create a new model instance.
+
+        Args:
+            **kwargs: Model field values
+
+        Returns:
+            A new model instance.
+
+        """
         return self.model_class(**kwargs, resource=self)
 
-    def _request_raw(
+    def request_raw(
         self,
         url: str | Template | URL | None = None,
         method: str = "GET",
@@ -280,6 +305,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         Returns:
             The JSON-decoded response from the API
+
         """
         if not url:
             if not (url := self.endpoints.get("list")):
@@ -291,7 +317,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
         response = self.client.request(method, url, params=params, data=data)
         return response
 
-    def _handle_response(self, response: dict[str, Any]) -> Iterator[_PaperlessModel]:
+    def handle_response(self, response: dict[str, Any]) -> Iterator[_BaseModel]:
         """
         Handle a response from the API and yield results.
 
@@ -315,9 +341,9 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
             kwargs={"response": response, "resource": self.name, "results": results},
         )
 
-        yield from self._handle_results(results)
+        yield from self.handle_results(results)
 
-    def _handle_results(self, results: list[dict[str, Any]]) -> Iterator[_PaperlessModel]:
+    def handle_results(self, results: list[dict[str, Any]]) -> Iterator[_BaseModel]:
         """
         Yield parsed models from a list of results.
 
@@ -334,15 +360,17 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
     def __call__(self, *args, **keywords) -> _QuerySet:
         """
-        Make the resource callable to get a QuerySet.
+        Make the resource callable to get a BaseQuerySet.
 
         This allows usage like: client.documents(title__contains='invoice')
 
         Args:
+            *args: Unused
             **keywords: Filter parameters
 
         Returns:
             A filtered QuerySet
+
         """
         return self.filter(**keywords)
 
@@ -357,11 +385,13 @@ class StandardResource(
         client: The PaperlessClient instance.
         endpoint: The API endpoint for this resource.
         model_class: The model class for this resource.
+
     """
 
     # The model class for this resource.
     model_class: type[_StandardModel]
 
+    @override
     def get(self, resource_id: int) -> _StandardModel:
         """
         Get a model within this resource by ID.
@@ -371,6 +401,7 @@ class StandardResource(
 
         Returns:
             The model retrieved
+
         """
         # Signal before getting resource
         signal_params = {"resource": self.name, "resource_id": resource_id}

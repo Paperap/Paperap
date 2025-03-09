@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -10,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,9 +21,10 @@
 
 from __future__ import annotations
 
-from typing import Any, Self, Union, Optional, TYPE_CHECKING
 import logging
-from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
+from typing import TYPE_CHECKING, Any, Optional, Self, Union
+
+from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models.mixins.queryset import HasStandard
 
 if TYPE_CHECKING:
@@ -52,6 +49,7 @@ class TagQuerySet(StandardQuerySet["Tag"], HasStandard):
 
         Returns:
             Filtered TagQuerySet
+
         """
         return self.filter_field_by_str("colour", value, exact=exact, case_insensitive=case_insensitive)
 
@@ -65,6 +63,7 @@ class TagQuerySet(StandardQuerySet["Tag"], HasStandard):
 
         Returns:
             Filtered TagQuerySet
+
         """
         return self.filter_field_by_str("match", value, exact=exact)
 
@@ -77,6 +76,7 @@ class TagQuerySet(StandardQuerySet["Tag"], HasStandard):
 
         Returns:
             Filtered TagQuerySet
+
         """
         return self.filter(matching_algorithm=value)
 
@@ -89,6 +89,7 @@ class TagQuerySet(StandardQuerySet["Tag"], HasStandard):
 
         Returns:
             Filtered TagQuerySet
+
         """
         return self.filter(is_insensitive=value)
 
@@ -101,6 +102,7 @@ class TagQuerySet(StandardQuerySet["Tag"], HasStandard):
 
         Returns:
             Filtered TagQuerySet
+
         """
         return self.filter(is_inbox_tag=value)
 
@@ -113,5 +115,6 @@ class TagQuerySet(StandardQuerySet["Tag"], HasStandard):
 
         Returns:
             Filtered TagQuerySet
+
         """
         return self.filter(user_can_change=value)

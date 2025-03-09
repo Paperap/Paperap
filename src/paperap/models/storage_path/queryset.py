@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -10,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,9 +21,10 @@
 
 from __future__ import annotations
 
-from typing import Any, Self, TYPE_CHECKING
 import logging
-from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
+from typing import TYPE_CHECKING, Any, Self
+
+from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models.mixins.queryset import HasStandard
 
 if TYPE_CHECKING:
@@ -51,6 +48,7 @@ class StoragePathQuerySet(StandardQuerySet["StoragePath"], HasStandard):
 
         Returns:
             Filtered StoragePathQuerySet
+
         """
         return self.filter_field_by_str("path", path, exact=exact, case_insensitive=case_insensitive)
 
@@ -64,6 +62,7 @@ class StoragePathQuerySet(StandardQuerySet["StoragePath"], HasStandard):
 
         Returns:
             Filtered StoragePathQuerySet
+
         """
         return self.filter_field_by_str("match", value, exact=exact)
 
@@ -76,6 +75,7 @@ class StoragePathQuerySet(StandardQuerySet["StoragePath"], HasStandard):
 
         Returns:
             Filtered StoragePathQuerySet
+
         """
         return self.filter(matching_algorithm=value)
 
@@ -88,6 +88,7 @@ class StoragePathQuerySet(StandardQuerySet["StoragePath"], HasStandard):
 
         Returns:
             Filtered StoragePathQuerySet
+
         """
         return self.filter(is_insensitive=insensitive)
 
@@ -100,5 +101,6 @@ class StoragePathQuerySet(StandardQuerySet["StoragePath"], HasStandard):
 
         Returns:
             Filtered StoragePathQuerySet
+
         """
         return self.filter(user_can_change=can_change)

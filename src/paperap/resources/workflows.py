@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -24,12 +20,13 @@
 """
 
 from __future__ import annotations
+
 from paperap.models.workflow import (
     Workflow,
     WorkflowAction,
-    WorkflowTrigger,
     WorkflowActionQuerySet,
     WorkflowQuerySet,
+    WorkflowTrigger,
     WorkflowTriggerQuerySet,
 )
 from paperap.resources.base import PaperlessResource, StandardResource

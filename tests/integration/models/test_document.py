@@ -30,7 +30,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 import logging
 from datetime import datetime, timezone
-from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
+from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models import *
 from paperap.client import PaperlessClient
 from paperap.resources.documents import DocumentResource

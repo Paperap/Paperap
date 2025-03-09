@@ -1,19 +1,15 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
 
        File:    plugin_manager.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -62,9 +58,17 @@ class PluginManager:
             "settings": {},
         }
         self.dependencies = {}
+        super().__init__()
 
     @property
     def enabled_plugins(self) -> list[str]:
+        """
+        Get the list of enabled plugins.
+
+        Returns:
+            List of enabled plugin names
+
+        """
         # TODO: There's a bug here... disabling every plugin will then enable every plugin
         if enabled := self.config.get("enabled_plugins"):
             return enabled
@@ -77,6 +81,7 @@ class PluginManager:
 
         Args:
             package_name: Dotted path to the package containing plugins.
+
         """
         try:
             package = importlib.import_module(package_name)
@@ -95,7 +100,7 @@ class PluginManager:
                 module = importlib.import_module(module_name)
 
                 # Find plugin classes in the module
-                for name, obj in inspect.getmembers(module, inspect.isclass):
+                for _name, obj in inspect.getmembers(module, inspect.isclass):
                     if issubclass(obj, Plugin) and obj is not Plugin and obj.__module__ == module_name:
                         plugin_name = obj.__name__
                         self.plugins[plugin_name] = obj
@@ -109,6 +114,7 @@ class PluginManager:
 
         Args:
             config: dictionary mapping plugin names to their configurations.
+
         """
         self.config = config
 
@@ -126,6 +132,7 @@ class PluginManager:
 
         Returns:
             The initialized plugin instance or None if initialization failed.
+
         """
         if plugin_name in self.instances:
             return self.instances[plugin_name]
@@ -156,6 +163,7 @@ class PluginManager:
 
         Returns:
             Dictionary mapping plugin names to their initialized instances.
+
         """
         # Get enabled plugins from config
         enabled_plugins = self.enabled_plugins

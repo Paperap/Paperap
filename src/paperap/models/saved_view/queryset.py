@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -10,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -26,10 +22,11 @@
 from __future__ import annotations
 
 import datetime
-from enum import Enum
-from typing import Any, Self, TYPE_CHECKING
 import logging
-from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
+from enum import Enum
+from typing import TYPE_CHECKING, Any, Self
+
+from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models.mixins.queryset import HasOwner
 
 if TYPE_CHECKING:
@@ -53,6 +50,7 @@ class SavedViewQuerySet(StandardQuerySet["SavedView"], HasOwner):
 
         Returns:
             Filtered SavedViewQuerySet
+
         """
         return self.filter_field_by_str("name", value, exact=exact, case_insensitive=case_insensitive)
 
@@ -65,6 +63,7 @@ class SavedViewQuerySet(StandardQuerySet["SavedView"], HasOwner):
 
         Returns:
             Filtered SavedViewQuerySet
+
         """
         return self.filter(show_in_sidebar=show)
 
@@ -77,6 +76,7 @@ class SavedViewQuerySet(StandardQuerySet["SavedView"], HasOwner):
 
         Returns:
             Filtered SavedViewQuerySet
+
         """
         return self.filter(show_on_dashboard=show)
 
@@ -90,6 +90,7 @@ class SavedViewQuerySet(StandardQuerySet["SavedView"], HasOwner):
 
         Returns:
             Filtered SavedViewQuerySet
+
         """
         return self.filter_field_by_str("sort_field", field, exact=exact, case_insensitive=case_insensitive)
 
@@ -102,6 +103,7 @@ class SavedViewQuerySet(StandardQuerySet["SavedView"], HasOwner):
 
         Returns:
             Filtered SavedViewQuerySet
+
         """
         return self.filter(sort_reverse=reverse)
 
@@ -114,6 +116,7 @@ class SavedViewQuerySet(StandardQuerySet["SavedView"], HasOwner):
 
         Returns:
             Filtered SavedViewQuerySet
+
         """
         return self.filter(page_size=size)
 
@@ -126,6 +129,7 @@ class SavedViewQuerySet(StandardQuerySet["SavedView"], HasOwner):
 
         Returns:
             Filtered SavedViewQuerySet
+
         """
         return self.filter(page_size__lt=size)
 
@@ -138,6 +142,7 @@ class SavedViewQuerySet(StandardQuerySet["SavedView"], HasOwner):
 
         Returns:
             Filtered SavedViewQuerySet
+
         """
         return self.filter(page_size__gt=size)
 
@@ -151,6 +156,7 @@ class SavedViewQuerySet(StandardQuerySet["SavedView"], HasOwner):
 
         Returns:
             Filtered SavedViewQuerySet
+
         """
         return self.filter(page_size__gte=min_size, page_size__lte=max_size)
 
@@ -163,6 +169,7 @@ class SavedViewQuerySet(StandardQuerySet["SavedView"], HasOwner):
 
         Returns:
             Filtered SavedViewQuerySet
+
         """
         return self.filter(display_mode=mode)
 
@@ -175,5 +182,6 @@ class SavedViewQuerySet(StandardQuerySet["SavedView"], HasOwner):
 
         Returns:
             Filtered SavedViewQuerySet
+
         """
         return self.filter(user_can_change=can_change)

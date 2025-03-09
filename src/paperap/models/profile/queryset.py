@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -10,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.2
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,9 +21,10 @@
 
 from __future__ import annotations
 
-from typing import Any, TYPE_CHECKING
 import logging
-from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
+from typing import TYPE_CHECKING, Any
+
+from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 
 if TYPE_CHECKING:
     from paperap.models.profile.model import Profile
@@ -39,7 +36,7 @@ class ProfileQuerySet(StandardQuerySet["Profile"]):
     """
     A lazy-loaded, chainable query interface for Profile resources in Paperless NGX.
 
-    Provides pagination, filtering, and caching functionality similar to Django's QuerySet.
+    Provides pagination, filtering, and caching functionality similar to Django's BaseQuerySet.
     Designed to be lazy - only fetching data when it's actually needed.
 
     Examples:
@@ -47,10 +44,12 @@ class ProfileQuerySet(StandardQuerySet["Profile"]):
         >>> profiles = profiles.email("example@example.com")
         >>> for profile in profiles:
         >>>     print(profile.first_name)
+
     """
 
     def email(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> ProfileQuerySet:
-        """Filter by email.
+        """
+        Filter by email.
 
         Args:
             value: The email to filter by.
@@ -68,6 +67,7 @@ class ProfileQuerySet(StandardQuerySet["Profile"]):
             >>> profiles = client.profiles().email("john.doe@gmail.com")
             >>> profiles = client.profiles().email("gmail.com", exact=False)
             >>> profiles = client.profiles().email("jOhN.DOE@gmail.com", case_insensitive=True)
+
         """
         return self.filter_field_by_str("email", value, exact=exact, case_insensitive=case_insensitive)
 
@@ -87,6 +87,7 @@ class ProfileQuerySet(StandardQuerySet["Profile"]):
             >>> profiles = client.profiles().first_name("John")
             >>> profiles = client.profiles().first_name("John", exact=False)
             >>> profiles = client.profiles().first_name("JOHN", case_insensitive=False)
+
         """
         return self.filter_field_by_str("first_name", value, exact=exact, case_insensitive=case_insensitive)
 
@@ -105,6 +106,7 @@ class ProfileQuerySet(StandardQuerySet["Profile"]):
             >>> profiles = client.profiles().last_name("Doe")
             >>> profiles = client.profiles().last_name("Doe", exact=False)
             >>> profiles = client.profiles().last_name("DOE", case_insensitive=False)
+
         """
         return self.filter_field_by_str("last_name", value, exact=exact, case_insensitive=case_insensitive)
 
@@ -121,5 +123,6 @@ class ProfileQuerySet(StandardQuerySet["Profile"]):
         Examples:
             >>> profiles = client.profiles().has_usable_password()
             >>> profiles = client.profiles().has_usable_password(False)
+
         """
         return self.filter(has_usable_password=value)

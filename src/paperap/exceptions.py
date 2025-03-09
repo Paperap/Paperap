@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -10,7 +6,7 @@
        File:    exceptions.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.2
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -28,15 +24,15 @@ from __future__ import annotations
 from string import Template
 
 
-class PaperlessException(Exception):
+class PaperlessError(Exception):
     """Base exception for all paperless client errors."""
 
 
-class ConfigurationError(PaperlessException):
+class ConfigurationError(PaperlessError):
     """Raised when the configuration is invalid."""
 
 
-class APIError(PaperlessException):
+class APIError(PaperlessError):
     """Raised when the API returns an error."""
 
     status_code: int | None = None

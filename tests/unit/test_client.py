@@ -10,7 +10,7 @@
         File:    test_client.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.2
+        Version: 0.0.4
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -31,7 +31,7 @@ from unittest.mock import MagicMock, patch
 from pathlib import Path
 from paperap.resources.documents import DocumentResource
 from paperap.tests import TestCase, load_sample_data
-from paperap.models.abstract import QuerySet
+from paperap.models.abstract import BaseQuerySet
 from paperap.models.document import Document
 from paperap.models.tag import Tag
 
@@ -45,7 +45,7 @@ class TestClient(TestCase):
     def test_get_documents(self, mock_request):
         mock_request.return_value = sample_data
         documents = self.client.documents()
-        self.assertIsInstance(documents, QuerySet)
+        self.assertIsInstance(documents, BaseQuerySet)
         total = documents.count()
         self.assertEqual(total, sample_data['count'], "Count of documents incorrect")
         total_on_page = documents.count_this_page()

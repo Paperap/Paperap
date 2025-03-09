@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -10,7 +6,7 @@
        File:    user.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.2
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,10 +21,10 @@
 
 from typing import Any, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from paperap.models.abstract.model import StandardModel
-from paperap.models.user.queryset import UserQuerySet, GroupQuerySet
+from paperap.models.user.queryset import GroupQuerySet, UserQuerySet
 
 
 class Group(StandardModel):
@@ -49,6 +45,7 @@ class Group(StandardModel):
 
         Returns:
             UserQuerySet: The users in this group
+
         """
         return self._client.users().all().in_group(self.id)
 
@@ -80,5 +77,6 @@ class User(StandardModel):
 
         Returns:
             GroupQuerySet: The groups this user is a member
+
         """
         return self._client.groups().all().id(self.groups)

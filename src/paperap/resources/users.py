@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -28,7 +24,7 @@ from __future__ import annotations
 from typing import Any, Optional
 
 from paperap.exceptions import ObjectNotFoundError
-from paperap.models.user import Group, User, UserQuerySet, GroupQuerySet
+from paperap.models.user import Group, GroupQuerySet, User, UserQuerySet
 from paperap.resources.base import PaperlessResource, StandardResource
 
 
@@ -43,6 +39,7 @@ class UserResource(StandardResource[User, UserQuerySet]):
 
         Returns:
             The current user.
+
         """
         if not (response := self.client.request("GET", "users/me/")):
             raise ObjectNotFoundError("Failed to get current user")

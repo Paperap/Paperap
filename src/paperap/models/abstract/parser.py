@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -25,25 +21,26 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Generic, Union, cast, get_type_hints, overload, get_origin, get_args
-from typing_extensions import TypeVar
-import types
 import datetime
 import logging
+import types
 from decimal import Decimal
 from enum import Enum
+from typing import TYPE_CHECKING, Any, Generic, Union, cast, get_args, get_origin, get_type_hints, overload
+
 import dateparser
+from typing_extensions import TypeVar
 
 if TYPE_CHECKING:
-    from paperap.models.abstract.model import PaperlessModel
+    from paperap.models.abstract.model import BaseModel
 
 logger = logging.getLogger(__name__)
 
 _T = TypeVar("_T")
-_PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel", default="PaperlessModel")
+_BaseModel = TypeVar("_BaseModel", bound="BaseModel", default="BaseModel")
 
 
-class Parser(Generic[_PaperlessModel]):
+class Parser(Generic[_BaseModel]):
     """
     Parser for converting API data into model instances.
 
@@ -59,12 +56,18 @@ class Parser(Generic[_PaperlessModel]):
     Examples:
         # Create a parser for a Document model
         parser = Parser(Document)
+
     """
 
-    model: type[_PaperlessModel]
+    model: type[_BaseModel]
 
-    def __init__(self, model: type[_PaperlessModel]):
+    def __init__(self, model: type[_BaseModel]):
         self.model = model
+        super().__init__()
+
+    @property
+    def _meta(self) -> "BaseModel.Meta":
+        return self.model._meta # pyright: ignore[reportPrivateUsage]
 
     def parse(self, value: Any, target_type: type[_T]) -> _T | None:
         """
@@ -83,8 +86,9 @@ class Parser(Generic[_PaperlessModel]):
         Examples:
             # Parse a string into an integer
             result = parser.parse("123", int)
+
         """
-        if target_type is None:
+        if target_type is types.NoneType:
             raise TypeError("Cannot parse to None type")
 
         if value is None:
@@ -94,7 +98,7 @@ class Parser(Generic[_PaperlessModel]):
         origin = get_origin(target_type)
         args = get_args(target_type)
 
-        if target_type is Any:
+        if str(target_type) == "typing.Any":
             return value
         if origin is list:
             return cast(_T, [self.parse(item, args[0]) for item in value])
@@ -126,16 +130,11 @@ class Parser(Generic[_PaperlessModel]):
     def parse_other(self, value: Any, target_type: type[_T]) -> _T | None:
         """
         Parse a value into the specified target type.
-
+        
         Subclasses may implement this. Raises a TypeError by default.
-
-        Returns:
-            The parsed value, or None if parsing fails.
-
-        Raises:
-            TypeError: If the target type is unsupported.
         """
         raise TypeError(f"Unsupported type: {target_type}")
+
 
     @overload
     def parse_datetime(self, value: str) -> datetime.datetime | None: ...
@@ -159,14 +158,19 @@ class Parser(Generic[_PaperlessModel]):
         Examples:
             # Parse a string into a datetime
             result = parser.parse_datetime("2025-03-04T12:00:00Z")
+
         """
         if isinstance(value, datetime.datetime):
             return value
         if isinstance(value, str):
-            parsed = dateparser.parse(value)
-            if parsed is None:
-                logger.warning(f"Failed to parse datetime from: {value}")
-            return parsed
+            try:
+                parsed = dateparser.parse(value)
+                if parsed is None:
+                    logger.warning(f"Failed to parse datetime from: {value}")
+                return parsed
+            except Exception as e:
+                logger.warning(f"Error parsing datetime '{value}': {e}")
+                return None
         return None
 
     @overload
@@ -191,6 +195,7 @@ class Parser(Generic[_PaperlessModel]):
         Examples:
             # Parse a string into a date
             result = parser.parse_date("2025-03-04")
+
         """
         if isinstance(value, datetime.datetime):
             return value.date()
@@ -225,6 +230,7 @@ class Parser(Generic[_PaperlessModel]):
         Examples:
             # Parse a string into an enum
             result = parser.parse_enum("ENUM_VALUE", MyEnum)
+
         """
         if value is None:
             return None
@@ -263,6 +269,7 @@ class Parser(Generic[_PaperlessModel]):
         Examples:
             # Parse a string into a boolean
             result = parser.parse_bool("true")
+
         """
         if value is None:
             return None
@@ -306,6 +313,7 @@ class Parser(Generic[_PaperlessModel]):
         Examples:
             # Parse a string into an integer
             result = parser.parse_int("123")
+
         """
         if value is None:
             return None
@@ -337,6 +345,7 @@ class Parser(Generic[_PaperlessModel]):
         Examples:
             # Parse a string into a float
             result = parser.parse_float("123.45")
+
         """
         if value is None:
             return None
@@ -359,6 +368,7 @@ class Parser(Generic[_PaperlessModel]):
         Examples:
             # Parse a dictionary of data
             parsed_data = parser.parse_data(api_data)
+
         """
         fields = self._get_model_fields()
         for field, value in data.items():
@@ -378,8 +388,9 @@ class Parser(Generic[_PaperlessModel]):
 
         Returns:
             The transformed data
+
         """
-        for key, attrib in self.model._meta.field_map.items():
+        for key, attrib in self._meta.field_map.items():
             # Change {key} to {attrib}
             if key in data:
                 data[attrib] = data.pop(key)
@@ -396,8 +407,9 @@ class Parser(Generic[_PaperlessModel]):
 
         Returns:
             The transformed data
+
         """
-        for key, attrib in self.model._meta.field_map.items():
+        for key, attrib in self._meta.field_map.items():
             # Change {attrib} to {key}
             if key in data:
                 data[key] = data.pop(attrib)
@@ -409,9 +421,14 @@ class Parser(Generic[_PaperlessModel]):
 
         Returns:
             A dictionary of field names and their types.
+
         """
+        # Use a class-level cache to improve performance
+        if cache := self.model.Meta.__type_hints_cache__:
+            return cache
+        
         hints = get_type_hints(self.model)
-        fields = {}
+        fields : dict[str, type] = {}
 
         for field, type_hint in hints.items():
             # Handle Unions (both new syntax `int | None` and `Union[int, None]`)
@@ -419,5 +436,7 @@ class Parser(Generic[_PaperlessModel]):
                 type_hint = next(arg for arg in getattr(type_hint, "__args__", ()) if arg is not type(None))
 
             fields[field] = type_hint
-
+            
+        # Cache the processed type hints
+        self.model.Meta.__type_hints_cache__ = fields
         return fields

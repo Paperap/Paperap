@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -10,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,12 +21,13 @@
 
 from __future__ import annotations
 
-from typing import Any, TYPE_CHECKING, Self
 import logging
-from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
+from typing import TYPE_CHECKING, Any, Self
+
+from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 
 if TYPE_CHECKING:
-    from paperap.models.user.model import User, Group
+    from paperap.models.user.model import Group, User
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +36,7 @@ class UserQuerySet(StandardQuerySet["User"]):
     """
     A lazy-loaded, chainable query interface for Paperless NGX resources.
 
-    QuerySet provides pagination, filtering, and caching functionality similar to Django's QuerySet.
+    BaseQuerySet provides pagination, filtering, and caching functionality similar to Django's BaseQuerySet.
     It's designed to be lazy - only fetching data when it's actually needed.
     """
 
@@ -54,6 +51,7 @@ class UserQuerySet(StandardQuerySet["User"]):
 
         Returns:
             Filtered UserQuerySet
+
         """
         return self.filter_field_by_str("username", value, exact=exact, case_insensitive=case_insensitive)
 
@@ -68,6 +66,7 @@ class UserQuerySet(StandardQuerySet["User"]):
 
         Returns:
             Filtered UserQuerySet
+
         """
         return self.filter_field_by_str("email", value, exact=exact, case_insensitive=case_insensitive)
 
@@ -82,6 +81,7 @@ class UserQuerySet(StandardQuerySet["User"]):
 
         Returns:
             Filtered UserQuerySet
+
         """
         return self.filter_field_by_str("first_name", value, exact=exact, case_insensitive=case_insensitive)
 
@@ -96,6 +96,7 @@ class UserQuerySet(StandardQuerySet["User"]):
 
         Returns:
             Filtered UserQuerySet
+
         """
         return self.filter_field_by_str("last_name", value, exact=exact, case_insensitive=case_insensitive)
 
@@ -108,6 +109,7 @@ class UserQuerySet(StandardQuerySet["User"]):
 
         Returns:
             Filtered UserQuerySet
+
         """
         return self.filter(is_staff=value)
 
@@ -120,6 +122,7 @@ class UserQuerySet(StandardQuerySet["User"]):
 
         Returns:
             Filtered UserQuerySet
+
         """
         return self.filter(is_active=value)
 
@@ -132,6 +135,7 @@ class UserQuerySet(StandardQuerySet["User"]):
 
         Returns:
             Filtered UserQuerySet
+
         """
         return self.filter(is_superuser=value)
 
@@ -144,6 +148,7 @@ class UserQuerySet(StandardQuerySet["User"]):
 
         Returns:
             Filtered UserQuerySet
+
         """
         return self.filter(groups_contains=value)
 
@@ -156,6 +161,7 @@ class UserQuerySet(StandardQuerySet["User"]):
 
         Returns:
             Filtered UserQuerySet
+
         """
         return self.filter(groups_permissions_contains=value)
 
@@ -168,6 +174,7 @@ class UserQuerySet(StandardQuerySet["User"]):
 
         Returns:
             Filtered UserQuerySet
+
         """
         return self.filter(inherited_permissions_contains=value)
 
@@ -176,7 +183,7 @@ class GroupQuerySet(StandardQuerySet["Group"]):
     """
     A lazy-loaded, chainable query interface for Paperless NGX resources.
 
-    QuerySet provides pagination, filtering, and caching functionality similar to Django's QuerySet.
+    BaseQuerySet provides pagination, filtering, and caching functionality similar to Django's BaseQuerySet.
     It's designed to be lazy - only fetching data when it's actually needed.
     """
 
@@ -191,6 +198,7 @@ class GroupQuerySet(StandardQuerySet["Group"]):
 
         Returns:
             Filtered GroupQuerySet
+
         """
         return self.filter_field_by_str("name", value, exact=exact, case_insensitive=case_insensitive)
 
@@ -203,5 +211,6 @@ class GroupQuerySet(StandardQuerySet["Group"]):
 
         Returns:
             Filtered GroupQuerySet
+
         """
         return self.filter(permissions__contains=value)

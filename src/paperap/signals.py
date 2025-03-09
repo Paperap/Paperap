@@ -5,50 +5,65 @@
 
 ----------------------------------------------------------------------------
 
-   METADATA:
+METADATA:
 
-       File:    signals.py
+File:    signals.py
         Project: paperap
-       Created: 2025-03-08
+Created: 2025-03-09
         Version: 0.0.4
-       Author:  Jess Mann
-       Email:   jess@jmann.me
+Author:  Jess Mann
+Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
-   LAST MODIFIED:
+LAST MODIFIED:
 
-       2025-03-08     By Jess Mann
+2025-03-09     By Jess Mann
 
 """
-
 from __future__ import annotations
 
+import logging
 from collections import defaultdict
 from typing import (
     Any,
     Callable,
+    Generic,
     Iterable,
     Literal,
     Optional,
     Self,
-    TypeAlias,
-    TypeVar,
-    Generic,
     Set,
+    TypeAlias,
     TypedDict,
+    TypeVar,
     overload,
 )
-import logging
 
 T = TypeVar("T")
 
 logger = logging.getLogger(__name__)
 
+class QueueType(TypedDict):
+    """
+    A type used by SignalRegistry for storing queued signal actions.
+    """
+
+    connect: dict[str, set[tuple[Callable, int]]]
+    disconnect: dict[str, set[Callable]]
+    disable: dict[str, set[Callable]]
+    enable: dict[str, set[Callable]]
+
+
+ActionType = Literal["connect", "disconnect", "disable", "enable"]
 
 class SignalPriority:
-    """Priority levels for signal handlers."""
+    """
+    Priority levels for signal handlers.
+
+    Any int can be provided, but these are the recommended values.
+    """
 
     FIRST = 0
     HIGH = 25
@@ -58,6 +73,10 @@ class SignalPriority:
 
 
 class SignalParams(TypedDict):
+    """
+    A type used by SignalRegistry for storing signal parameters.
+    """
+
     name: str
     description: str
 
@@ -81,6 +100,7 @@ class Signal(Generic[T]):
         self.description = description
         self._handlers = defaultdict(list)
         self._disabled_handlers = set()
+        super().__init__()
 
     def connect(self, handler: Callable[..., T], priority: int = SignalPriority.NORMAL) -> None:
         """
@@ -89,11 +109,12 @@ class Signal(Generic[T]):
         Args:
             handler: The handler function to be called when the signal is emitted.
             priority: The priority level for this handler (lower numbers execute first).
+
         """
         self._handlers[priority].append(handler)
 
         # Check if the handler was temporarily disabled in the registry
-        if handler in SignalRegistry.get_instance()._queue["disable"].get(self.name, set()):
+        if SignalRegistry.is_queued("disable", self.name, handler):
             self._disabled_handlers.add(handler)
 
     def disconnect(self, handler: Callable[..., T]) -> None:
@@ -102,6 +123,7 @@ class Signal(Generic[T]):
 
         Args:
             handler: The handler to disconnect.
+
         """
         for priority in self._handlers:
             if handler in self._handlers[priority]:
@@ -126,6 +148,7 @@ class Signal(Generic[T]):
 
         Returns:
             The final result after all handlers have processed the data.
+
         """
         current_value: T | None = None
         remaining_args = args
@@ -153,6 +176,7 @@ class Signal(Generic[T]):
 
         Args:
             handler: The handler to disable.
+
         """
         self._disabled_handlers.add(handler)
 
@@ -162,19 +186,10 @@ class Signal(Generic[T]):
 
         Args:
             handler: The handler to enable.
+
         """
         if handler in self._disabled_handlers:
             self._disabled_handlers.remove(handler)
-
-
-class QueueType(TypedDict):
-    connect: dict[str, set[tuple[Callable, int]]]
-    disconnect: dict[str, set[Callable]]
-    disable: dict[str, set[Callable]]
-    enable: dict[str, set[Callable]]
-
-
-ActionType = Literal["connect", "disconnect", "disable", "enable"]
 
 
 class SignalRegistry:
@@ -198,24 +213,42 @@ class SignalRegistry:
         ... )
 
         >>> SignalRegistry.connect("document.save:success", my_handler)
+
     """
 
     _instance: Self
     _signals: dict[str, Signal]
     _queue: QueueType
 
-    def __init__(self):
-        self._signals = {}
-        self._queue = {
-            "connect": {},  # {signal_name: {(handler, priority), ...}}
-            "disconnect": {},  # {signal_name: {handler, ...}}
-            "disable": {},  # {signal_name: {handler, ...}}
-            "enable": {},  # {signal_name: {handler, ...}}
-        }
+    def __new__(cls) -> Self:
+        """
+        Ensure that only one instance of the class is created.
+
+        Returns:
+            The singleton instance of this class.
+
+        """
+        if not hasattr(cls, "_instance"):
+            cls._instance = super().__new__(cls)
+            cls._instance._signals = {}
+            cls._instance._queue = {
+                "connect": {},  # {signal_name: {(handler, priority), ...}}
+                "disconnect": {},  # {signal_name: {handler, ...}}
+                "disable": {},  # {signal_name: {handler, ...}}
+                "enable": {},  # {signal_name: {handler, ...}}
+            }
+        return cls._instance
 
     @classmethod
     def get_instance(cls) -> Self:
-        if not hasattr(cls, "_instance") or cls._instance is None:
+        """
+        Get the singleton instance of this class.
+
+        Returns:
+            The singleton instance of this class.
+
+        """
+        if not hasattr(cls, "_instance"):
             cls._instance = cls()
         return cls._instance
 
@@ -226,6 +259,7 @@ class SignalRegistry:
 
         Args:
             signal: The signal to register.
+
         """
         self = cls.get_instance()
         self._signals[signal.name] = signal
@@ -261,6 +295,7 @@ class SignalRegistry:
 
         Raises:
             ValueError: If the action is invalid.
+
         """
         self = cls.get_instance()
         if action not in self._queue:
@@ -282,6 +317,7 @@ class SignalRegistry:
 
         Returns:
             The signal instance, or None if not found.
+
         """
         self = cls.get_instance()
         return self._signals.get(name)
@@ -293,6 +329,7 @@ class SignalRegistry:
 
         Returns:
             A list of signal names.
+
         """
         self = cls.get_instance()
         return list(self._signals.keys())
@@ -309,6 +346,7 @@ class SignalRegistry:
 
         Returns:
             The new signal instance.
+
         """
         signal = Signal[type[T]](name, description)
         cls.register(signal)
@@ -374,6 +412,7 @@ class SignalRegistry:
 
         Returns:
             The transformed first argument after all handlers have processed it
+
         """
         if not (signal := cls.get(name)):
             signal = cls.create(name, description, return_type)
@@ -392,6 +431,7 @@ class SignalRegistry:
             name: The signal name.
             handler: The handler function to connect.
             priority: The priority level for this handler (lower numbers execute first
+
         """
         if signal := cls.get(name):
             signal.connect(handler, priority)
@@ -406,6 +446,7 @@ class SignalRegistry:
         Args:
             name: The signal name.
             handler: The handler function to disconnect.
+
         """
         if signal := cls.get(name):
             signal.disconnect(handler)
@@ -420,6 +461,7 @@ class SignalRegistry:
         Args:
             name: The signal name.
             handler: The handler function to disable
+
         """
         if signal := cls.get(name):
             signal.disable(handler)
@@ -434,8 +476,25 @@ class SignalRegistry:
         Args:
             name: The signal name.
             handler: The handler function to enable.
+
         """
         if signal := cls.get(name):
             signal.enable(handler)
         else:
             cls.queue_action("enable", name, handler)
+
+    @classmethod
+    def is_queued(cls, action: ActionType, name: str, handler: Callable[..., T]) -> bool:
+        """
+        Check if a handler is queued for a signal action.
+
+        Args:
+            action: The action to check (connect, disconnect, disable, enable).
+            name: The signal name.
+            handler: The handler function to check.
+
+        Returns:
+            True if the handler is queued, False otherwise.
+
+        """
+        return handler in cls._queue[action].get(name, set())

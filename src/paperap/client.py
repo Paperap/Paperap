@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -10,7 +6,7 @@
        File:    client.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.3
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -27,30 +23,31 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from string import Template
 from typing import Any, Iterator, Literal, Union, Unpack, overload
+
 import requests
 from yarl import URL
-from string import Template
-from paperap.auth import BasicAuth, TokenAuth, AuthBase
+
+from paperap.auth import AuthBase, BasicAuth, TokenAuth
 from paperap.exceptions import (
     APIError,
     AuthenticationError,
-    InsufficientPermissionError,
-    PaperlessException,
+    BadResponseError,
     ConfigurationError,
+    InsufficientPermissionError,
+    PaperlessError,
+    RequestError,
     ResourceNotFoundError,
     ResponseParsingError,
-    RequestError,
-    BadResponseError,
 )
 from paperap.plugin_manager import PluginConfig
 from paperap.plugins.base import Plugin
-from paperap.settings import Settings, SettingsArgs
 from paperap.resources import (
     CorrespondentResource,
     CustomFieldResource,
-    DocumentResource,
     DocumentNoteResource,
+    DocumentResource,
     DocumentTypeResource,
     GroupResource,
     ProfileResource,
@@ -65,6 +62,7 @@ from paperap.resources import (
     WorkflowResource,
     WorkflowTriggerResource,
 )
+from paperap.settings import Settings, SettingsArgs
 from paperap.signals import SignalRegistry
 
 logger = logging.getLogger(__name__)
@@ -103,6 +101,7 @@ class PaperlessClient:
         with PaperlessClient(...) as client:
             docs = client.documents.list()
         ```
+
     """
 
     settings: Settings
@@ -155,6 +154,7 @@ class PaperlessClient:
         # Initialize resources
         self._init_resources()
         self._initialize_plugins()
+        super().__init__()
 
     @property
     def base_url(self) -> URL:
@@ -194,6 +194,7 @@ class PaperlessClient:
 
         Args:
             plugin_config: Optional configuration dictionary for plugins.
+
         """
         from paperap.plugin_manager import PluginManager
 
@@ -263,7 +264,8 @@ class PaperlessClient:
             AuthenticationError: If authentication fails.
             ResourceNotFoundError: If the requested resource doesn't exist.
             APIError: If the API returns an error.
-            PaperlessException: For other errors.
+            PaperlessError: For other errors.
+
         """
         endpoint = str(endpoint)
 
@@ -300,22 +302,7 @@ class PaperlessClient:
 
             # Handle HTTP errors
             if response.status_code >= 400:
-                error_message = self._extract_error_message(response)
-
-                if response.status_code == 400:
-                    if "This field is required" in error_message:
-                        raise ValueError(f"Required field missing: {error_message}")
-                if response.status_code == 401:
-                    raise AuthenticationError(f"Authentication failed: {error_message}")
-                if response.status_code == 403:
-                    if "this site requires a CSRF" in error_message:
-                        raise ConfigurationError(f"Response claims CSRF token required. Is the url correct? {url}")
-                    raise InsufficientPermissionError(f"Permission denied: {error_message}")
-                if response.status_code == 404:
-                    raise ResourceNotFoundError(f"Paperless returned 404 for {endpoint}")
-
-                # All else...
-                raise BadResponseError(error_message, response.status_code)
+                self._handle_request_errors(response, url, params=params, data=data, files=files)
 
             # No content
             if response.status_code == 204:
@@ -335,6 +322,32 @@ class PaperlessClient:
             raise RequestError(f"Connection error: {str(ce)}") from ce
         except requests.exceptions.RequestException as re:
             raise RequestError(f"Request failed: {str(re)}") from re
+
+    def _handle_request_errors(
+        self,
+        response : requests.Response,
+        url : str,
+        *,
+        params: dict[str, Any] | None = None,
+        data: dict[str, Any] | None = None,
+        files: dict[str, Any] | None = None,
+    ):
+        error_message = self._extract_error_message(response)
+
+        if response.status_code == 400:
+            if "This field is required" in error_message:
+                raise ValueError(f"Required field missing: {error_message}")
+        if response.status_code == 401:
+            raise AuthenticationError(f"Authentication failed: {error_message}")
+        if response.status_code == 403:
+            if "this site requires a CSRF" in error_message:
+                raise ConfigurationError(f"Response claims CSRF token required. Is the url correct? {url}")
+            raise InsufficientPermissionError(f"Permission denied: {error_message}")
+        if response.status_code == 404:
+            raise ResourceNotFoundError(f"Paperless returned 404 for {url}")
+
+        # All else...
+        raise BadResponseError(error_message, response.status_code)
 
     @overload
     def _handle_response(
@@ -499,7 +512,8 @@ class PaperlessClient:
 
         Raises:
             AuthenticationError: If authentication fails.
-            PaperlessException: For other errors.
+            PaperlessError: For other errors.
+
         """
         if timeout is None:
             timeout = self.settings.timeout
@@ -558,6 +572,7 @@ class PaperlessClient:
 
         Returns:
             Dictionary containing system statistics.
+
         """
         if result := self.request("GET", "api/statistics/"):
             return result
@@ -569,6 +584,7 @@ class PaperlessClient:
 
         Returns:
             Dictionary containing system status information.
+
         """
         if result := self.request("GET", "api/status/"):
             return result
@@ -580,6 +596,7 @@ class PaperlessClient:
 
         Returns:
             Dictionary containing system configuration.
+
         """
         if result := self.request("GET", "api/config/"):
             return result

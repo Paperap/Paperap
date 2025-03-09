@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -23,5 +19,5 @@
 
 """
 
-from paperap.models.profile.queryset import ProfileQuerySet
 from paperap.models.profile.model import Profile
+from paperap.models.profile.queryset import ProfileQuerySet

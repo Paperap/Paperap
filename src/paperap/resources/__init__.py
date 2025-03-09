@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -29,10 +25,10 @@ from paperap.resources.base import PaperlessResource, StandardResource
 from paperap.resources.correspondents import CorrespondentResource
 from paperap.resources.custom_fields import CustomFieldResource
 from paperap.resources.document_types import DocumentTypeResource
-from paperap.resources.documents import DocumentResource, DocumentNoteResource
-from paperap.resources.share_links import ShareLinksResource
+from paperap.resources.documents import DocumentNoteResource, DocumentResource
 from paperap.resources.profile import ProfileResource
 from paperap.resources.saved_views import SavedViewResource
+from paperap.resources.share_links import ShareLinksResource
 from paperap.resources.storage_paths import StoragePathResource
 from paperap.resources.tags import TagResource
 from paperap.resources.tasks import TaskResource

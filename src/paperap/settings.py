@@ -1,40 +1,40 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
-   METADATA:
+METADATA:
 
-       File:    settings.py
+File:    settings.py
         Project: paperap
-       Created: 2025-03-04
-        Version: 0.0.2
-       Author:  Jess Mann
-       Email:   jess@jmann.me
+Created: 2025-03-09
+        Version: 0.0.4
+Author:  Jess Mann
+Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
-   LAST MODIFIED:
+LAST MODIFIED:
 
-       2025-03-04     By Jess Mann
+2025-03-09     By Jess Mann
 
 """
-
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import Annotated, Any, Optional, Self, TypedDict, override
+
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Annotated, Any, Optional, Self, TypedDict
 from yarl import URL
 
 from paperap.exceptions import ConfigurationError
 
 
 class SettingsArgs(TypedDict, total=False):
+    """
+    Arguments for the settings class
+    """
+
     base_url: str | URL
     token: str | None
     username: str | None
@@ -104,7 +104,11 @@ class Settings(BaseSettings):
             raise ConfigurationError("Timeout must be a positive integer")
         return value
 
-    def model_post_init(self, __context):
+    @override
+    def model_post_init(self, __context : Any):
+        """
+        Validate the settings after they have been initialized.
+        """
         if self.token is None and (self.username is None or self.password is None):
             raise ConfigurationError("Provide a token, or a username and password")
 

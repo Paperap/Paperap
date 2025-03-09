@@ -1,7 +1,5 @@
 """
-
-
-       Usage example:
+Usage example:
        test_dir = Path(__file__).parent.parent.parent.parent / "tests/sample_data"
        collector = TestDataCollector(test_dir)
 
@@ -13,7 +11,7 @@
        File:    collect_test_data.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.3
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -27,18 +25,20 @@
 """
 
 from __future__ import annotations
+
 import datetime
-from decimal import Decimal
 import json
-from pathlib import Path
-import re
-from typing import Any, TYPE_CHECKING
 import logging
-from pydantic import BaseModel
+import re
+from decimal import Decimal
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, override
+
+from faker import Faker
+
+from paperap.models import BaseModel
 from paperap.plugins.base import Plugin
 from paperap.signals import SignalPriority, SignalRegistry
-from paperap.models import PaperlessModel
-from faker import Faker
 
 if TYPE_CHECKING:
     from paperap.client import PaperlessClient
@@ -85,12 +85,14 @@ class TestDataCollector(Plugin):
         self.test_dir.mkdir(parents=True, exist_ok=True)
         super().__init__(client, **kwargs)
 
+    @override
     def setup(self):
         """Register signal handlers."""
         SignalRegistry.connect("resource._handle_response:after", self.save_list_response, SignalPriority.LOW)
         SignalRegistry.connect("resource._handle_results:before", self.save_first_item, SignalPriority.LOW)
         SignalRegistry.connect("client.request:after", self.save_parsed_response, SignalPriority.LOW)
 
+    @override
     def teardown(self):
         """Unregister signal handlers."""
         SignalRegistry.disconnect("resource._handle_response:after", self.save_list_response)
@@ -99,14 +101,14 @@ class TestDataCollector(Plugin):
 
     @staticmethod
     def _json_serializer(obj: Any) -> Any:
-        """Custom JSON serializer for objects that are not natively serializable."""
+        """Serialize objects that are not natively serializable."""
         if isinstance(obj, datetime.datetime):
             return obj.isoformat()
         if isinstance(obj, Path):
             return str(obj)
         if isinstance(obj, Decimal):
             return float(obj)
-        if isinstance(obj, PaperlessModel):
+        if isinstance(obj, BaseModel):
             return obj.to_dict()
         if isinstance(obj, BaseModel):
             return obj.model_dump()
@@ -197,7 +199,6 @@ class TestDataCollector(Plugin):
 
         Connects to client.request:after signal.
         """
-
         if not json_response or not params:
             return parsed_response
 
@@ -218,6 +219,7 @@ class TestDataCollector(Plugin):
 
         return parsed_response
 
+    @override
     @classmethod
     def get_config_schema(cls) -> dict[str, Any]:
         """Define the configuration schema for this plugin."""

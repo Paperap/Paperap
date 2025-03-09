@@ -5,43 +5,44 @@
 
 ----------------------------------------------------------------------------
 
-   METADATA:
+METADATA:
 
-       File:    document.py
+File:    model.py
         Project: paperap
-       Created: 2025-03-04
+Created: 2025-03-09
         Version: 0.0.4
-       Author:  Jess Mann
-       Email:   jess@jmann.me
+Author:  Jess Mann
+Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
-   LAST MODIFIED:
+LAST MODIFIED:
 
-       2025-03-04     By Jess Mann
+2025-03-09     By Jess Mann
 
 """
+
 
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, TYPE_CHECKING, Iterable, Iterator, Optional, TypedDict, cast
-from typing_extensions import TypeVar
+from typing import TYPE_CHECKING, Any, Iterable, Iterator, Optional, TypedDict, cast, override
 
-from pydantic import BaseModel, Field, field_serializer, field_validator, model_serializer
+from pydantic import Field, field_serializer, field_validator, model_serializer
+from typing_extensions import TypeVar
 from yarl import URL
 
-from paperap.models.abstract import StandardModel, FilteringStrategies, Parser
-from paperap.models.document.queryset import DocumentQuerySet
+from paperap.models.abstract import FilteringStrategies, Parser, StandardModel
 from paperap.models.document.parser import CustomFieldDict, DocumentParser
+from paperap.models.document.queryset import DocumentQuerySet
 
 if TYPE_CHECKING:
     from paperap.models.correspondent import Correspondent
+    from paperap.models.custom_field import CustomField, CustomFieldQuerySet
     from paperap.models.document_type import DocumentType
     from paperap.models.storage_path import StoragePath
     from paperap.models.tag import Tag, TagQuerySet
-    from paperap.models.custom_field import CustomField, CustomFieldQuerySet
     from paperap.models.user import User
 
 
@@ -62,7 +63,7 @@ class DocumentNote(StandardModel):
         read_only_fields = {"deleted_at", "restored_at", "transaction_id", "created"}
 
     @field_serializer("deleted_at", "restored_at", "created")
-    def serialize_datetime(self, value: datetime | None, _info):
+    def serialize_datetime(self, value: datetime | None):
         return value.isoformat() if value else None
 
     def get_document(self) -> "Document":
@@ -71,6 +72,7 @@ class DocumentNote(StandardModel):
 
         Returns:
             The document associated with this note.
+
         """
         return self._client.documents().get(self.document)
 
@@ -80,6 +82,7 @@ class DocumentNote(StandardModel):
 
         Returns:
             The user who created this note.
+
         """
         return self._client.users().get(self.user)
 
@@ -116,6 +119,7 @@ class Document(StandardModel):
         >>> document.save()
         >>> document.title
         'Example Document'
+
     """
 
     added: datetime | None = None
@@ -255,38 +259,54 @@ class Document(StandardModel):
         }
 
     @field_serializer("added", "created", "updated", "deleted_at")
-    def serialize_datetime(self, value: datetime | None, _info):
+    def serialize_datetime(self, value: datetime | None) -> str | None:
+        """
+        Serialize datetime fields to ISO format.
+
+        Args:
+            value: The datetime value to serialize.
+
+        Returns:
+            The serialized datetime value.
+
+        """
         return value.isoformat() if value else None
 
     @field_serializer("notes")
-    def serialize_notes(self, value: list[DocumentNote], _info):
+    def serialize_notes(self, value: list[DocumentNote]):
         return [note.to_dict() for note in value] if value else []
 
     @field_validator("tag_ids", mode="before")
+    @classmethod
     def validate_tags(cls, value: list[int] | None) -> list[int]:
         if value is None:
             return []
         return [int(tag) for tag in value]
 
     @field_validator("custom_field_dicts", mode="before")
+    @classmethod
     def validate_custom_fields(cls, value: list[CustomFieldDict] | None) -> list[CustomFieldDict]:
         if value is None:
             return []
         return value
 
     @field_validator("content", mode="before")
+    @classmethod
     def validate_content(cls, value: str | None) -> str:
         return value or ""
 
     @field_validator("title", mode="before")
+    @classmethod
     def validate_title(cls, value: str | None) -> str:
         return value or ""
 
     @field_validator("notes", mode="before")
+    @classmethod
     def validate_notes(cls, value: list[Any] | None) -> list[Any]:
         return value or []
 
     @field_validator("is_shared_by_requester", mode="before")
+    @classmethod
     def validate_is_shared_by_requester(cls, value: bool | None) -> bool:
         return value or False
 
@@ -328,6 +348,7 @@ class Document(StandardModel):
             >>> filtered_tags = document.tags.filter(name__icontains='example')
             >>> for tag in filtered_tags:
             ...     print(f'{tag.name} # {tag.id}')
+
         """
         if not self.tag_ids:
             return self._client.tags().none()
@@ -343,6 +364,7 @@ class Document(StandardModel):
 
         Args:
             value: The tags to set.
+
         """
         if value is None:
             self.tag_ids = []
@@ -377,6 +399,7 @@ class Document(StandardModel):
             >>> document = client.documents().get(id=1)
             >>> document.correspondent.name
             'Example Correspondent'
+
         """
         # Return cache
         if self._correspondent is not None:
@@ -400,6 +423,7 @@ class Document(StandardModel):
 
         Args:
             value: The correspondent to set.
+
         """
         if value is None:
             # Leave cache in place in case it changes again
@@ -433,6 +457,7 @@ class Document(StandardModel):
             >>> document = client.documents().get(id=1)
             >>> document.document_type.name
             'Example Document Type
+
         """
         # Return cache
         if self._document_type is not None:
@@ -456,6 +481,7 @@ class Document(StandardModel):
 
         Args:
             value: The document type to set.
+
         """
         if value is None:
             # Leave cache in place in case it changes again
@@ -489,6 +515,7 @@ class Document(StandardModel):
             >>> document = client.documents().get(id=1)
             >>> document.storage_path.name
             'Example Storage Path'
+
         """
         # Return cache
         if self._storage_path is not None:
@@ -512,6 +539,7 @@ class Document(StandardModel):
 
         Args:
             value: The storage path to set.
+
         """
         if value is None:
             # Leave cache in place in case it changes again
@@ -540,6 +568,7 @@ class Document(StandardModel):
 
         Returns:
             List of custom fields associated with this document.
+
         """
         if not self.custom_field_dicts:
             return self._client.custom_fields().none()
@@ -555,6 +584,7 @@ class Document(StandardModel):
 
         Args:
             value: The custom fields to set.
+
         """
         if value is None:
             self.custom_field_dicts = []
@@ -588,6 +618,7 @@ class Document(StandardModel):
             field_id: The ID of the custom field.
             default: The value to return if the field is not found.
             raise_errors: Whether to raise an error if the field is not found.
+
         """
         for field in self.custom_field_dicts:
             if field["field"] == field_id:
@@ -606,14 +637,12 @@ class Document(StandardModel):
 
         raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
     """
-
+    @override
     def update_locally(self, **kwargs):
         # Paperless does not support setting notes to None if notes is not already None
         if self._meta.original_data["notes"]:
             if "notes" in kwargs and not kwargs.get("notes"):
                 # TODO: Gracefully delete the notes instead of raising an error.
-                raise ValueError(
-                    f"Cannot set notes to None if notes is not already empty. Notes currently: {self._meta.original_data['notes']}"
-                )
+                raise ValueError(f"Cannot set notes to None. Notes currently: {self._meta.original_data['notes']}")
 
         return super().update_locally(**kwargs)

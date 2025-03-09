@@ -51,7 +51,7 @@ from paperap.tests.factories import (
 )
 from paperap.models import (
     StandardModel,
-    QuerySet,
+    BaseQuerySet,
     Document,
     DocumentType,
     Correspondent,
@@ -149,7 +149,7 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource]):
         sample_data = self.load_list_data(resource_name)
         return [self.create_model(**item) for item in sample_data["results"]]
 
-    def _call_list_resource(self, resource : type[StandardResource[_StandardModel]] | StandardResource[_StandardModel] | None = None, **kwargs) -> QuerySet[_StandardModel]:
+    def _call_list_resource(self, resource : type[StandardResource[_StandardModel]] | StandardResource[_StandardModel] | None = None, **kwargs) -> BaseQuerySet[_StandardModel]:
         if not resource:
             if not (resource := getattr(self,"resource", None)):
                 raise ValueError("Resource not provided")
@@ -166,7 +166,7 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource]):
 
         return resource.get(id)
 
-    def list_resource(self, resource : type[StandardResource[_StandardModel]] | StandardResource[_StandardModel] | None = None, **kwargs) -> QuerySet[_StandardModel]:
+    def list_resource(self, resource : type[StandardResource[_StandardModel]] | StandardResource[_StandardModel] | None = None, **kwargs) -> BaseQuerySet[_StandardModel]:
         if not resource:
             if not (resource := getattr(self, "resource", None)):
                 raise ValueError("Resource not provided")

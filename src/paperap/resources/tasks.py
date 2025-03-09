@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -42,6 +38,7 @@ class TaskResource(StandardResource[Task, TaskQuerySet]):
 
         Args:
             task_id: ID of the task to acknowledge.
+
         """
         self.client.request("PUT", f"tasks/{task_id}/acknowledge/")
 
@@ -51,5 +48,6 @@ class TaskResource(StandardResource[Task, TaskQuerySet]):
 
         Args:
             task_ids: list of task IDs to acknowledge.
+
         """
         self.client.request("POST", "tasks/bulk_acknowledge/", data={"tasks": task_ids})

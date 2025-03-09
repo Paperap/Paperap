@@ -28,11 +28,11 @@ import unittest
 from datetime import datetime, timezone
 from unittest.mock import patch
 from paperap.tests import TestCase
-from paperap.models import PaperlessModel
+from paperap.models import BaseModel
 from paperap.client import PaperlessClient
 from paperap.resources.base import PaperlessResource
 
-class ExampleModel(PaperlessModel):
+class ExampleModel(BaseModel):
     """
     Example model for testing purposes.
     """

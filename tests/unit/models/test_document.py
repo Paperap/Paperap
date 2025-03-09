@@ -25,12 +25,12 @@
 from __future__ import annotations
 
 import os
-from typing import Iterable
+from typing import Iterable, override
 import unittest
 from unittest.mock import patch, MagicMock
 import logging
 from datetime import datetime, timezone
-from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
+from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models import *
 from paperap.resources.documents import DocumentResource
 from paperap.models.tag import Tag, TagQuerySet
@@ -42,6 +42,7 @@ sample_document_list = load_sample_data('documents_list.json')
 sample_document = load_sample_data('documents_item.json')
 
 class TestDocumentInit(DocumentTest):
+    @override
     def setup_model_data(self):
         self.model_data = {
             "id": 1,
@@ -72,6 +73,7 @@ class TestDocumentInit(DocumentTest):
         self.assertEqual(model.updated, datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc), f"updated wrong value after from_dict {model.updated}")
 
 class TestDocument(DocumentTest):
+    @override
     def setup_model_data(self):
         self.model_data = {
             "id": 1,
@@ -241,7 +243,7 @@ class TestRequestDocumentList(DocumentTest):
         with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = sample_document_list
             documents = self.client.documents()
-            self.assertIsInstance(documents, QuerySet)
+            self.assertIsInstance(documents, BaseQuerySet)
             total = documents.count()
             expected = sample_document_list["count"]
             self.assertEqual(total, expected, f"Expected {expected} documents, got {total}")
@@ -272,6 +274,7 @@ class TestRequestDocument(DocumentTest):
 
 class TestCustomFieldAccess(DocumentTest):
 
+    @override
     def setUp(self):
         super().setUp()
         self.custom_fields = [
