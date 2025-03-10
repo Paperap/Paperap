@@ -95,8 +95,8 @@ class ObjectNotFoundError(ResourceNotFoundError):
     def __init__(self, message: str | None = None, resource_type: str | None = None, resource_id: int | None = None):
         self.resource_id = resource_id
         if not message:
-            message = "Resource ${resource} (#${id}) not found."
-        message = Template(message).safe_substitute(resource=resource_type, id=resource_id)
+            message = "Resource ${resource} (#${pk}) not found."
+        message = Template(message).safe_substitute(resource=resource_type, pk=resource_id)
         super().__init__(message, resource_type)
 
 

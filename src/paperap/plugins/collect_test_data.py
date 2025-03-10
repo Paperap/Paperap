@@ -75,8 +75,9 @@ class TestDataCollector(Plugin):
     description = "Collects sample data from API responses for testing purposes"
     version = "0.0.2"
     fake = Faker()
+    test_dir : Path
 
-    def __init__(self, client: "PaperlessClient", test_dir=None, **kwargs):
+    def __init__(self, client: "PaperlessClient", test_dir : Path | None = None, **kwargs : Any):
         # Convert string path to Path object if needed
         if test_dir and isinstance(test_dir, str):
             test_dir = Path(test_dir)
@@ -144,9 +145,9 @@ class TestDataCollector(Plugin):
             if isinstance(value, list):
                 return [self.fake.word() for _ in value]
 
-        return
+        return value
 
-    def save_response(self, filepath: Path, response: dict[str, Any], **kwargs) -> None:
+    def save_response(self, filepath: Path, response: dict[str, Any], **kwargs : Any) -> None:
         """
         Save the response to a JSON file.
         """
@@ -161,7 +162,7 @@ class TestDataCollector(Plugin):
             # Don't allow the plugin to interfere with normal operations in the event of failure
             logger.error(f"Error saving response to file: {e}")
 
-    def save_list_response(self, sender, response: dict[str, Any], **kwargs) -> dict[str, Any]:
+    def save_list_response(self, sender : Any, response: dict[str, Any], **kwargs : Any) -> dict[str, Any]:
         """Save the list response to a JSON file."""
         if not response or not (resource_name := kwargs.get("resource")):
             return response
@@ -171,7 +172,7 @@ class TestDataCollector(Plugin):
 
         return response
 
-    def save_first_item(self, sender, item: dict[str, Any], **kwargs) -> dict[str, Any]:
+    def save_first_item(self, sender : Any, item: dict[str, Any], **kwargs : Any) -> dict[str, Any]:
         """Save the first item from a list to a JSON file."""
         resource_name = kwargs.get("resource")
         if not resource_name:
@@ -192,7 +193,7 @@ class TestDataCollector(Plugin):
         params: dict[str, Any] | None,
         json_response: bool,
         endpoint: str,
-        **kwargs,
+        **kwargs : Any,
     ) -> dict[str, Any]:
         """
         Save the request data to a JSON file.

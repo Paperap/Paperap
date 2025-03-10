@@ -114,7 +114,7 @@ class Document(StandardModel):
         user_can_change: Whether the user can change the document.
 
     Examples:
-        >>> document = client.documents().get(id=1)
+        >>> document = client.documents().get(pk=1)
         >>> document.title = 'Example Document'
         >>> document.save()
         >>> document.title
@@ -331,7 +331,7 @@ class Document(StandardModel):
             List of tags associated with this document.
 
         Examples:
-            >>> document = client.documents().get(id=1)
+            >>> document = client.documents().get(pk=1)
             >>> for tag in document.tags:
             ...     print(f'{tag.name} # {tag.id}')
             'Tag 1 # 1'
@@ -341,7 +341,7 @@ class Document(StandardModel):
             >>> if 5 in document.tags:
             ...     print('Tag ID #5 is associated with this document')
 
-            >>> tag = client.tags().get(id=1)
+            >>> tag = client.tags().get(pk=1)
             >>> if tag in document.tags:
             ...     print('Tag ID #1 is associated with this document')
 
@@ -396,15 +396,15 @@ class Document(StandardModel):
             The correspondent or None if not set.
 
         Examples:
-            >>> document = client.documents().get(id=1)
+            >>> document = client.documents().get(pk=1)
             >>> document.correspondent.name
             'Example Correspondent'
 
         """
         # Return cache
         if self._correspondent is not None:
-            id, value = self._correspondent
-            if id == self.correspondent_id:
+            pk, value = self._correspondent
+            if pk == self.correspondent_id:
                 return value
 
         # None set to retrieve
@@ -454,15 +454,15 @@ class Document(StandardModel):
             The document type or None if not set.
 
         Examples:
-            >>> document = client.documents().get(id=1)
+            >>> document = client.documents().get(pk=1)
             >>> document.document_type.name
             'Example Document Type
 
         """
         # Return cache
         if self._document_type is not None:
-            id, value = self._document_type
-            if id == self.document_type_id:
+            pk, value = self._document_type
+            if pk == self.document_type_id:
                 return value
 
         # None set to retrieve
@@ -512,15 +512,15 @@ class Document(StandardModel):
             The storage path or None if not set.
 
         Examples:
-            >>> document = client.documents().get(id=1)
+            >>> document = client.documents().get(pk=1)
             >>> document.storage_path.name
             'Example Storage Path'
 
         """
         # Return cache
         if self._storage_path is not None:
-            id, value = self._storage_path
-            if id == self.storage_path_id:
+            pk, value = self._storage_path
+            if pk == self.storage_path_id:
                 return value
 
         # None set to retrieve
@@ -638,11 +638,11 @@ class Document(StandardModel):
         raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
     """
     @override
-    def update_locally(self, **kwargs):
+    def update_locally(self, from_db : bool | None = None, **kwargs : Any):
         # Paperless does not support setting notes to None if notes is not already None
         if self._meta.original_data["notes"]:
             if "notes" in kwargs and not kwargs.get("notes"):
                 # TODO: Gracefully delete the notes instead of raising an error.
                 raise ValueError(f"Cannot set notes to None. Notes currently: {self._meta.original_data['notes']}")
 
-        return super().update_locally(**kwargs)
+        return super().update_locally(from_db, **kwargs)

@@ -19,7 +19,7 @@
 
 """
 
-from paperap.models.abstract import BaseModel, Parser, BaseQuerySet, StandardModel, StandardQuerySet
+from paperap.models.abstract import BaseModel, BaseQuerySet, Parser, StandardModel, StandardQuerySet
 from paperap.models.correspondent import Correspondent, CorrespondentQuerySet
 from paperap.models.custom_field import CustomField, CustomFieldQuerySet
 from paperap.models.document import Document, DocumentNote, DocumentQuerySet

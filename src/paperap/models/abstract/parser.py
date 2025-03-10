@@ -67,7 +67,7 @@ class Parser(Generic[_BaseModel]):
 
     @property
     def _meta(self) -> "BaseModel.Meta":
-        return self.model._meta # pyright: ignore[reportPrivateUsage]
+        return self.model._meta # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
 
     def parse(self, value: Any, target_type: type[_T]) -> _T | None:
         """

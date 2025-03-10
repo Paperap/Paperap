@@ -89,7 +89,7 @@ class PaperlessResource(ABC, Generic[_BaseModel, _QuerySet]):
         super().__init__()
 
     @classmethod
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, **kwargs : Any):
         """
         Initialize the subclass.
 
@@ -123,7 +123,7 @@ class PaperlessResource(ABC, Generic[_BaseModel, _QuerySet]):
 
     @property
     def _meta(self) -> "BaseModel.Meta[_BaseModel]":
-        return self.model_class._meta # pyright: ignore[reportPrivateUsage]
+        return self.model_class._meta # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
 
     def all(self) -> _QuerySet:
         """
@@ -133,9 +133,9 @@ class PaperlessResource(ABC, Generic[_BaseModel, _QuerySet]):
             A QuerySet for this resource
 
         """
-        return self.model_class._meta.queryset(self)  # type: ignore # _meta.queryset is always the right queryset type
+        return self._meta.queryset(self)  # type: ignore # _meta.queryset is always the right queryset type
 
-    def filter(self, **kwargs) -> _QuerySet:
+    def filter(self, **kwargs : Any) -> _QuerySet:
         """
         Return a QuerySet filtered by the given parameters.
 
@@ -148,7 +148,7 @@ class PaperlessResource(ABC, Generic[_BaseModel, _QuerySet]):
         """
         return self.all().filter(**kwargs)
 
-    def get(self, *args, **kwargs) -> _BaseModel:
+    def get(self, *args : Any, **kwargs : Any) -> _BaseModel:
         """
         Get a model by ID.
 
@@ -274,7 +274,7 @@ class PaperlessResource(ABC, Generic[_BaseModel, _QuerySet]):
         parsed_data = self.parser.parse_data(item)
         return self.model_class.from_dict(parsed_data)
 
-    def create_model(self, **kwargs) -> _BaseModel:
+    def create_model(self, **kwargs : Any) -> _BaseModel:
         """
         Create a new model instance.
 
@@ -392,7 +392,7 @@ class StandardResource(
     model_class: type[_StandardModel]
 
     @override
-    def get(self, resource_id: int) -> _StandardModel:
+    def get(self, resource_id: int, *args, **kwargs : Any) -> _StandardModel:
         """
         Get a model within this resource by ID.
 

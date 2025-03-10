@@ -6,7 +6,7 @@
        File:    ui_settings.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.3
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -63,6 +63,6 @@ class UISettingsResource(StandardResource[UISettings, UISettingsQuerySet]):
         if ui_settings:
             ui_settings.settings.update(settings)
             return self.update(ui_settings.id, ui_settings.to_dict())
-        else:
-            # Create new settings
-            return self.create({"settings": settings})
+       
+        # Create new settings
+        return self.create({"settings": settings})

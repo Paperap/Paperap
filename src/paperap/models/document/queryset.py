@@ -145,8 +145,8 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         if (slug := kwargs.get("slug")) is not None:
             qs = qs.correspondent_slug(slug, exact=exact, case_insensitive=case_insensitive)
-        if (id := kwargs.get("id")) is not None:
-            qs = qs.correspondent_id(id)
+        if (pk := kwargs.get("id")) is not None:
+            qs = qs.correspondent_id(pk)
         if (name := kwargs.get("name")) is not None:
             qs = qs.correspondent_name(name, exact=exact, case_insensitive=case_insensitive)
 
@@ -244,8 +244,8 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             else:
                 raise TypeError("Invalid value type for document type filter")
 
-        if (id := kwargs.get("id")) is not None:
-            qs = qs.document_type_id(id)
+        if (pk := kwargs.get("id")) is not None:
+            qs = qs.document_type_id(pk)
         if (name := kwargs.get("name")) is not None:
             qs = qs.document_type_name(name, exact=exact, case_insensitive=case_insensitive)
 
@@ -282,9 +282,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter_field_by_str("document_type__name", name, exact=exact, case_insensitive=case_insensitive)
 
-    def storage_path(
-        self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs
-    ) -> Self:
+    def storage_path(self, value: int | str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
         Filter documents by storage path.
 
@@ -320,25 +318,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             client.documents().all().storage_path("Invoices", id=1)
 
         """
-        qs = self
-        if value is not None:
-            if isinstance(value, int):
-                qs = qs.storage_path_id(value)
-            elif isinstance(value, str):
-                qs = qs.storage_path_name(value, exact=exact, case_insensitive=case_insensitive)
-            else:
-                raise TypeError("Invalid value type for storage path filter")
-
-        if (id := kwargs.get("id")) is not None:
-            qs = qs.storage_path_id(id)
-        if (name := kwargs.get("name")) is not None:
-            qs = qs.storage_path_name(name, exact=exact, case_insensitive=case_insensitive)
-
-        # If no filters have been applied, raise an error
-        if qs is self:
-            raise ValueError("No valid filters provided for storage path")
-
-        return qs
+        if isinstance(value, int):
+            return self.storage_path_id(value)
+        return self.storage_path_name(value, exact=exact, case_insensitive=case_insensitive)
 
     def storage_path_id(self, storage_path_id: int) -> Self:
         """
@@ -483,12 +465,12 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             return self.custom_field_query(field, "icontains", value)
         return self.custom_field_query(field, "contains", value)
 
-    def has_custom_field_id(self, id: int | list[int], *, exact: bool = False) -> Self:
+    def has_custom_field_id(self, pk: int | list[int], *, exact: bool = False) -> Self:
         """
         Filter documents that have a custom field with the specified ID(s).
 
         Args:
-            id: A single custom field ID or list of custom field IDs
+            pk: A single custom field ID or list of custom field IDs
             exact: If True, return results that have exactly these ids and no others
 
         Returns:
@@ -496,8 +478,8 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         """
         if exact:
-            return self.filter(custom_fields__id__all=id)
-        return self.filter(custom_fields__id__in=id)
+            return self.filter(custom_fields__id__all=pk)
+        return self.filter(custom_fields__id__in=pk)
 
     def _normalize_custom_field_query_item(self, value: Any) -> str:
         if isinstance(value, tuple):
@@ -523,8 +505,8 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         try:
             if not isinstance(query, CustomFieldQuery):
                 query = CustomFieldQuery(*query)
-        except TypeError:
-            raise TypeError("Invalid custom field query format")
+        except TypeError as te:
+            raise TypeError("Invalid custom field query format") from te
 
         field, operation, value = query
         operation = self._normalize_custom_field_query_item(operation)
@@ -562,7 +544,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         ...
 
     @singledispatchmethod  # type: ignore # mypy does not handle singledispatchmethod with overloads correctly
-    def custom_field_query(self, *args, **kwargs) -> Self:
+    def custom_field_query(self, *args, **kwargs : Any) -> Self:
         raise TypeError("Invalid custom field query format")
 
     @custom_field_query.register  # type: ignore # mypy does not handle singledispatchmethod with overloads correctly
@@ -659,6 +641,8 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         """
         return self.custom_field_query(field, "contains", values)
+
+    def has_custom_fields(self) -> Self:
         return self.filter(has_custom_fields=True)
 
     def no_custom_fields(self) -> Self:

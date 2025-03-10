@@ -70,9 +70,9 @@ class DocumentParser(Parser["Document"]):
         if target_type.__name__ == "DocumentNote":
             # Conditionally import DocumentNote (TODO: This is a hack to avoid a circular import)
             if not hasattr(self, "_document_note_class"):
-                from paperap.models.document.model import DocumentNote
+                from paperap.models.document.model import DocumentNote # pylint: disable=import-outside-toplevel
 
-                self._document_note_class = DocumentNote # type: ignore
+                self._document_note_class = DocumentNote # type: ignore # pylint: disable=attribute-defined-outside-init
             return cast(_T, self._document_note_class.from_dict(value))
 
         return super().parse_other(value, target_type)

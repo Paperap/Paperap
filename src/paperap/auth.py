@@ -33,13 +33,12 @@ class AuthBase(pydantic.BaseModel):
     @abstractmethod
     def get_auth_headers(self) -> dict[str, str]:
         """Get authentication headers."""
-        pass
+        raise NotImplementedError("get_auth_headers must be implemented by subclasses")
 
     @abstractmethod
     def get_auth_params(self) -> dict[str, Any]:
         """Get authentication parameters for requests."""
-        pass
-
+        raise NotImplementedError("get_auth_params must be implemented by subclasses")
 
 class TokenAuth(AuthBase):
     """Authentication using a token."""

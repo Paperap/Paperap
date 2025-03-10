@@ -10,7 +10,7 @@
         File:    test_document_queryset.py
         Project: paperap
         Created: 2025-03-05
-        Version: 0.0.2
+        Version: 0.0.4
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -51,7 +51,7 @@ class BaseTest(DocumentTest):
         super().setUp()
         self.queryset = self.client.documents()
 
-    def _test_method(self, sample_data : dict[str, Any], attr_name : str, expected_value : Any, fn : Callable, *args, action : str = "equal", **kwargs):
+    def _test_method(self, sample_data : dict[str, Any], attr_name : str, expected_value : Any, fn : Callable, *args, action : str = "equal", **kwargs : Any):
         with patch('paperap.client.PaperlessClient.request') as mock_request:
             mock_request.return_value = sample_data
             qs = fn(*args, **kwargs)
@@ -65,7 +65,7 @@ class BaseTest(DocumentTest):
                     self.assertIn(expected_value, value, f"Expected {expected_value} to be in document.{attr_name}")
 
 
-    def _test_no_results(self, fn : Callable, *args, **kwargs):
+    def _test_no_results(self, fn : Callable, *args, **kwargs : Any):
         sample_data = load_sample_data('documents___list__no_results.json')
         with patch('paperap.client.PaperlessClient.request') as mock_request:
             mock_request.return_value = sample_data

@@ -72,4 +72,4 @@ class ShareLinks(StandardModel):
         """
         if not self.document:
             raise ValueError("Document ID not set")
-        return self._client.documents().get(id=self.document)
+        return self._client.documents().get(pk=self.document)

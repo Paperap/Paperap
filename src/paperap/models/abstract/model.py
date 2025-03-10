@@ -24,7 +24,9 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from decimal import Decimal
 from enum import StrEnum
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, Literal, Self, override
+import types
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, Literal, Self, cast, override
+import logging
 
 import pydantic
 from pydantic import Field, PrivateAttr
@@ -32,6 +34,7 @@ from typing_extensions import TypeVar
 from yarl import URL
 
 from paperap.const import FilteringStrategies, ModelStatus
+from paperap.exceptions import ConfigurationError
 from paperap.models.abstract.meta import StatusContext
 from paperap.models.abstract.parser import Parser
 from paperap.models.abstract.queryset import BaseQuerySet
@@ -41,8 +44,9 @@ if TYPE_CHECKING:
     from paperap.client import PaperlessClient
     from paperap.resources.base import PaperlessResource, StandardResource
 
-_Self = TypeVar("_Self", bound="BaseModel")
+logger = logging.getLogger(__name__)
 
+_Self = TypeVar("_Self", bound="BaseModel")
 
 class BaseModel(pydantic.BaseModel, ABC):
     """
@@ -70,7 +74,6 @@ class BaseModel(pydantic.BaseModel, ABC):
                 api_endpoint: = URL("http://localhost:8000/api/documents/")
 
     """
-
     _meta: "ClassVar[Meta[Self]]"
 
     class Meta(Generic[_Self]):
@@ -98,7 +101,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         # It will default to the classname
         name: str
         # Fields that should not be modified. These will be appended to read_only_fields for all parent classes.
-        read_only_fields: ClassVar[set[str]] = {"id", "created", "updated"}
+        read_only_fields: ClassVar[set[str]] = set()
         # Fields that are disabled by Paperless NGX for filtering.
         # These will be appended to filtering_disabled for all parent classes.
         filtering_disabled: ClassVar[set[str]] = set()
@@ -187,7 +190,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             return True
 
     @classmethod
-    def __init_subclass__(cls, **kwargs) -> None:
+    def __init_subclass__(cls, **kwargs : Any) -> None:
         """
         Initialize subclass and set up metadata.
 
@@ -196,18 +199,44 @@ class BaseModel(pydantic.BaseModel, ABC):
 
         """
         super().__init_subclass__(**kwargs)
-
+        # Ensure the subclass has its own Meta definition.
+        # If not, create a new one inheriting from the parent’s Meta.
+        # If the subclass hasn't defined its own Meta, auto-generate one.
+        if "Meta" not in cls.__dict__:
+            top_meta : type[BaseModel.Meta[Self]] | None = None
+            # Iterate over ancestors to get the top-most explicitly defined Meta.
+            for base in cls.__mro__[1:]:
+                print(f'Base for {cls.__name__} is {base.__name__}')
+                if "Meta" in base.__dict__:
+                    top_meta = cast(type[BaseModel.Meta[Self]], base.Meta)
+                    break
+            if top_meta is None:
+                # This should never happen.
+                raise ConfigurationError(f"Meta class not found in {cls.__name__} or its bases")
+            
+            # Create a new Meta class that inherits from the top-most Meta.
+            meta_attrs = {
+                k: v for k, v in vars(top_meta).items()
+                if not k.startswith("_")  # Avoid special attributes like __parameters__
+            }
+            cls.Meta = type("Meta", (top_meta,), meta_attrs) # type: ignore # mypy complains about setting to a type
+            logger.debug(
+                "Auto-generated Meta for %s inheriting from %s",
+                cls.__name__,
+                top_meta.__name__,
+            )
+            
         # Append read_only_fields from all parents to Meta
         # Same with filtering_disabled
         # Retrieve filtering_fields from the attributes of the class
-        read_only_fields = (cls.Meta.read_only_fields or set()).copy()
-        filtering_disabled = (cls.Meta.filtering_disabled or set()).copy()
+        read_only_fields = (cls.Meta.read_only_fields or set[str]()).copy()
+        filtering_disabled = (cls.Meta.filtering_disabled or set[str]()).copy()
         filtering_fields = set(cls.__annotations__.keys())
         supported_filtering_params = cls.Meta.supported_filtering_params
         blacklist_filtering_params = cls.Meta.blacklist_filtering_params
         field_map = cls.Meta.field_map
         for base in cls.__bases__:
-            _meta: BaseModel.Meta | None
+            _meta: BaseModel.Meta[Self] | None
             if _meta := getattr(base, "Meta", None):
                 if hasattr(_meta, "read_only_fields"):
                     read_only_fields.update(_meta.read_only_fields)
@@ -231,7 +260,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         cls.Meta.field_map = field_map
 
         # Instantiate _meta
-        cls._meta = cls.Meta(cls)
+        cls._meta = cls.Meta(cls) # type: ignore # due to a mypy bug in version 1.15.0 (issue #18776)
 
         # Set name defaults
         if not hasattr(cls._meta, "name"):
@@ -245,7 +274,7 @@ class BaseModel(pydantic.BaseModel, ABC):
     )
 
     @property
-    def _resource(self) -> "PaperlessResource":
+    def _resource(self) -> "PaperlessResource[Self]":
         """
         Get the resource associated with this model.
 
@@ -266,7 +295,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         return self._meta.resource.client
 
-    def __init__(self, resource: "PaperlessResource | None" = None, **data):
+    def __init__(self, resource: "PaperlessResource[Self] | None" = None, **data : Any):
         """
         Initialize the model with resource and data.
 
@@ -341,7 +370,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             data = doc.to_dict()
 
         """
-        exclude = set() if include_read_only else set(self._meta.read_only_fields)
+        exclude : set[str] = set() if include_read_only else set(self._meta.read_only_fields)
 
         return self.model_dump(
             exclude=exclude,
@@ -392,7 +421,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         # TODO save
         return cls(**kwargs)
 
-    def update_locally(self, **kwargs) -> None:
+    def update_locally(self, from_db : bool | None = None, **kwargs : Any) -> None:
         """
         Update model attributes without triggering automatic save.
 
@@ -403,7 +432,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             Self with updated values
 
         """
-        from_db = kwargs.pop("from_db", False)
+        from_db = from_db if from_db is not None else False
 
         with StatusContext(self, ModelStatus.UPDATING):
             for name, value in kwargs.items():
@@ -494,8 +523,8 @@ class StandardModel(BaseModel, ABC):
     """
 
     id: int = Field(description="Unique identifier from Paperless NGX", default=0)
-
-    class Meta(BaseModel.Meta[_Self], Generic[_Self]):
+    
+    class Meta(BaseModel.Meta):
         """
         Metadata for the StandardModel.
 
@@ -593,7 +622,7 @@ class StandardModel(BaseModel, ABC):
         return self.id == 0
 
     @override
-    def __setattr__(self, name, value):
+    def __setattr__(self, name : str, value : Any):
         """
         Override attribute setting to automatically call save when attributes change.
 

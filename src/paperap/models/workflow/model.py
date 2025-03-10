@@ -21,15 +21,16 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any, Optional, Self
 
 from pydantic import Field
 
 from paperap.models.abstract.model import StandardModel
 from paperap.models.workflow.queryset import WorkflowActionQuerySet, WorkflowQuerySet, WorkflowTriggerQuerySet
+from paperap.models.mixins.models import MatcherMixin
 
 
-class WorkflowTrigger(StandardModel):
+class WorkflowTrigger(StandardModel, MatcherMixin):
     """
     Represents a workflow trigger in Paperless-NgX.
     """
@@ -39,16 +40,12 @@ class WorkflowTrigger(StandardModel):
     filter_path: str | None = None
     filter_filename: str | None = None
     filter_mailrule: str | None = None
-    matching_algorithm: int | None = None
-    match: str | None = None
-    is_insensitive: bool
     filter_has_tags: list[int] = Field(default_factory=list)
     filter_has_correspondent: int | None = None
     filter_has_document_type: int | None = None
 
     class Meta(StandardModel.Meta):
         queryset = WorkflowTriggerQuerySet
-
 
 class WorkflowAction(StandardModel):
     """

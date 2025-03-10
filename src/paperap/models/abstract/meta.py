@@ -19,7 +19,7 @@
 
 """
 
-from typing import TYPE_CHECKING, Iterable, Literal
+from typing import TYPE_CHECKING, Any, Iterable, Literal
 
 from paperap.const import ModelStatus
 
@@ -56,7 +56,7 @@ class StatusContext:
     @property
     def _meta(self) -> "BaseModel.Meta":
         """Read-only access to the model's meta."""
-        return self.model._meta # pyright: ignore[reportPrivateUsage]
+        return self.model._meta # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
     
     @property
     def new_status(self) -> ModelStatus:
@@ -80,7 +80,12 @@ class StatusContext:
         # Do NOT return context manager, because we want to guarantee that the status is reverted
         # so we do not want to allow access to the context manager object
 
-    def __exit__(self, exc_type, exc_value, traceback) -> None:
+    def __exit__(
+        self, 
+        exc_type : type[BaseException] | None, 
+        exc_value : BaseException | None, 
+        traceback : Iterable[Any]
+    ) -> None:
         if self.previous_status is not None:
             self._meta.status = self.previous_status
         else:

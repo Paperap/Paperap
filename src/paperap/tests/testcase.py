@@ -89,12 +89,12 @@ from paperap.resources import (
 )
 
 def load_sample_data(filename : str) -> dict[str, Any]:
-	# Load sample response from tests/sample_data/{model}_{endpoint}.json
-	sample_data_filepath = Path(__file__).parent.parent.parent.parent / "tests" / "sample_data" / filename
-	with open(sample_data_filepath, "r") as f:
-		text = f.read()
-		sample_data = json.loads(text)
-	return sample_data
+    # Load sample response from tests/sample_data/{model}_{endpoint}.json
+    sample_data_filepath = Path(__file__).parent.parent.parent.parent / "tests" / "sample_data" / filename
+    with open(sample_data_filepath, "r", encoding="utf-8") as f:
+        text = f.read()
+        sample_data = json.loads(text)
+    return sample_data
 
 _StandardModel = TypeVar("_StandardModel", bound="StandardModel", default="StandardModel")
 _StandardResource = TypeVar("_StandardResource", bound="StandardResource", default="StandardResource[_StandardModel]")
@@ -125,7 +125,7 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource]):
 
     def setup_resource(self):
         if not getattr(self, "resource", None) and (resource_class := getattr(self, 'resource_class', None)):
-            self.resource = resource_class(client=self.client)
+            self.resource = resource_class(client=self.client) # pylint: disable=not-callable
 
     def setup_model_data(self):
         if getattr(self, "resource", None):
@@ -135,10 +135,10 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource]):
         if getattr(self, "resource", None) and getattr(self, "factory", None):
             self.model = self.create_model(**self.model_data)
 
-    def create_model(self, *args, **kwargs) -> _StandardModel:
+    def create_model(self, *args, **kwargs : Any) -> _StandardModel:
         return self.factory.build(*args, **kwargs)
 
-    def create_list(self, count : int, *args, **kwargs) -> list[_StandardModel]:
+    def create_list(self, count : int, *args, **kwargs : Any) -> list[_StandardModel]:
         return [self.create_model(*args, **kwargs) for _ in range(count)]
 
     def load_model(self, resource_name : str | None = None) -> _StandardModel:
@@ -149,7 +149,7 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource]):
         sample_data = self.load_list_data(resource_name)
         return [self.create_model(**item) for item in sample_data["results"]]
 
-    def _call_list_resource(self, resource : type[StandardResource[_StandardModel]] | StandardResource[_StandardModel] | None = None, **kwargs) -> BaseQuerySet[_StandardModel]:
+    def _call_list_resource(self, resource : type[StandardResource[_StandardModel]] | StandardResource[_StandardModel] | None = None, **kwargs : Any) -> BaseQuerySet[_StandardModel]:
         if not resource:
             if not (resource := getattr(self,"resource", None)):
                 raise ValueError("Resource not provided")
@@ -159,14 +159,14 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource]):
             return resource(client=self.client).filter(**kwargs)
         return resource.filter(**kwargs)
 
-    def _call_get_resource(self, resource : type[StandardResource[_StandardModel]] | StandardResource[_StandardModel], id : int) -> _StandardModel:
+    def _call_get_resource(self, resource : type[StandardResource[_StandardModel]] | StandardResource[_StandardModel], pk : int) -> _StandardModel:
         # If resource is a type, instantiate it
         if isinstance(resource, type):
-            return resource(client=self.client).get(id)
+            return resource(client=self.client).get(pk)
 
-        return resource.get(id)
+        return resource.get(pk)
 
-    def list_resource(self, resource : type[StandardResource[_StandardModel]] | StandardResource[_StandardModel] | None = None, **kwargs) -> BaseQuerySet[_StandardModel]:
+    def list_resource(self, resource : type[StandardResource[_StandardModel]] | StandardResource[_StandardModel] | None = None, **kwargs : Any) -> BaseQuerySet[_StandardModel]:
         if not resource:
             if not (resource := getattr(self, "resource", None)):
                 raise ValueError("Resource not provided")
@@ -183,14 +183,14 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource]):
         except FileNotFoundError:
             return self._call_list_resource(resource, **kwargs)
 
-    def get_resource(self, resource : type[StandardResource[_StandardModel]] | StandardResource[_StandardModel], id : int) -> _StandardModel:
+    def get_resource(self, resource : type[StandardResource[_StandardModel]] | StandardResource[_StandardModel], pk : int) -> _StandardModel:
         try:
             sample_data = self.load_model_data()
             with patch("paperap.client.PaperlessClient.request") as request:
                 request.return_value = sample_data
-                return self._call_get_resource(resource, id)
+                return self._call_get_resource(resource, pk)
         except FileNotFoundError:
-            return self._call_get_resource(resource, id)
+            return self._call_get_resource(resource, pk)
 
     def load_model_data(self, resource_name : str | None = None) -> dict[str, Any]:
         if not getattr(self, "model_data", None):

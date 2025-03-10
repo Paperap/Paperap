@@ -38,7 +38,7 @@ class CustomFieldQuerySet(StandardQuerySet["CustomField"], HasDocumentCount):
     QuerySet for Paperless-ngx custom fields with specialized filtering methods.
     """
 
-    def name(self, name: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def name(self, name: str, *, exact: bool = True) -> Self:
         """
         Filter custom fields by name.
 

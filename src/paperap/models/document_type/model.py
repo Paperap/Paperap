@@ -24,12 +24,13 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from paperap.models.abstract.model import StandardModel
 from paperap.models.document_type.queryset import DocumentTypeQuerySet
+from paperap.models.mixins.models import MatcherMixin
 
 if TYPE_CHECKING:
     from paperap.models.document import Document, DocumentQuerySet
 
 
-class DocumentType(StandardModel):
+class DocumentType(StandardModel, MatcherMixin):
     """
     Represents a document type in Paperless-NgX.
 
@@ -51,12 +52,8 @@ class DocumentType(StandardModel):
         doc_type = DocumentType(name="Invoice", slug="invoice", match="INV-*")
 
     """
-
     name: str
     slug: str | None = None
-    match: str | None = None
-    matching_algorithm: int | None = None
-    is_insensitive: bool
     document_count: int = 0
     owner: int | None = None
     user_can_change: bool | None = None

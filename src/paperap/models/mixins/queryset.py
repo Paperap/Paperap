@@ -21,7 +21,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Protocol, Self
+from typing import TYPE_CHECKING, Any, Protocol, Self
 
 if TYPE_CHECKING:
     from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 
 class QuerySetProtocol(Protocol):
     def all(self) -> Self: ...
-    def filter(self, **kwargs) -> Self: ...
+    def filter(self, **kwargs : Any) -> Self: ...
     def filter_field_by_str(
         self, field: str, value: str, *, exact: bool = True, case_insensitive: bool = True
     ) -> Self: ...

@@ -196,7 +196,7 @@ class PaperlessClient:
             plugin_config: Optional configuration dictionary for plugins.
 
         """
-        from paperap.plugin_manager import PluginManager
+        from paperap.plugin_manager import PluginManager # type: ignore # pylint: disable=import-outside-toplevel
 
         # Create and configure the plugin manager
         self.plugin_manager = PluginManager()
@@ -431,6 +431,22 @@ class PaperlessClient:
         files: dict[str, Any] | None = None,
         json_response: bool = True,
     ) -> dict[str, Any] | bytes | None:
+        """
+        Make a request to the Paperless-NgX API.
+
+        Generally, this should be done using resources, not by calling this method directly.
+
+        Args:
+            method: HTTP method (GET, POST, PUT, DELETE).
+            endpoint: API endpoint relative to base URL.
+            params: Query parameters for the request.
+            data: Request body data.
+            files: Files to upload.
+            json_response: Whether to parse the response as JSON.
+
+        Returns:
+            Parsed response data.
+        """
         kwargs = {
             "client": self,
             "method": method,
@@ -473,20 +489,20 @@ class PaperlessClient:
                 # Try different possible error formats
                 if "detail" in error_data:
                     return error_data["detail"]
-                elif "error" in error_data:
+                if "error" in error_data:
                     return error_data["error"]
-                elif "non_field_errors" in error_data:
+                if "non_field_errors" in error_data:
                     return ", ".join(error_data["non_field_errors"])
-                else:
-                    # Handle nested error messages
-                    messages = []
-                    for key, value in error_data.items():
-                        if isinstance(value, list):
-                            values = [str(i) for i in value]
-                            messages.append(f"{key}: {', '.join(values)}")
-                        else:
-                            messages.append(f"{key}: {value}")
-                    return "; ".join(messages)
+
+                # Handle nested error messages
+                messages = []
+                for key, value in error_data.items():
+                    if isinstance(value, list):
+                        values = [str(i) for i in value]
+                        messages.append(f"{key}: {', '.join(values)}")
+                    else:
+                        messages.append(f"{key}: {value}")
+                return "; ".join(messages)
             return str(error_data)
         except ValueError:
             return response.text or f"HTTP {response.status_code}"
@@ -553,14 +569,13 @@ class PaperlessClient:
         except requests.exceptions.HTTPError as he:
             if he.response.status_code == 401:
                 raise AuthenticationError("Invalid username or password") from he
-            else:
-                try:
-                    error_data = he.response.json()
-                    error_message = error_data.get("detail", str(he))
-                except (ValueError, KeyError):
-                    error_message = str(he)
+            try:
+                error_data = he.response.json()
+                error_message = error_data.get("detail", str(he))
+            except (ValueError, KeyError):
+                error_message = str(he)
 
-                raise RequestError(f"Failed to generate token: {error_message}") from he
+            raise RequestError(f"Failed to generate token: {error_message}") from he
         except requests.exceptions.RequestException as re:
             raise RequestError(f"Error while requesting a new token: {str(re)}") from re
         except (ValueError, KeyError) as ve:

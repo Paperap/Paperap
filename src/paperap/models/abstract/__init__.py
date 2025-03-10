@@ -20,6 +20,6 @@
 """
 
 from paperap.models.abstract.meta import StatusContext
-from paperap.models.abstract.model import FilteringStrategies, BaseModel, StandardModel
+from paperap.models.abstract.model import BaseModel, FilteringStrategies, StandardModel
 from paperap.models.abstract.parser import Parser
 from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet

@@ -189,8 +189,8 @@ class TestModelFromDict(ModelTestCase):
                     self.fail(f"Failed to instantiate {model_class.__name__}.from_dict: {ex}")
 
                 self.assertIsInstance(model, model_class, f"Expected {model_class.__name__}, got {type(model)}")
-                if id := getattr(model, 'id', None):
-                    self.assertEqual(id, sample_data.get("id"), f"{model_class.__name__} id mismatch")
+                if pk := getattr(model, 'id', None):
+                    self.assertEqual(pk, sample_data.get("id"), f"{model_class.__name__} id mismatch")
 
                 model_fields = self._get_model_fields(model)
 

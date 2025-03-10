@@ -237,7 +237,7 @@ property-classes = ["abc.abstractproperty"]
 
 # Regular expression matching correct type variable names. If left empty, type
 # variable names will be checked with the set naming style.
-# typevar-rgx =
+typevar-rgx = "^_?[A-Za-z]+$"
 
 # Naming style matching correct variable names.
 variable-naming-style = "snake_case"
@@ -303,7 +303,7 @@ min-public-methods = 2
 
 [tool.pylint.exceptions]
 # Exceptions that will emit a warning when caught.
-overgeneral-exceptions = ["BaseException", "Exception"]
+overgeneral-exceptions = ["builtin.Exception"]
 
 [tool.pylint.format]
 # Expected format of line ending, e.g. empty (any line ending), LF or CRLF.
@@ -388,12 +388,59 @@ confidence = ["HIGH", "CONTROL_FLOW", "INFERENCE", "INFERENCE_FAILURE", "UNDEFIN
 # no Warning level messages displayed, use "--disable=all --enable=classes
 # --disable=W".
 disable = [
+  # Enabled Rules
+  #"unnecessary-lambda",
+  #"unspecified-encoding",
+  #"no-else-raises",
+  #"no-else-raise",
+  #"no-else-return",
+  #"invalid-name",
+  #"no-else-raises",
+  #"use-yield-from",
+  #"unreachable",
+  #"not-callable",
+  #"protected-access",
+  #"bad-indentation",
+  #"inconsistent-return-statements",
+  #"raise-missing-from",
+  #"unused-wildcard-import",
+  #"wildcard-import",
+  #"unnecessary-pass",
+  #"redefined-builtin",
+  #"import-outside-toplevel",
+  #"too-many-public-methods",
+  #"attribute-defined-outside-init",
+  #"attribute-defined-outside-init",
+  #"unknown-option-value",
+  #"multiple-imports",
+  #"logging-fstring-interpolation",
+
+  # Temporarily disabled until errors are resolved
   "missing-function-docstring",
-  "redundant-returns-doc",
-  "pointless-string-statement",
-  "multiple-imports",
+  "fixme",
+  "too-many-public-methods",
+  "duplicate-code",
+  "unused-argument",
+  "too-many-branches",
+  "too-many-return-statements",
+  "arguments-differ",
+  "line-too-long",
+  "wrong-import-order",
+
+  # Disabled indefinitely
+  "unused-import",
+  "trailing-whitespace",
+  "missing-class-docstring",
+  "too-few-public-methods",
+  "too-many-arguments",
+  "unnecessary-ellipsis",
+  "too-many-ancestors",
   "missing-final-newline",
   "trailing-newlines",
+  "pointless-string-statement",
+  "too-many-instance-attributes",
+  "too-many-positional-arguments",
+  "typevar-name-incorrect-variance",
 ]
 
 # Enable the message, report, category or checker with the given id(s). You can
@@ -895,13 +942,7 @@ reportImportCycles = "none"
 reportUnusedImport = "none"
 # This enforces strict typing in cases where it is critical
 reportUnnecessaryIsInstance = "none"
-
-# Rules that currently trigger errors which I'm assessing
-reportUnknownArgumentType = "none"
-reportUnknownMemberType = "none"
-reportUnknownParameterType = "none"
-reportUnknownVariableType = "none"
-reportMissingParameterType = "none"
+# pyright does not handle implicit Any or defaults, causing lots of clutter
 reportMissingTypeArgument = "none"
 
 # ------------------- #
@@ -910,6 +951,11 @@ reportMissingTypeArgument = "none"
 # These will be re-enabled once the errors they generate are addressed.
 reportUninitializedInstanceVariable = "none"
 reportUnusedCallResult = "none"
+reportMissingParameterType = "none"
+reportUnknownArgumentType = "none"
+reportUnknownMemberType = "none"
+reportUnknownParameterType = "none"
+reportUnknownVariableType = "none"
 
 [tool.mypy]
 python_version = "3.12"
@@ -923,7 +969,8 @@ show_error_code_links = true
 pretty = true
 ignore_missing_imports = false
 implicit_optional = false
-strict = true  # Enable strict typing
+strict = true
+
 disable_error_code = [
   "unused-ignore",
   # Temporary ignores
@@ -947,6 +994,7 @@ dev = [
     "bandit>=1.8.3",
     "black>=25.1.0",
     "factory-boy>=3.3.3",
+    "icecream>=2.1.4",
     "mypy>=1.15.0",
     "pre-commit>=4.1.0",
     "prospector>=1.15.2",

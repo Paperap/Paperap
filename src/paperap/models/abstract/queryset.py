@@ -128,7 +128,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
             {'id', 'added', 'modified'}
 
         """
-        return self._model._meta # pyright: ignore[reportPrivateUsage]
+        return self._model._meta # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
 
     def _reset(self) -> None:
         """
@@ -174,7 +174,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
             self._reset()
             self.filters.update(**values)
 
-    def filter(self, **kwargs) -> Self:
+    def filter(self, **kwargs : Any) -> Self:
         """
         Return a new QuerySet with the given filters applied.
 
@@ -216,7 +216,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
 
         return self._chain(filters={**self.filters, **processed_filters})
 
-    def exclude(self, **kwargs) -> Self:
+    def exclude(self, **kwargs : Any) -> Self:
         """
         Return a new QuerySet excluding objects with the given filters.
 
@@ -246,14 +246,14 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
 
         return self._chain(filters={**self.filters, **exclude_filters})
 
-    def get(self, id: int) -> _BaseModel:
+    def get(self, pk: Any) -> _BaseModel:
         """
         Retrieve a single object from the API.
 
         Raises NotImplementedError. Subclasses may implement this.
 
         Args:
-            id: The ID of the object to retrieve
+             pk: The primary key (e.g. the id) of the object to retrieve
 
         Returns:
             A single object matching the query
@@ -526,7 +526,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
 
         yield from self.resource.handle_response(response)
 
-    def _chain(self, **kwargs) -> Self:
+    def _chain(self, **kwargs : Any) -> Self:
         """
         Return a copy of the current BaseQuerySet with updated attributes.
 
@@ -547,7 +547,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         # Update with provided kwargs
         for key, value in kwargs.items():
             if key == "filters" and value:
-                clone._update_filters(value)
+                clone._update_filters(value) # pylint: disable=protected-access
             else:
                 setattr(clone, key, value)
 
@@ -564,9 +564,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         """
         # If we have a fully populated cache, use it
         if self._fetch_all:
-            for obj in self._result_cache or []:
-                yield obj
-            return
+            yield from self._result_cache
 
         if not self._iter:
             # Start a new iteration
@@ -731,12 +729,12 @@ class StandardQuerySet(BaseQuerySet[_StandardModel], Generic[_StandardModel]):
     """
 
     @override
-    def get(self, id: int) -> _StandardModel:
+    def get(self, pk: int) -> _StandardModel:
         """
         Retrieve a single object from the API.
 
         Args:
-            id: The ID of the object to retrieve
+            pk: The ID of the object to retrieve
 
         Returns:
             A single object matching the query
@@ -752,11 +750,11 @@ class StandardQuerySet(BaseQuerySet[_StandardModel], Generic[_StandardModel]):
         # Attempt to find it in the result cache
         if self._result_cache:
             for obj in self._result_cache:
-                if obj.id == id:
+                if obj.id == pk:
                     return obj
 
         # Direct lookup by ID - use the resource's get method
-        return self.resource.get(id)
+        return self.resource.get(pk)
 
     def id(self, value: int | list[int]) -> Self:
         """
@@ -789,5 +787,5 @@ class StandardQuerySet(BaseQuerySet[_StandardModel], Generic[_StandardModel]):
 
         """
         # ID means a match, even if the data is outdated
-        id = item if isinstance(item, int) else item.id
-        return any(obj.id == id for obj in self)
+        pk = item if isinstance(item, int) else item.id
+        return any(obj.id == pk for obj in self)

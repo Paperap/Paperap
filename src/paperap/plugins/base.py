@@ -38,7 +38,7 @@ class Plugin(ABC):
     client: PaperlessClient
     config: dict[str, Any]
 
-    def __init__(self, client: "PaperlessClient", **kwargs):
+    def __init__(self, client: "PaperlessClient", **kwargs : Any):
         """
         Initialize the plugin.
 
@@ -55,12 +55,10 @@ class Plugin(ABC):
     @abstractmethod
     def setup(self):
         """Register signal handlers and perform other initialization tasks."""
-        pass
 
     @abstractmethod
     def teardown(self):
         """Clean up resources when the plugin is disabled or the application exits."""
-        pass
 
     @classmethod
     def get_config_schema(cls) -> dict[str, Any]:

@@ -86,7 +86,7 @@ class PluginManager:
         try:
             package = importlib.import_module(package_name)
         except ImportError:
-            logger.warning(f"Could not import plugin package: {package_name}")
+            logger.warning("Could not import plugin package: %s", package_name)
             return
 
         # Find all modules in the package
