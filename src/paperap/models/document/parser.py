@@ -40,6 +40,12 @@ _T = TypeVar("_T")
 
 
 class DocumentParser(Parser["Document"]):
+    """
+    Parser for Document model instances.
+
+    Provides methods to parse various types of data into Document model instances.
+    """
+    
     @override
     def parse_other(self, value: Any, target_type: type[_T]) -> _T | None:
         """
