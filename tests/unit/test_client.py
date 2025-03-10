@@ -59,12 +59,12 @@ class TestClient(TestCase):
             self.assertIsInstance(document, Document, f"Expected Document, got {type(document)}")
             self.assertIsInstance(document.id, int, f"Document id is wrong type: {type(document.id)}")
             self.assertIsInstance(document.title, str, f"Document title is wrong type: {type(document.title)}")
-            if document.correspondent:
-                self.assertIsInstance(document.correspondent, int, f"Document correspondent is wrong type: {type(document.correspondent)}")
-            self.assertIsInstance(document.document_type, int, f"Document document_type is wrong type: {type(document.document_type)}")
-            self.assertIsInstance(document.tags, list, f"Document tags is wrong type: {type(document.tags)}")
+            if document.correspondent_id:
+                self.assertIsInstance(document.correspondent_id, int, f"Document correspondent is wrong type: {type(document.correspondent_id)}")
+            self.assertIsInstance(document.document_type_id, int, f"Document document_type is wrong type: {type(document.document_type_id)}")
+            self.assertIsInstance(document.tag_ids, list, f"Document tags is wrong type: {type(document.tag_ids)}")
 
-            for tag in document.tags:
+            for tag in document.tag_ids:
                 self.assertIsInstance(tag, int, f"Document tag is wrong type: {type(tag)}")
 
             # Ensure paging works (twice), then break

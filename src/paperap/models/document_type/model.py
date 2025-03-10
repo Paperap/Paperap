@@ -52,6 +52,7 @@ class DocumentType(StandardModel, MatcherMixin):
         doc_type = DocumentType(name="Invoice", slug="invoice", match="INV-*")
 
     """
+
     name: str
     slug: str | None = None
     document_count: int = 0

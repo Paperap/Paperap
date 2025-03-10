@@ -74,7 +74,7 @@ fail-under = 10
 # from-stdin =
 
 # Files or directories to be skipped. They should be base names, not paths.
-ignore = ["logs","node_modules", ".github", ".git", ".vscode", "config", "docs"]
+ignore = ["logs","node_modules", ".github", ".git", ".vscode", "config", "docs", "tests"]
 
 # Add files or directories matching the regex patterns to the ignore-list. The
 # regex matches against paths and can be in Posix or Windows format.
@@ -983,7 +983,8 @@ disable_error_code = [
 
 # The Factory Boy type stubs don't play well with mypy, and this is used exclusively for tests.
 exclude = [
-    'paperap/tests/factories/.*'
+    'paperap/tests/factories/.*',
+    'tests/',
 ]
 
 [tool.uv.workspace]

@@ -25,8 +25,8 @@ from typing import TYPE_CHECKING, Any, Optional
 from pydantic import Field
 
 from paperap.models.abstract.model import StandardModel
-from paperap.models.tag.queryset import TagQuerySet
 from paperap.models.mixins.models import MatcherMixin
+from paperap.models.tag.queryset import TagQuerySet
 
 if TYPE_CHECKING:
     from paperap.models.document import Document, DocumentQuerySet

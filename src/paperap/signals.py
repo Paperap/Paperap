@@ -165,7 +165,6 @@ class Signal(Generic[_ReturnType]):
             for handler in self._handlers[priority]:
                 if handler not in self._disabled_handlers:
                     # Pass the current value as the first argument, along with any other args
-                    # print(f'Calling handler with: cv: {current_value}, remaining: {remaining_args}')
                     current_value = handler(current_value, *remaining_args, **kwargs)
 
         return current_value
@@ -230,8 +229,8 @@ class SignalRegistry:
         """
         if not hasattr(cls, "_instance"):
             cls._instance = super().__new__(cls)
-            cls._instance._signals = {}
-            cls._instance._queue = {
+            cls._signals = {}
+            cls._queue = {
                 "connect": {},  # {signal_name: {(handler, priority), ...}}
                 "disconnect": {},  # {signal_name: {handler, ...}}
                 "disable": {},  # {signal_name: {handler, ...}}
@@ -261,23 +260,22 @@ class SignalRegistry:
             signal: The signal to register.
 
         """
-        self = cls.get_instance()
-        self._signals[signal.name] = signal
+        cls._signals[signal.name] = signal
 
         # Process queued connections
-        for handler, priority in self._queue["connect"].pop(signal.name, set()):
+        for handler, priority in cls._queue["connect"].pop(signal.name, set()):
             signal.connect(handler, priority)
 
         # Process queued disconnections
-        for handler in self._queue["disconnect"].pop(signal.name, set()):
+        for handler in cls._queue["disconnect"].pop(signal.name, set()):
             signal.disconnect(handler)
 
         # Process queued disables
-        for handler in self._queue["disable"].pop(signal.name, set()):
+        for handler in cls._queue["disable"].pop(signal.name, set()):
             signal.disable(handler)
 
         # Process queued enables
-        for handler in self._queue["enable"].pop(signal.name, set()):
+        for handler in cls._queue["enable"].pop(signal.name, set()):
             signal.enable(handler)
 
     @classmethod
@@ -297,15 +295,14 @@ class SignalRegistry:
             ValueError: If the action is invalid.
 
         """
-        self = cls.get_instance()
-        if action not in self._queue:
+        if action not in cls._queue:
             raise ValueError(f"Invalid queue action: {action}")
 
         if action == "connect":
             priority = priority if priority is not None else SignalPriority.NORMAL
-            self._queue[action].setdefault(name, set()).add((handler, priority))
+            cls._queue[action].setdefault(name, set()).add((handler, priority))
         else:
-            self._queue[action].setdefault(name, set()).add(handler)
+            cls._queue[action].setdefault(name, set()).add(handler)
 
     @classmethod
     def get(cls, name: str) -> Signal | None:
@@ -319,8 +316,7 @@ class SignalRegistry:
             The signal instance, or None if not found.
 
         """
-        self = cls.get_instance()
-        return self._signals.get(name)
+        return cls._signals.get(name)
 
     @classmethod
     def list_signals(cls) -> list[str]:
@@ -331,8 +327,7 @@ class SignalRegistry:
             A list of signal names.
 
         """
-        self = cls.get_instance()
-        return list(self._signals.keys())
+        return list(cls._signals.keys())
 
     @classmethod
     def create(cls, name: str, description: str = "", return_type: type[_ReturnType] | None = None) -> Signal:
@@ -419,7 +414,6 @@ class SignalRegistry:
 
         arg_tuple = (args,)
         kwargs = kwargs or {}
-        # print(f'Calling signal with args: {arg_tuple} and kwargs: {kwargs}')
         return signal.emit(*arg_tuple, **kwargs)
 
     @classmethod
@@ -498,3 +492,5 @@ class SignalRegistry:
 
         """
         return handler in cls._queue[action].get(name, set())
+
+registry = SignalRegistry.get_instance()

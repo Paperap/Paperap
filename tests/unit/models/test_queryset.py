@@ -27,6 +27,7 @@ from __future__ import annotations
 import logging
 import os
 from string import Template
+from typing import override
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -172,6 +173,7 @@ class TestQuerySetGetNoCache(DocumentTest):
         self.assertEqual(result.title, sample_document["title"])
 
 class TestQuerySetGetNoCacheFailure(DocumentTest):
+    @override
     def setUp(self):
         super().setUp()
         self.qs = StandardQuerySet(self.resource)
@@ -205,6 +207,7 @@ class TestQuerySetGetCache(DocumentTest):
         self.assertEqual(result.title, self.modified_doc_title)
 
 class TestQuerySetGetCacheFailure(DocumentTest):
+    @override
     def setUp(self):
         super().setUp()
         self.qs = StandardQuerySet(self.resource)
@@ -332,6 +335,7 @@ class TestQuerySetIter(TestCase):
         self.assertEqual(result, ["a", "b"])
 
 class TestQuerySetGetItem(TestCase):
+    @override
     def setUp(self):
         super().setUp()
         self.resource = DummyResource()

@@ -10,7 +10,7 @@
         File:    test_tags.py
         Project: paperap
         Created: 2025-03-05
-        Version: 0.0.3
+        Version: 0.0.4
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,7 +25,7 @@
 from __future__ import annotations
 
 import os
-from typing import Iterable
+from typing import Iterable, override
 from unittest.mock import patch, MagicMock
 from datetime import datetime
 from paperap.models import *
@@ -38,6 +38,7 @@ sample_tag = load_sample_data('tags_item.json')
 
 class TestTagsInit(TagTest):
 
+    @override
     def setup_model_data(self):
         self.model_data = {
             "id": 1,
@@ -75,6 +76,7 @@ class TestTagsInit(TagTest):
 
 class TestTag(TagTest):
 
+    @override
     def setup_model_data(self):
         self.model_data = {
             "id": 1,
@@ -132,6 +134,7 @@ class TestTag(TagTest):
 
 class TestRelationships(TagTest):
 
+    @override
     def setup_model_data(self):
         self.model_data = {
             "id": 1337,
@@ -163,17 +166,17 @@ class TestRelationships(TagTest):
                 fields = {
                     "id": int,
                     "title": str,
-                    "storage_path": int,
-                    "correspondent": int,
-                    "document_type": int,
+                    "storage_path_id": int,
+                    "correspondent_id": int,
+                    "document_type_id": int,
                     "created": datetime,
-                    "tags": list
+                    "tag_ids": list
                 }
                 for field, field_type in fields.items():
                     value = getattr(document, field)
                     self.assertIsInstance(value, field_type, f"Expected document.{field} to be a {field_type}, got {type(value)}")
                     self.assertEqual(value, sample_data["results"][i][field], f"Expected document.{field} to match sample data")
 
-                self.assertTrue(self.model.id in document.tags, f"Expected tag.id to be in document.tags. {self.model.id} not in {document.tags}")
+                self.assertTrue(self.model.id in document.tag_ids, f"Expected tag.id to be in document.tag_ids. {self.model.id} not in {document.tag_ids}")
 
             self.assertEqual(count, expected_count, f"Expected to iterate over {expected_count} documents, only saw {count}")

@@ -20,13 +20,13 @@
 """
 from __future__ import annotations
 
+import logging
+import types
 from abc import ABC, abstractmethod
 from datetime import datetime
 from decimal import Decimal
 from enum import StrEnum
-import types
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, Literal, Self, cast, override
-import logging
 
 import pydantic
 from pydantic import Field, PrivateAttr
@@ -74,6 +74,7 @@ class BaseModel(pydantic.BaseModel, ABC):
                 api_endpoint: = URL("http://localhost:8000/api/documents/")
 
     """
+
     _meta: "ClassVar[Meta[Self]]"
 
     class Meta(Generic[_Self]):
@@ -206,7 +207,6 @@ class BaseModel(pydantic.BaseModel, ABC):
             top_meta : type[BaseModel.Meta[Self]] | None = None
             # Iterate over ancestors to get the top-most explicitly defined Meta.
             for base in cls.__mro__[1:]:
-                print(f'Base for {cls.__name__} is {base.__name__}')
                 if "Meta" in base.__dict__:
                     top_meta = cast(type[BaseModel.Meta[Self]], base.Meta)
                     break

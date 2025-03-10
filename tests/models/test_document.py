@@ -25,7 +25,7 @@
 from __future__ import annotations
 
 import os
-from typing import Iterable
+from typing import Iterable, override
 import unittest
 from unittest.mock import patch, MagicMock
 from datetime import datetime, timezone
@@ -40,12 +40,14 @@ sample_document_list = load_sample_data('documents_list.json')
 sample_document = load_sample_data('documents_item.json')
 
 class DocumentTestCase(TestCase):
+    @override
     def setUp(self):
         env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
         with patch.dict(os.environ, env_data, clear=True):
             self.client = PaperlessClient()
 
 class TestDocumentInit(DocumentTestCase):
+    @override
     def setUp(self):
         super().setUp()
         super().setUp()
@@ -56,9 +58,9 @@ class TestDocumentInit(DocumentTestCase):
             "created": "2025-03-01T12:00:00Z",
             "updated": "2025-03-02T12:00:00Z",
             "title": "Test Document",
-            "correspondent": 1,
-            "document_type": 1,
-            "tags": [1, 2, 3],
+            "correspondent_id": 1,
+            "document_type_id": 1,
+            "tag_ids": [1, 2, 3],
         }
 
     def test_from_dict(self):
@@ -66,16 +68,17 @@ class TestDocumentInit(DocumentTestCase):
         self.assertIsInstance(model, Document, f"Expected Document, got {type(model)}")
         self.assertEqual(model.id, self.model_data["id"], f"Document id is wrong when created from dict: {model.id}")
         self.assertEqual(model.title, self.model_data["title"], f"Document title is wrong when created from dict: {model.title}")
-        self.assertEqual(model.correspondent, self.model_data["correspondent"], f"Document correspondent is wrong when created from dict: {model.correspondent}")
-        self.assertEqual(model.document_type, self.model_data["document_type"], f"Document document_type is wrong when created from dict: {model.document_type}")
-        self.assertIsInstance(model.tags, Iterable, f"Document tags is wrong type when created from dict: {type(model.tags)}")
-        self.assertEqual(model.tags, self.model_data["tags"], f"Document tags is wrong when created from dict: {model.tags}")
+        self.assertEqual(model.correspondent_id, self.model_data["correspondent_id"], f"Document correspondent is wrong when created from dict: {model.correspondent_id}")
+        self.assertEqual(model.document_type_id, self.model_data["document_type_id"], f"Document document_type is wrong when created from dict: {model.document_type_id}")
+        self.assertIsInstance(model.tag_ids, Iterable, f"Document tags is wrong type when created from dict: {type(model.tag_ids)}")
+        self.assertEqual(model.tag_ids, self.model_data["tag_ids"], f"Document tags is wrong when created from dict: {model.tag_ids}")
         self.assertIsInstance(model.created, datetime, f"created wrong type after from_dict {type(model.created)}")
         self.assertIsInstance(model.updated, datetime, f"updated wrong type after from_dict {type(model.updated)}")
         self.assertEqual(model.created, datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc), f"created wrong value after from_dict {model.created}")
         self.assertEqual(model.updated, datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc), f"updated wrong value after from_dict {model.updated}")
 
 class TestDocument(DocumentTestCase):
+    @override
     def setUp(self):
         super().setUp()
         super().setUp()
@@ -86,9 +89,9 @@ class TestDocument(DocumentTestCase):
             "created": "2025-03-01T12:00:00Z",
             "updated": "2025-03-02T12:00:00Z",
             "title": "Test Document",
-            "correspondent": 1,
-            "document_type": 1,
-            "tags": [1, 2, 3],
+            "correspondent_id": 1,
+            "document_type_id": 1,
+            "tag_ids": [1, 2, 3],
         }
         self.model = Document.from_dict(self.model_data)
 
@@ -107,13 +110,13 @@ class TestDocument(DocumentTestCase):
 
     def test_model_int_parsing(self):
         # Test if integer fields are parsed correctly
-        self.assertEqual(self.model.correspondent, 1)
-        self.assertEqual(self.model.document_type, 1)
+        self.assertEqual(self.model.correspondent_id, 1)
+        self.assertEqual(self.model.document_type_id, 1)
 
     def test_model_list_parsing(self):
         # Test if list fields are parsed correctly
-        self.assertIsInstance(self.model.tags, Iterable)
-        self.assertEqual(self.model.tags, [1, 2, 3])
+        self.assertIsInstance(self.model.tag_ids, Iterable)
+        self.assertEqual(self.model.tag_ids, [1, 2, 3])
 
     def test_model_to_dict(self):
         # Test if the model can be converted back to a dictionary
@@ -122,17 +125,19 @@ class TestDocument(DocumentTestCase):
         self.assertEqual(model_dict["created"], datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc))
         self.assertEqual(model_dict["updated"], datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc))
         self.assertEqual(model_dict["title"], "Test Document")
-        self.assertEqual(model_dict["correspondent"], 1)
-        self.assertEqual(model_dict["document_type"], 1)
-        self.assertEqual(model_dict["tags"], [1, 2, 3])
+        self.assertEqual(model_dict["correspondent_id"], 1)
+        self.assertEqual(model_dict["document_type_id"], 1)
+        self.assertEqual(model_dict["tag_ids"], [1, 2, 3])
 
 class TestGetTags(TestCase):
+    @override
     def setUp(self):
         super().setUp()
         super().setUp()
         # Setup a sample model instance
         self.documents = self.client.documents()
 
+    @override
     def setup_client(self):
         self.client = PaperlessClient()
 
@@ -141,9 +146,9 @@ class TestGetTags(TestCase):
     def test_get_tags(self):
         for document in self.documents:
             self.assertIsInstance(document, Document, f"Expected Document, got {type(document)}")
-            tags = document.tags
+            tags = document.tag_ids
             self.assertIsInstance(tags, BaseQuerySet)
-            expected_count = len(document.tags)
+            expected_count = len(document.tag_ids)
             actual_count = tags.count()
             self.assertEqual(expected_count, actual_count, f"Expected {expected_count} tags, got {actual_count}")
 
@@ -151,7 +156,7 @@ class TestGetTags(TestCase):
             for tag in tags:
                 count += 1
                 self.assertIsInstance(tag, Tag, f"Expected document.tag to be a Tag, got {type(tag)}")
-                self.assertTrue(tag.id in document.tags, f"Expected tag.id to be in document.tags. {tag.id} not in {document.tags}")
+                self.assertTrue(tag.id in document.tag_ids, f"Expected tag.id to be in document.tag_ids. {tag.id} not in {document.tag_ids}")
                 self.assertIsInstance(tag.name, str, f"Expected tag.name to be a string, got {type(tag.name)}")
 
             self.assertEqual(count, expected_count, f"Expected to iterate over {expected_count} tags, only saw {count}")
@@ -169,6 +174,7 @@ class TestRequestDocumentList(DocumentTestCase):
 
 class TestRequestDocument(TestCase):
 
+    @override
     def setup_client(self):
         env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
         with patch.dict(os.environ, env_data, clear=True):
@@ -181,18 +187,18 @@ class TestRequestDocument(TestCase):
             self.assertIsInstance(document, Document)
             self.assertIsInstance(document.id, int, "Loading sample document, id wrong type")
             self.assertIsInstance(document.title, str, "Loading sample document, title wrong type")
-            self.assertIsInstance(document.storage_path, str if sample_document["storage_path"] else type(None), "Loading sample document, storage_path wrong type")
-            self.assertIsInstance(document.correspondent, int if sample_document["correspondent"] is not None else type(None), "Loading sample document, correspondent wrong type")
-            self.assertIsInstance(document.document_type, int if sample_document["document_type"] is not None else type(None), "Loading sample document, document_type wrong type")
+            self.assertIsInstance(document.storage_path_id, str if sample_document["storage_path_id"] else type(None), "Loading sample document, storage_path wrong type")
+            self.assertIsInstance(document.correspondent_id, int if sample_document["correspondent_id"] is not None else type(None), "Loading sample document, correspondent wrong type")
+            self.assertIsInstance(document.document_type_id, int if sample_document["document_type_id"] is not None else type(None), "Loading sample document, document_type wrong type")
             self.assertIsInstance(document.created, datetime, "Loading sample document created wrong type")
             self.assertIsInstance(document.updated, datetime, "Loading sample document updated wrong type")
-            self.assertIsInstance(document.tags, list, "Loading sample document, tags wrong type")
+            self.assertIsInstance(document.tag_ids, list, "Loading sample document, tags wrong type")
             self.assertEqual(document.id, sample_document["id"], "Loading sample document id mismatch")
             self.assertEqual(document.title, sample_document["title"], "Loading sample document title mismatch")
-            self.assertEqual(document.storage_path, sample_document["storage_path"], "Loading sample document storage_path mismatch")
-            self.assertEqual(document.correspondent, sample_document["correspondent"], "Loading sample document correspondent mismatch")
-            self.assertEqual(document.document_type, sample_document["document_type"], "Loading sample document document_type mismatch")
-            self.assertEqual(document.tags, sample_document["tags"], "Loading sample document tags mismatch")
+            self.assertEqual(document.storage_path_id, sample_document["storage_path_id"], "Loading sample document storage_path mismatch")
+            self.assertEqual(document.correspondent_id, sample_document["correspondent_id"], "Loading sample document correspondent mismatch")
+            self.assertEqual(document.document_type_id, sample_document["document_type_id"], "Loading sample document document_type mismatch")
+            self.assertEqual(document.tag_ids, sample_document["tag_ids"], "Loading sample document tags mismatch")
 
     """
     # Working test when connected to a real server. Needs proper mocking for the request.
@@ -201,11 +207,11 @@ class TestRequestDocument(TestCase):
             mock_request.return_value = sample_document
             document = self.client.documents().get(1)
 
-        tags = document.tags
+        tags = document.tag_ids
         self.assertIsInstance(tags, TagQuerySet)
         for tag in tags:
             self.assertIsInstance(tag, Tag, f"Expected document.tag to be a Tag, got {type(tag)}")
-            self.assertTrue(tag.id in document.tags, "Expected tag.id to be in document.tags")
+            self.assertTrue(tag.id in document.tag_ids, "Expected tag.id to be in document.tag_ids")
             self.assertIsInstance(tag.name, str, f"Expected tag.name to be a string, got {type(tag.name)}")
     """
 

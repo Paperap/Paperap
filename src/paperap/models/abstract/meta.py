@@ -81,9 +81,9 @@ class StatusContext:
         # so we do not want to allow access to the context manager object
 
     def __exit__(
-        self, 
-        exc_type : type[BaseException] | None, 
-        exc_value : BaseException | None, 
+        self,
+        exc_type : type[BaseException] | None,
+        exc_value : BaseException | None,
         traceback : Iterable[Any]
     ) -> None:
         if self.previous_status is not None:

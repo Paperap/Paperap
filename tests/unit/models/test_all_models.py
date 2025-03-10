@@ -156,9 +156,9 @@ class ModelTestCase(TestCase):
                 "slug": "sample-slug",
                 "enabled": True,
                 "active": True,
-                "tags": [1, 2, 3],
-                "correspondent": 1,
-                "document_type": 1,
+                "tag_ids": [1, 2, 3],
+                "correspondent_id": 1,
+                "document_type_id": 1,
                 "storage_path": 1,
             }
             sample_data.update(common_fields)
@@ -217,7 +217,7 @@ class TestModelFromDict(ModelTestCase):
         for model_class, factory in self.model_to_factories.items():
             with self.subTest(model=model_class.__name__):
                 sample_data = self.generate_sample_data(model_class, factory)
-                hints = get_type_hints(model_class)
+                hints = model_class.__annotations__
                 for attr, type_hint in hints.items():
                     if attr.startswith('_'):
                         continue

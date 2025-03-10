@@ -646,9 +646,15 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         return self.custom_field_query(field, "contains", values)
 
     def has_custom_fields(self) -> Self:
+        """
+        Filter documents that have custom fields.
+        """
         return self.filter(has_custom_fields=True)
 
     def no_custom_fields(self) -> Self:
+        """
+        Filter documents that do not have custom fields.
+        """
         return self.filter(has_custom_fields=False)
 
     def notes(self, text: str) -> Self:

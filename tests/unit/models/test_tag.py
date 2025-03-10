@@ -10,7 +10,7 @@
         File:    test_tag.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.2
+        Version: 0.0.4
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -24,7 +24,7 @@
 """
 from __future__ import annotations
 import os
-from typing import Iterable
+from typing import Iterable, override
 import unittest
 from unittest.mock import MagicMock, patch
 from datetime import datetime, timezone
@@ -36,6 +36,7 @@ from paperap.tests import TestCase, load_sample_data, TagTest
 sample_data = load_sample_data('tags_list.json')
 
 class TestTagInit(TagTest):
+    @override
     def setup_model_data(self):
         self.model_data = {
             "id": 1,
@@ -60,6 +61,7 @@ class TestTagInit(TagTest):
         self.assertEqual(self.model.is_inbox_tag, self.model_data["is_inbox_tag"], f"Tag is_inbox_tag is wrong when created from dict: {self.model.is_inbox_tag}")
 
 class TestTag(TagTest):
+    @override
     def setup_model_data(self):
         self.model_data = {
             "id": 1,

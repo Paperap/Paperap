@@ -72,6 +72,7 @@ class DocumentNote(StandardModel):
 
         Returns:
             The serialized datetime value or None if the value is None.
+
         """
         return value.isoformat() if value else None
 
@@ -81,6 +82,7 @@ class DocumentNote(StandardModel):
 
         Returns:
             The document associated with this note.
+
         """
         return self._client.documents().get(self.document)
 
@@ -290,6 +292,7 @@ class Document(StandardModel):
 
         Returns:
             A list of dictionaries representing the notes.
+
         """
         return [note.to_dict() for note in value] if value else []
 
@@ -304,6 +307,7 @@ class Document(StandardModel):
 
         Returns:
             A list of validated tag IDs.
+
         """
         if value is None:
             return []
@@ -320,6 +324,7 @@ class Document(StandardModel):
 
         Returns:
             A list of validated custom field dictionaries.
+
         """
         if value is None:
             return []
@@ -336,6 +341,7 @@ class Document(StandardModel):
 
         Returns:
             The validated content string.
+
         """
         return value or ""
 
@@ -350,6 +356,7 @@ class Document(StandardModel):
 
         Returns:
             The validated title string.
+
         """
         return value or ""
 
@@ -364,6 +371,7 @@ class Document(StandardModel):
 
         Returns:
             The validated list of notes.
+
         """
         return value or []
 
@@ -378,19 +386,29 @@ class Document(StandardModel):
 
         Returns:
             The validated flag.
+
         """
         return value or False
 
     @property
     def custom_field_ids(self) -> list[int]:
+        """
+        Get the IDs of the custom fields for this document.
+        """
         return [field["field"] for field in self.custom_field_dicts]
 
     @property
     def custom_field_values(self) -> list[Any]:
+        """
+        Get the values of the custom fields for this document.
+        """
         return [field["value"] for field in self.custom_field_dicts]
 
     @property
     def tag_names(self) -> list[str]:
+        """
+        Get the names of the tags for this document.
+        """
         return [tag.name for tag in self.tags if tag.name]
 
     @property
@@ -692,6 +710,7 @@ class Document(StandardModel):
 
         Returns:
             The value of the custom field or the default value if not found.
+
         """
         for field in self.custom_field_dicts:
             if field["field"] == field_id:
@@ -721,6 +740,7 @@ class Document(StandardModel):
 
         Raises:
             ValueError: If attempting to set notes to None when they are not already None.
+
         """
         # Paperless does not support setting notes to None if notes is not already None
         if self._meta.original_data["notes"]:

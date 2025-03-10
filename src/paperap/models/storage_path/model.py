@@ -25,8 +25,8 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from paperap.models.abstract.model import StandardModel
-from paperap.models.storage_path.queryset import StoragePathQuerySet
 from paperap.models.mixins.models import MatcherMixin
+from paperap.models.storage_path.queryset import StoragePathQuerySet
 
 if TYPE_CHECKING:
     from paperap.models.document import Document, DocumentQuerySet
@@ -36,6 +36,7 @@ class StoragePath(StandardModel, MatcherMixin):
     """
     Represents a storage path in Paperless-NgX.
     """
+
     name: str
     slug: str | None = None
     path: str | None = None

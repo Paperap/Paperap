@@ -26,8 +26,8 @@ from typing import Any, Optional, Self
 from pydantic import Field
 
 from paperap.models.abstract.model import StandardModel
-from paperap.models.workflow.queryset import WorkflowActionQuerySet, WorkflowQuerySet, WorkflowTriggerQuerySet
 from paperap.models.mixins.models import MatcherMixin
+from paperap.models.workflow.queryset import WorkflowActionQuerySet, WorkflowQuerySet, WorkflowTriggerQuerySet
 
 
 class WorkflowTrigger(StandardModel, MatcherMixin):

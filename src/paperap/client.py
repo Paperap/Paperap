@@ -196,7 +196,7 @@ class PaperlessClient:
             plugin_config: Optional configuration dictionary for plugins.
 
         """
-        from paperap.plugin_manager import PluginManager # type: ignore # pylint: disable=import-outside-toplevel
+        from paperap.plugin_manager import PluginManager  # type: ignore # pylint: disable=import-outside-toplevel
 
         # Create and configure the plugin manager
         self.plugin_manager = PluginManager()
@@ -446,6 +446,7 @@ class PaperlessClient:
 
         Returns:
             Parsed response data.
+
         """
         kwargs = {
             "client": self,

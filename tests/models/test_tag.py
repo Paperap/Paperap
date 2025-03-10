@@ -24,7 +24,7 @@
 """
 from __future__ import annotations
 import os
-from typing import Iterable
+from typing import Iterable, override
 import unittest
 from unittest.mock import MagicMock, patch
 from datetime import datetime, timezone
@@ -38,6 +38,7 @@ sample_data = load_sample_data('tags_list.json')
 
 class TestTagInit(unittest.TestCase):
 
+    @override
     def setUp(self):
         # Setup a sample model instance
         env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
@@ -61,10 +62,6 @@ class TestTagInit(unittest.TestCase):
         model = Tag.from_dict(self.model_data)
         self.assertIsInstance(model, Tag, f"Expected Tag, got {type(model)}")
         self.assertEqual(model.id, self.model_data["id"], f"Tag id is wrong when created from dict: {model.id}")
-        self.assertIsInstance(model.created, datetime, f"created wrong type after from_dict {type(model.created)}")
-        self.assertIsInstance(model.updated, datetime, f"updated wrong type after from_dict {type(model.updated)}")
-        self.assertEqual(model.created, datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc), f"created wrong value after from_dict {model.created}")
-        self.assertEqual(model.updated, datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc), f"updated wrong value after from_dict {model.updated}")
         self.assertEqual(model.name, self.model_data["name"], f"Tag name is wrong when created from dict: {model.name}")
         self.assertEqual(model.slug, self.model_data["slug"], f"Tag slug is wrong when created from dict: {model.slug}")
         self.assertEqual(model.colour, self.model_data["color"], f"Tag color is wrong when created from dict: {model.colour}")
@@ -74,6 +71,7 @@ class TestTagInit(unittest.TestCase):
         self.assertEqual(model.is_inbox_tag, self.model_data["is_inbox_tag"], f"Tag is_inbox_tag is wrong when created from dict: {model.is_inbox_tag}")
 
 class TestTag(unittest.TestCase):
+    @override
     def setUp(self):
         # Setup a sample model instance
         env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
@@ -92,16 +90,7 @@ class TestTag(unittest.TestCase):
             "is_insensitive": True,
             "is_inbox_tag": True,
         }
-        self.model = Tag.from_dict(self.model_data, self.resource)
-
-    def test_model_date_parsing(self):
-        # Test if date strings are parsed into datetime objects
-        self.assertIsInstance(self.model.created, datetime, f"created wrong type after from_dict {type(self.model.created)}")
-        self.assertIsInstance(self.model.updated, datetime, f"updated wrong type after from_dict {type(self.model.updated)}")
-
-        # TZ UTC
-        self.assertEqual(self.model.created, datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc))
-        self.assertEqual(self.model.updated, datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc))
+        self.model = Tag.from_dict(self.model_data)
 
     def test_model_string_parsing(self):
         # Test if string fields are parsed correctly

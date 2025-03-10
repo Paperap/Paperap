@@ -121,10 +121,12 @@ class Parser(Generic[_BaseModel]):
             return self.parse_datetime(value)  # type: ignore
         if target_type is datetime.date:
             return self.parse_date(value)  # type: ignore
-        if issubclass(target_type, Enum):
+        if target_type is type and issubclass(target_type, Enum):
             return self.parse_enum(value, target_type)
 
         # Allow subclasses to implement custom logic
+        print(f'Calling parse_other on {value} (type {type(value)}) with target_type {target_type} (type {type(target_type)})')
+        print(f'Origin: {origin}, args: {args}')
         return self.parse_other(value, target_type)
 
     def parse_other(self, value: Any, target_type: type[_T]) -> _T | None:
@@ -427,7 +429,7 @@ class Parser(Generic[_BaseModel]):
         if cache := self.model.Meta.__type_hints_cache__:
             return cache
         
-        hints = get_type_hints(self.model)
+        hints = self.model.__annotations__
         fields : dict[str, type] = {}
 
         for field, type_hint in hints.items():

@@ -130,9 +130,9 @@ class TestMeta(BaseTest):
             'created',
             # Custom Fields for Document
             'content',
-            'custom_fields',
-            'document_type',
-            'tags',
+            'custom_field_dicts',
+            'document_type_id',
+            'tag_ids',
             'title',
         ]
         for field_name in expected_fields:
@@ -179,8 +179,8 @@ class TestCorrespondent(BaseTest):
                 self.assertIsInstance(qs, DocumentQuerySet)
                 for document in qs:
                     self.assertIsInstance(document, Document)
-                    self.assertIsInstance(document.correspondent, int)
-                    self.assertEqual(document.correspondent, 21)
+                    self.assertIsInstance(document.correspondent_id, int)
+                    self.assertEqual(document.correspondent_id, 21)
 
     def test_correspondent_args(self):
         test_cases = [
@@ -195,8 +195,8 @@ class TestCorrespondent(BaseTest):
                 self.assertIsInstance(qs, DocumentQuerySet)
                 for document in qs:
                     self.assertIsInstance(document, Document)
-                    self.assertIsInstance(document.correspondent, int)
-                    self.assertEqual(document.correspondent, 21)
+                    self.assertIsInstance(document.correspondent_id, int)
+                    self.assertEqual(document.correspondent_id, 21)
 
     def test_correspondent_arg_and_kwargs(self):
         sample_data = load_sample_data('documents___correspondent__21.json')
@@ -206,8 +206,8 @@ class TestCorrespondent(BaseTest):
             self.assertIsInstance(qs, DocumentQuerySet)
             for document in qs:
                 self.assertIsInstance(document, Document)
-                self.assertIsInstance(document.correspondent, int)
-                self.assertEqual(document.correspondent, 21)
+                self.assertIsInstance(document.correspondent_id, int)
+                self.assertEqual(document.correspondent_id, 21)
 
     def test_correspondent_no_params(self):
         with self.assertRaises(ValueError):
@@ -288,7 +288,7 @@ class TestTag(BaseQuerySetTest):
             (self.queryset.tag_name, 'Example Tag'),
         ]
         for method, arg in methods:
-            self._test_method(sample_data, 'tags', tag_id, method, arg, action="in")
+            self._test_method(sample_data, 'tag_ids', tag_id, method, arg, action="in")
 
 class TestTitle(BaseQuerySetTest):
     def test_title_iexact(self):
@@ -570,7 +570,7 @@ class TestCustomFields(BaseQuerySetTest):
             count += 1
             self.assertIsInstance(document, Document)
             found : bool = False
-            for custom_field in document.custom_fields:
+            for custom_field in document.custom_field_dicts:
                 self.assertIsInstance(custom_field, dict)
                 if custom_field['field'] == 27:
                     found = True

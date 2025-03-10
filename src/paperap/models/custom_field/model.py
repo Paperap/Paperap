@@ -52,4 +52,7 @@ class CustomField(StandardModel):
 
     @property
     def documents(self) -> "DocumentQuerySet":
+        """
+        Get documents with this custom field.
+        """
         return self._client.documents().all().has_custom_field_id(self.id)

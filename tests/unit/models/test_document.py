@@ -49,9 +49,9 @@ class TestDocumentInit(DocumentTest):
             "created": "2025-03-01T12:00:00Z",
             "updated": "2025-03-02T12:00:00Z",
             "title": "Test Document",
-            "correspondent": 1,
-            "document_type": 1,
-            "tags": [1, 2, 3],
+            "correspondent_id": 1,
+            "document_type_id": 1,
+            "tag_ids": [1, 2, 3],
         }
 
     def test_from_dict(self):
@@ -59,9 +59,9 @@ class TestDocumentInit(DocumentTest):
         fields = {
             "id": int,
             "title": str,
-            "correspondent": int,
-            "document_type": int,
-            "tags": list
+            "correspondent_id": int,
+            "document_type_id": int,
+            "tag_ids": list
         }
         for field, field_type in fields.items():
             value = getattr(model, field)
@@ -80,9 +80,9 @@ class TestDocument(DocumentTest):
             "created": "2025-03-01T12:00:00Z",
             "updated": "2025-03-02T12:00:00Z",
             "title": "Test Document",
-            "correspondent": 1,
-            "document_type": 1,
-            "tags": [1, 2, 3],
+            "correspondent_id": 1,
+            "document_type_id": 1,
+            "tag_ids": [1, 2, 3],
         }
 
     def test_model_date_parsing(self):
@@ -100,13 +100,13 @@ class TestDocument(DocumentTest):
 
     def test_model_int_parsing(self):
         # Test if integer fields are parsed correctly
-        self.assertEqual(self.model.correspondent, 1)
-        self.assertEqual(self.model.document_type, 1)
+        self.assertEqual(self.model.correspondent_id, 1)
+        self.assertEqual(self.model.document_type_id, 1)
 
     def test_model_list_parsing(self):
         # Test if list fields are parsed correctly
-        self.assertIsInstance(self.model.tags, Iterable)
-        self.assertEqual(self.model.tags, [1, 2, 3])
+        self.assertIsInstance(self.model.tag_ids, Iterable)
+        self.assertEqual(self.model.tag_ids, [1, 2, 3])
 
     def test_model_to_dict(self):
         # Test if the model can be converted back to a dictionary
@@ -115,16 +115,16 @@ class TestDocument(DocumentTest):
         self.assertEqual(model_dict["created"], '2025-03-01T12:00:00+00:00')
         self.assertEqual(model_dict['updated'], '2025-03-02T12:00:00+00:00')
         self.assertEqual(model_dict["title"], "Test Document")
-        self.assertEqual(model_dict["correspondent"], 1)
-        self.assertEqual(model_dict["document_type"], 1)
-        self.assertEqual(model_dict["tags"], [1, 2, 3])
+        self.assertEqual(model_dict["correspondent_id"], 1)
+        self.assertEqual(model_dict["document_type_id"], 1)
+        self.assertEqual(model_dict["tag_ids"], [1, 2, 3])
 
 class TestGetRelationships(DocumentTest):
     def test_get_tags(self):
         sample_data = load_sample_data('tags_list_id__in_38,162,160,191.json')
         with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = sample_data
-            expected_count = len(self.model.tags)
+            expected_count = len(self.model.tag_ids)
             tags = self.model.tags
             self.assertIsInstance(tags, TagQuerySet)
             actual_count = tags.count()
@@ -151,7 +151,7 @@ class TestGetRelationships(DocumentTest):
                     self.assertIsInstance(value, field_type, f"Expected tag.{field} to be a {field_type}, got {type(value)}")
 
                 self.assertGreater(tag.document_count, 0, f"Expected tag.document_count to be greater than 0, got {tag.document_count}")
-                self.assertTrue(tag in self.model.tags, f"Expected tag.id to be in document.tags. {tag.id} not in {self.model.tags}")
+                self.assertTrue(tag in self.model.tag_ids, f"Expected tag.id to be in document.tag_ids. {tag.id} not in {self.model.tag_ids}")
 
             self.assertEqual(count, expected_count, f"Expected to iterate over {expected_count} tags, only saw {count}")
 
@@ -161,7 +161,7 @@ class TestGetRelationships(DocumentTest):
             mock_request.return_value = sample_data
             self.model.correspondent_id = sample_data["id"]
             correspondent = self.model.correspondent
-            self.assertIsInstance(correspondent, Correspondent, f"Expected document.correspondent to be a Correspondent, got {type(correspondent)}")
+            self.assertIsInstance(correspondent, Correspondent, f"Expected document.correspondent_id to be a Correspondent, got {type(correspondent)}")
             # Make mypy happy
             assert correspondent is not None
             fields = {
@@ -189,7 +189,7 @@ class TestGetRelationships(DocumentTest):
             mock_request.return_value = sample_data
             self.model.document_type_id = sample_data["id"]
             document_type = self.model.document_type
-            self.assertIsInstance(document_type, DocumentType, f"Expected document.document_type to be a DocumentType, got {type(document_type)}")
+            self.assertIsInstance(document_type, DocumentType, f"Expected document.document_type_id to be a DocumentType, got {type(document_type)}")
             # Make mypy happy
             assert document_type is not None
             fields = {
@@ -257,12 +257,12 @@ class TestRequestDocument(DocumentTest):
             fields = {
                 "id": int,
                 "title": str,
-                "storage_path": int,
-                "correspondent": int,
-                "document_type": int,
+                "storage_path_id": int,
+                "correspondent_id": int,
+                "document_type_id": int,
                 #"created": datetime,
                 #"updated": datetime,
-                "tags": list
+                "tag_ids": list
             }
             for field, field_type in fields.items():
                 value = getattr(document, field)
@@ -292,10 +292,10 @@ class TestCustomFieldAccess(DocumentTest):
             "created": "2025-03-01T12:00:00Z",
             "updated": "2025-03-02T12:00:00Z",
             "title": "Test Document",
-            "correspondent": 1,
-            "document_type": 1,
-            "tags": [1, 2, 3],
-            "custom_fields": self.custom_fields
+            "correspondent_id": 1,
+            "document_type_id": 1,
+            "tag_ids": [1, 2, 3],
+            "custom_field_dicts": self.custom_fields
         })
 
     def test_custom_field_success(self):
