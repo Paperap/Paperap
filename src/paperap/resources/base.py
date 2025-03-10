@@ -100,7 +100,7 @@ class PaperlessResource(ABC, Generic[_BaseModel, _QuerySet]):
             return
 
         # model_class is required
-        if not (model_class := getattr(cls, "model_class", None)):
+        if not (_model_class := getattr(cls, "model_class", None)):
             raise ConfigurationError(f"model_class must be defined in {cls.__name__}")
 
         # API Endpoint must be defined
@@ -262,12 +262,7 @@ class PaperlessResource(ABC, Generic[_BaseModel, _QuerySet]):
         Returns:
             The parsed model instance.
         """
-        from icecream import ic
-        print('Before transform')
-        ic(item)
         data = self.transform_data_input(item)
-        print('After transform')
-        ic(data)
         return self.model_class.model_validate(data)
 
     def transform_data_input(self, data: dict[str, Any]) -> dict[str, Any]:

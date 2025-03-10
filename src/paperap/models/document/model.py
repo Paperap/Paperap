@@ -74,6 +74,25 @@ class DocumentNote(StandardModel):
         """
         return value.isoformat() if value else None
 
+    @classmethod
+    @field_validator("deleted_at", "restored_at", "created", mode="before")
+    def validate_deleted_at(cls, value: datetime | str | None) -> datetime | None:
+        """
+        Validate and return the deleted_at field.
+
+        Args:
+            value: The deleted_at field to validate.
+
+        Returns:
+            The validated deleted_at field.
+
+        """
+        if value is None:
+            return None
+        if isinstance(value, str):
+            return datetime.fromisoformat(value)
+        return value
+
     def get_document(self) -> "Document":
         """
         Get the document associated with this note.
@@ -127,29 +146,29 @@ class Document(StandardModel):
         >>> document.save()
         >>> document.title
         'Example Document'
-
     """
-
     added: datetime | None = None
     archive_serial_number: int | None = None
     archived_file_name: str | None = None
     content: str = ""
-    correspondent_id: int | None = None
-    created: datetime | None = Field(description="Creation timestamp", default=None, alias="created_on")
-    created_date: str | None = None
-    updated: datetime | None = Field(description="Last update timestamp", default=None, alias="updated_on")
-    custom_field_dicts: list[CustomFieldDict] = Field(default_factory=list)
-    deleted_at: datetime | None = None
-    document_type_id: int | None = None
     is_shared_by_requester: bool = False
     notes: "list[DocumentNote]" = Field(default_factory=list)  # TODO unknown subtype
     original_file_name: str | None = None
     owner: int | None = None
     page_count: int | None = None
-    storage_path_id: int | None = None
-    tag_ids: list[int] = Field(default_factory=list)
     title: str = ""
     user_can_change: bool | None = None
+    
+    created: datetime | None = Field(description="Creation timestamp", default=None, alias="created_on")
+    created_date: str | None = None
+    updated: datetime | None = Field(description="Last update timestamp", default=None, alias="updated_on")
+    deleted_at: datetime | None = None
+    
+    custom_field_dicts: list[CustomFieldDict] = Field(default_factory=list)
+    correspondent_id: int | None = None
+    document_type_id: int | None = None
+    storage_path_id: int | None = None
+    tag_ids: list[int] = Field(default_factory=list)
 
     _correspondent: tuple[int, Correspondent] | None = None
     _document_type: tuple[int, DocumentType] | None = None
@@ -327,32 +346,17 @@ class Document(StandardModel):
             return []
         return value
 
-    @field_validator("content", mode="before")
+    @field_validator("content", "title", mode="before")
     @classmethod
-    def validate_content(cls, value: str | None) -> str:
+    def validate_text(cls, value: str | None) -> str:
         """
-        Validate and return the content string.
+        Validate and return a text field.
 
         Args:
-            value: The content string to validate.
+            value: The value of the text field to validate.
 
         Returns:
-            The validated content string.
-
-        """
-        return value or ""
-
-    @field_validator("title", mode="before")
-    @classmethod
-    def validate_title(cls, value: str | None) -> str:
-        """
-        Validate and return the title string.
-
-        Args:
-            value: The title string to validate.
-
-        Returns:
-            The validated title string.
+            The validated text value.
 
         """
         return value or ""
@@ -386,6 +390,25 @@ class Document(StandardModel):
 
         """
         return value or False
+    
+    @classmethod
+    @field_validator("deleted_at", "created_date", "updated", "created", mode="before")
+    def validate_dates(cls, value: datetime | str | None) -> datetime | None:
+        """
+        Validate and return the deleted_at field.
+
+        Args:
+            value: The deleted_at field to validate.
+
+        Returns:
+            The validated deleted_at field.
+
+        """
+        if value is None:
+            return None
+        if isinstance(value, str):
+            return datetime.fromisoformat(value)
+        return value
 
     @property
     def custom_field_ids(self) -> list[int]:

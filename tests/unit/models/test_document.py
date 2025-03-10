@@ -55,22 +55,28 @@ class TestDocumentInit(DocumentTest):
         }
 
     def test_from_dict(self):
-        model = Document.from_dict(self.model_data)
         fields = {
             "id": int,
             "title": str,
-            "correspondent_id": int,
-            "document_type_id": int,
-            "tag_ids": list
         }
         for field, field_type in fields.items():
-            value = getattr(model, field)
-            self.assertIsInstance(value, field_type, f"Expected {field} to be a {field_type}, got {type(value)}")
+            value = getattr(self.model, field)
+            if self.model_data[field] is None:
+                self.assertIsNone(value)
+            else:
+                self.assertIsInstance(value, field_type, f"Expected {field} to be a {field_type}, got {type(value)}")
             self.assertEqual(value, self.model_data[field], f"Expected {field} to match sample data")
-        self.assertIsInstance(model.created, datetime, f"created wrong type after from_dict {type(model.created)}")
-        self.assertIsInstance(model.updated, datetime, f"updated wrong type after from_dict {type(model.updated)}")
-        self.assertEqual(model.created, datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc), f"created wrong value after from_dict {model.created}")
-        self.assertEqual(model.updated, datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc), f"updated wrong value after from_dict {model.updated}")
+        self.assertIsInstance(self.model.created, datetime, f"created wrong type after from_dict {type(self.model.created)}")
+        self.assertIsInstance(self.model.updated, datetime, f"updated wrong type after from_dict {type(self.model.updated)}")
+        self.assertEqual(self.model.created, datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc), f"created wrong value after from_dict {self.model.created}")
+        self.assertEqual(self.model.updated, datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc), f"updated wrong value after from_dict {self.model.updated}")
+        self.assertIsInstance(self.model.tag_ids, Iterable)
+        self.assertEqual(self.model.tag_ids, [1, 2, 3])
+        self.assertIsInstance(self.model.correspondent_id, int)
+        self.assertEqual(self.model.correspondent_id, 1)
+        self.assertIsInstance(self.model.document_type_id, int)
+        self.assertEqual(self.model.document_type_id, 1)
+        self.assertIsInstance(self.model.tags, TagQuerySet)
 
 class TestDocument(DocumentTest):
     @override
@@ -132,6 +138,8 @@ class TestGetRelationships(DocumentTest):
 
             count = 0
             for tag in tags:
+                self.assertIsInstance(tag, Tag, f"Expected tag to be a Tag, got {type(tag)}")
+                
                 count += 1
                 fields = {
                     "id": int,
@@ -148,10 +156,12 @@ class TestGetRelationships(DocumentTest):
                 }
                 for field, field_type in fields.items():
                     value = getattr(tag, field)
-                    self.assertIsInstance(value, field_type, f"Expected tag.{field} to be a {field_type}, got {type(value)}")
+                    if value is not None:
+                        self.assertIsInstance(value, field_type, f"Expected tag.{field} to be a {field_type}, got {type(value)}")
 
                 self.assertGreater(tag.document_count, 0, f"Expected tag.document_count to be greater than 0, got {tag.document_count}")
-                self.assertTrue(tag in self.model.tag_ids, f"Expected tag.id to be in document.tag_ids. {tag.id} not in {self.model.tag_ids}")
+                self.assertTrue(tag in self.model.tags, f"Expected tag to be in document.tags. {tag.id} not in {self.model.tag_ids}")
+                self.assertTrue(tag.id in self.model.tag_ids, f"Expected tag.id to be in document.tag_ids. {tag.id} not in {self.model.tag_ids}")
 
             self.assertEqual(count, expected_count, f"Expected to iterate over {expected_count} tags, only saw {count}")
 
@@ -257,12 +267,6 @@ class TestRequestDocument(DocumentTest):
             fields = {
                 "id": int,
                 "title": str,
-                "storage_path_id": int,
-                "correspondent_id": int,
-                "document_type_id": int,
-                #"created": datetime,
-                #"updated": datetime,
-                "tag_ids": list
             }
             for field, field_type in fields.items():
                 value = getattr(document, field)
@@ -271,6 +275,19 @@ class TestRequestDocument(DocumentTest):
                 else:
                     self.assertIsInstance(value, field_type, f"Expected document.{field} to be a {field_type}, got {type(value)}")
                     self.assertEqual(value, sample_document[field], f"Expected document.{field} to match sample data")
+
+            if document.created is not None:
+                self.assertIsInstance(document.created, datetime, f"created wrong type after from_dict {type(document.created)}")
+            if document.updated is not None:
+                self.assertIsInstance(document.updated, datetime, f"updated wrong type after from_dict {type(document.updated)}")
+            self.assertIsInstance(document.tag_ids, Iterable)
+            self.assertEqual(document.tag_ids, sample_document["tags"])
+            self.assertIsInstance(document.correspondent_id, int)
+            self.assertEqual(document.correspondent_id, sample_document["correspondent"])
+            self.assertIsInstance(document.document_type_id, int)
+            self.assertEqual(document.document_type_id, sample_document["document_type"])
+            self.assertIsInstance(document.storage_path_id, int)
+            self.assertEqual(document.storage_path_id, sample_document["storage_path"])
 
 class TestCustomFieldAccess(DocumentTest):
 
@@ -302,7 +319,7 @@ class TestCustomFieldAccess(DocumentTest):
         for field in self.custom_fields:
             field_id = field["field"]
             expected = field["value"]
-            actual = self.model.custom_field_value(field_id)
+            actual = self.model.custom_field_value(field_id) # type: ignore
             self.assertEqual(expected, actual, f"Expected {expected}, got {actual} of type {type(actual)}")
 
     def test_custom_field_default(self):

@@ -171,8 +171,7 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource]):
         Set up the model instance using the factory and model data.
         """
         if getattr(self, "resource", None) and getattr(self, "factory", None):
-            model_data = self.resource.transform_data_input(self.model_data)
-            self.model = self.create_model(**model_data)
+            self.model = self.create_model(**self.model_data)
 
     def create_model(self, *args, **kwargs : Any) -> _StandardModel:
         """
@@ -323,7 +322,8 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource]):
         if not getattr(self, "model_data", None):
             resource_name = resource_name or self.resource.name
             filename = f"{resource_name}_item.json"
-            self.model_data = load_sample_data(filename)
+            model_data = load_sample_data(filename)
+            self.model_data = self.resource.transform_data_output(model_data)
         return self.model_data
 
     def load_list_data(self, resource_name : str | None = None) -> dict[str, Any]:
@@ -341,7 +341,6 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource]):
             filename = f"{resource_name}_list.json"
             self.list_data = load_sample_data(filename)
         return self.list_data
-
 
 class DocumentTest(TestCase["Document", "DocumentResource"]):
     """
