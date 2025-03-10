@@ -64,6 +64,15 @@ class DocumentNote(StandardModel):
 
     @field_serializer("deleted_at", "restored_at", "created")
     def serialize_datetime(self, value: datetime | None):
+        """
+        Serialize datetime fields to ISO format.
+
+        Args:
+            value: The datetime value to serialize.
+
+        Returns:
+            The serialized datetime value or None if the value is None.
+        """
         return value.isoformat() if value else None
 
     def get_document(self) -> "Document":
@@ -72,7 +81,6 @@ class DocumentNote(StandardModel):
 
         Returns:
             The document associated with this note.
-
         """
         return self._client.documents().get(self.document)
 
@@ -274,11 +282,29 @@ class Document(StandardModel):
 
     @field_serializer("notes")
     def serialize_notes(self, value: list[DocumentNote]):
+        """
+        Serialize notes to a list of dictionaries.
+
+        Args:
+            value: The list of DocumentNote objects to serialize.
+
+        Returns:
+            A list of dictionaries representing the notes.
+        """
         return [note.to_dict() for note in value] if value else []
 
     @field_validator("tag_ids", mode="before")
     @classmethod
     def validate_tags(cls, value: list[int] | None) -> list[int]:
+        """
+        Validate and convert tag IDs to a list of integers.
+
+        Args:
+            value: The list of tag IDs to validate.
+
+        Returns:
+            A list of validated tag IDs.
+        """
         if value is None:
             return []
         return [int(tag) for tag in value]
@@ -286,6 +312,15 @@ class Document(StandardModel):
     @field_validator("custom_field_dicts", mode="before")
     @classmethod
     def validate_custom_fields(cls, value: list[CustomFieldDict] | None) -> list[CustomFieldDict]:
+        """
+        Validate and return custom field dictionaries.
+
+        Args:
+            value: The list of custom field dictionaries to validate.
+
+        Returns:
+            A list of validated custom field dictionaries.
+        """
         if value is None:
             return []
         return value
@@ -293,21 +328,57 @@ class Document(StandardModel):
     @field_validator("content", mode="before")
     @classmethod
     def validate_content(cls, value: str | None) -> str:
+        """
+        Validate and return the content string.
+
+        Args:
+            value: The content string to validate.
+
+        Returns:
+            The validated content string.
+        """
         return value or ""
 
     @field_validator("title", mode="before")
     @classmethod
     def validate_title(cls, value: str | None) -> str:
+        """
+        Validate and return the title string.
+
+        Args:
+            value: The title string to validate.
+
+        Returns:
+            The validated title string.
+        """
         return value or ""
 
     @field_validator("notes", mode="before")
     @classmethod
     def validate_notes(cls, value: list[Any] | None) -> list[Any]:
+        """
+        Validate and return the list of notes.
+
+        Args:
+            value: The list of notes to validate.
+
+        Returns:
+            The validated list of notes.
+        """
         return value or []
 
     @field_validator("is_shared_by_requester", mode="before")
     @classmethod
     def validate_is_shared_by_requester(cls, value: bool | None) -> bool:
+        """
+        Validate and return the is_shared_by_requester flag.
+
+        Args:
+            value: The flag to validate.
+
+        Returns:
+            The validated flag.
+        """
         return value or False
 
     @property
@@ -619,6 +690,8 @@ class Document(StandardModel):
             default: The value to return if the field is not found.
             raise_errors: Whether to raise an error if the field is not found.
 
+        Returns:
+            The value of the custom field or the default value if not found.
         """
         for field in self.custom_field_dicts:
             if field["field"] == field_id:
@@ -639,6 +712,16 @@ class Document(StandardModel):
     """
     @override
     def update_locally(self, from_db : bool | None = None, **kwargs : Any):
+        """
+        Update the document locally with the provided data.
+
+        Args:
+            from_db: Whether to update from the database.
+            **kwargs: Additional data to update the document with.
+
+        Raises:
+            ValueError: If attempting to set notes to None when they are not already None.
+        """
         # Paperless does not support setting notes to None if notes is not already None
         if self._meta.original_data["notes"]:
             if "notes" in kwargs and not kwargs.get("notes"):

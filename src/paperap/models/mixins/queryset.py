@@ -28,6 +28,11 @@ if TYPE_CHECKING:
 
 
 class QuerySetProtocol(Protocol):
+    """
+    Protocol for querysets.
+
+    Used primarily for type hinting.
+    """
     def all(self) -> Self: ...
     def filter(self, **kwargs : Any) -> Self: ...
     def filter_field_by_str(

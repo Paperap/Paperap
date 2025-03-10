@@ -545,6 +545,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
     @singledispatchmethod  # type: ignore # mypy does not handle singledispatchmethod with overloads correctly
     def custom_field_query(self, *args, **kwargs : Any) -> Self:
+        """
+        Filter documents by custom field query.
+        """
         raise TypeError("Invalid custom field query format")
 
     @custom_field_query.register  # type: ignore # mypy does not handle singledispatchmethod with overloads correctly
