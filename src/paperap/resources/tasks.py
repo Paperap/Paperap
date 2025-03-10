@@ -6,7 +6,7 @@
        File:    tasks.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -24,7 +24,7 @@ from __future__ import annotations
 from typing import Any, Optional
 
 from paperap.models.task import Task, TaskQuerySet
-from paperap.resources.base import PaperlessResource, StandardResource
+from paperap.resources.base import BaseResource, StandardResource
 
 
 class TaskResource(StandardResource[Task, TaskQuerySet]):

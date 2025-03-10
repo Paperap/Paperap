@@ -53,7 +53,7 @@ class TestDocumentInit(DocumentTestCase):
         super().setUp()
         # Setup a sample model instance
         self.resource = self.client.documents
-        self.model_data = {
+        self.model_data_parsed = {
             "id": 1,
             "created": "2025-03-01T12:00:00Z",
             "updated": "2025-03-02T12:00:00Z",
@@ -64,14 +64,14 @@ class TestDocumentInit(DocumentTestCase):
         }
 
     def test_from_dict(self):
-        model = Document.from_dict(self.model_data)
+        model = Document.from_dict(self.model_data_parsed)
         self.assertIsInstance(model, Document, f"Expected Document, got {type(model)}")
-        self.assertEqual(model.id, self.model_data["id"], f"Document id is wrong when created from dict: {model.id}")
-        self.assertEqual(model.title, self.model_data["title"], f"Document title is wrong when created from dict: {model.title}")
-        self.assertEqual(model.correspondent_id, self.model_data["correspondent_id"], f"Document correspondent is wrong when created from dict: {model.correspondent_id}")
-        self.assertEqual(model.document_type_id, self.model_data["document_type_id"], f"Document document_type is wrong when created from dict: {model.document_type_id}")
+        self.assertEqual(model.id, self.model_data_parsed["id"], f"Document id is wrong when created from dict: {model.id}")
+        self.assertEqual(model.title, self.model_data_parsed["title"], f"Document title is wrong when created from dict: {model.title}")
+        self.assertEqual(model.correspondent_id, self.model_data_parsed["correspondent_id"], f"Document correspondent is wrong when created from dict: {model.correspondent_id}")
+        self.assertEqual(model.document_type_id, self.model_data_parsed["document_type_id"], f"Document document_type is wrong when created from dict: {model.document_type_id}")
         self.assertIsInstance(model.tag_ids, Iterable, f"Document tags is wrong type when created from dict: {type(model.tag_ids)}")
-        self.assertEqual(model.tag_ids, self.model_data["tag_ids"], f"Document tags is wrong when created from dict: {model.tag_ids}")
+        self.assertEqual(model.tag_ids, self.model_data_parsed["tag_ids"], f"Document tags is wrong when created from dict: {model.tag_ids}")
         self.assertIsInstance(model.created, datetime, f"created wrong type after from_dict {type(model.created)}")
         self.assertIsInstance(model.updated, datetime, f"updated wrong type after from_dict {type(model.updated)}")
         self.assertEqual(model.created, datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc), f"created wrong value after from_dict {model.created}")
@@ -84,7 +84,7 @@ class TestDocument(DocumentTestCase):
         super().setUp()
         # Setup a sample model instance
         self.resource = self.client.documents
-        self.model_data = {
+        self.model_data_parsed = {
             "id": 1,
             "created": "2025-03-01T12:00:00Z",
             "updated": "2025-03-02T12:00:00Z",
@@ -93,7 +93,7 @@ class TestDocument(DocumentTestCase):
             "document_type_id": 1,
             "tag_ids": [1, 2, 3],
         }
-        self.model = Document.from_dict(self.model_data)
+        self.model = Document.from_dict(self.model_data_parsed)
 
     def test_model_date_parsing(self):
         # Test if date strings are parsed into datetime objects

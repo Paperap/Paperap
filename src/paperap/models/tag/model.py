@@ -54,10 +54,7 @@ class Tag(StandardModel, MatcherMixin):
     def validate_colour(cls, value: str | int | None) -> str | None:
         if value is None:
             return None
-        value = str(value)
-        if not value.startswith("#"):
-            return f"#{value}"
-        return value
+        return str(value)
 
     @property
     def documents(self) -> "DocumentQuerySet":

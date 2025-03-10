@@ -33,7 +33,7 @@ from paperap.exceptions import FilterDisabledError, MultipleObjectsFoundError, O
 
 if TYPE_CHECKING:
     from paperap.models.abstract.model import BaseModel, StandardModel
-    from paperap.resources.base import PaperlessResource, StandardResource
+    from paperap.resources.base import BaseResource, StandardResource
 
 _BaseModel = TypeVar("_BaseModel", bound="BaseModel", covariant=True)
 _StandardModel = TypeVar("_StandardModel", bound="StandardModel", covariant=True)
@@ -49,7 +49,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
     It's designed to be lazy - only fetching data when it's actually needed.
 
     Args:
-        resource: The PaperlessResource instance.
+        resource: The BaseResource instance.
         filters: Initial filter parameters.
         _cache: Optional internal result cache.
         _fetch_all: Whether all results have been fetched.
@@ -71,29 +71,32 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
 
     """
 
-    resource: "PaperlessResource[_BaseModel]"
+    resource: "BaseResource[_BaseModel]"
     filters: dict[str, Any]
     _last_response: dict[str, Any] | None = None
     _result_cache: list[_BaseModel] = []
     _fetch_all: bool = False
     _next_url: str | None = None
+    _urls_fetched : list[str] = []
     _iter: Iterator[_BaseModel] | None
 
     def __init__(
         self,
-        resource: "PaperlessResource[_BaseModel]",
+        resource: "BaseResource[_BaseModel]",
         filters: Optional[dict[str, Any]] = None,
         _cache: Optional[list[_BaseModel]] = None,
         _fetch_all: bool = False,
         _next_url: str | None = None,
         _last_response: Optional[dict[str, Any]] = None,
         _iter: Optional[Iterator[_BaseModel]] = None,
+        _urls_fetched: Optional[list[str]] = None,
     ):
         self.resource = resource
         self.filters = filters or {}
         self._result_cache = _cache or []
         self._fetch_all = _fetch_all
         self._next_url = _next_url
+        self._urls_fetched = _urls_fetched or []
         self._last_response = _last_response
         self._iter = _iter
         
@@ -139,6 +142,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         self._result_cache = []
         self._fetch_all = False
         self._next_url = None
+        self._urls_fetched = []
         self._last_response = None
         self._iter = None
 
@@ -489,7 +493,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         self._result_cache.extend(list(iterator))
 
         # Fetch additional pages if available
-        while response and (next_url := response.get("next")):
+        while response and (next_url := self._get_next(response)):
             iterator = self._request_iter(url=next_url)
             response = self._last_response
             self._result_cache.extend(list(iterator))
@@ -525,6 +529,33 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         self._last_response = response
 
         yield from self.resource.handle_response(response)
+
+    def _get_next(self, response : dict[str, Any] | None = None) -> str | None:
+        """
+        Get the next url, and adjust our references accordingly.
+        """
+        # Allow passing a different response
+        if response is None:
+            response = self._last_response
+
+        # Last response is not set
+        if not response:
+            return None
+        
+        if not (next_url := response.get("next")):
+            self._next_url = None
+            return None
+
+        # For safety, check both instance attributes, even though the first check isn't strictly necessary
+        # this hopefully future proofs any changes to the implementation
+        if next_url == self._next_url or next_url in self._urls_fetched:
+            logger.warning('Next URL was previously fetched. Stopping iteration.')
+            return
+
+        # Cache it
+        self._next_url = next_url
+        self._urls_fetched.append(next_url)
+        return self._next_url
 
     def _chain(self, **kwargs : Any) -> Self:
         """
@@ -569,7 +600,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         if not self._iter:
             # Start a new iteration
             self._iter = self._request_iter(params=self.filters)
-            self._next_url = self._last_response.get("next") if self._last_response else None
+            self._get_next()
 
             # Yield objects from the current page
             for obj in self._iter:
@@ -577,9 +608,10 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
                 yield obj
 
         # If there are more pages, keep going
-        while self._next_url:
-            self._iter = self._request_iter(url=self._next_url)
-            self._next_url = self._last_response.get("next") if self._last_response else None
+        next_url = self._next_url
+        while next_url:
+            self._iter = self._request_iter(url=next_url)
+            next_url = self._get_next()
 
             # Yield objects from the current page
             for obj in self._iter:
@@ -713,7 +745,7 @@ class StandardQuerySet(BaseQuerySet[_StandardModel], Generic[_StandardModel]):
         model = StandardModel(id=1)
 
     Args:
-        resource: The PaperlessResource instance.
+        resource: The BaseResource instance.
         filters: Initial filter parameters.
 
     Returns:

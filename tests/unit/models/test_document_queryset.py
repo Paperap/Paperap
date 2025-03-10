@@ -215,15 +215,14 @@ class TestCorrespondent(BaseTest):
 
 class BaseQuerySetTest(BaseTest):
     """ Base test class with common queryset test logic. """
-
     def assert_queryset_results(
         self,
         method : Callable[..., DocumentQuerySet],
         arg : Any,
         sample_data : dict[str, Any],
-        expected_count : int,
+        expected_count : int | None = None,
         key : str | None = None,
-        condition=None
+        condition : Callable[..., bool] | None = None
     ):
         """
         Generic method to test queryset filtering.
@@ -236,6 +235,10 @@ class BaseQuerySetTest(BaseTest):
             key: Attribute to check in documents (optional).
             condition: Callable to apply on key (optional).
         """
+        if expected_count is None:
+            expected_count = int(sample_data['count'])
+        expected_iterations = min(expected_count, 6)
+            
         with patch('paperap.client.PaperlessClient.request') as mock_request:
             mock_request.return_value = sample_data
             qs = method(arg)
@@ -247,13 +250,14 @@ class BaseQuerySetTest(BaseTest):
                 count += 1
                 self.assertIsInstance(document, Document)
                 if key and condition:
-                    self.assertIsNotNone(getattr(document, key), f"Expected {key} to be set")
-                    self.assertTrue(condition(getattr(document, key)), f"Condition failed for {key}")
+                    value = getattr(document, key)
+                    self.assertTrue(condition(value), f"Condition failed for {key} with {value}")
 
-                # Avoid infinite iteration in queryset
-                break
+                # Check multiple results, but avoid paging
+                if count > 5:
+                    break
 
-            self.assertEqual(count, min(expected_count, 1), f"Documents iteration unexpected. Expected {expected_count} iterations, got {count}.")
+            self.assertEqual(count, expected_iterations, f"Documents iteration unexpected. Count: {expected_count} -> Expected {expected_iterations} iterations, got {count}.")
 
 
     def _test_date_filter(self, method, file, date_str, key, comparator):
@@ -317,13 +321,11 @@ class TestDocumentType(BaseQuerySetTest):
 class TestStoragePath(BaseQuerySetTest):
     def test_storage_path_id(self):
         sample_data = load_sample_data('documents___storage_path__52.json')
-        self.assert_queryset_results(
-            self.queryset.storage_path_id,
-            52,
+        self.assert_queryset_callback(
             sample_data,
-            sample_data['count'],
-            key="storage_path",
-            condition=lambda sp: sp is not None and sp == 52
+            self.queryset.storage_path_id,
+            callback=lambda doc: (doc is not None and doc['storage_path'] == 52)
+            52,
         )
 
 class TestContent(BaseQuerySetTest):

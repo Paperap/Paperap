@@ -41,7 +41,7 @@ from paperap.signals import SignalRegistry
 
 if TYPE_CHECKING:
     from paperap.client import PaperlessClient
-    from paperap.resources.base import PaperlessResource, StandardResource
+    from paperap.resources.base import BaseResource, StandardResource
 
 logger = logging.getLogger(__name__)
 
@@ -88,7 +88,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             supported_filtering_params: Params allowed during queryset filtering.
             blacklist_filtering_params: Params disallowed during queryset filtering.
             filtering_strategies: Strategies for filtering.
-            resource: The PaperlessResource instance.
+            resource: The BaseResource instance.
             queryset: The type of QuerySet for the model.
 
         Raises:
@@ -115,7 +115,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         # Strategies for filtering.
         # This determines which of the above lists will be used to allow or deny filters to QuerySets.
         filtering_strategies: ClassVar[set[FilteringStrategies]] = {FilteringStrategies.BLACKLIST}
-        resource: "PaperlessResource[_Self]"
+        resource: "BaseResource[_Self]"
         queryset: type[BaseQuerySet[_Self]] = BaseQuerySet
         # Updating attributes will not trigger save()
         status: ModelStatus = ModelStatus.INITIALIZING
@@ -269,12 +269,12 @@ class BaseModel(pydantic.BaseModel, ABC):
     )
 
     @property
-    def _resource(self) -> "PaperlessResource[Self]":
+    def _resource(self) -> "BaseResource[Self]":
         """
         Get the resource associated with this model.
 
         Returns:
-            The PaperlessResource instance.
+            The BaseResource instance.
 
         """
         return self._meta.resource
@@ -290,12 +290,12 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         return self._meta.resource.client
 
-    def __init__(self, resource: "PaperlessResource[Self] | None" = None, **data : Any):
+    def __init__(self, resource: "BaseResource[Self] | None" = None, **data : Any):
         """
         Initialize the model with resource and data.
 
         Args:
-            resource: The PaperlessResource instance.
+            resource: The BaseResource instance.
             **data: Additional data to initialize the model.
 
         Raises:

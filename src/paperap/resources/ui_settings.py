@@ -24,7 +24,7 @@ from __future__ import annotations
 from typing import Any
 
 from paperap.models.ui_settings import UISettings, UISettingsQuerySet
-from paperap.resources.base import PaperlessResource, StandardResource
+from paperap.resources.base import BaseResource, StandardResource
 
 
 class UISettingsResource(StandardResource[UISettings, UISettingsQuerySet]):

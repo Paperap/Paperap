@@ -32,11 +32,11 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 # Import the exceptions used by BaseQuerySet.
-from paperap.exceptions import ObjectNotFoundError, MultipleObjectsFoundError
+from paperap.exceptions import ObjectNotFoundError, MultipleObjectsFoundError, ResponseParsingError
 from paperap.models import StandardModel, BaseQuerySet
 from paperap.models.abstract.queryset import StandardQuerySet
 from paperap.models.document import Document
-from paperap.resources import PaperlessResource, StandardResource
+from paperap.resources import BaseResource, StandardResource
 from paperap.client import PaperlessClient
 from paperap.resources.documents import DocumentResource
 from paperap.tests import load_sample_data, TestCase, DocumentTest
@@ -328,11 +328,20 @@ class TestQuerySetIter(TestCase):
         # By default, we use a nonempty filter.
         self.qs = StandardQuerySet(self.resource, filters={"init": "value"})
 
+    def test_iter_raises_parsing_error(self):
+        # Set the result cache to a bad type
+        self.qs._result_cache = ["a", "b"]  # type: ignore # Allow edit ClassVar in tests
+        self.qs._fetch_all = True # type: ignore
+        with self.assertRaises(ResponseParsingError):
+            list(iter(self.qs))
+        
+    """
     def test_iter_with_fully_fetched_cache(self):
         self.qs._result_cache = ["a", "b"]  # type: ignore # Allow edit ClassVar in tests
         self.qs._fetch_all = True
         result = list(iter(self.qs))
         self.assertEqual(result, ["a", "b"])
+    """
 
 class TestQuerySetGetItem(TestCase):
     @override

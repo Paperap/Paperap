@@ -119,18 +119,19 @@ class TestDataCollector(Plugin):
             return obj.decode("utf-8")
         raise TypeError(f"Type {type(obj).__name__} is not JSON serializable")
 
-    def _sanitize_response(self, response: dict[str, Any]) -> dict[str, Any]:
+    def _sanitize_response(self, **response: dict[str, Any]) -> dict[str, Any]:
         """
         Sanitize the response data to replace any strings with potentially personal information with dummy data
         """
+        sanitized = {}
         for key, value in response.items():
-            response[key] = self._sanitize_value_recursive(key, value)
+            sanitized[key] = self._sanitize_value_recursive(key, value)
 
         # Replace "next" domain using regex
         if "next" in response and isinstance(response["next"], str):
-            response["next"] = re.sub(r"https?://.*?/", "https://example.com/", response["next"])
+            sanitized["next"] = re.sub(r"https?://.*?/", "https://example.com/", response["next"])
 
-        return response
+        return sanitized
 
     def _sanitize_value_recursive(self, key: str, value: Any) -> Any:
         """
@@ -155,7 +156,7 @@ class TestDataCollector(Plugin):
             return
 
         try:
-            response = self._sanitize_response(response)
+            response = self._sanitize_response(**response)
             with filepath.open("w") as f:
                 json.dump(response, f, indent=4, sort_keys=True, ensure_ascii=False, default=self._json_serializer)
         except (TypeError, OverflowError, OSError) as e:

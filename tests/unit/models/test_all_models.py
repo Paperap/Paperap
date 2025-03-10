@@ -34,7 +34,7 @@ from unittest.mock import patch
 from pydantic import ValidationError
 
 from paperap.models.abstract import BaseModel, StandardModel, BaseQuerySet
-from paperap.resources.base import PaperlessResource, StandardResource
+from paperap.resources.base import BaseResource, StandardResource
 from paperap.models.correspondent import Correspondent
 from paperap.models.custom_field import CustomField
 from paperap.models.document import Document
@@ -57,7 +57,7 @@ logger = logging.getLogger(__name__)
 
 class ModelTestCase(TestCase):
     MAX_RECURSION_DEPTH = 2
-    model_to_resource : dict[type[BaseModel], PaperlessResource]
+    model_to_resource : dict[type[BaseModel], BaseResource]
     model_to_factories : dict[type[BaseModel], type[PydanticFactory]]
 
     @override

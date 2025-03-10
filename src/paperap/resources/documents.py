@@ -29,7 +29,7 @@ from typing_extensions import TypeVar
 
 from paperap.exceptions import APIError, BadResponseError
 from paperap.models.document import Document, DocumentNote, DocumentQuerySet
-from paperap.resources.base import PaperlessResource, StandardResource
+from paperap.resources.base import BaseResource, StandardResource
 
 
 class DocumentResource(StandardResource[Document, DocumentQuerySet]):

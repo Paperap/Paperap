@@ -21,6 +21,7 @@
 
 from __future__ import annotations
 
+import copy
 import logging
 from abc import ABC, ABCMeta
 from string import Template
@@ -30,7 +31,7 @@ from typing_extensions import TypeVar
 from yarl import URL
 
 from paperap.const import URLS, Endpoints
-from paperap.exceptions import ConfigurationError, ObjectNotFoundError, ResourceNotFoundError
+from paperap.exceptions import ConfigurationError, ObjectNotFoundError, ResourceNotFoundError, ResponseParsingError
 from paperap.signals import SignalRegistry
 
 if TYPE_CHECKING:
@@ -46,7 +47,7 @@ _StandardQuerySet = TypeVar(
 
 logger = logging.getLogger(__name__)
 
-class PaperlessResource(ABC, Generic[_BaseModel, _QuerySet]):
+class BaseResource(ABC, Generic[_BaseModel, _QuerySet]):
     """
     Base class for API resources.
 
@@ -96,7 +97,7 @@ class PaperlessResource(ABC, Generic[_BaseModel, _QuerySet]):
         super().__init_subclass__(**kwargs)
 
         # Skip processing for the base class itself. TODO: This is a hack
-        if cls.__name__ in ["PaperlessResource", "StandardResource"]:
+        if cls.__name__ in ["BaseResource", "StandardResource"]:
             return
 
         # model_class is required
@@ -153,7 +154,7 @@ class PaperlessResource(ABC, Generic[_BaseModel, _QuerySet]):
             The model retrieved.
 
         """
-        raise NotImplementedError("get method not available for paperless resources without an id")
+        raise NotImplementedError("get method not available for resources without an id")
 
     def create(self, data: dict[str, Any]) -> _BaseModel:
         """
@@ -261,11 +262,19 @@ class PaperlessResource(ABC, Generic[_BaseModel, _QuerySet]):
 
         Returns:
             The parsed model instance.
+
+        Parsing to model: {'id': 7313, 'title': 'example-title', 'content': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum', 'created': '2025-03-01T00:00:00-05:00', 'created_date': '2025-03-01', 'modified': '2025-03-01T09:36:19.777402-05:00', 'added': '2025-03-01T07:26:58.940005-05:00', 'deleted_at': None, 'archive_serial_number': None, 'original_file_name': 'sample_filename.jpg', 'archived_file_name': 'sample_archived_filename.pdf', 'owner': 10, 'user_can_change': True, 'is_shared_by_requester': False, 'notes': [], 'page_count': None, 'tag_ids': [38, 162, 160, 191], 'custom_field_dicts': [{'value': None, 'field': 32}, {'value': None, 'field': 11}, {'value': None, 'field': 12}, {'value': None, 'field': 13}, {'value': None, 'field': 25}, {'value': None, 'field': 28}, {'value': None, 'field': 29}, {'value': None, 'field': 30}, {'value': None, 'field': 31}, {'value': None, 'field': 16}, {'value': '28', 'field': 3}, {'value': None, 'field': 19}, {'value': None, 'field': 14}, {'value': None, 'field': 15}], 'document_type_id': 8, 'correspondent_id': 1, 'storage_path_id': None}
+        Transformed: {'id': 7313, 'title': 'example-title', 'content': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum', 'created': '2025-03-01T00:00:00-05:00', 'created_date': '2025-03-01', 'modified': '2025-03-01T09:36:19.777402-05:00', 'added': '2025-03-01T07:26:58.940005-05:00', 'deleted_at': None, 'archive_serial_number': None, 'original_file_name': 'sample_filename.jpg', 'archived_file_name': 'sample_archived_filename.pdf', 'owner': 10, 'user_can_change': True, 'is_shared_by_requester': False, 'notes': [], 'page_count': None, 'tags': [38, 162, 160, 191], 'custom_fields': [{'value': None, 'field': 32}, {'value': None, 'field': 11}, {'value': None, 'field': 12}, {'value': None, 'field': 13}, {'value': None, 'field': 25}, {'value': None, 'field': 28}, {'value': None, 'field': 29}, {'value': None, 'field': 30}, {'value': None, 'field': 31}, {'value': None, 'field': 16}, {'value': '28', 'field': 3}, {'value': None, 'field': 19}, {'value': None, 'field': 14}, {'value': None, 'field': 15}], 'document_type': 8, 'correspondent': 1, 'storage_path': None}
+
+        Parsing to model: {'id': 7313, 'correspondent': 1, 'document_type': 8, 'storage_path': None, 'title': 'example-title', 'content': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum', 'tags': [38, 162, 160, 191], 'created': '2025-03-01T00:00:00-05:00', 'created_date': '2025-03-01', 'modified': '2025-03-01T09:36:19.777402-05:00', 'added': '2025-03-01T07:26:58.940005-05:00', 'deleted_at': None, 'archive_serial_number': None, 'original_file_name': 'sample_filename.jpg', 'archived_file_name': 'sample_archived_filename.pdf', 'owner': 10, 'user_can_change': True, 'is_shared_by_requester': False, 'notes': [], 'custom_fields': [{'value': None, 'field': 32}, {'value': None, 'field': 11}, {'value': None, 'field': 12}, {'value': None, 'field': 13}, {'value': None, 'field': 25}, {'value': None, 'field': 28}, {'value': None, 'field': 29}, {'value': None, 'field': 30}, {'value': None, 'field': 31}, {'value': None, 'field': 16}, {'value': '28', 'field': 3}, {'value': None, 'field': 19}, {'value': None, 'field': 14}, {'value': None, 'field': 15}], 'page_count': None}
+        Transformed: {'id': 7313, 'correspondent': 1, 'document_type': 8, 'storage_path': None, 'title': 'example-title', 'content': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum', 'tags': [38, 162, 160, 191], 'created': '2025-03-01T00:00:00-05:00', 'created_date': '2025-03-01', 'modified': '2025-03-01T09:36:19.777402-05:00', 'added': '2025-03-01T07:26:58.940005-05:00', 'deleted_at': None, 'archive_serial_number': None, 'original_file_name': 'sample_filename.jpg', 'archived_file_name': 'sample_archived_filename.pdf', 'owner': 10, 'user_can_change': True, 'is_shared_by_requester': False, 'notes': [], 'custom_fields': [{'value': None, 'field': 32}, {'value': None, 'field': 11}, {'value': None, 'field': 12}, {'value': None, 'field': 13}, {'value': None, 'field': 25}, {'value': None, 'field': 28}, {'value': None, 'field': 29}, {'value': None, 'field': 30}, {'value': None, 'field': 31}, {'value': None, 'field': 16}, {'value': '28', 'field': 3}, {'value': None, 'field': 19}, {'value': None, 'field': 14}, {'value': None, 'field': 15}], 'page_count': None}
         """
-        data = self.transform_data_input(item)
+        #print(f'Parsing to model: {item}')
+        data = self.transform_data_input(**item)
+        #print(f'Transformed: {data}')
         return self.model_class.model_validate(data)
 
-    def transform_data_input(self, data: dict[str, Any]) -> dict[str, Any]:
+    def transform_data_input(self, **data: Any) -> dict[str, Any]:
         """
         Transform data after receiving it from the API.
 
@@ -277,11 +286,11 @@ class PaperlessResource(ABC, Generic[_BaseModel, _QuerySet]):
 
         """
         for key, value in self._meta.field_map.items():
-            if value in data:
-                data[key] = data.pop(value)
+            if key in data:
+                data[value] = data.pop(key)
         return data
 
-    def transform_data_output(self, data: dict[str, Any]) -> dict[str, Any]:
+    def transform_data_output(self, **data: Any) -> dict[str, Any]:
         """
         Transform data before sending it to the API.
 
@@ -293,8 +302,8 @@ class PaperlessResource(ABC, Generic[_BaseModel, _QuerySet]):
 
         """
         for key, value in self._meta.field_map.items():
-            if key in data:
-                data[value] = data.pop(key)
+            if value in data:
+                data[key] = data.pop(value)
         return data
 
     def create_model(self, **kwargs : Any) -> _BaseModel:
@@ -361,7 +370,7 @@ class PaperlessResource(ABC, Generic[_BaseModel, _QuerySet]):
             "resource._handle_response:after",
             "Emitted after list response, before processing",
             args=[self],
-            kwargs={"response": response, "resource": self.name, "results": results},
+            kwargs={"response": {**response}, "resource": self.name, "results": results},
         )
 
         yield from self.handle_results(results)
@@ -373,11 +382,14 @@ class PaperlessResource(ABC, Generic[_BaseModel, _QuerySet]):
         Override in subclasses to implement custom result handling.
         """
         for item in results:
+            if not isinstance(item, dict):
+                raise ResponseParsingError(f"Expected type of elements in results is dict, got {type(item)}")
+            
             SignalRegistry.emit(
                 "resource._handle_results:before",
                 "Emitted for each item in a list response",
                 args=[self],
-                kwargs={"resource": self.name, "item": item},
+                kwargs={"resource": self.name, "item": {**item}},
             )
             yield self.parse_to_model(item)
 
@@ -399,7 +411,7 @@ class PaperlessResource(ABC, Generic[_BaseModel, _QuerySet]):
 
 
 class StandardResource(
-    PaperlessResource[_StandardModel, _StandardQuerySet], Generic[_StandardModel, _StandardQuerySet]
+    BaseResource[_StandardModel, _StandardQuerySet], Generic[_StandardModel, _StandardQuerySet]
 ):
     """
     Base class for API resources.

@@ -6,7 +6,7 @@
        File:    users.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.3
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,7 +25,7 @@ from typing import Any, Optional
 
 from paperap.exceptions import ObjectNotFoundError
 from paperap.models.user import Group, GroupQuerySet, User, UserQuerySet
-from paperap.resources.base import PaperlessResource, StandardResource
+from paperap.resources.base import BaseResource, StandardResource
 
 
 class UserResource(StandardResource[User, UserQuerySet]):

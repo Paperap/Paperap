@@ -10,7 +10,7 @@
         File:    test_base.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.3
+        Version: 0.0.4
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -34,7 +34,7 @@ from paperap.tests import TestCase
 from unittest.mock import patch
 from paperap.tests import TestCase
 from paperap.models import StandardModel
-from paperap.resources.base import PaperlessResource, StandardResource, StandardResource
+from paperap.resources.base import BaseResource, StandardResource, StandardResource
 
 class ExampleModel(StandardModel):
     """
@@ -62,7 +62,7 @@ class TestBase(TestCase):
         super().setUp()
 
         self.resource = ExampleResource(self.client)
-        self.model_data = {
+        self.model_data_parsed = {
             "id": 1,
             "a_str": "Hello, world!",
             "a_date": "2020-05-12T12:00:00Z",
@@ -75,13 +75,13 @@ class TestWithModel(TestBase):
 
     def setUp(self):
         super().setUp()
-        self.model = ExampleModel.from_dict(self.model_data)
+        self.model = ExampleModel.from_dict(self.model_data_parsed)
 
 class TestModelFromDict(TestBase):
 
     def test_from_dict(self):
         # Test if the model can be created from a dictionary
-        model_data = {
+        model_data_parsed = {
             "id": 1,
             "a_str": "Hello, world!",
             "a_date": "2020-05-12T12:00:00Z",
@@ -89,7 +89,7 @@ class TestModelFromDict(TestBase):
             "a_float": 3.14,
             "a_bool": True
         }
-        model = ExampleModel.from_dict(model_data)
+        model = ExampleModel.from_dict(model_data_parsed)
         self.assertIsInstance(model, ExampleModel)
         self.assertIsInstance(model.a_date, datetime)
         self.assertIsInstance(model.a_str, str)
@@ -97,11 +97,11 @@ class TestModelFromDict(TestBase):
         self.assertIsInstance(model.a_float, float)
         self.assertIsInstance(model.a_bool, bool)
 
-        self.assertEqual(model.id, model_data["id"])
-        self.assertEqual(model.a_str, model_data["a_str"])
-        self.assertEqual(model.an_int, model_data["an_int"])
-        self.assertEqual(model.a_float, model_data["a_float"])
-        self.assertEqual(model.a_bool, model_data["a_bool"])
+        self.assertEqual(model.id, model_data_parsed["id"])
+        self.assertEqual(model.a_str, model_data_parsed["a_str"])
+        self.assertEqual(model.an_int, model_data_parsed["an_int"])
+        self.assertEqual(model.a_float, model_data_parsed["a_float"])
+        self.assertEqual(model.a_bool, model_data_parsed["a_bool"])
         # TODO datetime
 
 class TestModelToDict(TestWithModel):
@@ -149,11 +149,11 @@ class TestModelToDict(TestWithModel):
 class TestModel(TestWithModel):
     def test_model_initialization(self):
         # Test if the model is initialized correctly
-        self.assertEqual(self.model.id, self.model_data["id"])
-        self.assertEqual(self.model.a_str, self.model_data["a_str"])
-        self.assertEqual(self.model.an_int, self.model_data["an_int"])
-        self.assertEqual(self.model.a_float, self.model_data["a_float"])
-        self.assertEqual(self.model.a_bool, self.model_data["a_bool"])
+        self.assertEqual(self.model.id, self.model_data_parsed["id"])
+        self.assertEqual(self.model.a_str, self.model_data_parsed["a_str"])
+        self.assertEqual(self.model.an_int, self.model_data_parsed["an_int"])
+        self.assertEqual(self.model.a_float, self.model_data_parsed["a_float"])
+        self.assertEqual(self.model.a_bool, self.model_data_parsed["a_bool"])
 
     def test_model_date_parsing(self):
         # Test if date strings are parsed into datetime objects
@@ -166,11 +166,11 @@ class TestModel(TestWithModel):
         # Test if the model can be converted back to a dictionary
         model_dict = self.model.to_dict()
 
-        self.assertEqual(model_dict["id"], self.model_data["id"])
-        self.assertEqual(model_dict["a_str"], self.model_data["a_str"])
-        self.assertEqual(model_dict["an_int"], self.model_data["an_int"])
-        self.assertEqual(model_dict["a_float"], self.model_data["a_float"])
-        self.assertEqual(model_dict["a_bool"], self.model_data["a_bool"])
+        self.assertEqual(model_dict["id"], self.model_data_parsed["id"])
+        self.assertEqual(model_dict["a_str"], self.model_data_parsed["a_str"])
+        self.assertEqual(model_dict["an_int"], self.model_data_parsed["an_int"])
+        self.assertEqual(model_dict["a_float"], self.model_data_parsed["a_float"])
+        self.assertEqual(model_dict["a_bool"], self.model_data_parsed["a_bool"])
 
         self.assertEqual(model_dict["a_date"], "2020-05-12T12:00:00+00:00")
 

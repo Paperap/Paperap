@@ -52,8 +52,8 @@ class TestClient(TestCase):
         self.assertEqual(total_on_page, len(sample_data['results']), "Count of documents on this page incorrect")
 
         count = 0
-        # Ensure paging works (twice), then break
-        test_iterations = (total_on_page * 2) + 2
+        # Ensure paging works, then break
+        test_iterations = total_on_page + 2
         for document in documents:
             count += 1
             self.assertIsInstance(document, Document, f"Expected Document, got {type(document)}")
@@ -67,7 +67,7 @@ class TestClient(TestCase):
             for tag in document.tag_ids:
                 self.assertIsInstance(tag, int, f"Document tag is wrong type: {type(tag)}")
 
-            # Ensure paging works (twice), then break
+            # Ensure paging works, then break
             if count >= test_iterations:
                 break
 

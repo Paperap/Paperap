@@ -24,12 +24,14 @@
 """
 from __future__ import annotations
 
+import copy
 import os
 from typing import Iterable, override
 import unittest
 from unittest.mock import patch, MagicMock
 import logging
 from datetime import datetime, timezone
+from paperap.client import PaperlessClient
 from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models import *
 from paperap.resources.documents import DocumentResource
@@ -44,7 +46,7 @@ sample_document = load_sample_data('documents_item.json')
 class TestDocumentInit(DocumentTest):
     @override
     def setup_model_data(self):
-        self.model_data = {
+        self.model_data_parsed = {
             "id": 1,
             "created": "2025-03-01T12:00:00Z",
             "updated": "2025-03-02T12:00:00Z",
@@ -61,11 +63,11 @@ class TestDocumentInit(DocumentTest):
         }
         for field, field_type in fields.items():
             value = getattr(self.model, field)
-            if self.model_data[field] is None:
+            if self.model_data_parsed[field] is None:
                 self.assertIsNone(value)
             else:
                 self.assertIsInstance(value, field_type, f"Expected {field} to be a {field_type}, got {type(value)}")
-            self.assertEqual(value, self.model_data[field], f"Expected {field} to match sample data")
+            self.assertEqual(value, self.model_data_parsed[field], f"Expected {field} to match sample data")
         self.assertIsInstance(self.model.created, datetime, f"created wrong type after from_dict {type(self.model.created)}")
         self.assertIsInstance(self.model.updated, datetime, f"updated wrong type after from_dict {type(self.model.updated)}")
         self.assertEqual(self.model.created, datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc), f"created wrong value after from_dict {self.model.created}")
@@ -81,7 +83,7 @@ class TestDocumentInit(DocumentTest):
 class TestDocument(DocumentTest):
     @override
     def setup_model_data(self):
-        self.model_data = {
+        self.model_data_parsed = {
             "id": 1,
             "created": "2025-03-01T12:00:00Z",
             "updated": "2025-03-02T12:00:00Z",
@@ -258,36 +260,66 @@ class TestRequestDocumentList(DocumentTest):
             expected = sample_document_list["count"]
             self.assertEqual(total, expected, f"Expected {expected} documents, got {total}")
 
-class TestRequestDocument(DocumentTest):
-    def test_get_document(self):
+class TestRequest(DocumentTest):
+    def test_manual(self):
+        """Test getting the document without using any of our custom unit test functionality, just in case."""        
         with patch("paperap.client.PaperlessClient.request") as mock_request:
-            mock_request.return_value = sample_document
-            document = self.get_resource(DocumentResource, 7313)
-            self.assertIsInstance(document, Document)
-            fields = {
-                "id": int,
-                "title": str,
-            }
-            for field, field_type in fields.items():
-                value = getattr(document, field)
-                if sample_document[field] is None:
-                    self.assertIsNone(value)
-                else:
-                    self.assertIsInstance(value, field_type, f"Expected document.{field} to be a {field_type}, got {type(value)}")
-                    self.assertEqual(value, sample_document[field], f"Expected document.{field} to match sample data")
+            mock_request.return_value = copy.deepcopy(sample_document)
+            document = self.client.documents.get(1)
 
-            if document.created is not None:
-                self.assertIsInstance(document.created, datetime, f"created wrong type after from_dict {type(document.created)}")
-            if document.updated is not None:
-                self.assertIsInstance(document.updated, datetime, f"updated wrong type after from_dict {type(document.updated)}")
-            self.assertIsInstance(document.tag_ids, Iterable)
-            self.assertEqual(document.tag_ids, sample_document["tags"])
+            self.assertIsInstance(document, Document)
+            self.assertEqual(document.id, sample_document['id'])
+            self.assertEqual(document.title, sample_document['title'])
+            self.assertEqual(document.correspondent_id, sample_document['correspondent'])
+            self.assertEqual(document.document_type_id, sample_document['document_type'])
+            self.assertEqual(document.storage_path_id, sample_document['storage_path'])
+            self.assertEqual(document.tag_ids, sample_document['tags'])
+            
+    def test_get(self):
+        document = self.get_resource(DocumentResource, self.model_data_parsed["id"])
+        """
+        from icecream import ic
+        ic(self.model_data_parsed)
+        ic(document)
+        ic(document.__dict__)
+        """
+        self.assertIsInstance(document, Document)
+        fields = {
+            "id": int,
+            "title": str,
+        }
+        for field, field_type in fields.items():
+            value = getattr(document, field)
+            if self.model_data_parsed[field] is None:
+                self.assertIsNone(value)
+            else:
+                self.assertIsInstance(value, field_type, f"Expected document.{field} to be a {field_type}, got {type(value)}")
+                self.assertEqual(value, self.model_data_parsed[field], f"Expected document.{field} to match sample data")
+
+        if document.created is not None:
+            self.assertIsInstance(document.created, datetime, f"created wrong type after from_dict {type(document.created)}")
+        if document.updated is not None:
+            self.assertIsInstance(document.updated, datetime, f"updated wrong type after from_dict {type(document.updated)}")
+        self.assertIsInstance(document.tag_ids, Iterable)
+        self.assertEqual(document.tag_ids, self.model_data_parsed["tags"])
+        
+        if self.model_data_parsed["correspondent"] is None:
+            self.assertIsNone(document.correspondent_id)
+        else:
             self.assertIsInstance(document.correspondent_id, int)
-            self.assertEqual(document.correspondent_id, sample_document["correspondent"])
+            self.assertEqual(document.correspondent_id, self.model_data_parsed["correspondent"])
+            
+        if self.model_data_parsed["document_type"] is None:
+            self.assertIsNone(document.document_type_id)
+        else:
             self.assertIsInstance(document.document_type_id, int)
-            self.assertEqual(document.document_type_id, sample_document["document_type"])
+            self.assertEqual(document.document_type_id, self.model_data_parsed["document_type"])
+
+        if self.model_data_parsed["storage_path"] is None:
+            self.assertIsNone(document.storage_path_id)
+        else:
             self.assertIsInstance(document.storage_path_id, int)
-            self.assertEqual(document.storage_path_id, sample_document["storage_path"])
+            self.assertEqual(document.storage_path_id, self.model_data_parsed["storage_path"])
 
 class TestCustomFieldAccess(DocumentTest):
 
@@ -304,7 +336,7 @@ class TestCustomFieldAccess(DocumentTest):
             {"field": 57, "value": False},
             {"field": 58, "value": None},
         ]
-        self.model = self.create_model(**{
+        self.model = self.bake_model(**{
             "id": 1,
             "created": "2025-03-01T12:00:00Z",
             "updated": "2025-03-02T12:00:00Z",
