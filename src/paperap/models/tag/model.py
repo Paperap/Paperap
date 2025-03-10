@@ -22,7 +22,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Optional
 
-from pydantic import Field
+from pydantic import Field, field_validator
 
 from paperap.models.abstract.model import StandardModel
 from paperap.models.mixins.models import MatcherMixin
@@ -49,6 +49,15 @@ class Tag(StandardModel, MatcherMixin):
         # Fields that should not be modified
         read_only_fields = {"slug", "document_count"}
         queryset = TagQuerySet
+
+    @field_validator("colour", mode="before")
+    def validate_colour(cls, value: str | int | None) -> str | None:
+        if value is None:
+            return None
+        value = str(value)
+        if not value.startswith("#"):
+            return f"#{value}"
+        return value
 
     @property
     def documents(self) -> "DocumentQuerySet":

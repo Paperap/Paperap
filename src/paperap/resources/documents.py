@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import os.path
 from datetime import datetime
-from typing import Any, BinaryIO, Iterator, Optional
+from typing import Any, BinaryIO, Iterator, Optional, override
 
 from typing_extensions import TypeVar
 

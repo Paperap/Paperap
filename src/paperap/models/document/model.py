@@ -22,8 +22,6 @@ LAST MODIFIED:
 2025-03-09     By Jess Mann
 
 """
-
-
 from __future__ import annotations
 
 from datetime import datetime
@@ -33,8 +31,8 @@ from pydantic import Field, field_serializer, field_validator, model_serializer
 from typing_extensions import TypeVar
 from yarl import URL
 
-from paperap.models.abstract import FilteringStrategies, Parser, StandardModel
-from paperap.models.document.parser import CustomFieldDict, DocumentParser
+from paperap.models.abstract import FilteringStrategies, StandardModel
+from paperap.models.document.parser import CustomFieldDict
 from paperap.models.document.queryset import DocumentQuerySet
 
 if TYPE_CHECKING:
@@ -163,7 +161,6 @@ class Document(StandardModel):
         read_only_fields = {"page_count", "deleted_at", "updated", "is_shared_by_requester"}
         filtering_disabled = {"page_count", "deleted_at", "updated", "is_shared_by_requester"}
         filtering_strategies = {FilteringStrategies.WHITELIST}
-        parser = DocumentParser
         field_map = {
             "tags": "tag_ids",
             "custom_fields": "custom_field_dicts",

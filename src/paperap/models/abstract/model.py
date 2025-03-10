@@ -36,7 +36,6 @@ from yarl import URL
 from paperap.const import FilteringStrategies, ModelStatus
 from paperap.exceptions import ConfigurationError
 from paperap.models.abstract.meta import StatusContext
-from paperap.models.abstract.parser import Parser
 from paperap.models.abstract.queryset import BaseQuerySet
 from paperap.signals import SignalRegistry
 
@@ -89,7 +88,6 @@ class BaseModel(pydantic.BaseModel, ABC):
             supported_filtering_params: Params allowed during queryset filtering.
             blacklist_filtering_params: Params disallowed during queryset filtering.
             filtering_strategies: Strategies for filtering.
-            parser: The type of parser for API data.
             resource: The PaperlessResource instance.
             queryset: The type of QuerySet for the model.
 
@@ -117,9 +115,6 @@ class BaseModel(pydantic.BaseModel, ABC):
         # Strategies for filtering.
         # This determines which of the above lists will be used to allow or deny filters to QuerySets.
         filtering_strategies: ClassVar[set[FilteringStrategies]] = {FilteringStrategies.BLACKLIST}
-        # the type of parser, which parses api data into appropriate types
-        # this will usually not need to be overridden
-        parser: type[Parser[_Self]] = Parser
         resource: "PaperlessResource[_Self]"
         queryset: type[BaseQuerySet[_Self]] = BaseQuerySet
         # Updating attributes will not trigger save()
@@ -345,7 +340,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             doc = Document.from_dict(api_data)
 
         """
-        return cls.model_validate(data)
+        return cls._meta.resource.parse_to_model(data)
 
     def to_dict(
         self,

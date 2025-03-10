@@ -171,7 +171,8 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource]):
         Set up the model instance using the factory and model data.
         """
         if getattr(self, "resource", None) and getattr(self, "factory", None):
-            self.model = self.create_model(**self.model_data)
+            model_data = self.resource.transform_data_input(self.model_data)
+            self.model = self.create_model(**model_data)
 
     def create_model(self, *args, **kwargs : Any) -> _StandardModel:
         """

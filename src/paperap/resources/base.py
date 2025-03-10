@@ -31,7 +31,6 @@ from yarl import URL
 
 from paperap.const import URLS, Endpoints
 from paperap.exceptions import ConfigurationError, ObjectNotFoundError, ResourceNotFoundError
-from paperap.models.abstract.parser import Parser
 from paperap.signals import SignalRegistry
 
 if TYPE_CHECKING:
@@ -70,9 +69,6 @@ class PaperlessResource(ABC, Generic[_BaseModel, _QuerySet]):
     # Setting it will allow you to contact a different schema or even a completely different API.
     # this will usually not need to be overridden
     endpoints: ClassVar[Endpoints]
-    # A class which parses api data into appropriate types
-    # this will usually not need to be overridden
-    parser: ClassVar[Parser]
 
     def __init__(self, client: "PaperlessClient"):
         self.client = client
@@ -106,10 +102,6 @@ class PaperlessResource(ABC, Generic[_BaseModel, _QuerySet]):
         # model_class is required
         if not (model_class := getattr(cls, "model_class", None)):
             raise ConfigurationError(f"model_class must be defined in {cls.__name__}")
-
-        # Set parser
-        parser_type = model_class._meta.parser
-        cls.parser = parser_type(model_class)
 
         # API Endpoint must be defined
         if not hasattr(cls, "endpoints"):
@@ -269,10 +261,46 @@ class PaperlessResource(ABC, Generic[_BaseModel, _QuerySet]):
 
         Returns:
             The parsed model instance.
+        """
+        from icecream import ic
+        print('Before transform')
+        ic(item)
+        data = self.transform_data_input(item)
+        print('After transform')
+        ic(data)
+        return self.model_class.model_validate(data)
+
+    def transform_data_input(self, data: dict[str, Any]) -> dict[str, Any]:
+        """
+        Transform data after receiving it from the API.
+
+        Args:
+            data: The data to transform.
+
+        Returns:
+            The transformed data.
 
         """
-        parsed_data = self.parser.parse_data(item)
-        return self.model_class.from_dict(parsed_data)
+        for key, value in self._meta.field_map.items():
+            if value in data:
+                data[key] = data.pop(value)
+        return data
+
+    def transform_data_output(self, data: dict[str, Any]) -> dict[str, Any]:
+        """
+        Transform data before sending it to the API.
+
+        Args:
+            data: The data to transform.
+
+        Returns:
+            The transformed data.
+
+        """
+        for key, value in self._meta.field_map.items():
+            if key in data:
+                data[value] = data.pop(key)
+        return data
 
     def create_model(self, **kwargs : Any) -> _BaseModel:
         """
