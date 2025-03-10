@@ -166,10 +166,10 @@ class Parser(Generic[_BaseModel]):
             try:
                 parsed = dateparser.parse(value)
                 if parsed is None:
-                    logger.warning(f"Failed to parse datetime from: {value}")
+                    logger.warning("Failed to parse datetime from: %s", value)
                 return parsed
             except Exception as e:
-                logger.warning(f"Error parsing datetime '{value}': {e}")
+                logger.warning("Error parsing datetime '%s': %s", value, e)
                 return None
         return None
 
@@ -243,7 +243,7 @@ class Parser(Generic[_BaseModel]):
             if isinstance(value, int):
                 return enum_type(value)
         except (KeyError, ValueError) as e:
-            logger.error(f"Failed to parse enum: {e}")
+            logger.error("Failed to parse enum: %s", e)
 
         return None
 

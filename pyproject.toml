@@ -414,9 +414,9 @@ disable = [
   #"unknown-option-value",
   #"multiple-imports",
   #"logging-fstring-interpolation",
+  #"missing-function-docstring",
 
   # Temporarily disabled until errors are resolved
-  "missing-function-docstring",
   "fixme",
   "too-many-public-methods",
   "duplicate-code",

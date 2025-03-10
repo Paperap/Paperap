@@ -104,9 +104,9 @@ class PluginManager:
                     if issubclass(obj, Plugin) and obj is not Plugin and obj.__module__ == module_name:
                         plugin_name = obj.__name__
                         self.plugins[plugin_name] = obj
-                        logger.debug(f"Discovered plugin: {plugin_name}")
+                        logger.debug("Discovered plugin: %s", plugin_name)
             except Exception as e:
-                logger.error(f"Error loading plugin module {module_name}: {e}")
+                logger.error("Error loading plugin module %s: %s", module_name, e)
 
     def configure(self, config: PluginConfig) -> None:
         """
@@ -138,7 +138,7 @@ class PluginManager:
             return self.instances[plugin_name]
 
         if plugin_name not in self.plugins:
-            logger.warning(f"Plugin not found: {plugin_name}")
+            logger.warning("Plugin not found: %s", plugin_name)
             return None
 
         plugin_class = self.plugins[plugin_name]
@@ -148,10 +148,10 @@ class PluginManager:
             # Initialize the plugin with client and any plugin-specific config
             plugin_instance = plugin_class(client, **plugin_config)
             self.instances[plugin_name] = plugin_instance
-            logger.info(f"Initialized plugin: {plugin_name}")
+            logger.info("Initialized plugin: %s", plugin_name)
             return plugin_instance
         except Exception as e:
-            logger.error(f"Failed to initialize plugin {plugin_name}: {e}")
+            logger.error("Failed to initialize plugin %s: %s", plugin_name, e)
             return None
 
     def initialize_all_plugins(self, client: Any) -> dict[str, Plugin]:

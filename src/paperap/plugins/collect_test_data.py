@@ -160,7 +160,7 @@ class TestDataCollector(Plugin):
                 json.dump(response, f, indent=4, sort_keys=True, ensure_ascii=False, default=self._json_serializer)
         except (TypeError, OverflowError, OSError) as e:
             # Don't allow the plugin to interfere with normal operations in the event of failure
-            logger.error(f"Error saving response to file: {e}")
+            logger.error("Error saving response to file: %s", e)
 
     def save_list_response(self, sender : Any, response: dict[str, Any], **kwargs : Any) -> dict[str, Any]:
         """Save the list response to a JSON file."""
