@@ -10,7 +10,7 @@
         File:    test_tags.py
         Project: paperap
         Created: 2025-03-05
-        Version: 0.0.3
+        Version: 0.0.4
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,7 +25,7 @@
 from __future__ import annotations
 
 import os
-from typing import Iterable
+from typing import Iterable, override
 from unittest.mock import patch, MagicMock
 from datetime import datetime
 from paperap.models import *
@@ -38,8 +38,9 @@ sample_tag = load_sample_data('tags_item.json')
 
 class TestTagsInit(TagTest):
 
+    @override
     def setup_model_data(self):
-        self.model_data = {
+        self.model_data_parsed = {
             "id": 1,
             "name": "Test Tag",
             "slug": "test-tag",
@@ -54,7 +55,7 @@ class TestTagsInit(TagTest):
         }
 
     def test_from_dict(self):
-        model = Tag.from_dict(self.model_data)
+        model = Tag.from_dict(self.model_data_parsed)
         fields = {
             "id": int,
             "name": str,
@@ -71,12 +72,13 @@ class TestTagsInit(TagTest):
         for field, field_type in fields.items():
             value = getattr(model, field)
             self.assertIsInstance(value, field_type, f"Expected {field} to be a {field_type}, got {type(value)}")
-            self.assertEqual(value, self.model_data[field], f"Expected {field} to match sample data")
+            self.assertEqual(value, self.model_data_parsed[field], f"Expected {field} to match sample data")
 
 class TestTag(TagTest):
 
+    @override
     def setup_model_data(self):
-        self.model_data = {
+        self.model_data_parsed = {
             "id": 1,
             "name": "Test Tag",
             "slug": "test-tag",
@@ -128,12 +130,13 @@ class TestTag(TagTest):
         for field, field_type in fields.items():
             value = model_dict[field]
             self.assertIsInstance(value, field_type, f"Expected {field} to be a {field_type}, got {type(value)}")
-            self.assertEqual(value, self.model_data[field], f"Expected {field} to match sample data")
+            self.assertEqual(value, self.model_data_parsed[field], f"Expected {field} to match sample data")
 
 class TestRelationships(TagTest):
 
+    @override
     def setup_model_data(self):
-        self.model_data = {
+        self.model_data_parsed = {
             "id": 1337,
             "name": "Test Tag",
             "slug": "test-tag",
@@ -160,20 +163,36 @@ class TestRelationships(TagTest):
             count = 0
             for i, document in enumerate(documents):
                 count += 1
+                sample_document = sample_data["results"][i]
                 fields = {
                     "id": int,
                     "title": str,
-                    "storage_path": int,
-                    "correspondent": int,
-                    "document_type": int,
-                    "created": datetime,
-                    "tags": list
                 }
                 for field, field_type in fields.items():
                     value = getattr(document, field)
                     self.assertIsInstance(value, field_type, f"Expected document.{field} to be a {field_type}, got {type(value)}")
-                    self.assertEqual(value, sample_data["results"][i][field], f"Expected document.{field} to match sample data")
+                    self.assertEqual(value, sample_document[field], f"Expected document.{field} to match sample data")
 
-                self.assertTrue(self.model.id in document.tags, f"Expected tag.id to be in document.tags. {self.model.id} not in {document.tags}")
+                self.assertIsInstance(document.tag_ids, list)
+                self.assertTrue(self.model.id in document.tag_ids, f"Expected tag.id to be in document.tag_ids. {self.model.id} not in {document.tag_ids}")
+                self.assertCountEqual(document.tag_ids, sample_document['tags'], f"Expected document.tag_ids to match sample data")
+
+                if sample_document['storage_path'] is None:
+                    self.assertIsNone(document.storage_path_id)
+                else:
+                    self.assertIsInstance(document.storage_path_id, int)
+                    self.assertEqual(document.storage_path_id, sample_document['storage_path'])
+
+                if sample_document['correspondent'] is None:
+                    self.assertIsNone(document.correspondent_id)
+                else:
+                    self.assertIsInstance(document.correspondent_id, int)
+                    self.assertEqual(document.correspondent_id, sample_document['correspondent'])
+
+                if sample_document['document_type'] is None:
+                    self.assertIsNone(document.document_type_id)
+                else:
+                    self.assertIsInstance(document.document_type_id, int)
+                    self.assertEqual(document.document_type_id, sample_document['document_type'])
 
             self.assertEqual(count, expected_count, f"Expected to iterate over {expected_count} documents, only saw {count}")

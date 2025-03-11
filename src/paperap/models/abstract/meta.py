@@ -1,19 +1,15 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
 
        File:    meta.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-07
-       Version: 0.0.2
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -23,11 +19,12 @@
 
 """
 
-from typing import TYPE_CHECKING, Iterable, Literal
+from typing import TYPE_CHECKING, Any, Iterable, Literal
+
 from paperap.const import ModelStatus
 
 if TYPE_CHECKING:
-    from paperap.models.abstract import PaperlessModel
+    from paperap.models.abstract import BaseModel
 
 
 class StatusContext:
@@ -40,20 +37,26 @@ class StatusContext:
         previous_status (ModelStatus): The status before entering the context.
 
     Examples:
-        >>> class SomeModel(PaperlessModel):
+        >>> class SomeModel(BaseModel):
         ...     def perform_update(self):
         ...         with StatusContext(self, ModelStatus.UPDATING):
         ...             # Perform an update
+
     """
 
-    _model: "PaperlessModel"
+    _model: "BaseModel"
     _new_status: ModelStatus
     _previous_status: ModelStatus | None
 
     @property
-    def model(self) -> "PaperlessModel":
+    def model(self) -> "BaseModel":
         """Read-only access to the model."""
         return self._model
+
+    @property
+    def _meta(self) -> "BaseModel.Meta":
+        """Read-only access to the model's meta."""
+        return self.model._meta  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
 
     @property
     def new_status(self) -> ModelStatus:
@@ -65,19 +68,22 @@ class StatusContext:
         """Read-only access to the previous status."""
         return self._previous_status
 
-    def __init__(self, model: "PaperlessModel", new_status: ModelStatus):
+    def __init__(self, model: "BaseModel", new_status: ModelStatus):
         self._model = model
         self._new_status = new_status
         self._previous_status = None
+        super().__init__()
 
-    def __enter__(self):
-        self._previous_status = self.model._meta.status
-        self.model._meta.status = self.new_status
+    def __enter__(self) -> None:
+        self._previous_status = self._meta.status
+        self._meta.status = self.new_status
         # Do NOT return context manager, because we want to guarantee that the status is reverted
         # so we do not want to allow access to the context manager object
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(
+        self, exc_type: type[BaseException] | None, exc_value: BaseException | None, traceback: Iterable[Any]
+    ) -> None:
         if self.previous_status is not None:
-            self.model._meta.status = self.previous_status
+            self._meta.status = self.previous_status
         else:
-            self.model._meta.status = ModelStatus.ERROR
+            self._meta.status = ModelStatus.ERROR

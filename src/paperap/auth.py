@@ -1,19 +1,15 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
 
        File:    auth.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -26,22 +22,23 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from pydantic import BaseModel
-from typing import Any
+from typing import Any, override
+
+import pydantic
 
 
-class AuthBase(BaseModel):
+class AuthBase(pydantic.BaseModel):
     """Base authentication class."""
 
     @abstractmethod
     def get_auth_headers(self) -> dict[str, str]:
         """Get authentication headers."""
-        pass
+        raise NotImplementedError("get_auth_headers must be implemented by subclasses")
 
     @abstractmethod
     def get_auth_params(self) -> dict[str, Any]:
         """Get authentication parameters for requests."""
-        pass
+        raise NotImplementedError("get_auth_params must be implemented by subclasses")
 
 
 class TokenAuth(AuthBase):
@@ -49,10 +46,12 @@ class TokenAuth(AuthBase):
 
     token: str
 
+    @override
     def get_auth_headers(self) -> dict[str, str]:
         """Get the authorization headers."""
         return {"Authorization": f"Token {self.token}"}
 
+    @override
     def get_auth_params(self) -> dict[str, Any]:
         """Get authentication parameters for requests."""
         return {}
@@ -64,13 +63,16 @@ class BasicAuth(AuthBase):
     username: str
     password: str
 
+    @override
     def get_auth_headers(self) -> dict[str, str]:
         """
-        Basic auth is handled by the requests library,
-        so no headers are needed here.
+        Get headers for basic auth.
+
+        Basic auth is handled by the requests library, so no headers are needed here.
         """
         return {}
 
+    @override
     def get_auth_params(self) -> dict[str, Any]:
         """Get authentication parameters for requests."""
         return {"auth": (self.username, self.password)}

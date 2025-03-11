@@ -28,7 +28,25 @@ from abc import ABC
 import factory
 from faker import Faker
 from datetime import datetime, timezone
-from paperap.models import *
+from paperap.models import (
+    Correspondent,
+    CustomField,
+    Document,
+    DocumentNote,
+    DocumentType,
+    Tag,
+    User,
+    Group,
+    Profile,
+    StoragePath,
+    SavedView,
+    ShareLinks,
+    Task,
+    UISettings,
+    Workflow,
+    WorkflowAction,
+    WorkflowTrigger,
+)
 
 fake = Faker()
 
@@ -39,7 +57,7 @@ class CorrespondentFactory(PydanticFactory):
     class Meta: # type: ignore # pyright handles this wrong
         model = Correspondent
 
-    slug = factory.LazyFunction(lambda: fake.slug())
+    slug = factory.LazyFunction(fake.slug)
     name = factory.Faker("name")
     match = factory.Faker("word")
     matching_algorithm = factory.Faker("random_int", min=0, max=3)
@@ -99,7 +117,7 @@ class DocumentTypeFactory(PydanticFactory):
         model = DocumentType
 
     name = factory.Faker("word")
-    slug = factory.LazyFunction(lambda: fake.slug())
+    slug = factory.LazyFunction(fake.slug)
     match = factory.Faker("word")
     matching_algorithm = factory.Faker("random_int", min=0, max=3)
     is_insensitive = factory.Faker("boolean")
@@ -113,7 +131,7 @@ class TagFactory(PydanticFactory):
         model = Tag
 
     name = factory.Faker("word")
-    slug = factory.LazyFunction(lambda: fake.slug())
+    slug = factory.LazyFunction(fake.slug)
     colour = factory.Faker("hex_color")
     match = factory.Faker("word")
     matching_algorithm = factory.Faker("random_int", min=0, max=3)
@@ -160,7 +178,7 @@ class StoragePathFactory(PydanticFactory):
         model = StoragePath
 
     name = factory.Faker("word")
-    slug = factory.LazyFunction(lambda: fake.slug())
+    slug = factory.LazyFunction(fake.slug)
     path = factory.Faker("file_path")
     match = factory.Faker("word")
     matching_algorithm = factory.Faker("random_int", min=0, max=3)

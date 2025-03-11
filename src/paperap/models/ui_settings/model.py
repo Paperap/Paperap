@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -10,7 +6,7 @@
        File:    ui_settings.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,7 +21,7 @@
 
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from paperap.models.abstract.model import StandardModel
 from paperap.models.ui_settings.queryset import UISettingsQuerySet

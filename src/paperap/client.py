@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -10,7 +6,7 @@
        File:    client.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.3
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -27,30 +23,31 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from string import Template
 from typing import Any, Iterator, Literal, Union, Unpack, overload
+
 import requests
 from yarl import URL
-from string import Template
-from paperap.auth import BasicAuth, TokenAuth, AuthBase
+
+from paperap.auth import AuthBase, BasicAuth, TokenAuth
 from paperap.exceptions import (
     APIError,
     AuthenticationError,
-    InsufficientPermissionError,
-    PaperlessException,
+    BadResponseError,
     ConfigurationError,
+    InsufficientPermissionError,
+    PaperlessError,
+    RequestError,
     ResourceNotFoundError,
     ResponseParsingError,
-    RequestError,
-    BadResponseError,
 )
 from paperap.plugin_manager import PluginConfig
 from paperap.plugins.base import Plugin
-from paperap.settings import Settings, SettingsArgs
 from paperap.resources import (
     CorrespondentResource,
     CustomFieldResource,
-    DocumentResource,
     DocumentNoteResource,
+    DocumentResource,
     DocumentTypeResource,
     GroupResource,
     ProfileResource,
@@ -65,6 +62,7 @@ from paperap.resources import (
     WorkflowResource,
     WorkflowTriggerResource,
 )
+from paperap.settings import Settings, SettingsArgs
 from paperap.signals import SignalRegistry
 
 logger = logging.getLogger(__name__)
@@ -103,6 +101,7 @@ class PaperlessClient:
         with PaperlessClient(...) as client:
             docs = client.documents.list()
         ```
+
     """
 
     settings: Settings
@@ -155,6 +154,7 @@ class PaperlessClient:
         # Initialize resources
         self._init_resources()
         self._initialize_plugins()
+        super().__init__()
 
     @property
     def base_url(self) -> URL:
@@ -194,8 +194,9 @@ class PaperlessClient:
 
         Args:
             plugin_config: Optional configuration dictionary for plugins.
+
         """
-        from paperap.plugin_manager import PluginManager
+        from paperap.plugin_manager import PluginManager  # type: ignore # pylint: disable=import-outside-toplevel
 
         # Create and configure the plugin manager
         self.plugin_manager = PluginManager()
@@ -263,7 +264,8 @@ class PaperlessClient:
             AuthenticationError: If authentication fails.
             ResourceNotFoundError: If the requested resource doesn't exist.
             APIError: If the API returns an error.
-            PaperlessException: For other errors.
+            PaperlessError: For other errors.
+
         """
         endpoint = str(endpoint)
 
@@ -300,22 +302,7 @@ class PaperlessClient:
 
             # Handle HTTP errors
             if response.status_code >= 400:
-                error_message = self._extract_error_message(response)
-
-                if response.status_code == 400:
-                    if "This field is required" in error_message:
-                        raise ValueError(f"Required field missing: {error_message}")
-                if response.status_code == 401:
-                    raise AuthenticationError(f"Authentication failed: {error_message}")
-                if response.status_code == 403:
-                    if "this site requires a CSRF" in error_message:
-                        raise ConfigurationError(f"Response claims CSRF token required. Is the url correct? {url}")
-                    raise InsufficientPermissionError(f"Permission denied: {error_message}")
-                if response.status_code == 404:
-                    raise ResourceNotFoundError(f"Paperless returned 404 for {endpoint}")
-
-                # All else...
-                raise BadResponseError(error_message, response.status_code)
+                self._handle_request_errors(response, url, params=params, data=data, files=files)
 
             # No content
             if response.status_code == 204:
@@ -335,6 +322,32 @@ class PaperlessClient:
             raise RequestError(f"Connection error: {str(ce)}") from ce
         except requests.exceptions.RequestException as re:
             raise RequestError(f"Request failed: {str(re)}") from re
+
+    def _handle_request_errors(
+        self,
+        response: requests.Response,
+        url: str,
+        *,
+        params: dict[str, Any] | None = None,
+        data: dict[str, Any] | None = None,
+        files: dict[str, Any] | None = None,
+    ):
+        error_message = self._extract_error_message(response)
+
+        if response.status_code == 400:
+            if "This field is required" in error_message:
+                raise ValueError(f"Required field missing: {error_message}")
+        if response.status_code == 401:
+            raise AuthenticationError(f"Authentication failed: {error_message}")
+        if response.status_code == 403:
+            if "this site requires a CSRF" in error_message:
+                raise ConfigurationError(f"Response claims CSRF token required. Is the url correct? {url}")
+            raise InsufficientPermissionError(f"Permission denied: {error_message}")
+        if response.status_code == 404:
+            raise ResourceNotFoundError(f"Paperless returned 404 for {url}")
+
+        # All else...
+        raise BadResponseError(error_message, response.status_code)
 
     @overload
     def _handle_response(
@@ -418,6 +431,23 @@ class PaperlessClient:
         files: dict[str, Any] | None = None,
         json_response: bool = True,
     ) -> dict[str, Any] | bytes | None:
+        """
+        Make a request to the Paperless-NgX API.
+
+        Generally, this should be done using resources, not by calling this method directly.
+
+        Args:
+            method: HTTP method (GET, POST, PUT, DELETE).
+            endpoint: API endpoint relative to base URL.
+            params: Query parameters for the request.
+            data: Request body data.
+            files: Files to upload.
+            json_response: Whether to parse the response as JSON.
+
+        Returns:
+            Parsed response data.
+
+        """
         kwargs = {
             "client": self,
             "method": method,
@@ -460,20 +490,20 @@ class PaperlessClient:
                 # Try different possible error formats
                 if "detail" in error_data:
                     return error_data["detail"]
-                elif "error" in error_data:
+                if "error" in error_data:
                     return error_data["error"]
-                elif "non_field_errors" in error_data:
+                if "non_field_errors" in error_data:
                     return ", ".join(error_data["non_field_errors"])
-                else:
-                    # Handle nested error messages
-                    messages = []
-                    for key, value in error_data.items():
-                        if isinstance(value, list):
-                            values = [str(i) for i in value]
-                            messages.append(f"{key}: {', '.join(values)}")
-                        else:
-                            messages.append(f"{key}: {value}")
-                    return "; ".join(messages)
+
+                # Handle nested error messages
+                messages = []
+                for key, value in error_data.items():
+                    if isinstance(value, list):
+                        values = [str(i) for i in value]
+                        messages.append(f"{key}: {', '.join(values)}")
+                    else:
+                        messages.append(f"{key}: {value}")
+                return "; ".join(messages)
             return str(error_data)
         except ValueError:
             return response.text or f"HTTP {response.status_code}"
@@ -499,7 +529,8 @@ class PaperlessClient:
 
         Raises:
             AuthenticationError: If authentication fails.
-            PaperlessException: For other errors.
+            PaperlessError: For other errors.
+
         """
         if timeout is None:
             timeout = self.settings.timeout
@@ -539,14 +570,13 @@ class PaperlessClient:
         except requests.exceptions.HTTPError as he:
             if he.response.status_code == 401:
                 raise AuthenticationError("Invalid username or password") from he
-            else:
-                try:
-                    error_data = he.response.json()
-                    error_message = error_data.get("detail", str(he))
-                except (ValueError, KeyError):
-                    error_message = str(he)
+            try:
+                error_data = he.response.json()
+                error_message = error_data.get("detail", str(he))
+            except (ValueError, KeyError):
+                error_message = str(he)
 
-                raise RequestError(f"Failed to generate token: {error_message}") from he
+            raise RequestError(f"Failed to generate token: {error_message}") from he
         except requests.exceptions.RequestException as re:
             raise RequestError(f"Error while requesting a new token: {str(re)}") from re
         except (ValueError, KeyError) as ve:
@@ -558,6 +588,7 @@ class PaperlessClient:
 
         Returns:
             Dictionary containing system statistics.
+
         """
         if result := self.request("GET", "api/statistics/"):
             return result
@@ -569,6 +600,7 @@ class PaperlessClient:
 
         Returns:
             Dictionary containing system status information.
+
         """
         if result := self.request("GET", "api/status/"):
             return result
@@ -580,6 +612,7 @@ class PaperlessClient:
 
         Returns:
             Dictionary containing system configuration.
+
         """
         if result := self.request("GET", "api/config/"):
             return result

@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -10,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,9 +21,10 @@
 
 from __future__ import annotations
 
-from typing import Any, Self, Union, Optional, TYPE_CHECKING
 import logging
-from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
+from typing import TYPE_CHECKING, Any, Optional, Self, Union
+
+from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models.mixins.queryset import HasDocumentCount
 
 if TYPE_CHECKING:
@@ -41,7 +38,7 @@ class CustomFieldQuerySet(StandardQuerySet["CustomField"], HasDocumentCount):
     QuerySet for Paperless-ngx custom fields with specialized filtering methods.
     """
 
-    def name(self, name: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def name(self, name: str, *, exact: bool = True) -> Self:
         """
         Filter custom fields by name.
 
@@ -51,6 +48,7 @@ class CustomFieldQuerySet(StandardQuerySet["CustomField"], HasDocumentCount):
 
         Returns:
             Filtered CustomFieldQuerySet
+
         """
         if exact:
             return self.filter(name=name)
@@ -65,5 +63,6 @@ class CustomFieldQuerySet(StandardQuerySet["CustomField"], HasDocumentCount):
 
         Returns:
             Filtered CustomFieldQuerySet
+
         """
         return self.filter(data_type=data_type)

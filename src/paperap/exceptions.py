@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -10,7 +6,7 @@
        File:    exceptions.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.2
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -28,15 +24,15 @@ from __future__ import annotations
 from string import Template
 
 
-class PaperlessException(Exception):
+class PaperlessError(Exception):
     """Base exception for all paperless client errors."""
 
 
-class ConfigurationError(PaperlessException):
+class ConfigurationError(PaperlessError):
     """Raised when the configuration is invalid."""
 
 
-class APIError(PaperlessException):
+class APIError(PaperlessError):
     """Raised when the API returns an error."""
 
     status_code: int | None = None
@@ -81,27 +77,27 @@ class ResponseParsingError(APIError):
 class ResourceNotFoundError(APIError):
     """Raised when a requested resource is not found."""
 
-    resource_type: str | None = None
+    resource_name: str | None = None
 
-    def __init__(self, message: str | None = None, resource_type: str | None = None):
-        self.resource_type = resource_type
+    def __init__(self, message: str | None = None, resource_name: str | None = None):
+        self.resource_name = resource_name
         if not message:
             message = "Resource ${resource} not found."
-        message = Template(message).safe_substitute(resource=resource_type)
+        message = Template(message).safe_substitute(resource=resource_name)
         super().__init__(message, 404)
 
 
 class ObjectNotFoundError(ResourceNotFoundError):
     """Raised when a requested object is not found."""
 
-    resource_id: int | None = None
+    model_id: int | None = None
 
-    def __init__(self, message: str | None = None, resource_type: str | None = None, resource_id: int | None = None):
-        self.resource_id = resource_id
+    def __init__(self, message: str | None = None, resource_name: str | None = None, model_id: int | None = None):
+        self.model_id = model_id
         if not message:
-            message = "Resource ${resource} (#${id}) not found."
-        message = Template(message).safe_substitute(resource=resource_type, id=resource_id)
-        super().__init__(message, resource_type)
+            message = "Resource ${resource} (#${pk}) not found."
+        message = Template(message).safe_substitute(resource=resource_name, pk=model_id)
+        super().__init__(message, resource_name)
 
 
 class MultipleObjectsFoundError(APIError):

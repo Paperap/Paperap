@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -10,7 +6,7 @@
        File:    tasks.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -28,7 +24,7 @@ from __future__ import annotations
 from typing import Any, Optional
 
 from paperap.models.task import Task, TaskQuerySet
-from paperap.resources.base import PaperlessResource, StandardResource
+from paperap.resources.base import BaseResource, StandardResource
 
 
 class TaskResource(StandardResource[Task, TaskQuerySet]):
@@ -42,6 +38,7 @@ class TaskResource(StandardResource[Task, TaskQuerySet]):
 
         Args:
             task_id: ID of the task to acknowledge.
+
         """
         self.client.request("PUT", f"tasks/{task_id}/acknowledge/")
 
@@ -51,5 +48,6 @@ class TaskResource(StandardResource[Task, TaskQuerySet]):
 
         Args:
             task_ids: list of task IDs to acknowledge.
+
         """
         self.client.request("POST", "tasks/bulk_acknowledge/", data={"tasks": task_ids})

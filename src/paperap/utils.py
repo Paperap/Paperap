@@ -1,19 +1,15 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
 
        File:    utils.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -38,6 +34,7 @@ def datetime_to_str(dt: datetime) -> str:
 
     Returns:
         ISO 8601 formatted string.
+
     """
     if dt is None:
         return None
@@ -53,8 +50,9 @@ def parse_filter_params(**kwargs: Any) -> dict[str, Any]:
 
     Returns:
         Dictionary of filter parameters.
+
     """
-    filters = {}
+    filters: dict[str, Any] = {}
     for key, value in kwargs.items():
         if value is not None:
             if isinstance(value, datetime):

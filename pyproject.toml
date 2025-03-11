@@ -1,6 +1,6 @@
 [project]
 name = "paperap"
-version = "0.0.4"
+version = "0.0.5"
 description = "Python library for interacting with the Paperless NGX REST API"
 readme = "README.md"
 authors = [
@@ -26,10 +26,10 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.pydoctor]
-add-package = ["./src/paperap"]
+add-package = ["src/paperap"]
 project-name = "paperap"
-project-version = "0.0.1"
-project-url = "https://github.com/paperap/paperap"
+project-version = "0.0.4"
+project-url = "https://github.com/Paperap/Paperap"
 html-output = "docs/API"
 project-base-dir = "./"
 intersphinx = ["https://docs.python.org/3/objects.inv"]
@@ -37,6 +37,8 @@ docformat = "google"
 verbose = 1
 theme = "readthedocs"
 warnings-as-errors = true
+# Ensure missing docstrings trigger warnings
+warn-on-missing-docstrings = true
 
 [tool.pylint.main]
 # Analyse import fallback blocks. This can be used to support both Python 2 and 3
@@ -72,7 +74,7 @@ fail-under = 10
 # from-stdin =
 
 # Files or directories to be skipped. They should be base names, not paths.
-ignore = ["logs","node_modules", ".github", ".git", ".vscode", "config", "docs"]
+ignore = ["logs","node_modules", ".github", ".git", ".vscode", "config", "docs", "tests"]
 
 # Add files or directories matching the regex patterns to the ignore-list. The
 # regex matches against paths and can be in Posix or Windows format.
@@ -235,7 +237,7 @@ property-classes = ["abc.abstractproperty"]
 
 # Regular expression matching correct type variable names. If left empty, type
 # variable names will be checked with the set naming style.
-# typevar-rgx =
+typevar-rgx = "^_?[A-Za-z]+$"
 
 # Naming style matching correct variable names.
 variable-naming-style = "snake_case"
@@ -301,7 +303,7 @@ min-public-methods = 2
 
 [tool.pylint.exceptions]
 # Exceptions that will emit a warning when caught.
-overgeneral-exceptions = ["BaseException", "Exception"]
+overgeneral-exceptions = ["builtin.Exception"]
 
 [tool.pylint.format]
 # Expected format of line ending, e.g. empty (any line ending), LF or CRLF.
@@ -386,20 +388,69 @@ confidence = ["HIGH", "CONTROL_FLOW", "INFERENCE", "INFERENCE_FAILURE", "UNDEFIN
 # no Warning level messages displayed, use "--disable=all --enable=classes
 # --disable=W".
 disable = [
-  "missing-function-docstring",
-  "redundant-returns-doc",
-  "pointless-string-statement",
-  "multiple-imports",
+  # Enabled Rules
+  #"unnecessary-lambda",
+  #"unspecified-encoding",
+  #"no-else-raises",
+  #"no-else-raise",
+  #"no-else-return",
+  #"invalid-name",
+  #"no-else-raises",
+  #"use-yield-from",
+  #"unreachable",
+  #"not-callable",
+  #"protected-access",
+  #"bad-indentation",
+  #"inconsistent-return-statements",
+  #"raise-missing-from",
+  #"unused-wildcard-import",
+  #"wildcard-import",
+  #"unnecessary-pass",
+  #"redefined-builtin",
+  #"import-outside-toplevel",
+  #"too-many-public-methods",
+  #"attribute-defined-outside-init",
+  #"attribute-defined-outside-init",
+  #"unknown-option-value",
+  #"multiple-imports",
+  #"logging-fstring-interpolation",
+  #"missing-function-docstring",
+
+  # Temporarily disabled until errors are resolved
+  "fixme",
+  "too-many-public-methods",
+  "duplicate-code",
+  "unused-argument",
+  "too-many-branches",
+  "too-many-return-statements",
+  "arguments-differ",
+  "line-too-long",
+  "wrong-import-order",
+
+  # Disabled indefinitely
+  "unused-import",
+  "trailing-whitespace",
+  "missing-class-docstring",
+  "too-few-public-methods",
+  "too-many-arguments",
+  "unnecessary-ellipsis",
+  "too-many-ancestors",
   "missing-final-newline",
   "trailing-newlines",
-  "unnecessary-pass",
+  "pointless-string-statement",
+  "too-many-instance-attributes",
+  "too-many-positional-arguments",
+  "typevar-name-incorrect-variance",
 ]
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
 # multiple time (only on the command line, not in the configuration file where it
 # should appear only once). See also the "--disable" option for examples.
-enable = ["c-extension-no-member"]
+enable = [
+  "c-extension-no-member",
+  "logging-format-interpolation"
+]
 
 [tool.pylint.miscellaneous]
 # List of note tags to take in consideration, separated by a comma.
@@ -591,11 +642,7 @@ ignore_patterns = [
 [tool.bandit]
 exclude_dirs = ["tests", ".venv", "node_modules", "logs"]
 skips = []
-
-# Specify the target python version
 target_version = "3.12"
-
-# Recursive scan
 recursive = true
 
 [tool.bandit.any_other_function_with_shell_equals_true]
@@ -640,9 +687,8 @@ subprocess = [
 ]
 
 [tool.ruff]
-# Basic configuration options
 line-length = 120
-include = ["**/*.py", "**/*.pyi"]
+target-version = "py312"
 
 # Excludes in addition to ruff's defaults
 # -- a few of these are already ruff defaults
@@ -659,8 +705,27 @@ extend-exclude = [
     "__pycache__",
     "tests"
 ]
-#max-complexity = 10
-output-format = 'concise'
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "C90", "I", "N", "D"]
+ignore = [
+  "D107",  # Missing docstring in __init__
+  "D200",  # One-line docstring should fit on one line with quotes
+  "D205",  # Blank line required between summary line and description
+  "D203",  # No blank line before class
+  "D212",  # Multi-line docstring summary should start at the first line
+  "D400",  # Section name should end with punctuation
+  "D415",  # ^
+  "D418",  # Function decorated with @overload shouldn't contain a docstring
+  "W293",  # Blank line contains whitespace
+  # Temporarily disabled
+  "D101",  # Missing docstring in public class
+  "D102",  # Missing docstring in public method
+  "D105",  # Missing docstring in magic method
+  "D106",  # Missing docstring in public nested class
+  "D417",
+  "C901",  # too complex
+]
 
 # 4. Ignore `E402` (import violations) in all `__init__.py` files, and in selected subdirectories.
 [tool.ruff.lint.per-file-ignores]
@@ -766,41 +831,161 @@ report_errors = true
 [tool.pyright]
 include = ["."]
 exclude = [
-    '**/.*',
-    '**/_*',
-    '**/node_modules',
-    '**/tests',
-    '**/logs',
+    "**/.*",
+    "**/_*",
+    "**/node_modules",
+    "**/tests",
+    "**/logs",
 ]
 ignore = ["docs"]
 defineConstant = { DEBUG = true }
 stubPath = "../.pyright/stubs"
-
-reportMissingImports = false
-reportMissingTypeStubs = false
-
 pythonVersion = "3.12"
 pythonPlatform = "Linux"
+
+# Enable strict type checking per rule instead of using 'strict = ["."]'
+# This allows rules to be overridden below
+# See: https://github.com/microsoft/pyright/blob/main/docs/configuration.md
+analyzeUnannotatedFunctions = true
+disableBytesTypePromotions = true
+strictParameterNoneValue = true
+enableTypeIgnoreComments = true
+enableReachabilityAnalysis = true
+strictListInference = true
+strictDictionaryInference = true
+strictSetInference = true
+
+# Reporting rules
+reportMissingTypeStubs = "error"
+reportMissingModuleSource = "warning"
+reportInvalidTypeForm = "error"
+reportMissingImports = "error"
+reportUndefinedVariable = "error"
+reportAssertAlwaysTrue = "error"
+reportInvalidStringEscapeSequence = "error"
+reportInvalidTypeVarUse = "error"
+reportSelfClsParameterName = "error"
+reportUnsupportedDunderAll = "error"
+reportUnusedExpression = "error"
+reportWildcardImportFromLibrary = "error"
+reportAbstractUsage = "error"
+reportArgumentType = "error"
+reportAssertTypeFailure = "error"
+reportAssignmentType = "error"
+reportAttributeAccessIssue = "error"
+reportCallIssue = "error"
+reportGeneralTypeIssues = "error"
+reportInconsistentOverload = "error"
+reportIndexIssue = "error"
+reportInvalidTypeArguments = "error"
+reportNoOverloadImplementation = "error"
+reportOperatorIssue = "error"
+reportOptionalSubscript = "error"
+reportOptionalMemberAccess = "error"
+reportOptionalCall = "error"
+reportOptionalIterable = "error"
+reportOptionalContextManager = "error"
+reportOptionalOperand = "error"
+reportRedeclaration = "error"
+reportReturnType = "error"
+reportTypedDictNotRequiredAccess = "error"
+reportUnboundVariable = "error"
+reportUnhashable = "error"
+reportUnusedCoroutine = "error"
+reportUnusedExcept = "error"
+reportFunctionMemberAccess = "error"
+reportIncompatibleMethodOverride = "error"
+reportIncompatibleVariableOverride = "error"
+reportOverlappingOverload = "error"
+reportPossiblyUnboundVariable = "error"
+reportConstantRedefinition = "error"
+reportDeprecated = "error"
+reportDuplicateImport = "error"
+reportIncompleteStub = "error"
+reportInconsistentConstructor = "error"
+reportInvalidStubStatement = "error"
+reportMatchNotExhaustive = "error"
+reportTypeCommentUsage = "error"
+reportUnnecessaryCast = "error"
+reportUnnecessaryContains = "error"
+reportUnusedClass = "error"
+reportUnusedFunction = "error"
+reportUntypedBaseClass = "error"
+reportUntypedClassDecorator = "error"
+reportUntypedFunctionDecorator = "error"
+reportUntypedNamedTuple = "error"
+eportImplicitStringConcatenation = "error"
+reportShadowedImports = "error"
+reportCallInDefaultInitializer = "error"
+reportUnknownLambdaType = "error"
+
+# Rules that are a little finicky, but fine
+reportImplicitOverride = "error"
+reportMissingSuperCall = "error"
+reportUnnecessaryComparison = "error"
+reportUnusedVariable = "error"
+reportPrivateImportUsage = "error"
+reportPrivateUsage = "error"
+
+# ================ #
+# OVERRIDDEN rules #
+# ================ #
+
+# Allow type: ignore for other type checkers, even if pyright thinks its unnecessary
+reportUnnecessaryTypeIgnoreComment = "none"
+# Properties are used to control how setters parse values,
+# so getters/setter types don't always match by design
+reportPropertyTypeMismatch = "none"
+# Does not take into account TYPE_CHECKING. May reassess this override later.
+reportImportCycles = "none"
+# Will be re-enabled once the codebase is mature
+reportUnusedImport = "none"
+# This enforces strict typing in cases where it is critical
+reportUnnecessaryIsInstance = "none"
+# pyright does not handle implicit Any or defaults, causing lots of clutter
+reportMissingTypeArgument = "none"
+
+# ------------------- #
+# Temporarily ignored #
+# ------------------- #
+# These will be re-enabled once the errors they generate are addressed.
+reportUninitializedInstanceVariable = "none"
+reportUnusedCallResult = "none"
+reportMissingParameterType = "none"
+reportUnknownArgumentType = "none"
+reportUnknownMemberType = "none"
+reportUnknownParameterType = "none"
+reportUnknownVariableType = "none"
 
 [tool.mypy]
 python_version = "3.12"
 mypy_path = "./src/paperap"
 namespace_packages = true
 explicit_package_bases = false
-warn_unused_ignores = false
+warn_unused_ignores = true
 show_error_context = true
 show_column_numbers = true
 show_error_code_links = true
 pretty = true
+ignore_missing_imports = false
+implicit_optional = false
+strict = true
+
+disable_error_code = [
+  "unused-ignore",
+  # Temporary ignores
+  "no-untyped-def",
+  "no-any-return",
+  "no-untyped-call",
+  "type-arg",
+  "attr-defined",
+]
+
 # The Factory Boy type stubs don't play well with mypy, and this is used exclusively for tests.
 exclude = [
-    'paperap/tests/factories/models\.py$'
+    'paperap/tests/factories/.*',
+    'tests/',
 ]
-plugins = [
-]
-ignore_missing_imports = false
-implicit_optional = true
-disable_error_code = ["unused-ignore"]
 
 [tool.uv.workspace]
 members = ["tmp"]
@@ -810,6 +995,7 @@ dev = [
     "bandit>=1.8.3",
     "black>=25.1.0",
     "factory-boy>=3.3.3",
+    "icecream>=2.1.4",
     "mypy>=1.15.0",
     "pre-commit>=4.1.0",
     "prospector>=1.15.2",
@@ -820,5 +1006,6 @@ dev = [
     "ruff>=0.9.9",
     "types-dateparser>=1.2.0.20250208",
     "types-factory-boy>=0.4.1",
+    "types-pyyaml>=6.0.12.20241230",
     "types-requests>=2.32.0.20241016",
 ]

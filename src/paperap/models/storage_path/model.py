@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -10,7 +6,7 @@
        File:    storage_path.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.2
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -24,17 +20,19 @@
 """
 
 from __future__ import annotations
+
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from paperap.models.abstract.model import StandardModel
+from paperap.models.mixins.models import MatcherMixin
 from paperap.models.storage_path.queryset import StoragePathQuerySet
 
 if TYPE_CHECKING:
     from paperap.models.document import Document, DocumentQuerySet
 
 
-class StoragePath(StandardModel):
+class StoragePath(StandardModel, MatcherMixin):
     """
     Represents a storage path in Paperless-NgX.
     """
@@ -42,9 +40,6 @@ class StoragePath(StandardModel):
     name: str
     slug: str | None = None
     path: str | None = None
-    match: str | None = None
-    matching_algorithm: int | None = None
-    is_insensitive: bool
     document_count: int = 0
     owner: int | None = None
     user_can_change: bool | None = None

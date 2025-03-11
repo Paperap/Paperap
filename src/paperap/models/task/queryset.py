@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -10,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.1
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,9 +21,10 @@
 
 from __future__ import annotations
 
-from typing import Any, TYPE_CHECKING, Self
 import logging
-from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
+from typing import TYPE_CHECKING, Any, Self
+
+from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 
 if TYPE_CHECKING:
     from paperap.models.task.model import Task
@@ -39,7 +36,7 @@ class TaskQuerySet(StandardQuerySet["Task"]):
     """
     A lazy-loaded, chainable query interface for Paperless NGX resources.
 
-    QuerySet provides pagination, filtering, and caching functionality similar to Django's QuerySet.
+    BaseQuerySet provides pagination, filtering, and caching functionality similar to Django's BaseQuerySet.
     It's designed to be lazy - only fetching data when it's actually needed.
     """
 
@@ -52,6 +49,7 @@ class TaskQuerySet(StandardQuerySet["Task"]):
 
         Returns:
             TaskQuerySet: The filtered queryset
+
         """
         return self.filter(task_id=value)
 
@@ -66,6 +64,7 @@ class TaskQuerySet(StandardQuerySet["Task"]):
 
         Returns:
             TaskQuerySet: The filtered queryset
+
         """
         return self.filter_field_by_str("task_file_name", value, exact=exact, case_insensitive=case_insensitive)
 
@@ -78,6 +77,7 @@ class TaskQuerySet(StandardQuerySet["Task"]):
 
         Returns:
             TaskQuerySet: The filtered queryset
+
         """
         return self.filter(date_done=value)
 
@@ -92,6 +92,7 @@ class TaskQuerySet(StandardQuerySet["Task"]):
 
         Returns:
             TaskQuerySet: The filtered queryset
+
         """
         return self.filter_field_by_str("type", value, exact=exact, case_insensitive=case_insensitive)
 
@@ -106,6 +107,7 @@ class TaskQuerySet(StandardQuerySet["Task"]):
 
         Returns:
             TaskQuerySet: The filtered queryset
+
         """
         return self.filter_field_by_str("status", value, exact=exact, case_insensitive=case_insensitive)
 
@@ -120,6 +122,7 @@ class TaskQuerySet(StandardQuerySet["Task"]):
 
         Returns:
             TaskQuerySet: The filtered queryset
+
         """
         if value is None:
             return self.filter(result__isnull=True)
@@ -134,6 +137,7 @@ class TaskQuerySet(StandardQuerySet["Task"]):
 
         Returns:
             TaskQuerySet: The filtered queryset
+
         """
         return self.filter(acknowledged=value)
 
@@ -146,6 +150,7 @@ class TaskQuerySet(StandardQuerySet["Task"]):
 
         Returns:
             TaskQuerySet: The filtered queryset
+
         """
         if isinstance(value, int):
             return self.filter(related_document=value)

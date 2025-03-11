@@ -10,7 +10,7 @@
         File:    test_document_queryset.py
         Project: paperap
         Created: 2025-03-05
-        Version: 0.0.2
+        Version: 0.0.4
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -51,21 +51,7 @@ class BaseTest(DocumentTest):
         super().setUp()
         self.queryset = self.client.documents()
 
-    def _test_method(self, sample_data : dict[str, Any], attr_name : str, expected_value : Any, fn : Callable, *args, action : str = "equal", **kwargs):
-        with patch('paperap.client.PaperlessClient.request') as mock_request:
-            mock_request.return_value = sample_data
-            qs = fn(*args, **kwargs)
-            self.assertIsInstance(qs, DocumentQuerySet)
-            for document in qs:
-                self.assertIsInstance(document, Document)
-                value = getattr(document, attr_name)
-                if action == "equal":
-                    self.assertEqual(value, expected_value, f"Expected document.{attr_name} to be {expected_value}, got {value}")
-                elif action == "in":
-                    self.assertIn(expected_value, value, f"Expected {expected_value} to be in document.{attr_name}")
-
-
-    def _test_no_results(self, fn : Callable, *args, **kwargs):
+    def _test_no_results(self, fn : Callable, *args, **kwargs : Any):
         sample_data = load_sample_data('documents___list__no_results.json')
         with patch('paperap.client.PaperlessClient.request') as mock_request:
             mock_request.return_value = sample_data
@@ -130,9 +116,9 @@ class TestMeta(BaseTest):
             'created',
             # Custom Fields for Document
             'content',
-            'custom_fields',
-            'document_type',
-            'tags',
+            'custom_field_dicts',
+            'document_type_id',
+            'tag_ids',
             'title',
         ]
         for field_name in expected_fields:
@@ -156,14 +142,21 @@ class TestCorrespondent(BaseTest):
 
     def test_correspondent(self):
         sample_data = load_sample_data('documents___correspondent__21.json')
-        correspondent_id = 21
-        methods = [
-            (self.queryset.correspondent_id, 21),
-            (self.queryset.correspondent_slug, 'example-correspondent'),
-            (self.queryset.correspondent_name, 'Example Correspondent'),
-        ]
-        for fn, args in methods:
-            self._test_method(sample_data, 'correspondent', correspondent_id, fn, args)
+        self.assert_queryset_callback_patched(
+            queryset = lambda: self.queryset.correspondent_id(21),
+            sample_data = sample_data,
+            callback = lambda doc: doc.correspondent_id == 21
+        )
+        self.assert_queryset_callback_patched(
+            queryset = lambda: self.queryset.correspondent_slug('example-correspondent'),
+            sample_data = sample_data,
+            callback = lambda doc: doc.correspondent_id == 21
+        )
+        self.assert_queryset_callback_patched(
+            queryset = lambda: self.queryset.correspondent_name('Example Correspondent'),
+            sample_data = sample_data,
+            callback = lambda doc: doc.correspondent_id == 21
+        )
 
     def test_correspondent_kwargs(self):
         test_cases = [
@@ -179,8 +172,8 @@ class TestCorrespondent(BaseTest):
                 self.assertIsInstance(qs, DocumentQuerySet)
                 for document in qs:
                     self.assertIsInstance(document, Document)
-                    self.assertIsInstance(document.correspondent, int)
-                    self.assertEqual(document.correspondent, 21)
+                    self.assertIsInstance(document.correspondent_id, int)
+                    self.assertEqual(document.correspondent_id, 21)
 
     def test_correspondent_args(self):
         test_cases = [
@@ -195,8 +188,8 @@ class TestCorrespondent(BaseTest):
                 self.assertIsInstance(qs, DocumentQuerySet)
                 for document in qs:
                     self.assertIsInstance(document, Document)
-                    self.assertIsInstance(document.correspondent, int)
-                    self.assertEqual(document.correspondent, 21)
+                    self.assertIsInstance(document.correspondent_id, int)
+                    self.assertEqual(document.correspondent_id, 21)
 
     def test_correspondent_arg_and_kwargs(self):
         sample_data = load_sample_data('documents___correspondent__21.json')
@@ -206,8 +199,8 @@ class TestCorrespondent(BaseTest):
             self.assertIsInstance(qs, DocumentQuerySet)
             for document in qs:
                 self.assertIsInstance(document, Document)
-                self.assertIsInstance(document.correspondent, int)
-                self.assertEqual(document.correspondent, 21)
+                self.assertIsInstance(document.correspondent_id, int)
+                self.assertEqual(document.correspondent_id, 21)
 
     def test_correspondent_no_params(self):
         with self.assertRaises(ValueError):
@@ -215,15 +208,14 @@ class TestCorrespondent(BaseTest):
 
 class BaseQuerySetTest(BaseTest):
     """ Base test class with common queryset test logic. """
-
     def assert_queryset_results(
         self,
         method : Callable[..., DocumentQuerySet],
         arg : Any,
         sample_data : dict[str, Any],
-        expected_count : int,
+        expected_count : int | None = None,
         key : str | None = None,
-        condition=None
+        condition : Callable[..., bool] | None = None
     ):
         """
         Generic method to test queryset filtering.
@@ -236,6 +228,10 @@ class BaseQuerySetTest(BaseTest):
             key: Attribute to check in documents (optional).
             condition: Callable to apply on key (optional).
         """
+        if expected_count is None:
+            expected_count = int(sample_data['count'])
+        expected_iterations = min(expected_count, 6)
+
         with patch('paperap.client.PaperlessClient.request') as mock_request:
             mock_request.return_value = sample_data
             qs = method(arg)
@@ -247,13 +243,14 @@ class BaseQuerySetTest(BaseTest):
                 count += 1
                 self.assertIsInstance(document, Document)
                 if key and condition:
-                    self.assertIsNotNone(getattr(document, key), f"Expected {key} to be set")
-                    self.assertTrue(condition(getattr(document, key)), f"Condition failed for {key}")
+                    value = getattr(document, key)
+                    self.assertTrue(condition(value), f"Condition failed for {key} with {value}")
 
-                # Avoid infinite iteration in queryset
-                break
+                # Check multiple results, but avoid paging
+                if count > 5:
+                    break
 
-            self.assertEqual(count, min(expected_count, 1), f"Documents iteration unexpected. Expected {expected_count} iterations, got {count}.")
+            self.assertEqual(count, expected_iterations, f"Documents iteration unexpected. Count: {expected_count} -> Expected {expected_iterations} iterations, got {count}.")
 
 
     def _test_date_filter(self, method, file, date_str, key, comparator):
@@ -282,48 +279,42 @@ class BaseQuerySetTest(BaseTest):
 class TestTag(BaseQuerySetTest):
     def test_tag(self):
         sample_data = load_sample_data('documents___tags__179.json')
-        tag_id = 179
-        methods = [
-            (self.queryset.tag_id, tag_id),
-            (self.queryset.tag_name, 'Example Tag'),
-        ]
-        for method, arg in methods:
-            self._test_method(sample_data, 'tags', tag_id, method, arg, action="in")
+        self.assert_queryset_callback_patched(
+            queryset = lambda: self.queryset.tag_id(179),
+            sample_data = sample_data,
+            callback = lambda doc: 179 in doc.tag_ids
+        )
+        self.assert_queryset_callback_patched(
+            queryset = lambda: self.queryset.tag_name('Example Tag'),
+            sample_data = sample_data,
+            callback = lambda doc: 179 in doc.tag_ids
+        )
 
 class TestTitle(BaseQuerySetTest):
     def test_title_iexact(self):
         sample_data = load_sample_data('documents___title__example-title.json')
-        self.assert_queryset_results(
-            self.queryset.title,
-            "example-title",
-            sample_data,
-            sample_data['count'],
-            key="title",
-            condition=lambda title: title.lower() == "example-title"
+        self.assert_queryset_callback_patched(
+            queryset = lambda: self.queryset.title("example-title"),
+            sample_data = sample_data,
+            callback = lambda doc: doc.title.lower() == "example-title"
         )
 
 class TestDocumentType(BaseQuerySetTest):
     def test_document_type_id(self):
         sample_data = load_sample_data('documents___document_type__8.json')
-        self.assert_queryset_results(
-            self.queryset.document_type_id,
-            8,
-            sample_data,
-            sample_data['count'],
-            key="document_type",
-            condition=lambda dt: dt == 8
+        self.assert_queryset_callback_patched(
+            queryset = lambda: self.queryset.document_type_id(8),
+            sample_data = sample_data,
+            callback = lambda doc: doc.document_type_id == 8
         )
 
 class TestStoragePath(BaseQuerySetTest):
     def test_storage_path_id(self):
         sample_data = load_sample_data('documents___storage_path__52.json')
-        self.assert_queryset_results(
-            self.queryset.storage_path_id,
-            52,
-            sample_data,
-            sample_data['count'],
-            key="storage_path",
-            condition=lambda sp: sp is not None and sp == 52
+        self.assert_queryset_callback_patched(
+            queryset = lambda: self.queryset.storage_path_id(52),
+            callback = lambda doc: doc.storage_path_id == 52,
+            sample_data = sample_data
         )
 
 class TestContent(BaseQuerySetTest):
@@ -570,7 +561,7 @@ class TestCustomFields(BaseQuerySetTest):
             count += 1
             self.assertIsInstance(document, Document)
             found : bool = False
-            for custom_field in document.custom_fields:
+            for custom_field in document.custom_field_dicts:
                 self.assertIsInstance(custom_field, dict)
                 if custom_field['field'] == 27:
                     found = True

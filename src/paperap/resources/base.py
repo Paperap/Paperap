@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -25,24 +21,26 @@
 
 from __future__ import annotations
 
+import copy
+import logging
 from abc import ABC, ABCMeta
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, Iterator, Optional
+from string import Template
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, Iterator, Optional, override
+
 from typing_extensions import TypeVar
 from yarl import URL
-from string import Template
-import logging
+
 from paperap.const import URLS, Endpoints
-from paperap.models.abstract.parser import Parser
-from paperap.exceptions import ObjectNotFoundError, ResourceNotFoundError, ConfigurationError
+from paperap.exceptions import ConfigurationError, ObjectNotFoundError, ResourceNotFoundError, ResponseParsingError
 from paperap.signals import SignalRegistry
 
 if TYPE_CHECKING:
     from paperap.client import PaperlessClient
-    from paperap.models.abstract import StandardModel, PaperlessModel, QuerySet, StandardQuerySet
+    from paperap.models.abstract import BaseModel, BaseQuerySet, StandardModel, StandardQuerySet
 
-_PaperlessModel = TypeVar("_PaperlessModel", bound="PaperlessModel", covariant=True)
+_BaseModel = TypeVar("_BaseModel", bound="BaseModel", covariant=True)
 _StandardModel = TypeVar("_StandardModel", bound="StandardModel", covariant=True, default="StandardModel")
-_QuerySet = TypeVar("_QuerySet", bound="QuerySet", covariant=True, default="QuerySet[_PaperlessModel]")
+_QuerySet = TypeVar("_QuerySet", bound="BaseQuerySet", covariant=True, default="BaseQuerySet[_BaseModel]")
 _StandardQuerySet = TypeVar(
     "_StandardQuerySet", bound="StandardQuerySet", covariant=True, default="StandardQuerySet[_StandardModel]"
 )
@@ -50,7 +48,7 @@ _StandardQuerySet = TypeVar(
 logger = logging.getLogger(__name__)
 
 
-class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
+class BaseResource(ABC, Generic[_BaseModel, _QuerySet]):
     """
     Base class for API resources.
 
@@ -58,10 +56,11 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
         client: The PaperlessClient instance.
         endpoint: The API endpoint for this resource.
         model_class: The model class for this resource.
+
     """
 
     # The model class for this resource.
-    model_class: type[_PaperlessModel]
+    model_class: type[_BaseModel]
     # The PaperlessClient instance.
     client: "PaperlessClient"
     # The name of the model. This must line up with the API endpoint
@@ -72,37 +71,39 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
     # Setting it will allow you to contact a different schema or even a completely different API.
     # this will usually not need to be overridden
     endpoints: ClassVar[Endpoints]
-    # A class which parses api data into appropriate types
-    # this will usually not need to be overridden
-    parser: ClassVar[Parser]
 
     def __init__(self, client: "PaperlessClient"):
         self.client = client
         if not hasattr(self, "name"):
-            self.name = f"{self.model_class._meta.name.lower()}s"
+            self.name = f"{self._meta.name.lower()}s"
 
         # Allow templating
         for key, value in self.endpoints.items():
             self.endpoints[key] = Template(value.safe_substitute(resource=self.name))  # type: ignore # endpoints is always dict[str, Template]
 
         # Ensure the model has a link back to this resource
-        self.model_class._meta.resource = self
+        self._meta.resource = self
+
+        super().__init__()
 
     @classmethod
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, **kwargs: Any):
+        """
+        Initialize the subclass.
+
+        Args:
+            **kwargs: Arbitrary keyword arguments
+
+        """
         super().__init_subclass__(**kwargs)
 
         # Skip processing for the base class itself. TODO: This is a hack
-        if cls.__name__ in ["PaperlessResource", "StandardResource"]:
+        if cls.__name__ in ["BaseResource", "StandardResource"]:
             return
 
         # model_class is required
-        if not (model_class := getattr(cls, "model_class", None)):
+        if not (_model_class := getattr(cls, "model_class", None)):
             raise ConfigurationError(f"model_class must be defined in {cls.__name__}")
-
-        # Set parser
-        parser_type = model_class._meta.parser
-        cls.parser = parser_type(model_class)
 
         # API Endpoint must be defined
         if not hasattr(cls, "endpoints"):
@@ -114,16 +115,21 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
                 "delete": URLS.delete,
             }
 
+    @property
+    def _meta(self) -> "BaseModel.Meta[_BaseModel]":
+        return self.model_class._meta  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
+
     def all(self) -> _QuerySet:
         """
         Return a QuerySet representing all objects of this resource type.
 
         Returns:
             A QuerySet for this resource
-        """
-        return self.model_class._meta.queryset(self)  # type: ignore # _meta.queryset is always the right queryset type
 
-    def filter(self, **kwargs) -> _QuerySet:
+        """
+        return self._meta.queryset(self)  # type: ignore # _meta.queryset is always the right queryset type
+
+    def filter(self, **kwargs: Any) -> _QuerySet:
         """
         Return a QuerySet filtered by the given parameters.
 
@@ -132,27 +138,26 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         Returns:
             A filtered QuerySet
+
         """
         return self.all().filter(**kwargs)
 
-    def get(self, resource_id: int) -> _PaperlessModel:
+    def get(self, *args: Any, **kwargs: Any) -> _BaseModel:
         """
         Get a model by ID.
 
         Raises NotImplementedError. Subclasses may implement this.
-
-        Args:
-            resource_id: ID of the model to retrieve.
 
         Raises:
             NotImplementedError: Unless implemented by a subclass.
 
         Returns:
             The model retrieved.
-        """
-        raise NotImplementedError("get method not available for paperless resources without an id")
 
-    def create(self, data: dict[str, Any]) -> _PaperlessModel:
+        """
+        raise NotImplementedError("get method not available for resources without an id")
+
+    def create(self, data: dict[str, Any]) -> _BaseModel:
         """
         Create a new resource.
 
@@ -161,6 +166,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         Returns:
             The created resource.
+
         """
         # Signal before creating resource
         signal_params = {"resource": self.name, "data": data}
@@ -171,7 +177,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         url = template.safe_substitute(resource=self.name)
         if not (response := self.client.request("POST", url, data=data)):
-            raise ResourceNotFoundError("Resource {resource} not found after create.", resource_type=self.name)
+            raise ResourceNotFoundError("Resource {resource} not found after create.", resource_name=self.name)
 
         model = self.parse_to_model(response)
 
@@ -185,12 +191,25 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         return model
 
-    def update(self, resource_id: int, data: dict[str, Any]) -> _PaperlessModel:
+    def update(self, model: _BaseModel) -> _BaseModel:
         """
         Update a resource.
 
         Args:
-            resource_id: ID of the resource.
+            resource: The resource to update.
+
+        Returns:
+            The updated resource.
+
+        """
+        raise NotImplementedError("update method not available for resources without an id")
+
+    def update_dict(self, model_id: int, **data: dict[str, Any]) -> _BaseModel:
+        """
+        Update a resource.
+
+        Args:
+            model_id: ID of the resource.
             data: Resource data.
 
         Raises:
@@ -198,17 +217,18 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         Returns:
             The updated resource.
+
         """
         # Signal before updating resource
-        signal_params = {"resource": self.name, "resource_id": resource_id, "data": data}
+        signal_params = {"resource": self.name, "model_id": model_id, "data": data}
         SignalRegistry.emit("resource.update:before", "Emitted before updating a resource", kwargs=signal_params)
 
         if not (template := self.endpoints.get("update")):
             raise ConfigurationError(f"Update endpoint not defined for resource {self.name}")
 
-        url = template.safe_substitute(resource=self.name, pk=resource_id)
+        url = template.safe_substitute(resource=self.name, pk=model_id)
         if not (response := self.client.request("PUT", url, data=data)):
-            raise ResourceNotFoundError("Resource {resource} not found after update.", resource_type=self.name)
+            raise ResourceNotFoundError("Resource ${resource} not found after update.", resource_name=self.name)
 
         model = self.parse_to_model(response)
 
@@ -222,15 +242,16 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         return model
 
-    def delete(self, resource_id: int) -> None:
+    def delete(self, model_id: int) -> None:
         """
         Delete a resource.
 
         Args:
-            resource_id: ID of the resource.
+            model_id: ID of the resource.
+
         """
         # Signal before deleting resource
-        signal_params = {"resource": self.name, "resource_id": resource_id}
+        signal_params = {"resource": self.name, "model_id": model_id}
         SignalRegistry.emit(
             "resource.delete:before", "Emitted before deleting a resource", args=[self], kwargs=signal_params
         )
@@ -238,7 +259,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
         if not (template := self.endpoints.get("delete")):
             raise ConfigurationError(f"Delete endpoint not defined for resource {self.name}")
 
-        url = template.safe_substitute(resource=self.name, pk=resource_id)
+        url = template.safe_substitute(resource=self.name, pk=model_id)
         self.client.request("DELETE", url)
 
         # Signal after deleting resource
@@ -246,7 +267,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
             "resource.delete:after", "Emitted after deleting a resource", args=[self], kwargs=signal_params
         )
 
-    def parse_to_model(self, item: dict[str, Any]) -> _PaperlessModel:
+    def parse_to_model(self, item: dict[str, Any]) -> _BaseModel:
         """
         Parse an item dictionary into a model instance, handling date parsing.
 
@@ -255,14 +276,59 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         Returns:
             The parsed model instance.
-        """
-        parsed_data = self.parser.parse_data(item)
-        return self.model_class.from_dict(parsed_data)
 
-    def create_model(self, **kwargs) -> _PaperlessModel:
+        """
+        # print(f'Parsing to model: {item}')
+        data = self.transform_data_input(**item)
+        # print(f'Transformed: {data}')
+        return self.model_class.model_validate(data)
+
+    def transform_data_input(self, **data: Any) -> dict[str, Any]:
+        """
+        Transform data after receiving it from the API.
+
+        Args:
+            data: The data to transform.
+
+        Returns:
+            The transformed data.
+
+        """
+        for key, value in self._meta.field_map.items():
+            if key in data:
+                data[value] = data.pop(key)
+        return data
+
+    def transform_data_output(self, **data: Any) -> dict[str, Any]:
+        """
+        Transform data before sending it to the API.
+
+        Args:
+            data: The data to transform.
+
+        Returns:
+            The transformed data.
+
+        """
+        for key, value in self._meta.field_map.items():
+            if value in data:
+                data[key] = data.pop(value)
+        return data
+
+    def create_model(self, **kwargs: Any) -> _BaseModel:
+        """
+        Create a new model instance.
+
+        Args:
+            **kwargs: Model field values
+
+        Returns:
+            A new model instance.
+
+        """
         return self.model_class(**kwargs, resource=self)
 
-    def _request_raw(
+    def request_raw(
         self,
         url: str | Template | URL | None = None,
         method: str = "GET",
@@ -280,6 +346,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
 
         Returns:
             The JSON-decoded response from the API
+
         """
         if not url:
             if not (url := self.endpoints.get("list")):
@@ -291,7 +358,7 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
         response = self.client.request(method, url, params=params, data=data)
         return response
 
-    def _handle_response(self, response: dict[str, Any]) -> Iterator[_PaperlessModel]:
+    def handle_response(self, response: dict[str, Any]) -> Iterator[_BaseModel]:
         """
         Handle a response from the API and yield results.
 
@@ -312,44 +379,47 @@ class PaperlessResource(ABC, Generic[_PaperlessModel, _QuerySet]):
             "resource._handle_response:after",
             "Emitted after list response, before processing",
             args=[self],
-            kwargs={"response": response, "resource": self.name, "results": results},
+            kwargs={"response": {**response}, "resource": self.name, "results": results},
         )
 
-        yield from self._handle_results(results)
+        yield from self.handle_results(results)
 
-    def _handle_results(self, results: list[dict[str, Any]]) -> Iterator[_PaperlessModel]:
+    def handle_results(self, results: list[dict[str, Any]]) -> Iterator[_BaseModel]:
         """
         Yield parsed models from a list of results.
 
         Override in subclasses to implement custom result handling.
         """
         for item in results:
+            if not isinstance(item, dict):
+                raise ResponseParsingError(f"Expected type of elements in results is dict, got {type(item)}")
+
             SignalRegistry.emit(
                 "resource._handle_results:before",
                 "Emitted for each item in a list response",
                 args=[self],
-                kwargs={"resource": self.name, "item": item},
+                kwargs={"resource": self.name, "item": {**item}},
             )
             yield self.parse_to_model(item)
 
     def __call__(self, *args, **keywords) -> _QuerySet:
         """
-        Make the resource callable to get a QuerySet.
+        Make the resource callable to get a BaseQuerySet.
 
         This allows usage like: client.documents(title__contains='invoice')
 
         Args:
+            *args: Unused
             **keywords: Filter parameters
 
         Returns:
             A filtered QuerySet
+
         """
         return self.filter(**keywords)
 
 
-class StandardResource(
-    PaperlessResource[_StandardModel, _StandardQuerySet], Generic[_StandardModel, _StandardQuerySet]
-):
+class StandardResource(BaseResource[_StandardModel, _StandardQuerySet], Generic[_StandardModel, _StandardQuerySet]):
     """
     Base class for API resources.
 
@@ -357,23 +427,26 @@ class StandardResource(
         client: The PaperlessClient instance.
         endpoint: The API endpoint for this resource.
         model_class: The model class for this resource.
+
     """
 
     # The model class for this resource.
     model_class: type[_StandardModel]
 
-    def get(self, resource_id: int) -> _StandardModel:
+    @override
+    def get(self, model_id: int, *args, **kwargs: Any) -> _StandardModel:
         """
         Get a model within this resource by ID.
 
         Args:
-            resource_id: ID of the model to retrieve.
+            model_id: ID of the model to retrieve.
 
         Returns:
             The model retrieved
+
         """
         # Signal before getting resource
-        signal_params = {"resource": self.name, "resource_id": resource_id}
+        signal_params = {"resource": self.name, "model_id": model_id}
         SignalRegistry.emit(
             "resource.get:before", "Emitted before getting a resource", args=[self], kwargs=signal_params
         )
@@ -382,15 +455,15 @@ class StandardResource(
             raise ConfigurationError(f"Get detail endpoint not defined for resource {self.name}")
 
         # Provide template substitutions for endpoints
-        url = template.safe_substitute(resource=self.name, pk=resource_id)
+        url = template.safe_substitute(resource=self.name, pk=model_id)
 
         if not (response := self.client.request("GET", url)):
-            raise ObjectNotFoundError(resource_type=self.name, resource_id=resource_id)
+            raise ObjectNotFoundError(resource_name=self.name, model_id=model_id)
 
         # If the response doesn't have an ID, it's likely a 404
         if not response.get("id"):
             message = response.get("detail") or f"No ID found in {self.name} response"
-            raise ObjectNotFoundError(message, resource_type=self.name, resource_id=resource_id)
+            raise ObjectNotFoundError(message, resource_name=self.name, model_id=model_id)
 
         model = self.parse_to_model(response)
 
@@ -403,3 +476,19 @@ class StandardResource(
         )
 
         return model
+
+    @override
+    def update(self, model: _StandardModel) -> _StandardModel:
+        """
+        Update a model.
+
+        Args:
+            model: The model to update.
+
+        Returns:
+            The updated model.
+
+        """
+        data = model.to_dict()
+        data = self.transform_data_output(**data)
+        return self.update_dict(model.id, **data)

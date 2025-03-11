@@ -10,7 +10,7 @@
         File:    test_signals.py
         Project: paperap
         Created: 2025-03-08
-        Version: 0.0.2
+        Version: 0.0.4
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -37,7 +37,7 @@ class TestSignalSystem(unittest.TestCase):
 
     def test_basic_signal_emit(self):
         # Simple transformation handler
-        def add_field(data: Dict[str, Any], **kwargs) -> dict[str, Any]:
+        def add_field(data: Dict[str, Any], **kwargs : Any) -> dict[str, Any]:
             data["added_field"] = "test"
             return data
 
@@ -57,15 +57,15 @@ class TestSignalSystem(unittest.TestCase):
         # Create handlers with different priorities
         results = []
 
-        def first_handler(data, **kwargs):
+        def first_handler(data, **kwargs : Any):
             results.append("first")
             return data
 
-        def second_handler(data, **kwargs):
+        def second_handler(data, **kwargs : Any):
             results.append("second")
             return data
 
-        def third_handler(data, **kwargs):
+        def third_handler(data, **kwargs : Any):
             results.append("third")
             return data
 
@@ -82,13 +82,13 @@ class TestSignalSystem(unittest.TestCase):
 
     def test_data_transformation_chain(self):
         # Create handlers that transform data
-        def add_one(number, **kwargs):
+        def add_one(number, **kwargs : Any):
             return number + 1
 
-        def multiply_by_two(number, **kwargs):
+        def multiply_by_two(number, **kwargs : Any):
             return number * 2
 
-        def subtract_three(number, **kwargs):
+        def subtract_three(number, **kwargs : Any):
             return number - 3
 
         # Connect handlers
@@ -104,7 +104,7 @@ class TestSignalSystem(unittest.TestCase):
 
     def test_additional_arguments(self):
         # Handler that uses additional arguments
-        def format_with_context(data, **kwargs):
+        def format_with_context(data, **kwargs : Any):
             model = kwargs.get("model")
             if model and hasattr(model, "name"):
                 data["context"] = f"Processed by {model.name}"
@@ -134,7 +134,7 @@ class TestSignalSystem(unittest.TestCase):
 
     def test_handler_disable_enable(self):
         # Create a handler
-        def add_field(data, **kwargs):
+        def add_field(data, **kwargs : Any):
             data["field"] = "value"
             return data
 
@@ -157,7 +157,7 @@ class TestSignalSystem(unittest.TestCase):
 
     def test_queued_connection(self):
         # Connect to a signal that doesn't exist yet
-        def transform(data, **kwargs):
+        def transform(data, **kwargs : Any):
             data["transformed"] = True
             return data
 

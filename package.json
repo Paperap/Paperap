@@ -1,12 +1,13 @@
 {
   "name": "paperap",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A wrapper for the paperless ngx rest api",
   "scripts": {
     "prettier": "prettier --write **/*.{json,js,md,yml,yaml} *.{json,js,md,yml,yaml}",
     "test": "uv run python -m unittest discover -s tests/unit --failfast",
     "integration": "uv run python -m unittest discover -s tests/integration --failfast",
-    "pre-commit": "pre-commit run --all-files"
+    "pre-commit": "pre-commit run --all-files",
+    "mypy": "uv run mypy src"
   },
   "author": "Jess Mann <jess@jmann.me>",
   "license": "MIT",

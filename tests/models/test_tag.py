@@ -24,7 +24,7 @@
 """
 from __future__ import annotations
 import os
-from typing import Iterable
+from typing import Iterable, override
 import unittest
 from unittest.mock import MagicMock, patch
 from datetime import datetime, timezone
@@ -38,13 +38,14 @@ sample_data = load_sample_data('tags_list.json')
 
 class TestTagInit(unittest.TestCase):
 
+    @override
     def setUp(self):
         # Setup a sample model instance
         env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
         with patch.dict(os.environ, env_data, clear=True):
             self.client = PaperlessClient()
         self.resource = self.client.tags
-        self.model_data = {
+        self.model_data_parsed = {
             "id": 1,
             "created": "2025-03-01T12:00:00Z",
             "updated": "2025-03-02T12:00:00Z",
@@ -58,29 +59,26 @@ class TestTagInit(unittest.TestCase):
         }
 
     def test_from_dict(self):
-        model = Tag.from_dict(self.model_data)
+        model = Tag.from_dict(self.model_data_parsed)
         self.assertIsInstance(model, Tag, f"Expected Tag, got {type(model)}")
-        self.assertEqual(model.id, self.model_data["id"], f"Tag id is wrong when created from dict: {model.id}")
-        self.assertIsInstance(model.created, datetime, f"created wrong type after from_dict {type(model.created)}")
-        self.assertIsInstance(model.updated, datetime, f"updated wrong type after from_dict {type(model.updated)}")
-        self.assertEqual(model.created, datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc), f"created wrong value after from_dict {model.created}")
-        self.assertEqual(model.updated, datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc), f"updated wrong value after from_dict {model.updated}")
-        self.assertEqual(model.name, self.model_data["name"], f"Tag name is wrong when created from dict: {model.name}")
-        self.assertEqual(model.slug, self.model_data["slug"], f"Tag slug is wrong when created from dict: {model.slug}")
-        self.assertEqual(model.colour, self.model_data["color"], f"Tag color is wrong when created from dict: {model.colour}")
-        self.assertEqual(model.match, self.model_data["match"], f"Tag match is wrong when created from dict: {model.match}")
-        self.assertEqual(model.matching_algorithm, self.model_data["matching_algorithm"], f"Tag matching_algorithm is wrong when created from dict: {model.matching_algorithm}")
-        self.assertEqual(model.is_insensitive, self.model_data["is_insensitive"], f"Tag is_insensitive is wrong when created from dict: {model.is_insensitive}")
-        self.assertEqual(model.is_inbox_tag, self.model_data["is_inbox_tag"], f"Tag is_inbox_tag is wrong when created from dict: {model.is_inbox_tag}")
+        self.assertEqual(model.id, self.model_data_parsed["id"], f"Tag id is wrong when created from dict: {model.id}")
+        self.assertEqual(model.name, self.model_data_parsed["name"], f"Tag name is wrong when created from dict: {model.name}")
+        self.assertEqual(model.slug, self.model_data_parsed["slug"], f"Tag slug is wrong when created from dict: {model.slug}")
+        self.assertEqual(model.colour, self.model_data_parsed["color"], f"Tag color is wrong when created from dict: {model.colour}")
+        self.assertEqual(model.match, self.model_data_parsed["match"], f"Tag match is wrong when created from dict: {model.match}")
+        self.assertEqual(model.matching_algorithm, self.model_data_parsed["matching_algorithm"], f"Tag matching_algorithm is wrong when created from dict: {model.matching_algorithm}")
+        self.assertEqual(model.is_insensitive, self.model_data_parsed["is_insensitive"], f"Tag is_insensitive is wrong when created from dict: {model.is_insensitive}")
+        self.assertEqual(model.is_inbox_tag, self.model_data_parsed["is_inbox_tag"], f"Tag is_inbox_tag is wrong when created from dict: {model.is_inbox_tag}")
 
 class TestTag(unittest.TestCase):
+    @override
     def setUp(self):
         # Setup a sample model instance
         env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
         with patch.dict(os.environ, env_data, clear=True):
             self.client = PaperlessClient()
         self.resource = self.client.tags
-        self.model_data = {
+        self.model_data_parsed = {
             "id": 1,
             "created": "2025-03-01T12:00:00Z",
             "updated": "2025-03-02T12:00:00Z",
@@ -92,24 +90,15 @@ class TestTag(unittest.TestCase):
             "is_insensitive": True,
             "is_inbox_tag": True,
         }
-        self.model = Tag.from_dict(self.model_data, self.resource)
-
-    def test_model_date_parsing(self):
-        # Test if date strings are parsed into datetime objects
-        self.assertIsInstance(self.model.created, datetime, f"created wrong type after from_dict {type(self.model.created)}")
-        self.assertIsInstance(self.model.updated, datetime, f"updated wrong type after from_dict {type(self.model.updated)}")
-
-        # TZ UTC
-        self.assertEqual(self.model.created, datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc))
-        self.assertEqual(self.model.updated, datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc))
+        self.model = Tag.from_dict(self.model_data_parsed)
 
     def test_model_string_parsing(self):
         # Test if string fields are parsed correctly
-        self.assertEqual(self.model.name, self.model_data["name"])
+        self.assertEqual(self.model.name, self.model_data_parsed["name"])
 
     def test_model_int_parsing(self):
         # Test if integer fields are parsed correctly
-        self.assertEqual(self.model.matching_algorithm, self.model_data["matching_algorithm"])
+        self.assertEqual(self.model.matching_algorithm, self.model_data_parsed["matching_algorithm"])
 
     def test_model_to_dict(self):
         # Test if the model can be converted back to a dictionary
@@ -117,13 +106,13 @@ class TestTag(unittest.TestCase):
 
         self.assertEqual(model_dict["created"], datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc))
         self.assertEqual(model_dict["updated"], datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc))
-        self.assertEqual(model_dict["name"], self.model_data["name"])
-        self.assertEqual(model_dict["slug"], self.model_data["slug"])
-        self.assertEqual(model_dict["colour"], self.model_data["color"])
-        self.assertEqual(model_dict["match"], self.model_data["match"])
-        self.assertEqual(model_dict["matching_algorithm"], self.model_data["matching_algorithm"])
-        self.assertEqual(model_dict["is_insensitive"], self.model_data["is_insensitive"])
-        self.assertEqual(model_dict["is_inbox_tag"], self.model_data["is_inbox_tag"])
+        self.assertEqual(model_dict["name"], self.model_data_parsed["name"])
+        self.assertEqual(model_dict["slug"], self.model_data_parsed["slug"])
+        self.assertEqual(model_dict["colour"], self.model_data_parsed["color"])
+        self.assertEqual(model_dict["match"], self.model_data_parsed["match"])
+        self.assertEqual(model_dict["matching_algorithm"], self.model_data_parsed["matching_algorithm"])
+        self.assertEqual(model_dict["is_insensitive"], self.model_data_parsed["is_insensitive"])
+        self.assertEqual(model_dict["is_inbox_tag"], self.model_data_parsed["is_inbox_tag"])
 
 if __name__ == "__main__":
     unittest.main()

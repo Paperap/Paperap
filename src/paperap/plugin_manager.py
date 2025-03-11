@@ -1,19 +1,15 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
 
        File:    plugin_manager.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-04
-       Version: 0.0.1
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -62,9 +58,17 @@ class PluginManager:
             "settings": {},
         }
         self.dependencies = {}
+        super().__init__()
 
     @property
     def enabled_plugins(self) -> list[str]:
+        """
+        Get the list of enabled plugins.
+
+        Returns:
+            List of enabled plugin names
+
+        """
         # TODO: There's a bug here... disabling every plugin will then enable every plugin
         if enabled := self.config.get("enabled_plugins"):
             return enabled
@@ -77,11 +81,12 @@ class PluginManager:
 
         Args:
             package_name: Dotted path to the package containing plugins.
+
         """
         try:
             package = importlib.import_module(package_name)
         except ImportError:
-            logger.warning(f"Could not import plugin package: {package_name}")
+            logger.warning("Could not import plugin package: %s", package_name)
             return
 
         # Find all modules in the package
@@ -95,13 +100,13 @@ class PluginManager:
                 module = importlib.import_module(module_name)
 
                 # Find plugin classes in the module
-                for name, obj in inspect.getmembers(module, inspect.isclass):
+                for _name, obj in inspect.getmembers(module, inspect.isclass):
                     if issubclass(obj, Plugin) and obj is not Plugin and obj.__module__ == module_name:
                         plugin_name = obj.__name__
                         self.plugins[plugin_name] = obj
-                        logger.debug(f"Discovered plugin: {plugin_name}")
+                        logger.debug("Discovered plugin: %s", plugin_name)
             except Exception as e:
-                logger.error(f"Error loading plugin module {module_name}: {e}")
+                logger.error("Error loading plugin module %s: %s", module_name, e)
 
     def configure(self, config: PluginConfig) -> None:
         """
@@ -109,6 +114,7 @@ class PluginManager:
 
         Args:
             config: dictionary mapping plugin names to their configurations.
+
         """
         self.config = config
 
@@ -126,12 +132,13 @@ class PluginManager:
 
         Returns:
             The initialized plugin instance or None if initialization failed.
+
         """
         if plugin_name in self.instances:
             return self.instances[plugin_name]
 
         if plugin_name not in self.plugins:
-            logger.warning(f"Plugin not found: {plugin_name}")
+            logger.warning("Plugin not found: %s", plugin_name)
             return None
 
         plugin_class = self.plugins[plugin_name]
@@ -141,10 +148,10 @@ class PluginManager:
             # Initialize the plugin with client and any plugin-specific config
             plugin_instance = plugin_class(client, **plugin_config)
             self.instances[plugin_name] = plugin_instance
-            logger.info(f"Initialized plugin: {plugin_name}")
+            logger.info("Initialized plugin: %s", plugin_name)
             return plugin_instance
         except Exception as e:
-            logger.error(f"Failed to initialize plugin {plugin_name}: {e}")
+            logger.error("Failed to initialize plugin %s: %s", plugin_name, e)
             return None
 
     def initialize_all_plugins(self, client: Any) -> dict[str, Plugin]:
@@ -156,6 +163,7 @@ class PluginManager:
 
         Returns:
             Dictionary mapping plugin names to their initialized instances.
+
         """
         # Get enabled plugins from config
         enabled_plugins = self.enabled_plugins

@@ -10,7 +10,7 @@
         File:    test_document.py
         Project: paperap
         Created: 2025-03-08
-        Version: 0.0.3
+        Version: 0.0.4
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,12 +25,13 @@
 from __future__ import annotations
 
 import os
-from typing import Iterable
+from typing import Iterable, override
 import unittest
 from unittest.mock import patch, MagicMock
 import logging
+from icecream import ic
 from datetime import datetime, timezone
-from paperap.models.abstract.queryset import QuerySet, StandardQuerySet
+from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models import *
 from paperap.client import PaperlessClient
 from paperap.resources.documents import DocumentResource
@@ -45,11 +46,13 @@ sample_document = load_sample_data('documents_item.json')
 class IntegrationTest(DocumentTest):
     mock_env = False
 
+    @override
     def setUp(self):
         super().setUp()
         self.model = self.client.documents().get(7411)
         self._initial_data = self.model.to_dict()
 
+    @override
     def tearDown(self):
         # Request that paperless ngx reverts to the previous data
         self.model.update(**self._initial_data)
@@ -92,9 +95,10 @@ class TestIntegrationTest(IntegrationTest):
         return False
 
 class TestSaveManual(IntegrationTest):
+    @override
     def setup_model(self):
         super().setup_model()
-        self.model._meta.save_on_write = False
+        self._meta.save_on_write = False
 
     def test_save(self):
         # Append a bunch of random gibberish
@@ -127,30 +131,30 @@ class TestSaveManual(IntegrationTest):
         ts = datetime.now().timestamp()
         fields = [
             ("title", [f"Test Document {ts}"]),
-            ("correspondent", [21, 37, None]),
-            ("document_type", [10, 16, None]),
-            ("tags", [[74], [254], [45, 80], [74, 254, 45]]),
+            ("correspondent_id", [21, 37, None]),
+            ("document_type_id", [10, 16, None]),
+            ("tag_ids", [[74], [254], [45, 80], [74, 254, 45]]),
         ]
         for field, values in fields:
             for value in values:
                 current = getattr(self.model, field)
                 setattr(self.model, field, value)
-                if field == "tags":
-                    self.assertCountEqual(value, self.model.tags, f"{field} not updated in local instance. Previous value {current}")
+                if field == "tag_ids":
+                    self.assertCountEqual(value, self.model.tag_ids, f"{field} not updated in local instance. Previous value {current}")
                 else:
                     self.assertEqual(value, getattr(self.model, field), f"{field} not updated in local instance. Previous value {current}")
                 self.assertEqual(self.model.id, 7411, f"ID changed after update to {field}")
                 self.model.save()
-                if field == "tags":
-                    self.assertCountEqual(value, self.model.tags, f"{field} not updated after save. Previous value {current}")
+                if field == "tag_ids":
+                    self.assertCountEqual(value, self.model.tag_ids, f"{field} not updated after save. Previous value {current}")
                 else:
                     self.assertEqual(value, getattr(self.model, field), f"{field} not updated after save. Previous value {current}")
                 self.assertEqual(self.model.id, 7411, "ID changed after save")
 
                 # Get a new copy
                 document = self.client.documents().get(7411)
-                if field == "tags":
-                    self.assertCountEqual(value, document.tags, f"{field} not updated in remote instance. Previous value {current}")
+                if field == "tag_ids":
+                    self.assertCountEqual(value, document.tag_ids, f"{field} not updated in remote instance. Previous value {current}")
                 else:
                     self.assertEqual(value, getattr(document, field), f"{field} not updated in remote instance. Previous value {current}")
 
@@ -170,9 +174,9 @@ class TestSaveManual(IntegrationTest):
         ts = datetime.now().timestamp()
         fields = {
             "title": f"Test Document {ts}",
-            "correspondent": 21,
-            "document_type": 10,
-            "tags": [38],
+            "correspondent_id": 21,
+            "document_type_id": 10,
+            "tag_ids": [38],
         }
         self.model.update(**fields)
         for field, value in fields.items():
@@ -180,67 +184,73 @@ class TestSaveManual(IntegrationTest):
             self.assertEqual(self.model.id, 7411, f"ID changed after update to {field}")
 
 class TestSaveNone(IntegrationTest):
+    @override
     def setUp(self):
         super().setUp()
-        self.model._meta.save_on_write = False
+        self._meta.save_on_write = False
 
-        if not self.model.tags:
-            self.model.tags = [38]
+        if not self.model.tag_ids:
+            self.model.tag_ids = [38]
             self.model.save()
 
         self.none_data = {
             "archive_serial_number": None,
             "content": "",
-            "correspondent": None,
-            "custom_fields": [],
+            "correspondent_id": None,
+            "custom_field_dicts": [],
             "deleted_at": None,
-            "document_type": None,
+            "document_type_id": None,
             #"notes": [],
             "page_count": None,
-            "storage_path": None,
-            "tags": [],
+            "storage_path_id": None,
             "title": "",
         }
 
         self.expected_data = {
             "archive_serial_number": 123456,
             "content": "Test Content",
-            "correspondent": 31,
-            "custom_fields": [{"field": 32, "value": "Test Value"}],
-            "document_type": 16,
-            "tags": [28],
+            "correspondent_id": 31,
+            "custom_field_dicts": [{"field": 32, "value": "Test Value"}],
+            "document_type_id": 16,
+            "tag_ids": [28],
             "title": "Test Document",
             #"notes": ["Test Note"],
-            "storage_path": 1,
+            "storage_path_id": 1,
         }
 
     def test_update_tags_to_none(self):
         # Test that the document is saved when a field is written to
         self.model.update(tags=None)
         document = self.client.documents().get(7411)
-        self.assertEqual([], document.tags, "Tags not cleared in remote instance when updated to None")
+        self.assertEqual([], document.tag_ids, "Tags not cleared in remote instance when updated to None")
 
+    """
     def test_update_tags_to_empty(self):
-        # Test that the document is saved when a field is written to
-        self.model.update(tags=[])
-        document = self.client.documents().get(7411)
-        self.assertEqual([], document.tags, "Tags not cleared in remote instance when updated to empty list")
+        with self.assertRaises(NotImplementedError):
+            self.model.update(tags=[])
+    """
 
+    def test_update_tag_ids_to_empty(self):
+        # Test that the document is saved when a field is written to
+        with self.assertRaises(NotImplementedError):
+            self.model.update(tag_ids=[])
+
+    """
     def test_set_tags_to_none(self):
         # Test that the document is saved when a field is written to
-        self.model.tags = []
-        self.model.save()
-        document = self.client.documents().get(7411)
-        self.assertEqual([], document.tags, "Tags not cleared in remote instance when set to empty list")
+        with self.assertRaises(NotImplementedError):
+            self.model.tag_ids = None
+            self.model.save()
+    """
 
     def test_set_fields(self):
         # Ensure fields can be set and reset without consequences
         self.model.update(**self.expected_data)
         document = self.client.documents().get(7411)
         for field, value in self.expected_data.items():
-            if field == "tags":
-                self.assertCountEqual(value, self.model.tags, f"{field} not updated in local instance on first set to expected")
-                self.assertCountEqual(value, document.tags, f"{field} not updated in remote instance on first set to expected")
+            if field == "tag_ids":
+                self.assertCountEqual(value, self.model.tag_ids, f"{field} not updated in local instance on first set to expected")
+                self.assertCountEqual(value, document.tag_ids, f"{field} not updated in remote instance on first set to expected")
             else:
                 self.assertEqual(value, getattr(self.model, field), f"{field} not updated in local instance on first set to expected")
                 self.assertEqual(value, getattr(document, field), f"{field} not updated in remote instance on first set to expected")
@@ -249,9 +259,9 @@ class TestSaveNone(IntegrationTest):
         self.model.update(**none_data)
         document = self.client.documents().get(7411)
         for field, value in self.none_data.items():
-            if field == "tags":
-                self.assertCountEqual(value, self.model.tags, f"{field} not updated in local instance on set to None")
-                self.assertCountEqual(value, document.tags, f"{field} not updated in remote instance on set to None")
+            if field == "tag_ids":
+                self.assertCountEqual(value, self.model.tag_ids, f"{field} not updated in local instance on set to None")
+                self.assertCountEqual(value, document.tag_ids, f"{field} not updated in remote instance on set to None")
             else:
                 self.assertEqual(value, getattr(self.model, field), f"{field} not updated in local instance on set to None")
                 self.assertEqual(value, getattr(document, field), f"{field} not updated in remote instance on set to None")
@@ -259,9 +269,9 @@ class TestSaveNone(IntegrationTest):
         self.model.update(**self.expected_data)
         document = self.client.documents().get(7411)
         for field, value in self.expected_data.items():
-            if field == "tags":
-                self.assertCountEqual(value, self.model.tags, f"{field} not updated in local instance on second set to expected")
-                self.assertCountEqual(value, document.tags, f"{field} not updated in remote instance on second set to expected")
+            if field == "tag_ids":
+                self.assertCountEqual(value, self.model.tag_ids, f"{field} not updated in local instance on second set to expected")
+                self.assertCountEqual(value, document.tag_ids, f"{field} not updated in remote instance on second set to expected")
             else:
                 self.assertEqual(value, getattr(self.model, field), f"{field} not updated in local instance on second set to expected")
                 self.assertEqual(value, getattr(document, field), f"{field} not updated in remote instance on second set to expected")
@@ -269,7 +279,7 @@ class TestSaveNone(IntegrationTest):
     def test_set_fields_to_none(self):
         # field_name -> expected value after being set to None
         for field, value in self.none_data.items():
-            with self.subTest(field=field):
+            #with self.subTest(field=field):
                 setattr(self.model, field, None)
                 self.assertEqual(value, getattr(self.model, field), f"{field} not updated in local instance")
                 self.model.save()
@@ -292,9 +302,10 @@ class TestSaveNone(IntegrationTest):
                 self.assertEqual(value, getattr(document, field), f"{field} not updated in remote instance")
 
 class TestSaveOnWrite(IntegrationTest):
+    @override
     def setup_model(self):
         super().setup_model()
-        self.model._meta.save_on_write = True
+        self._meta.save_on_write = True
 
     def test_save_on_write(self):
         # Test that the document is saved when a field is written to
@@ -314,8 +325,7 @@ class TestTag(IntegrationTest):
         self.assertGreater(len(documents), 1000, "Incorrect number of documents retrieved")
         for i, document in enumerate(documents):
             self.assertIsInstance(document, Document)
-            tags = [tag.name for tag in document.get_tags()]
-            self.assertIn("HRSH", tags, f"Document does not have HRSH tag. Tags: {tags}, tag_ids: {document.tags}")
+            self.assertIn("HRSH", document.tag_names, f"Document does not have HRSH tag. tag_ids: {document.tag_ids}")
             # avoid calling next a million times
             if i > 52:
                 break

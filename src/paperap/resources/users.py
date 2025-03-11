@@ -1,8 +1,4 @@
 """
-
-
-
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -10,7 +6,7 @@
        File:    users.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.3
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -28,8 +24,8 @@ from __future__ import annotations
 from typing import Any, Optional
 
 from paperap.exceptions import ObjectNotFoundError
-from paperap.models.user import Group, User, UserQuerySet, GroupQuerySet
-from paperap.resources.base import PaperlessResource, StandardResource
+from paperap.models.user import Group, GroupQuerySet, User, UserQuerySet
+from paperap.resources.base import BaseResource, StandardResource
 
 
 class UserResource(StandardResource[User, UserQuerySet]):
@@ -43,6 +39,7 @@ class UserResource(StandardResource[User, UserQuerySet]):
 
         Returns:
             The current user.
+
         """
         if not (response := self.client.request("GET", "users/me/")):
             raise ObjectNotFoundError("Failed to get current user")

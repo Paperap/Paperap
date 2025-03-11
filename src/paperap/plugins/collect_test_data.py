@@ -1,7 +1,5 @@
 """
-
-
-       Usage example:
+Usage example:
        test_dir = Path(__file__).parent.parent.parent.parent / "tests/sample_data"
        collector = TestDataCollector(test_dir)
 
@@ -13,7 +11,7 @@
        File:    collect_test_data.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.3
+        Version: 0.0.4
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -27,18 +25,20 @@
 """
 
 from __future__ import annotations
+
 import datetime
-from decimal import Decimal
 import json
-from pathlib import Path
-import re
-from typing import Any, TYPE_CHECKING
 import logging
-from pydantic import BaseModel
+import re
+from decimal import Decimal
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, override
+
+from faker import Faker
+
+from paperap.models import BaseModel
 from paperap.plugins.base import Plugin
 from paperap.signals import SignalPriority, SignalRegistry
-from paperap.models import PaperlessModel
-from faker import Faker
 
 if TYPE_CHECKING:
     from paperap.client import PaperlessClient
@@ -75,8 +75,9 @@ class TestDataCollector(Plugin):
     description = "Collects sample data from API responses for testing purposes"
     version = "0.0.2"
     fake = Faker()
+    test_dir: Path
 
-    def __init__(self, client: "PaperlessClient", test_dir=None, **kwargs):
+    def __init__(self, client: "PaperlessClient", test_dir: Path | None = None, **kwargs: Any):
         # Convert string path to Path object if needed
         if test_dir and isinstance(test_dir, str):
             test_dir = Path(test_dir)
@@ -85,12 +86,14 @@ class TestDataCollector(Plugin):
         self.test_dir.mkdir(parents=True, exist_ok=True)
         super().__init__(client, **kwargs)
 
+    @override
     def setup(self):
         """Register signal handlers."""
         SignalRegistry.connect("resource._handle_response:after", self.save_list_response, SignalPriority.LOW)
         SignalRegistry.connect("resource._handle_results:before", self.save_first_item, SignalPriority.LOW)
         SignalRegistry.connect("client.request:after", self.save_parsed_response, SignalPriority.LOW)
 
+    @override
     def teardown(self):
         """Unregister signal handlers."""
         SignalRegistry.disconnect("resource._handle_response:after", self.save_list_response)
@@ -99,14 +102,14 @@ class TestDataCollector(Plugin):
 
     @staticmethod
     def _json_serializer(obj: Any) -> Any:
-        """Custom JSON serializer for objects that are not natively serializable."""
+        """Serialize objects that are not natively serializable."""
         if isinstance(obj, datetime.datetime):
             return obj.isoformat()
         if isinstance(obj, Path):
             return str(obj)
         if isinstance(obj, Decimal):
             return float(obj)
-        if isinstance(obj, PaperlessModel):
+        if isinstance(obj, BaseModel):
             return obj.to_dict()
         if isinstance(obj, BaseModel):
             return obj.model_dump()
@@ -116,18 +119,19 @@ class TestDataCollector(Plugin):
             return obj.decode("utf-8")
         raise TypeError(f"Type {type(obj).__name__} is not JSON serializable")
 
-    def _sanitize_response(self, response: dict[str, Any]) -> dict[str, Any]:
+    def _sanitize_response(self, **response: dict[str, Any]) -> dict[str, Any]:
         """
         Sanitize the response data to replace any strings with potentially personal information with dummy data
         """
+        sanitized = {}
         for key, value in response.items():
-            response[key] = self._sanitize_value_recursive(key, value)
+            sanitized[key] = self._sanitize_value_recursive(key, value)
 
         # Replace "next" domain using regex
         if "next" in response and isinstance(response["next"], str):
-            response["next"] = re.sub(r"https?://.*?/", "https://example.com/", response["next"])
+            sanitized["next"] = re.sub(r"https?://.*?/", "https://example.com/", response["next"])
 
-        return response
+        return sanitized
 
     def _sanitize_value_recursive(self, key: str, value: Any) -> Any:
         """
@@ -142,9 +146,9 @@ class TestDataCollector(Plugin):
             if isinstance(value, list):
                 return [self.fake.word() for _ in value]
 
-        return
+        return value
 
-    def save_response(self, filepath: Path, response: dict[str, Any], **kwargs) -> None:
+    def save_response(self, filepath: Path, response: dict[str, Any], **kwargs: Any) -> None:
         """
         Save the response to a JSON file.
         """
@@ -152,14 +156,14 @@ class TestDataCollector(Plugin):
             return
 
         try:
-            response = self._sanitize_response(response)
+            response = self._sanitize_response(**response)
             with filepath.open("w") as f:
                 json.dump(response, f, indent=4, sort_keys=True, ensure_ascii=False, default=self._json_serializer)
         except (TypeError, OverflowError, OSError) as e:
             # Don't allow the plugin to interfere with normal operations in the event of failure
-            logger.error(f"Error saving response to file: {e}")
+            logger.error("Error saving response to file: %s", e)
 
-    def save_list_response(self, sender, response: dict[str, Any], **kwargs) -> dict[str, Any]:
+    def save_list_response(self, sender: Any, response: dict[str, Any], **kwargs: Any) -> dict[str, Any]:
         """Save the list response to a JSON file."""
         if not response or not (resource_name := kwargs.get("resource")):
             return response
@@ -169,7 +173,7 @@ class TestDataCollector(Plugin):
 
         return response
 
-    def save_first_item(self, sender, item: dict[str, Any], **kwargs) -> dict[str, Any]:
+    def save_first_item(self, sender: Any, item: dict[str, Any], **kwargs: Any) -> dict[str, Any]:
         """Save the first item from a list to a JSON file."""
         resource_name = kwargs.get("resource")
         if not resource_name:
@@ -190,14 +194,13 @@ class TestDataCollector(Plugin):
         params: dict[str, Any] | None,
         json_response: bool,
         endpoint: str,
-        **kwargs,
+        **kwargs: Any,
     ) -> dict[str, Any]:
         """
         Save the request data to a JSON file.
 
         Connects to client.request:after signal.
         """
-
         if not json_response or not params:
             return parsed_response
 
@@ -218,6 +221,7 @@ class TestDataCollector(Plugin):
 
         return parsed_response
 
+    @override
     @classmethod
     def get_config_schema(cls) -> dict[str, Any]:
         """Define the configuration schema for this plugin."""
