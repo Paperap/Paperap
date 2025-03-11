@@ -294,7 +294,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         return self._meta.resource.client
 
-    def __init__(self, resource: "BaseResource[Self] | None" = None, **data: Any):
+    def __init__(self, resource: "BaseResource[Self] | None" = None, **data: Any) -> None:
         """
         Initialize the model with resource and data.
 
@@ -317,7 +317,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             )
 
     @override
-    def model_post_init(self, __context):
+    def model_post_init(self, __context) -> None:
         super().model_post_init(__context)
 
         # Save original_data to support dirty fields
@@ -622,7 +622,7 @@ class StandardModel(BaseModel, ABC):
         return self.id == 0
 
     @override
-    def __setattr__(self, name: str, value: Any):
+    def __setattr__(self, name: str, value: Any) -> None:
         """
         Override attribute setting to automatically call save when attributes change.
 

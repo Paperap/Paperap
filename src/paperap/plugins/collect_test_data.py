@@ -3,7 +3,6 @@ Usage example:
        test_dir = Path(__file__).parent.parent.parent.parent / "tests/sample_data"
        collector = TestDataCollector(test_dir)
 
-
 ----------------------------------------------------------------------------
 
    METADATA:
@@ -11,7 +10,7 @@ Usage example:
        File:    collect_test_data.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.4
+        Version: 0.0.5
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -47,7 +46,6 @@ logger = logging.getLogger(__name__)
 
 sanitize_pattern = re.compile(r"[^a-zA-Z0-9_-]")
 
-
 SANITIZE_KEYS = [
     "email",
     "first_name",
@@ -77,7 +75,7 @@ class TestDataCollector(Plugin):
     fake = Faker()
     test_dir: Path
 
-    def __init__(self, client: "PaperlessClient", test_dir: Path | None = None, **kwargs: Any):
+    def __init__(self, client: "PaperlessClient", test_dir: Path | None = None, **kwargs: Any) -> None:
         # Convert string path to Path object if needed
         if test_dir and isinstance(test_dir, str):
             test_dir = Path(test_dir)
@@ -87,14 +85,14 @@ class TestDataCollector(Plugin):
         super().__init__(client, **kwargs)
 
     @override
-    def setup(self):
+    def setup(self) -> None:
         """Register signal handlers."""
         SignalRegistry.connect("resource._handle_response:after", self.save_list_response, SignalPriority.LOW)
         SignalRegistry.connect("resource._handle_results:before", self.save_first_item, SignalPriority.LOW)
         SignalRegistry.connect("client.request:after", self.save_parsed_response, SignalPriority.LOW)
 
     @override
-    def teardown(self):
+    def teardown(self) -> None:
         """Unregister signal handlers."""
         SignalRegistry.disconnect("resource._handle_response:after", self.save_list_response)
         SignalRegistry.disconnect("resource._handle_results:before", self.save_first_item)

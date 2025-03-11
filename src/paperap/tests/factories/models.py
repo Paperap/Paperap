@@ -2,7 +2,6 @@
 
 
 
-
  ----------------------------------------------------------------------------
 
     METADATA:
@@ -10,7 +9,7 @@
         File:    models.py
         Project: paperap
         Created: 2025-03-07
-        Version: 0.0.4
+        Version: 0.0.5
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -22,31 +21,20 @@
         2025-03-07     By Jess Mann
 
 """
-from typing import Any, Generic
-from typing_extensions import TypeVar
+from __future__ import annotations
+
 from abc import ABC
+from datetime import datetime, timezone
+from typing import Any, Generic
+
 import factory
 from faker import Faker
-from datetime import datetime, timezone
-from paperap.models import (
-    Correspondent,
-    CustomField,
-    Document,
-    DocumentNote,
-    DocumentType,
-    Tag,
-    User,
-    Group,
-    Profile,
-    StoragePath,
-    SavedView,
-    ShareLinks,
-    Task,
-    UISettings,
-    Workflow,
-    WorkflowAction,
-    WorkflowTrigger,
-)
+from typing_extensions import TypeVar
+
+from paperap.models import (Correspondent, CustomField, Document, DocumentNote,
+                            DocumentType, Group, Profile, SavedView,
+                            ShareLinks, StoragePath, Tag, Task, UISettings,
+                            User, Workflow, WorkflowAction, WorkflowTrigger)
 
 fake = Faker()
 
@@ -125,7 +113,6 @@ class DocumentTypeFactory(PydanticFactory):
     owner = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
     user_can_change = factory.Faker("boolean")
 
-
 class TagFactory(PydanticFactory):
     class Meta: # type: ignore # pyright handles this wrong
         model = Tag
@@ -141,7 +128,6 @@ class TagFactory(PydanticFactory):
     owner = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
     user_can_change = factory.Faker("boolean")
 
-
 class ProfileFactory(PydanticFactory):
     class Meta: # type: ignore # pyright handles this wrong
         model = Profile
@@ -153,7 +139,6 @@ class ProfileFactory(PydanticFactory):
     auth_token = factory.Faker("uuid4")
     social_accounts = factory.List([factory.Faker("url") for _ in range(3)])
     has_usable_password = factory.Faker("boolean")
-
 
 class UserFactory(PydanticFactory):
     class Meta: # type: ignore # pyright handles this wrong
@@ -172,7 +157,6 @@ class UserFactory(PydanticFactory):
     user_permissions = factory.List([factory.Faker("word") for _ in range(5)])
     inherited_permissions = factory.List([factory.Faker("word") for _ in range(5)])
 
-
 class StoragePathFactory(PydanticFactory):
     class Meta: # type: ignore # pyright handles this wrong
         model = StoragePath
@@ -186,7 +170,6 @@ class StoragePathFactory(PydanticFactory):
     document_count = factory.Faker("random_int", min=0, max=500)
     owner = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
     user_can_change = factory.Faker("boolean")
-
 
 class SavedViewFactory(PydanticFactory):
     class Meta: # type: ignore # pyright handles this wrong

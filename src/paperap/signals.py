@@ -2,7 +2,6 @@
 
 
 
-
 ----------------------------------------------------------------------------
 
 METADATA:
@@ -10,7 +9,7 @@ METADATA:
 File:    signals.py
         Project: paperap
 Created: 2025-03-09
-        Version: 0.0.4
+        Version: 0.0.5
 Author:  Jess Mann
 Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -98,7 +97,7 @@ class Signal(Generic[_ReturnType]):
     _handlers: dict[int, list[Callable[..., _ReturnType]]]
     _disabled_handlers: Set[Callable[..., _ReturnType]]
 
-    def __init__(self, name: str, description: str = ""):
+    def __init__(self, name: str, description: str = "") -> None:
         self.name = name
         self.description = description
         self._handlers = defaultdict(list)

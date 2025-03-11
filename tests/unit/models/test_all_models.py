@@ -11,7 +11,7 @@ least a base level of testing for all models.
         File:    test_from_dict.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.4
+        Version: 0.0.5
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -53,7 +53,6 @@ from paperap.tests.factories import *
 from paperap.tests import TestCase
 
 logger = logging.getLogger(__name__)
-
 
 class ModelTestCase(TestCase):
     MAX_RECURSION_DEPTH = 2
@@ -243,7 +242,6 @@ class TestModelFromDict(ModelTestCase):
                 model_dict = model.to_dict(exclude_none=False, exclude_unset=False, include_read_only=True)
                 missing = set(sample_data.keys()) - set(model_dict.keys())
                 self.assertFalse(missing, f"{model_class.__name__}.to_dict missing keys: {missing}")
-
 
 class TestRequest(ModelTestCase):
 

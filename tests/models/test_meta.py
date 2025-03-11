@@ -2,7 +2,6 @@
 
 
 
-
  ----------------------------------------------------------------------------
 
     METADATA:
@@ -10,7 +9,7 @@
         File:    test_meta.py
         Project: paperap
         Created: 2025-03-09
-        Version: 0.0.4
+        Version: 0.0.5
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -74,7 +73,6 @@ class TestStandardModelMeta(TestCase):
             def __init_subclass__(cls, **kwargs : Any) -> None:
                 super().__init_subclass__(**kwargs)
                 cls.Meta.foo = "child-subclass-foo-update"
-
 
         class SubChildModel(ChildModel):
             field1: str = "sub-child-field1"
@@ -220,7 +218,6 @@ class TestStandardModelMeta(TestCase):
             def __init_subclass__(cls, **kwargs : Any) -> None:
                 super().__init_subclass__(**kwargs)
                 cls.Meta.foo = "child-subclass-foo-update"
-
 
         class SubChildModel(ChildModel):
             field1: str = "sub-child-field1"

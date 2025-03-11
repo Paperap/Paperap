@@ -2,7 +2,6 @@
 
 
 
-
  ----------------------------------------------------------------------------
 
     METADATA:
@@ -10,7 +9,7 @@
         File:    test_queryset.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.4
+        Version: 0.0.5
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -71,7 +70,6 @@ class TestQuerySetFilterBase(TestCase):
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
         self.qs = StandardQuerySet(self.resource, filters={"init": "value"})
-
 
 class TestUpdateFilters(TestQuerySetFilterBase):
     def test_update_filters(self):
@@ -241,7 +239,6 @@ class TestQuerySetAll(TestCase):
         self.assertIsNot(qs_all, self.qs)
         self.assertEqual(qs_all.filters, self.qs.filters)
 
-
 class TestQuerySetOrderBy(TestCase):
     @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
@@ -385,7 +382,6 @@ class TestQuerySetGetItem(TestCase):
         self.qs._fetch_all = True
         result = self.qs[1:-1]
         self.assertEqual(result, ["b", "c"])
-
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)

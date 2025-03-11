@@ -6,7 +6,7 @@
        File:    meta.py
         Project: paperap
        Created: 2025-03-07
-        Version: 0.0.4
+        Version: 0.0.5
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -18,6 +18,8 @@
        2025-03-07     By Jess Mann
 
 """
+
+from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Iterable, Literal
 
@@ -68,7 +70,7 @@ class StatusContext:
         """Read-only access to the previous status."""
         return self._previous_status
 
-    def __init__(self, model: "BaseModel", new_status: ModelStatus):
+    def __init__(self, model: "BaseModel", new_status: ModelStatus) -> None:
         self._model = model
         self._new_status = new_status
         self._previous_status = None

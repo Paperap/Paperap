@@ -72,7 +72,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
     # this will usually not need to be overridden
     endpoints: ClassVar[Endpoints]
 
-    def __init__(self, client: "PaperlessClient"):
+    def __init__(self, client: "PaperlessClient") -> None:
         self.client = client
         if not hasattr(self, "name"):
             self.name = f"{self._meta.name.lower()}s"
@@ -88,7 +88,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         super().__init__()
 
     @classmethod
-    def __init_subclass__(cls, **kwargs: Any):
+    def __init_subclass__(cls, **kwargs: Any) -> None:
         """
         Initialize the subclass.
 

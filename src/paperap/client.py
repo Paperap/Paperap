@@ -6,7 +6,7 @@
        File:    client.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.4
+        Version: 0.0.5
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -128,7 +128,7 @@ class PaperlessClient:
     workflow_triggers: WorkflowTriggerResource
     workflows: WorkflowResource
 
-    def __init__(self, settings: Settings | None = None, **kwargs: Unpack[SettingsArgs]):
+    def __init__(self, settings: Settings | None = None, **kwargs: Unpack[SettingsArgs]) -> None:
         if not settings:
             # Any params not provided in kwargs will be loaded from env vars
             settings = Settings(**kwargs)  # type: ignore # base_url is a URL, but accepts str | URL
@@ -161,10 +161,10 @@ class PaperlessClient:
         """Get the base URL."""
         return self.settings.base_url
 
-    def __enter__(self):
+    def __enter__(self) -> PaperlessClient:
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val, exc_tb) -> bool | None:
         self.close()
 
     def _init_resources(self) -> None:
@@ -331,7 +331,7 @@ class PaperlessClient:
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
         files: dict[str, Any] | None = None,
-    ):
+    ) -> None:
         error_message = self._extract_error_message(response)
 
         if response.status_code == 400:

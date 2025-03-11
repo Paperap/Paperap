@@ -2,7 +2,6 @@
 
 
 
-
  ----------------------------------------------------------------------------
 
     METADATA:
@@ -10,7 +9,7 @@
         File:    test_document.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.4
+        Version: 0.0.5
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -222,7 +221,6 @@ class TestGetRelationships(DocumentTest):
                 else:
                     self.assertIsInstance(value, field_type, f"Expected document_type.{field} to be a {field_type}, got {type(value)}")
                     self.assertEqual(value, sample_data[field], f"Expected document_type.{field} to match sample data")
-
 
     def test_get_storage_path(self):
         sample_data = load_sample_data('storage_paths_item.json')

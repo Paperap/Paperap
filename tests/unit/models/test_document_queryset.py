@@ -2,7 +2,6 @@
 
 
 
-
  ----------------------------------------------------------------------------
 
     METADATA:
@@ -10,7 +9,7 @@
         File:    test_document_queryset.py
         Project: paperap
         Created: 2025-03-05
-        Version: 0.0.4
+        Version: 0.0.5
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -124,7 +123,6 @@ class TestMeta(BaseTest):
         for field_name in expected_fields:
             with self.subTest(field_name=field_name):
                 self.assertIn(field_name, Document._meta.filtering_fields)
-
 
     def test_read_only_fields(self):
         # Non Exhaustive list, just in case the fields change
@@ -251,7 +249,6 @@ class BaseQuerySetTest(BaseTest):
                     break
 
             self.assertEqual(count, expected_iterations, f"Documents iteration unexpected. Count: {expected_count} -> Expected {expected_iterations} iterations, got {count}.")
-
 
     def _test_date_filter(self, method, file, date_str, key, comparator):
         """
@@ -573,7 +570,6 @@ class TestCustomFields(BaseQuerySetTest):
 
         self.assertEqual(count, 1, "Documents were not iterated over.")
 
-
 class TestCustomFieldAccess(BaseQuerySetTest):
     def test_custom_field_noparams(self):
         sample_data = load_sample_data('documents___custom_field_query__building__icontains__52.json')
@@ -625,7 +621,6 @@ class TestCustomFieldAccess(BaseQuerySetTest):
                 break
 
         self.assertEqual(count, 1, "Documents were not iterated over.")
-
 
 if __name__ == "__main__":
     unittest.main()

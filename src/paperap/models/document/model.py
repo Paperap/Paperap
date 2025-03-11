@@ -2,7 +2,6 @@
 
 
 
-
 ----------------------------------------------------------------------------
 
 METADATA:
@@ -432,7 +431,7 @@ class Document(StandardModel):
         return self._client.tags().id(self.tag_ids)
 
     @tags.setter
-    def tags(self, value: "Iterable[Tag | int] | None"):
+    def tags(self, value: "Iterable[Tag | int] | None") -> None:
         """
         Set the tags for this document.
 
@@ -491,7 +490,7 @@ class Document(StandardModel):
         return correspondent
 
     @correspondent.setter
-    def correspondent(self, value: "Correspondent | int | None"):
+    def correspondent(self, value: "Correspondent | int | None") -> None:
         """
         Set the correspondent for this document.
 
@@ -549,7 +548,7 @@ class Document(StandardModel):
         return document_type
 
     @document_type.setter
-    def document_type(self, value: "DocumentType | int | None"):
+    def document_type(self, value: "DocumentType | int | None") -> None:
         """
         Set the document type for this document.
 
@@ -607,7 +606,7 @@ class Document(StandardModel):
         return storage_path
 
     @storage_path.setter
-    def storage_path(self, value: "StoragePath | int | None"):
+    def storage_path(self, value: "StoragePath | int | None") -> None:
         """
         Set the storage path for this document.
 
@@ -652,7 +651,7 @@ class Document(StandardModel):
         return self._client.custom_fields().id(self.custom_field_ids)
 
     @custom_fields.setter
-    def custom_fields(self, value: "Iterable[CustomField | CustomFieldDict] | None"):
+    def custom_fields(self, value: "Iterable[CustomField | CustomFieldDict] | None") -> None:
         """
         Set the custom fields for this document.
 

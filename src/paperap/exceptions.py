@@ -6,7 +6,7 @@
        File:    exceptions.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.4
+        Version: 0.0.5
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -37,7 +37,7 @@ class APIError(PaperlessError):
 
     status_code: int | None = None
 
-    def __init__(self, message: str | None = None, status_code: int | None = None):
+    def __init__(self, message: str | None = None, status_code: int | None = None) -> None:
         self.status_code = status_code
         if not message:
             message = "An error occurred."
@@ -79,7 +79,7 @@ class ResourceNotFoundError(APIError):
 
     resource_name: str | None = None
 
-    def __init__(self, message: str | None = None, resource_name: str | None = None):
+    def __init__(self, message: str | None = None, resource_name: str | None = None) -> None:
         self.resource_name = resource_name
         if not message:
             message = "Resource ${resource} not found."
@@ -92,7 +92,9 @@ class ObjectNotFoundError(ResourceNotFoundError):
 
     model_id: int | None = None
 
-    def __init__(self, message: str | None = None, resource_name: str | None = None, model_id: int | None = None):
+    def __init__(
+        self, message: str | None = None, resource_name: str | None = None, model_id: int | None = None
+    ) -> None:
         self.model_id = model_id
         if not message:
             message = "Resource ${resource} (#${pk}) not found."

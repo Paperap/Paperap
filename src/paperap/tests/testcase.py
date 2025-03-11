@@ -2,7 +2,6 @@
 
 
 
-
  ----------------------------------------------------------------------------
 
     METADATA:
@@ -23,87 +22,45 @@
 
 """
 from __future__ import annotations
+
 import json
-import os
-from typing import TYPE_CHECKING, Any, Callable, Generic, Iterator, override
-from typing_extensions import TypeVar, TypeAlias
-import unittest
-from unittest.mock import MagicMock, patch
 import logging
+import os
+import unittest
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, Callable, Generic, Iterator, override
+from unittest.mock import MagicMock, patch
+
+from typing_extensions import TypeAlias, TypeVar
+
 from paperap.client import PaperlessClient
-from paperap.tests.factories import (
-    PydanticFactory,
-    DocumentFactory,
-    DocumentTypeFactory,
-    CorrespondentFactory,
-    TagFactory,
-    UserFactory,
-    GroupFactory,
-    ProfileFactory,
-    TaskFactory,
-    WorkflowFactory,
-    SavedViewFactory,
-    ShareLinksFactory,
-    UISettingsFactory,
-    StoragePathFactory,
-    WorkflowActionFactory,
-    WorkflowTriggerFactory,
-)
-from paperap.models import (
-    StandardModel,
-    StandardQuerySet,
-    BaseQuerySet,
-    Document,
-    DocumentQuerySet,
-    DocumentType,
-    DocumentTypeQuerySet,
-    Correspondent,
-    CorrespondentQuerySet,
-    Tag,
-    TagQuerySet,
-    User,
-    UserQuerySet,
-    Group,
-    GroupQuerySet,
-    Profile,
-    ProfileQuerySet,
-    Task,
-    TaskQuerySet,
-    Workflow,
-    WorkflowQuerySet,
-    SavedView,
-    SavedViewQuerySet,
-    ShareLinks,
-    ShareLinksQuerySet,
-    UISettings,
-    UISettingsQuerySet,
-    StoragePath,
-    StoragePathQuerySet,
-    WorkflowAction,
-    WorkflowActionQuerySet,
-    WorkflowTrigger,
-    WorkflowTriggerQuerySet,
-)
-from paperap.resources import (
-    BaseResource,
-    StandardResource,
-    DocumentResource,
-    DocumentTypeResource,
-    CorrespondentResource,
-    TagResource,
-    UserResource,
-    GroupResource,
-    ProfileResource,
-    TaskResource,
-    WorkflowResource,
-    SavedViewResource,
-    ShareLinksResource,
-    UISettingsResource,
-    StoragePathResource,
-    WorkflowActionResource,
-    WorkflowTriggerResource
-)
+from paperap.models import (BaseQuerySet, Correspondent, CorrespondentQuerySet,
+                            Document, DocumentQuerySet, DocumentType,
+                            DocumentTypeQuerySet, Group, GroupQuerySet,
+                            Profile, ProfileQuerySet, SavedView,
+                            SavedViewQuerySet, ShareLinks, ShareLinksQuerySet,
+                            StandardModel, StandardQuerySet, StoragePath,
+                            StoragePathQuerySet, Tag, TagQuerySet, Task,
+                            TaskQuerySet, UISettings, UISettingsQuerySet, User,
+                            UserQuerySet, Workflow, WorkflowAction,
+                            WorkflowActionQuerySet, WorkflowQuerySet,
+                            WorkflowTrigger, WorkflowTriggerQuerySet)
+from paperap.resources import (BaseResource, CorrespondentResource,
+                               DocumentResource, DocumentTypeResource,
+                               GroupResource, ProfileResource,
+                               SavedViewResource, ShareLinksResource,
+                               StandardResource, StoragePathResource,
+                               TagResource, TaskResource, UISettingsResource,
+                               UserResource, WorkflowActionResource,
+                               WorkflowResource, WorkflowTriggerResource)
+from paperap.tests.factories import (CorrespondentFactory, DocumentFactory,
+                                     DocumentTypeFactory, GroupFactory,
+                                     ProfileFactory, PydanticFactory,
+                                     SavedViewFactory, ShareLinksFactory,
+                                     StoragePathFactory, TagFactory,
+                                     TaskFactory, UISettingsFactory,
+                                     UserFactory, WorkflowActionFactory,
+                                     WorkflowFactory, WorkflowTriggerFactory)
 
 logger = logging.getLogger(__name__)
 
@@ -167,7 +124,7 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource, _St
         return self.model._meta # type: ignore # Allow private attribute access in tests
 
     @override
-    def setUp(self):
+    def setUp(self) -> None:
         """
         Set up the test case by initializing the client, resource, and model data.
         """
@@ -177,7 +134,7 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource, _St
         self.setup_model_data()
         self.setup_model()
 
-    def setup_client(self):
+    def setup_client(self) -> None:
         """
         Set up the PaperlessClient instance, optionally mocking environment variables.
         """
@@ -188,7 +145,7 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource, _St
             else:
                 self.client = PaperlessClient()
 
-    def setup_references(self):
+    def setup_references(self) -> None:
         # Check if we have each attrib, and set all the others we can
         if hasattr(self, "modal_type"):
             self.resource = getattr(self, "resource", self.model_type._meta.resource) # type: ignore
@@ -209,21 +166,21 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource, _St
             self.model_type = getattr(self, "model_type", self.resource.model_class) # type: ignore
             self.queryset_type = getattr(self, "queryset_type", self.model_type._meta.queryset) # type: ignore
 
-    def setup_resource(self):
+    def setup_resource(self) -> None:
         """
         Set up the resource instance using the resource class.
         """
         if not getattr(self, "resource", None) and (resource_class := getattr(self, 'resource_class', None)):
             self.resource = resource_class(client=self.client) # pylint: disable=not-callable
 
-    def setup_model_data(self):
+    def setup_model_data(self) -> None:
         """
         Load model data if the resource is set.
         """
         if getattr(self, "resource", None):
             self.load_model_data()
 
-    def setup_model(self):
+    def setup_model(self) -> None:
         """
         Set up the model instance using the factory and model data.
         """
@@ -405,7 +362,7 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource, _St
         queryset : StandardQuerySet[_StandardModel],
         callback : Callable[[_StandardModel], bool] | None = None,
         expected_count : int | None = None
-    ):
+    ) -> None:
         """
         Generic method to test queryset filtering.
 
@@ -443,7 +400,7 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource, _St
         sample_data : dict[str, Any],
         callback : Callable[[_StandardModel], bool] | None = None,
         expected_count : int | None = None,
-    ):
+    ) -> None:
         """
         Generic method to test queryset filtering.
 

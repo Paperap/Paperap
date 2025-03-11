@@ -2,7 +2,6 @@
 
 
 
-
  ----------------------------------------------------------------------------
 
     METADATA:
@@ -10,7 +9,7 @@
         File:    test_meta.py
         Project: paperap
         Created: 2025-03-07
-        Version: 0.0.4
+        Version: 0.0.5
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -32,7 +31,6 @@ from paperap.models.abstract.meta import StatusContext
 from paperap.tests import TestCase, load_sample_data, DocumentTest
 from paperap.models.document import Document
 from paperap.resources.documents import DocumentResource
-
 
 # Unit tests
 class TestStatusContext(DocumentTest):

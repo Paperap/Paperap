@@ -2,7 +2,6 @@
 
 
 
-
  ----------------------------------------------------------------------------
 
     METADATA:
@@ -10,7 +9,7 @@
         File:    test_signals.py
         Project: paperap
         Created: 2025-03-08
-        Version: 0.0.4
+        Version: 0.0.5
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,7 +24,6 @@
 import unittest
 from typing import Any, Dict
 from paperap.signals import Signal, SignalPriority, SignalRegistry
-
 
 class TestSignalSystem(unittest.TestCase):
 
@@ -168,7 +166,6 @@ class TestSignalSystem(unittest.TestCase):
 
         # Verify the handler was properly connected
         self.assertTrue(result["transformed"])
-
 
 if __name__ == "__main__":
     unittest.main()

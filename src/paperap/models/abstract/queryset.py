@@ -91,7 +91,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         _last_response: Optional[dict[str, Any]] = None,
         _iter: Optional[Iterator[_BaseModel]] = None,
         _urls_fetched: Optional[list[str]] = None,
-    ):
+    ) -> None:
         self.resource = resource
         self.filters = filters or {}
         self._result_cache = _cache or []
