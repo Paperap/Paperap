@@ -63,6 +63,6 @@ class UISettingsResource(StandardResource[UISettings, UISettingsQuerySet]):
         if ui_settings:
             ui_settings.settings.update(settings)
             return self.update(ui_settings.id, ui_settings.to_dict())
-       
+
         # Create new settings
         return self.create({"settings": settings})

@@ -18,5 +18,6 @@
        2025-03-05     By Jess Mann
 
 """
+
 from paperap.models.mixins.models import MatcherMixin
 from paperap.models.mixins.queryset import HasDocumentCount, HasOwner, HasStandard

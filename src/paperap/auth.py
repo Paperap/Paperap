@@ -40,6 +40,7 @@ class AuthBase(pydantic.BaseModel):
         """Get authentication parameters for requests."""
         raise NotImplementedError("get_auth_params must be implemented by subclasses")
 
+
 class TokenAuth(AuthBase):
     """Authentication using a token."""
 
@@ -66,7 +67,7 @@ class BasicAuth(AuthBase):
     def get_auth_headers(self) -> dict[str, str]:
         """
         Get headers for basic auth.
-        
+
         Basic auth is handled by the requests library, so no headers are needed here.
         """
         return {}

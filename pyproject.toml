@@ -448,7 +448,7 @@ disable = [
 # multiple time (only on the command line, not in the configuration file where it
 # should appear only once). See also the "--disable" option for examples.
 enable = [
-  "c-extension-no-member", 
+  "c-extension-no-member",
   "logging-format-interpolation"
 ]
 
@@ -723,7 +723,7 @@ ignore = [
   "D102",  # Missing docstring in public method
   "D105",  # Missing docstring in magic method
   "D106",  # Missing docstring in public nested class
-  "D417", 
+  "D417",
   "C901",  # too complex
 ]
 
@@ -947,7 +947,7 @@ reportMissingTypeArgument = "none"
 
 # ------------------- #
 # Temporarily ignored #
-# ------------------- # 
+# ------------------- #
 # These will be re-enabled once the errors they generate are addressed.
 reportUninitializedInstanceVariable = "none"
 reportUnusedCallResult = "none"

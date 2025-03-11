@@ -40,7 +40,7 @@ class TestStandardModelMeta(TestCase):
     def setUp(self):
         super().setUp()
         self.resource = SampleResource(self.client)
-        
+
     def test_subclass_meta_inheritance(self):
         """Ensure that subclasses inherit Meta correctly without modifying parents."""
 
@@ -69,13 +69,13 @@ class TestStandardModelMeta(TestCase):
                 supported_filtering_params: ClassVar[set[str]] = {"child_filter"}
                 foo = "child-foo"
                 bar = "child-bar"
-                
+
             @classmethod
             def __init_subclass__(cls, **kwargs : Any) -> None:
                 super().__init_subclass__(**kwargs)
                 cls.Meta.foo = "child-subclass-foo-update"
 
-                
+
         class SubChildModel(ChildModel):
             field1: str = "sub-child-field1"
             field2: str = "sub-child-field2"
@@ -189,7 +189,7 @@ class TestStandardModelMeta(TestCase):
         self.assertIn("child_filter", subchild._meta.supported_filtering_params)
         self.assertIn("sub_child_field", subchild._meta.read_only_fields)
         self.assertIn("sub_child_filter", subchild._meta.supported_filtering_params)
-        
+
     def test_subclass_meta_missing(self):
         """
         Ensure that subclasses inherit Meta correctly even when a Meta class is not defined.
@@ -215,13 +215,13 @@ class TestStandardModelMeta(TestCase):
         class ChildModel(ParentModel):
             field1: str = "child-field1"
             field2: str = "child-field2"
-                
+
             @classmethod
             def __init_subclass__(cls, **kwargs : Any) -> None:
                 super().__init_subclass__(**kwargs)
                 cls.Meta.foo = "child-subclass-foo-update"
 
-                
+
         class SubChildModel(ChildModel):
             field1: str = "sub-child-field1"
             field2: str = "sub-child-field2"

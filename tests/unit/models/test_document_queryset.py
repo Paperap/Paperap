@@ -51,20 +51,6 @@ class BaseTest(DocumentTest):
         super().setUp()
         self.queryset = self.client.documents()
 
-    def _test_method(self, sample_data : dict[str, Any], attr_name : str, expected_value : Any, fn : Callable, *args, action : str = "equal", **kwargs : Any):
-        with patch('paperap.client.PaperlessClient.request') as mock_request:
-            mock_request.return_value = sample_data
-            qs = fn(*args, **kwargs)
-            self.assertIsInstance(qs, DocumentQuerySet)
-            for document in qs:
-                self.assertIsInstance(document, Document)
-                value = getattr(document, attr_name)
-                if action == "equal":
-                    self.assertEqual(value, expected_value, f"Expected document.{attr_name} to be {expected_value}, got {value}")
-                elif action == "in":
-                    self.assertIn(expected_value, value, f"Expected {expected_value} to be in document.{attr_name}")
-
-
     def _test_no_results(self, fn : Callable, *args, **kwargs : Any):
         sample_data = load_sample_data('documents___list__no_results.json')
         with patch('paperap.client.PaperlessClient.request') as mock_request:
@@ -156,14 +142,21 @@ class TestCorrespondent(BaseTest):
 
     def test_correspondent(self):
         sample_data = load_sample_data('documents___correspondent__21.json')
-        correspondent_id = 21
-        methods = [
-            (self.queryset.correspondent_id, 21),
-            (self.queryset.correspondent_slug, 'example-correspondent'),
-            (self.queryset.correspondent_name, 'Example Correspondent'),
-        ]
-        for fn, args in methods:
-            self._test_method(sample_data, 'correspondent', correspondent_id, fn, args)
+        self.assert_queryset_callback_patched(
+            queryset = lambda: self.queryset.correspondent_id(21),
+            sample_data = sample_data,
+            callback = lambda doc: doc.correspondent_id == 21
+        )
+        self.assert_queryset_callback_patched(
+            queryset = lambda: self.queryset.correspondent_slug('example-correspondent'),
+            sample_data = sample_data,
+            callback = lambda doc: doc.correspondent_id == 21
+        )
+        self.assert_queryset_callback_patched(
+            queryset = lambda: self.queryset.correspondent_name('Example Correspondent'),
+            sample_data = sample_data,
+            callback = lambda doc: doc.correspondent_id == 21
+        )
 
     def test_correspondent_kwargs(self):
         test_cases = [
@@ -238,7 +231,7 @@ class BaseQuerySetTest(BaseTest):
         if expected_count is None:
             expected_count = int(sample_data['count'])
         expected_iterations = min(expected_count, 6)
-            
+
         with patch('paperap.client.PaperlessClient.request') as mock_request:
             mock_request.return_value = sample_data
             qs = method(arg)
@@ -286,46 +279,42 @@ class BaseQuerySetTest(BaseTest):
 class TestTag(BaseQuerySetTest):
     def test_tag(self):
         sample_data = load_sample_data('documents___tags__179.json')
-        tag_id = 179
-        methods = [
-            (self.queryset.tag_id, tag_id),
-            (self.queryset.tag_name, 'Example Tag'),
-        ]
-        for method, arg in methods:
-            self._test_method(sample_data, 'tag_ids', tag_id, method, arg, action="in")
+        self.assert_queryset_callback_patched(
+            queryset = lambda: self.queryset.tag_id(179),
+            sample_data = sample_data,
+            callback = lambda doc: 179 in doc.tag_ids
+        )
+        self.assert_queryset_callback_patched(
+            queryset = lambda: self.queryset.tag_name('Example Tag'),
+            sample_data = sample_data,
+            callback = lambda doc: 179 in doc.tag_ids
+        )
 
 class TestTitle(BaseQuerySetTest):
     def test_title_iexact(self):
         sample_data = load_sample_data('documents___title__example-title.json')
-        self.assert_queryset_results(
-            self.queryset.title,
-            "example-title",
-            sample_data,
-            sample_data['count'],
-            key="title",
-            condition=lambda title: title.lower() == "example-title"
+        self.assert_queryset_callback_patched(
+            queryset = lambda: self.queryset.title("example-title"),
+            sample_data = sample_data,
+            callback = lambda doc: doc.title.lower() == "example-title"
         )
 
 class TestDocumentType(BaseQuerySetTest):
     def test_document_type_id(self):
         sample_data = load_sample_data('documents___document_type__8.json')
-        self.assert_queryset_results(
-            self.queryset.document_type_id,
-            8,
-            sample_data,
-            sample_data['count'],
-            key="document_type",
-            condition=lambda dt: dt == 8
+        self.assert_queryset_callback_patched(
+            queryset = lambda: self.queryset.document_type_id(8),
+            sample_data = sample_data,
+            callback = lambda doc: doc.document_type_id == 8
         )
 
 class TestStoragePath(BaseQuerySetTest):
     def test_storage_path_id(self):
         sample_data = load_sample_data('documents___storage_path__52.json')
-        self.assert_queryset_callback(
-            sample_data,
-            self.queryset.storage_path_id,
-            callback=lambda doc: (doc is not None and doc['storage_path'] == 52)
-            52,
+        self.assert_queryset_callback_patched(
+            queryset = lambda: self.queryset.storage_path_id(52),
+            callback = lambda doc: doc.storage_path_id == 52,
+            sample_data = sample_data
         )
 
 class TestContent(BaseQuerySetTest):

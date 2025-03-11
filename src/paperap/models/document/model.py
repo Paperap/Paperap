@@ -22,6 +22,7 @@ LAST MODIFIED:
 2025-03-09     By Jess Mann
 
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -146,7 +147,9 @@ class Document(StandardModel):
         >>> document.save()
         >>> document.title
         'Example Document'
+
     """
+
     added: datetime | None = None
     archive_serial_number: int | None = None
     archived_file_name: str | None = None
@@ -158,12 +161,12 @@ class Document(StandardModel):
     page_count: int | None = None
     title: str = ""
     user_can_change: bool | None = None
-    
+
     created: datetime | None = Field(description="Creation timestamp", default=None, alias="created_on")
     created_date: str | None = None
     updated: datetime | None = Field(description="Last update timestamp", default=None, alias="updated_on")
     deleted_at: datetime | None = None
-    
+
     custom_field_dicts: list[CustomFieldDict] = Field(default_factory=list)
     correspondent_id: int | None = None
     document_type_id: int | None = None
@@ -390,7 +393,7 @@ class Document(StandardModel):
 
         """
         return value or False
-    
+
     @classmethod
     @field_validator("deleted_at", "created_date", "updated", "created", mode="before")
     def validate_dates(cls, value: datetime | str | None) -> datetime | None:
@@ -700,7 +703,7 @@ class Document(StandardModel):
             return
 
         if isinstance(value, Iterable):
-            new_list : list[CustomFieldDict] = []
+            new_list: list[CustomFieldDict] = []
             for field in value:
                 # Check against StandardModel to avoid circular imports
                 # If it is another type of standard model, pydantic validators will complain
@@ -749,8 +752,9 @@ class Document(StandardModel):
 
         raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
     """
+
     @override
-    def update_locally(self, from_db : bool | None = None, **kwargs : Any):
+    def update_locally(self, from_db: bool | None = None, **kwargs: Any):
         """
         Update the document locally with the provided data.
 

@@ -52,7 +52,7 @@ def parse_filter_params(**kwargs: Any) -> dict[str, Any]:
         Dictionary of filter parameters.
 
     """
-    filters : dict[str, Any] = {}
+    filters: dict[str, Any] = {}
     for key, value in kwargs.items():
         if value is not None:
             if isinstance(value, datetime):

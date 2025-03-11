@@ -22,6 +22,8 @@ LAST MODIFIED:
 2025-03-09     By Jess Mann
 
 """
+
+
 class MatcherMixin:
     match: str | None = None
     matching_algorithm: int | None = None

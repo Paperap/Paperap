@@ -325,8 +325,8 @@ class PaperlessClient:
 
     def _handle_request_errors(
         self,
-        response : requests.Response,
-        url : str,
+        response: requests.Response,
+        url: str,
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,

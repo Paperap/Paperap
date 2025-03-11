@@ -110,6 +110,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         return self.all().filter(query=query)
     """
 
+
 class DocumentNoteResource(StandardResource[DocumentNote]):
     """Resource for managing document notes."""
 

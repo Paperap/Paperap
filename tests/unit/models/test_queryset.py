@@ -312,9 +312,9 @@ class TestQuerySetExists(TestCase):
 
     def test_exists(self):
         self.qs._result_cache = ["exists"]  # type: ignore # Allow edit ClassVar in tests
-        self.qs._fetch_all = True
+        self.qs._fetch_all = True # type: ignore
         self.assertTrue(self.qs.exists())
-        self.qs._result_cache = []
+        self.qs._result_cache = [] # type: ignore
         self.assertFalse(self.qs.exists())
 
 class TestQuerySetIter(TestCase):
@@ -334,7 +334,7 @@ class TestQuerySetIter(TestCase):
         self.qs._fetch_all = True # type: ignore
         with self.assertRaises(ResponseParsingError):
             list(iter(self.qs))
-        
+
     """
     def test_iter_with_fully_fetched_cache(self):
         self.qs._result_cache = ["a", "b"]  # type: ignore # Allow edit ClassVar in tests

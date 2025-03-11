@@ -77,7 +77,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
     _result_cache: list[_BaseModel] = []
     _fetch_all: bool = False
     _next_url: str | None = None
-    _urls_fetched : list[str] = []
+    _urls_fetched: list[str] = []
     _iter: Iterator[_BaseModel] | None
 
     def __init__(
@@ -99,7 +99,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         self._urls_fetched = _urls_fetched or []
         self._last_response = _last_response
         self._iter = _iter
-        
+
         super().__init__()
 
     @property
@@ -131,7 +131,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
             {'id', 'added', 'modified'}
 
         """
-        return self._model._meta # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
+        return self._model._meta  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
 
     def _reset(self) -> None:
         """
@@ -178,7 +178,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
             self._reset()
             self.filters.update(**values)
 
-    def filter(self, **kwargs : Any) -> Self:
+    def filter(self, **kwargs: Any) -> Self:
         """
         Return a new QuerySet with the given filters applied.
 
@@ -220,7 +220,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
 
         return self._chain(filters={**self.filters, **processed_filters})
 
-    def exclude(self, **kwargs : Any) -> Self:
+    def exclude(self, **kwargs: Any) -> Self:
         """
         Return a new QuerySet excluding objects with the given filters.
 
@@ -432,7 +432,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
 
         """
         # Check the cache before potentially making a new request
-        if self._result_cache:
+        if self._fetch_all or self._result_cache:
             return len(self._result_cache) > 0
 
         # Check if there's at least one result
@@ -530,7 +530,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
 
         yield from self.resource.handle_response(response)
 
-    def _get_next(self, response : dict[str, Any] | None = None) -> str | None:
+    def _get_next(self, response: dict[str, Any] | None = None) -> str | None:
         """
         Get the next url, and adjust our references accordingly.
         """
@@ -541,7 +541,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         # Last response is not set
         if not response:
             return None
-        
+
         if not (next_url := response.get("next")):
             self._next_url = None
             return None
@@ -549,7 +549,11 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         # For safety, check both instance attributes, even though the first check isn't strictly necessary
         # this hopefully future proofs any changes to the implementation
         if next_url == self._next_url or next_url in self._urls_fetched:
-            logger.warning('Next URL was previously fetched. Stopping iteration.')
+            logger.warning(
+                "Next URL was previously fetched. Stopping iteration. URL: %s, Already Fetched: %s",
+                next_url,
+                self._urls_fetched,
+            )
             return
 
         # Cache it
@@ -557,7 +561,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         self._urls_fetched.append(next_url)
         return self._next_url
 
-    def _chain(self, **kwargs : Any) -> Self:
+    def _chain(self, **kwargs: Any) -> Self:
         """
         Return a copy of the current BaseQuerySet with updated attributes.
 
@@ -578,7 +582,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         # Update with provided kwargs
         for key, value in kwargs.items():
             if key == "filters" and value:
-                clone._update_filters(value) # pylint: disable=protected-access
+                clone._update_filters(value)  # pylint: disable=protected-access
             else:
                 setattr(clone, key, value)
 

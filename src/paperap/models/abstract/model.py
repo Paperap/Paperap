@@ -18,6 +18,7 @@
        2025-03-04     By Jess Mann
 
 """
+
 from __future__ import annotations
 
 import logging
@@ -46,6 +47,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 _Self = TypeVar("_Self", bound="BaseModel")
+
 
 class BaseModel(pydantic.BaseModel, ABC):
     """
@@ -129,7 +131,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         # This will be populated from all parent classes.
         field_map: dict[str, str] = {}
 
-        __type_hints_cache__ : dict[str, type] = {}
+        __type_hints_cache__: dict[str, type] = {}
 
         def __init__(self, model: type[_Self]):
             self.model = model
@@ -186,7 +188,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             return True
 
     @classmethod
-    def __init_subclass__(cls, **kwargs : Any) -> None:
+    def __init_subclass__(cls, **kwargs: Any) -> None:
         """
         Initialize subclass and set up metadata.
 
@@ -199,7 +201,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         # If not, create a new one inheriting from the parent’s Meta.
         # If the subclass hasn't defined its own Meta, auto-generate one.
         if "Meta" not in cls.__dict__:
-            top_meta : type[BaseModel.Meta[Self]] | None = None
+            top_meta: type[BaseModel.Meta[Self]] | None = None
             # Iterate over ancestors to get the top-most explicitly defined Meta.
             for base in cls.__mro__[1:]:
                 if "Meta" in base.__dict__:
@@ -208,19 +210,20 @@ class BaseModel(pydantic.BaseModel, ABC):
             if top_meta is None:
                 # This should never happen.
                 raise ConfigurationError(f"Meta class not found in {cls.__name__} or its bases")
-            
+
             # Create a new Meta class that inherits from the top-most Meta.
             meta_attrs = {
-                k: v for k, v in vars(top_meta).items()
+                k: v
+                for k, v in vars(top_meta).items()
                 if not k.startswith("_")  # Avoid special attributes like __parameters__
             }
-            cls.Meta = type("Meta", (top_meta,), meta_attrs) # type: ignore # mypy complains about setting to a type
+            cls.Meta = type("Meta", (top_meta,), meta_attrs)  # type: ignore # mypy complains about setting to a type
             logger.debug(
                 "Auto-generated Meta for %s inheriting from %s",
                 cls.__name__,
                 top_meta.__name__,
             )
-            
+
         # Append read_only_fields from all parents to Meta
         # Same with filtering_disabled
         # Retrieve filtering_fields from the attributes of the class
@@ -255,7 +258,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         cls.Meta.field_map = field_map
 
         # Instantiate _meta
-        cls._meta = cls.Meta(cls) # type: ignore # due to a mypy bug in version 1.15.0 (issue #18776)
+        cls._meta = cls.Meta(cls)  # type: ignore # due to a mypy bug in version 1.15.0 (issue #18776)
 
         # Set name defaults
         if not hasattr(cls._meta, "name"):
@@ -290,7 +293,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         return self._meta.resource.client
 
-    def __init__(self, resource: "BaseResource[Self] | None" = None, **data : Any):
+    def __init__(self, resource: "BaseResource[Self] | None" = None, **data: Any):
         """
         Initialize the model with resource and data.
 
@@ -365,7 +368,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             data = doc.to_dict()
 
         """
-        exclude : set[str] = set() if include_read_only else set(self._meta.read_only_fields)
+        exclude: set[str] = set() if include_read_only else set(self._meta.read_only_fields)
 
         return self.model_dump(
             exclude=exclude,
@@ -416,7 +419,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         # TODO save
         return cls(**kwargs)
 
-    def update_locally(self, from_db : bool | None = None, **kwargs : Any) -> None:
+    def update_locally(self, from_db: bool | None = None, **kwargs: Any) -> None:
         """
         Update model attributes without triggering automatic save.
 
@@ -518,7 +521,7 @@ class StandardModel(BaseModel, ABC):
     """
 
     id: int = Field(description="Unique identifier from Paperless NGX", default=0)
-    
+
     class Meta(BaseModel.Meta):
         """
         Metadata for the StandardModel.
@@ -617,7 +620,7 @@ class StandardModel(BaseModel, ABC):
         return self.id == 0
 
     @override
-    def __setattr__(self, name : str, value : Any):
+    def __setattr__(self, name: str, value: Any):
         """
         Override attribute setting to automatically call save when attributes change.
 

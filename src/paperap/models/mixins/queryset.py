@@ -33,11 +33,12 @@ class QuerySetProtocol(Protocol):
 
     Used primarily for type hinting.
     """
-    def all(self) -> Self: ... # pylint: disable=missing-function-docstring
-    def filter(self, **kwargs : Any) -> Self: ... # pylint: disable=missing-function-docstring
-    def filter_field_by_str( # pylint: disable=missing-function-docstring
+
+    def all(self) -> Self: ...  # pylint: disable=missing-function-docstring
+    def filter(self, **kwargs: Any) -> Self: ...  # pylint: disable=missing-function-docstring
+    def filter_field_by_str(  # pylint: disable=missing-function-docstring
         self, field: str, value: str, *, exact: bool = True, case_insensitive: bool = True
-    ) -> Self: ... 
+    ) -> Self: ...
 
 
 class HasDocumentCount(QuerySetProtocol):

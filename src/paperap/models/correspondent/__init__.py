@@ -18,5 +18,6 @@
        2025-03-04     By Jess Mann
 
 """
-from paperap.models.correspondent.queryset import CorrespondentQuerySet
+
 from paperap.models.correspondent.model import Correspondent
+from paperap.models.correspondent.queryset import CorrespondentQuerySet

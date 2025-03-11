@@ -47,6 +47,7 @@ class WorkflowTrigger(StandardModel, MatcherMixin):
     class Meta(StandardModel.Meta):
         queryset = WorkflowTriggerQuerySet
 
+
 class WorkflowAction(StandardModel):
     """
     Represents a workflow action in Paperless-NgX.

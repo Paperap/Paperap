@@ -18,6 +18,7 @@ LAST MODIFIED:
 2025-03-09     By Jess Mann
 
 """
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -105,7 +106,7 @@ class Settings(BaseSettings):
         return value
 
     @override
-    def model_post_init(self, __context : Any):
+    def model_post_init(self, __context: Any):
         """
         Validate the settings after they have been initialized.
         """

@@ -138,15 +138,22 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource, _St
         model_data_parsed: The data for creating a model instance.
         list_data: The data for creating a list of model instances.
     """
-    client : "PaperlessClient"
+    # Patching stuff
     mock_env : bool = True
     env_data : dict[str, Any] = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123', 'PAPERLESS_SAVE_ON_WRITE': 'False'}
-    resource : _StandardResource
-    factory : type[PydanticFactory]
-    model : _StandardModel
-    model_data_unparsed : dict[str, Any]    
+
+    # Data for the test
+    model_data_unparsed : dict[str, Any]
     model_data_parsed : dict[str, Any]
     list_data : dict[str, Any]
+
+    # Instances
+    client : "PaperlessClient"
+    resource : _StandardResource
+    model : _StandardModel
+
+    # Types (TODO only one of these should be needed)
+    factory : type[PydanticFactory]
     resource_class : type[_StandardResource]
     model_type : type[_StandardModel] | None = None
     queryset_type : type[_StandardQuerySet] | None = None
@@ -364,23 +371,19 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource, _St
 
     def assert_queryset_callback(
         self,
+        *,
         queryset : _StandardQuerySet,
-        expected_count : int | None = None,
-        callback : Callable[[_StandardModel], bool] | None = None
+        callback : Callable[[_StandardModel], bool] | None = None,
+        expected_count : int | None = None
     ):
         """
         Generic method to test queryset filtering.
 
         Args:
             queryset: The queryset to test
-            expected_count: The expected result count of the queryset.
             callback: A callback function to test each model instance.
+            expected_count: The expected result count of the queryset.
         """
-        if self.queryset_type:
-            self.assertIsInstance(queryset, self.queryset_type)
-        else:
-            self.assertIsInstance(queryset, BaseQuerySet)
-            
         if expected_count is not None:
             self.assertEqual(queryset.count(), expected_count)
 
@@ -391,7 +394,7 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource, _St
                 self.assertIsInstance(model, self.model_type)
             else:
                 self.assertIsInstance(model, StandardModel)
-                
+
             if callback:
                 self.assertTrue(callback(model), f"Condition failed for {model}")
 
@@ -403,63 +406,53 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource, _St
             expected_iterations = min(expected_count, 6)
             self.assertEqual(count, expected_iterations, f"Documents iteration unexpected. Count: {expected_count} -> Expected {expected_iterations} iterations, got {count}.")
 
-    def assert_queryset_vs_data(
+    def assert_queryset_callback_patched(
         self,
-        sample_data : dict[str, Any],
+        *,
         queryset : _StandardQuerySet | Callable[..., _StandardQuerySet],
-        expected_count : int | None = None,
+        sample_data : dict[str, Any],
         callback : Callable[[_StandardModel], bool] | None = None,
-        *args : Any,
-        **kwargs : Any
+        expected_count : int | None = None,
     ):
         """
         Generic method to test queryset filtering.
 
         Args:
-            sample_data: The sample data to use for the queryset.
             queryset: The queryset to test, or a method which retrieves a queryset.
-            expected_count: The expected result count of the queryset.
+            sample_data: The sample data to use for the queryset.
             callback: A callback function to test each model instance.
-            args: Additional arguments to pass to the method which retrieves a queryset
-            kwargs: Additional keyword arguments to pass to the method which retrieves a queryset
+            expected_count: The expected result count of the queryset.
         """
         # Setup defaults
         if expected_count is None:
             expected_count = int(sample_data['count'])
-        expected_iterations = min(expected_count, 6)
-            
+
         with patch('paperap.client.PaperlessClient.request') as mock_request:
             mock_request.return_value = sample_data
-            if isinstance(queryset, BaseQuerySet):
+            if not isinstance(queryset, Callable):
                 qs = queryset
             else:
-                qs = queryset(*args, **kwargs)
-            self.assertIsInstance(qs, DocumentQuerySet)
+                qs = queryset()
+                if self.queryset_type:
+                    self.assertIsInstance(qs, self.queryset_type)
+                else:
+                    self.assertIsInstance(qs, BaseQuerySet)
+
             self.assertEqual(qs.count(), expected_count)
 
-            count = 0
-            for model in qs:
-                count += 1
-                if self.model_type:
-                    self.assertIsInstance(model, self.model_type)
-                else:
-                    self.assertIsInstance(model, StandardModel)
-                    
-                if callback:
-                    self.assertTrue(callback(model), f"Condition failed for {model}")
-
-                # Check multiple results, but avoid paging
-                if count > 5:
-                    break
-
-            self.assertEqual(count, expected_iterations, f"Documents iteration unexpected. Count: {expected_count} -> Expected {expected_iterations} iterations, got {count}.")
-
+            self.assert_queryset_callback(
+                queryset = qs,
+                expected_count = expected_count,
+                callback = callback
+            )
 
 class DocumentTest(TestCase["Document", "DocumentResource", "DocumentQuerySet"]):
     """
     A test case for the Document model and resource.
     """
     resource_class = DocumentResource
+    model_type = Document
+    queryset_type = DocumentQuerySet
     factory = DocumentFactory
 
 class DocumentTypeTest(TestCase["DocumentType", "DocumentTypeResource", "DocumentTypeQuerySet"]):
@@ -467,6 +460,8 @@ class DocumentTypeTest(TestCase["DocumentType", "DocumentTypeResource", "Documen
     A test case for the DocumentType model and resource.
     """
     resource_class = DocumentTypeResource
+    model_type = DocumentType
+    queryset_type = DocumentTypeQuerySet
     factory = DocumentTypeFactory
 
 class CorrespondentTest(TestCase["Correspondent", "CorrespondentResource", "CorrespondentQuerySet"]):
@@ -474,6 +469,8 @@ class CorrespondentTest(TestCase["Correspondent", "CorrespondentResource", "Corr
     A test case for the Correspondent model and resource.
     """
     resource_class = CorrespondentResource
+    model_type = Correspondent
+    queryset_type = CorrespondentQuerySet
     factory = CorrespondentFactory
 
 class TagTest(TestCase["Tag", "TagResource", "TagQuerySet"]):
@@ -481,6 +478,8 @@ class TagTest(TestCase["Tag", "TagResource", "TagQuerySet"]):
     A test case for the Tag model and resource.
     """
     resource_class = TagResource
+    model_type = Tag
+    queryset_type = TagQuerySet
     factory = TagFactory
 
 class UserTest(TestCase["User", "UserResource", "UserQuerySet"]):
@@ -488,6 +487,8 @@ class UserTest(TestCase["User", "UserResource", "UserQuerySet"]):
     A test case for the User model and resource.
     """
     resource_class = UserResource
+    model_type = User
+    queryset_type = UserQuerySet
     factory = UserFactory
 
 class GroupTest(TestCase["Group", "GroupResource", "GroupQuerySet"]):
@@ -495,6 +496,8 @@ class GroupTest(TestCase["Group", "GroupResource", "GroupQuerySet"]):
     A test case for the Group model and resource.
     """
     resource_class = GroupResource
+    model_type = Group
+    queryset_type = GroupQuerySet
     factory = GroupFactory
 
 class ProfileTest(TestCase["Profile", "ProfileResource", "ProfileQuerySet"]):
@@ -502,6 +505,8 @@ class ProfileTest(TestCase["Profile", "ProfileResource", "ProfileQuerySet"]):
     A test case for the Profile model and resource.
     """
     resource_class = ProfileResource
+    model_type = Profile
+    queryset_type = ProfileQuerySet
     factory = ProfileFactory
 
 class TaskTest(TestCase["Task", "TaskResource", "TaskQuerySet"]):
@@ -509,6 +514,8 @@ class TaskTest(TestCase["Task", "TaskResource", "TaskQuerySet"]):
     A test case for the Task model and resource.
     """
     resource_class = TaskResource
+    model_type = Task
+    queryset_type = TaskQuerySet
     factory = TaskFactory
 
 class WorkflowTest(TestCase["Workflow", "WorkflowResource", "WorkflowQuerySet"]):
@@ -516,6 +523,8 @@ class WorkflowTest(TestCase["Workflow", "WorkflowResource", "WorkflowQuerySet"])
     A test case for the Workflow model and resource.
     """
     resource_class = WorkflowResource
+    model_type = Workflow
+    queryset_type = WorkflowQuerySet
     factory = WorkflowFactory
 
 class SavedViewTest(TestCase["SavedView", "SavedViewResource", "SavedViewQuerySet"]):
@@ -523,6 +532,8 @@ class SavedViewTest(TestCase["SavedView", "SavedViewResource", "SavedViewQuerySe
     A test case for the SavedView model and resource.
     """
     resource_class = SavedViewResource
+    model_type = SavedView
+    queryset_type = SavedViewQuerySet
     factory = SavedViewFactory
 
 class ShareLinksTest(TestCase["ShareLinks", "ShareLinksResource", "ShareLinksQuerySet"]):
@@ -530,6 +541,8 @@ class ShareLinksTest(TestCase["ShareLinks", "ShareLinksResource", "ShareLinksQue
     A test case for ShareLinks
     """
     resource_class = ShareLinksResource
+    model_type = ShareLinks
+    queryset_type = ShareLinksQuerySet
     factory = ShareLinksFactory
 
 class UISettingsTest(TestCase["UISettings", "UISettingsResource", "UISettingsQuerySet"]):
@@ -537,6 +550,8 @@ class UISettingsTest(TestCase["UISettings", "UISettingsResource", "UISettingsQue
     A test case for the UISettings model and resource.
     """
     resource_class = UISettingsResource
+    model_type = UISettings
+    queryset_type = UISettingsQuerySet
     factory = UISettingsFactory
 
 class StoragePathTest(TestCase["StoragePath", "StoragePathResource", "StoragePathQuerySet"]):
@@ -544,6 +559,8 @@ class StoragePathTest(TestCase["StoragePath", "StoragePathResource", "StoragePat
     A test case for the StoragePath model and resource.
     """
     resource_class = StoragePathResource
+    model_type = StoragePath
+    queryset_type = StoragePathQuerySet
     factory = StoragePathFactory
 
 class WorkflowActionTest(TestCase["WorkflowAction", "WorkflowActionResource", "WorkflowActionQuerySet"]):
@@ -551,6 +568,8 @@ class WorkflowActionTest(TestCase["WorkflowAction", "WorkflowActionResource", "W
     A test case for the WorkflowAction model and resource.
     """
     resource_class = WorkflowActionResource
+    model_type = WorkflowAction
+    queryset_type = WorkflowActionQuerySet
     factory = WorkflowActionFactory
 
 class WorkflowTriggerTest(TestCase["WorkflowTrigger", "WorkflowTriggerResource", "WorkflowTriggerQuerySet"]):
@@ -558,4 +577,6 @@ class WorkflowTriggerTest(TestCase["WorkflowTrigger", "WorkflowTriggerResource",
     A test case for the WorkflowTrigger model and resource.
     """
     resource_class = WorkflowTriggerResource
+    model_type = WorkflowTrigger
+    queryset_type = WorkflowTrigger
     factory = WorkflowTriggerFactory

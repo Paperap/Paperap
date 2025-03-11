@@ -38,7 +38,7 @@ class Plugin(ABC):
     client: PaperlessClient
     config: dict[str, Any]
 
-    def __init__(self, client: "PaperlessClient", **kwargs : Any):
+    def __init__(self, client: "PaperlessClient", **kwargs: Any):
         """
         Initialize the plugin.
 

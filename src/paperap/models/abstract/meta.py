@@ -56,8 +56,8 @@ class StatusContext:
     @property
     def _meta(self) -> "BaseModel.Meta":
         """Read-only access to the model's meta."""
-        return self.model._meta # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
-    
+        return self.model._meta  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
+
     @property
     def new_status(self) -> ModelStatus:
         """Read-only access to the new status."""
@@ -81,10 +81,7 @@ class StatusContext:
         # so we do not want to allow access to the context manager object
 
     def __exit__(
-        self,
-        exc_type : type[BaseException] | None,
-        exc_value : BaseException | None,
-        traceback : Iterable[Any]
+        self, exc_type: type[BaseException] | None, exc_value: BaseException | None, traceback: Iterable[Any]
     ) -> None:
         if self.previous_status is not None:
             self._meta.status = self.previous_status

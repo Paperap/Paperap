@@ -141,7 +141,7 @@ class TestGetRelationships(DocumentTest):
             count = 0
             for tag in tags:
                 self.assertIsInstance(tag, Tag, f"Expected tag to be a Tag, got {type(tag)}")
-                
+
                 count += 1
                 fields = {
                     "id": int,
@@ -262,7 +262,7 @@ class TestRequestDocumentList(DocumentTest):
 
 class TestRequest(DocumentTest):
     def test_manual(self):
-        """Test getting the document without using any of our custom unit test functionality, just in case."""        
+        """Test getting the document without using any of our custom unit test functionality, just in case."""
         with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = copy.deepcopy(sample_document)
             document = self.client.documents.get(1)
@@ -274,7 +274,7 @@ class TestRequest(DocumentTest):
             self.assertEqual(document.document_type_id, sample_document['document_type'])
             self.assertEqual(document.storage_path_id, sample_document['storage_path'])
             self.assertEqual(document.tag_ids, sample_document['tags'])
-            
+
     def test_get(self):
         document = self.get_resource(DocumentResource, self.model_data_parsed["id"])
         """
@@ -302,13 +302,13 @@ class TestRequest(DocumentTest):
             self.assertIsInstance(document.updated, datetime, f"updated wrong type after from_dict {type(document.updated)}")
         self.assertIsInstance(document.tag_ids, Iterable)
         self.assertEqual(document.tag_ids, self.model_data_parsed["tags"])
-        
+
         if self.model_data_parsed["correspondent"] is None:
             self.assertIsNone(document.correspondent_id)
         else:
             self.assertIsInstance(document.correspondent_id, int)
             self.assertEqual(document.correspondent_id, self.model_data_parsed["correspondent"])
-            
+
         if self.model_data_parsed["document_type"] is None:
             self.assertIsNone(document.document_type_id)
         else:

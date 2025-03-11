@@ -230,6 +230,12 @@ class TestSaveNone(IntegrationTest):
         document = self.client.documents().get(7411)
         self.assertEqual([], document.tag_ids, "Tags not cleared in remote instance when updated to empty list")
 
+    def test_update_tag_ids_to_empty(self):
+        # Test that the document is saved when a field is written to
+        self.model.update(tag_ids=[])
+        document = self.client.documents().get(7411)
+        self.assertEqual([], document.tag_ids, "Tag ids not cleared in remote instance when updated to empty list")
+
     def test_set_tags_to_none(self):
         # Test that the document is saved when a field is written to
         self.model.tag_ids = []

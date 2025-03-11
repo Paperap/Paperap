@@ -22,6 +22,7 @@ LAST MODIFIED:
 2025-03-09     By Jess Mann
 
 """
+
 from __future__ import annotations
 
 import logging
@@ -41,9 +42,10 @@ from typing import (
     overload,
 )
 
-_ReturnType = TypeVar("_ReturnType") # pylint: disable=invalid-name
+_ReturnType = TypeVar("_ReturnType")  # pylint: disable=invalid-name
 
 logger = logging.getLogger(__name__)
+
 
 class QueueType(TypedDict):
     """
@@ -57,6 +59,7 @@ class QueueType(TypedDict):
 
 
 ActionType = Literal["connect", "disconnect", "disable", "enable"]
+
 
 class SignalPriority:
     """
@@ -492,5 +495,6 @@ class SignalRegistry:
 
         """
         return handler in cls._queue[action].get(name, set())
+
 
 registry = SignalRegistry.get_instance()

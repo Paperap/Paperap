@@ -47,6 +47,7 @@ _StandardQuerySet = TypeVar(
 
 logger = logging.getLogger(__name__)
 
+
 class BaseResource(ABC, Generic[_BaseModel, _QuerySet]):
     """
     Base class for API resources.
@@ -82,11 +83,11 @@ class BaseResource(ABC, Generic[_BaseModel, _QuerySet]):
 
         # Ensure the model has a link back to this resource
         self._meta.resource = self
-        
+
         super().__init__()
 
     @classmethod
-    def __init_subclass__(cls, **kwargs : Any):
+    def __init_subclass__(cls, **kwargs: Any):
         """
         Initialize the subclass.
 
@@ -116,7 +117,7 @@ class BaseResource(ABC, Generic[_BaseModel, _QuerySet]):
 
     @property
     def _meta(self) -> "BaseModel.Meta[_BaseModel]":
-        return self.model_class._meta # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
+        return self.model_class._meta  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
 
     def all(self) -> _QuerySet:
         """
@@ -128,7 +129,7 @@ class BaseResource(ABC, Generic[_BaseModel, _QuerySet]):
         """
         return self._meta.queryset(self)  # type: ignore # _meta.queryset is always the right queryset type
 
-    def filter(self, **kwargs : Any) -> _QuerySet:
+    def filter(self, **kwargs: Any) -> _QuerySet:
         """
         Return a QuerySet filtered by the given parameters.
 
@@ -141,7 +142,7 @@ class BaseResource(ABC, Generic[_BaseModel, _QuerySet]):
         """
         return self.all().filter(**kwargs)
 
-    def get(self, *args : Any, **kwargs : Any) -> _BaseModel:
+    def get(self, *args: Any, **kwargs: Any) -> _BaseModel:
         """
         Get a model by ID.
 
@@ -263,15 +264,10 @@ class BaseResource(ABC, Generic[_BaseModel, _QuerySet]):
         Returns:
             The parsed model instance.
 
-        Parsing to model: {'id': 7313, 'title': 'example-title', 'content': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum', 'created': '2025-03-01T00:00:00-05:00', 'created_date': '2025-03-01', 'modified': '2025-03-01T09:36:19.777402-05:00', 'added': '2025-03-01T07:26:58.940005-05:00', 'deleted_at': None, 'archive_serial_number': None, 'original_file_name': 'sample_filename.jpg', 'archived_file_name': 'sample_archived_filename.pdf', 'owner': 10, 'user_can_change': True, 'is_shared_by_requester': False, 'notes': [], 'page_count': None, 'tag_ids': [38, 162, 160, 191], 'custom_field_dicts': [{'value': None, 'field': 32}, {'value': None, 'field': 11}, {'value': None, 'field': 12}, {'value': None, 'field': 13}, {'value': None, 'field': 25}, {'value': None, 'field': 28}, {'value': None, 'field': 29}, {'value': None, 'field': 30}, {'value': None, 'field': 31}, {'value': None, 'field': 16}, {'value': '28', 'field': 3}, {'value': None, 'field': 19}, {'value': None, 'field': 14}, {'value': None, 'field': 15}], 'document_type_id': 8, 'correspondent_id': 1, 'storage_path_id': None}
-        Transformed: {'id': 7313, 'title': 'example-title', 'content': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum', 'created': '2025-03-01T00:00:00-05:00', 'created_date': '2025-03-01', 'modified': '2025-03-01T09:36:19.777402-05:00', 'added': '2025-03-01T07:26:58.940005-05:00', 'deleted_at': None, 'archive_serial_number': None, 'original_file_name': 'sample_filename.jpg', 'archived_file_name': 'sample_archived_filename.pdf', 'owner': 10, 'user_can_change': True, 'is_shared_by_requester': False, 'notes': [], 'page_count': None, 'tags': [38, 162, 160, 191], 'custom_fields': [{'value': None, 'field': 32}, {'value': None, 'field': 11}, {'value': None, 'field': 12}, {'value': None, 'field': 13}, {'value': None, 'field': 25}, {'value': None, 'field': 28}, {'value': None, 'field': 29}, {'value': None, 'field': 30}, {'value': None, 'field': 31}, {'value': None, 'field': 16}, {'value': '28', 'field': 3}, {'value': None, 'field': 19}, {'value': None, 'field': 14}, {'value': None, 'field': 15}], 'document_type': 8, 'correspondent': 1, 'storage_path': None}
-
-        Parsing to model: {'id': 7313, 'correspondent': 1, 'document_type': 8, 'storage_path': None, 'title': 'example-title', 'content': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum', 'tags': [38, 162, 160, 191], 'created': '2025-03-01T00:00:00-05:00', 'created_date': '2025-03-01', 'modified': '2025-03-01T09:36:19.777402-05:00', 'added': '2025-03-01T07:26:58.940005-05:00', 'deleted_at': None, 'archive_serial_number': None, 'original_file_name': 'sample_filename.jpg', 'archived_file_name': 'sample_archived_filename.pdf', 'owner': 10, 'user_can_change': True, 'is_shared_by_requester': False, 'notes': [], 'custom_fields': [{'value': None, 'field': 32}, {'value': None, 'field': 11}, {'value': None, 'field': 12}, {'value': None, 'field': 13}, {'value': None, 'field': 25}, {'value': None, 'field': 28}, {'value': None, 'field': 29}, {'value': None, 'field': 30}, {'value': None, 'field': 31}, {'value': None, 'field': 16}, {'value': '28', 'field': 3}, {'value': None, 'field': 19}, {'value': None, 'field': 14}, {'value': None, 'field': 15}], 'page_count': None}
-        Transformed: {'id': 7313, 'correspondent': 1, 'document_type': 8, 'storage_path': None, 'title': 'example-title', 'content': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum', 'tags': [38, 162, 160, 191], 'created': '2025-03-01T00:00:00-05:00', 'created_date': '2025-03-01', 'modified': '2025-03-01T09:36:19.777402-05:00', 'added': '2025-03-01T07:26:58.940005-05:00', 'deleted_at': None, 'archive_serial_number': None, 'original_file_name': 'sample_filename.jpg', 'archived_file_name': 'sample_archived_filename.pdf', 'owner': 10, 'user_can_change': True, 'is_shared_by_requester': False, 'notes': [], 'custom_fields': [{'value': None, 'field': 32}, {'value': None, 'field': 11}, {'value': None, 'field': 12}, {'value': None, 'field': 13}, {'value': None, 'field': 25}, {'value': None, 'field': 28}, {'value': None, 'field': 29}, {'value': None, 'field': 30}, {'value': None, 'field': 31}, {'value': None, 'field': 16}, {'value': '28', 'field': 3}, {'value': None, 'field': 19}, {'value': None, 'field': 14}, {'value': None, 'field': 15}], 'page_count': None}
         """
-        #print(f'Parsing to model: {item}')
+        # print(f'Parsing to model: {item}')
         data = self.transform_data_input(**item)
-        #print(f'Transformed: {data}')
+        # print(f'Transformed: {data}')
         return self.model_class.model_validate(data)
 
     def transform_data_input(self, **data: Any) -> dict[str, Any]:
@@ -306,7 +302,7 @@ class BaseResource(ABC, Generic[_BaseModel, _QuerySet]):
                 data[key] = data.pop(value)
         return data
 
-    def create_model(self, **kwargs : Any) -> _BaseModel:
+    def create_model(self, **kwargs: Any) -> _BaseModel:
         """
         Create a new model instance.
 
@@ -384,7 +380,7 @@ class BaseResource(ABC, Generic[_BaseModel, _QuerySet]):
         for item in results:
             if not isinstance(item, dict):
                 raise ResponseParsingError(f"Expected type of elements in results is dict, got {type(item)}")
-            
+
             SignalRegistry.emit(
                 "resource._handle_results:before",
                 "Emitted for each item in a list response",
@@ -410,9 +406,7 @@ class BaseResource(ABC, Generic[_BaseModel, _QuerySet]):
         return self.filter(**keywords)
 
 
-class StandardResource(
-    BaseResource[_StandardModel, _StandardQuerySet], Generic[_StandardModel, _StandardQuerySet]
-):
+class StandardResource(BaseResource[_StandardModel, _StandardQuerySet], Generic[_StandardModel, _StandardQuerySet]):
     """
     Base class for API resources.
 
@@ -427,7 +421,7 @@ class StandardResource(
     model_class: type[_StandardModel]
 
     @override
-    def get(self, resource_id: int, *args, **kwargs : Any) -> _StandardModel:
+    def get(self, resource_id: int, *args, **kwargs: Any) -> _StandardModel:
         """
         Get a model within this resource by ID.
 
