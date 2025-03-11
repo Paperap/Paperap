@@ -545,7 +545,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         # For safety, check both instance attributes, even though the first check isn't strictly necessary
         # this hopefully future proofs any changes to the implementation
         if next_url == self._next_url or next_url in self._urls_fetched:
-            logger.warning(
+            logger.debug(
                 "Next URL was previously fetched. Stopping iteration. URL: %s, Already Fetched: %s",
                 next_url,
                 self._urls_fetched,

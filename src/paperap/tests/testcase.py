@@ -29,6 +29,7 @@ from typing import TYPE_CHECKING, Any, Callable, Generic, Iterator, override
 from typing_extensions import TypeVar, TypeAlias
 import unittest
 from unittest.mock import MagicMock, patch
+import logging
 from pathlib import Path
 from paperap.client import PaperlessClient
 from paperap.tests.factories import (
@@ -51,6 +52,7 @@ from paperap.tests.factories import (
 )
 from paperap.models import (
     StandardModel,
+    StandardQuerySet,
     BaseQuerySet,
     Document,
     DocumentQuerySet,
@@ -103,6 +105,12 @@ from paperap.resources import (
     WorkflowTriggerResource
 )
 
+logger = logging.getLogger(__name__)
+
+_StandardModel = TypeVar("_StandardModel", bound="StandardModel", default="StandardModel")
+_StandardResource = TypeVar("_StandardResource", bound="StandardResource", default="StandardResource")
+_StandardQuerySet = TypeVar("_StandardQuerySet", bound="StandardQuerySet", default="StandardQuerySet")
+
 def load_sample_data(filename : str) -> dict[str, Any]:
     """
     Load sample data from a JSON file.
@@ -119,10 +127,6 @@ def load_sample_data(filename : str) -> dict[str, Any]:
         text = f.read()
         sample_data = json.loads(text)
     return sample_data
-
-_StandardModel = TypeVar("_StandardModel", bound="StandardModel", default="StandardModel")
-_StandardResource = TypeVar("_StandardResource", bound="StandardResource", default="StandardResource[_StandardModel]")
-_StandardQuerySet = TypeVar("_StandardQuerySet", bound="BaseQuerySet", default="BaseQuerySet[_StandardModel]")
 
 class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource, _StandardQuerySet]):
     """
@@ -167,6 +171,7 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource, _St
         """
         Set up the test case by initializing the client, resource, and model data.
         """
+        self.setup_references()
         self.setup_client()
         self.setup_resource()
         self.setup_model_data()
@@ -182,6 +187,27 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource, _St
                     self.client = PaperlessClient()
             else:
                 self.client = PaperlessClient()
+
+    def setup_references(self):
+        # Check if we have each attrib, and set all the others we can
+        if hasattr(self, "modal_type"):
+            self.resource = getattr(self, "resource", self.model_type._meta.resource) # type: ignore
+            self.resource_class = getattr(self, "resource_class", self.resource.__class__) # type: ignore
+            self.queryset_type = getattr(self, "queryset_type", self.model_type._meta.queryset) # type: ignore
+        if hasattr(self, "model"):
+            self.model_type = getattr(self, "model_type", self.model.__class__) # type: ignore
+            self.resource = getattr(self, "resource", self._meta.resource) # type: ignore
+            self.resource_class = getattr(self, "resource_class", self.resource.__class__) # type: ignore
+            self.queryset_type = getattr(self, "queryset_type", self._meta.queryset) # type: ignore
+        if hasattr(self, "factory"):
+            self.model_type = getattr(self, "model_type", self.factory.Meta.model) # type: ignore
+            self.resource = getattr(self, "resource", self.model_type._meta.resource) # type: ignore
+            self.resource_class = getattr(self, "resource_class", self.resource.__class__) # type: ignore
+            self.queryset_type = getattr(self, "queryset_type", self.model_type._meta.queryset) # type: ignore
+        if hasattr(self, "resource"):
+            self.resource_class = getattr(self, "resource_class", self.resource.__class__) # type: ignore
+            self.model_type = getattr(self, "model_type", self.resource.model_class) # type: ignore
+            self.queryset_type = getattr(self, "queryset_type", self.model_type._meta.queryset) # type: ignore
 
     def setup_resource(self):
         """
@@ -376,7 +402,7 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource, _St
     def assert_queryset_callback(
         self,
         *,
-        queryset : _StandardQuerySet,
+        queryset : StandardQuerySet[_StandardModel],
         callback : Callable[[_StandardModel], bool] | None = None,
         expected_count : int | None = None
     ):
@@ -413,7 +439,7 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource, _St
     def assert_queryset_callback_patched(
         self,
         *,
-        queryset : _StandardQuerySet | Callable[..., _StandardQuerySet],
+        queryset : StandardQuerySet[_StandardModel] | Callable[..., StandardQuerySet[_StandardModel]],
         sample_data : dict[str, Any],
         callback : Callable[[_StandardModel], bool] | None = None,
         expected_count : int | None = None,
@@ -582,5 +608,5 @@ class WorkflowTriggerTest(TestCase["WorkflowTrigger", "WorkflowTriggerResource",
     """
     resource_class = WorkflowTriggerResource
     model_type = WorkflowTrigger
-    queryset_type = WorkflowTrigger
+    queryset_type = WorkflowTriggerQuerySet
     factory = WorkflowTriggerFactory

@@ -79,7 +79,8 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
 
         # Allow templating
         for key, value in self.endpoints.items():
-            self.endpoints[key] = Template(value.safe_substitute(resource=self.name))  # type: ignore # endpoints is always dict[str, Template]
+            # endpoints is always dict[str, Template]
+            self.endpoints[key] = Template(value.safe_substitute(resource=self.name))  # type: ignore
 
         # Ensure the model has a link back to this resource
         self._meta.resource = self
