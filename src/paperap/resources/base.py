@@ -177,7 +177,7 @@ class BaseResource(ABC, Generic[_BaseModel, _QuerySet]):
 
         url = template.safe_substitute(resource=self.name)
         if not (response := self.client.request("POST", url, data=data)):
-            raise ResourceNotFoundError("Resource {resource} not found after create.", resource_type=self.name)
+            raise ResourceNotFoundError("Resource {resource} not found after create.", resource_name=self.name)
 
         model = self.parse_to_model(response)
 
@@ -191,12 +191,25 @@ class BaseResource(ABC, Generic[_BaseModel, _QuerySet]):
 
         return model
 
-    def update(self, resource_id: int, data: dict[str, Any]) -> _BaseModel:
+    def update(self, model: _BaseModel) -> _BaseModel:
         """
         Update a resource.
 
         Args:
-            resource_id: ID of the resource.
+            resource: The resource to update.
+
+        Returns:
+            The updated resource.
+
+        """
+        raise NotImplementedError("update method not available for resources without an id")
+
+    def update_dict(self, model_id: int, **data: dict[str, Any]) -> _BaseModel:
+        """
+        Update a resource.
+
+        Args:
+            model_id: ID of the resource.
             data: Resource data.
 
         Raises:
@@ -207,15 +220,15 @@ class BaseResource(ABC, Generic[_BaseModel, _QuerySet]):
 
         """
         # Signal before updating resource
-        signal_params = {"resource": self.name, "resource_id": resource_id, "data": data}
+        signal_params = {"resource": self.name, "model_id": model_id, "data": data}
         SignalRegistry.emit("resource.update:before", "Emitted before updating a resource", kwargs=signal_params)
 
         if not (template := self.endpoints.get("update")):
             raise ConfigurationError(f"Update endpoint not defined for resource {self.name}")
 
-        url = template.safe_substitute(resource=self.name, pk=resource_id)
+        url = template.safe_substitute(resource=self.name, pk=model_id)
         if not (response := self.client.request("PUT", url, data=data)):
-            raise ResourceNotFoundError("Resource {resource} not found after update.", resource_type=self.name)
+            raise ResourceNotFoundError("Resource ${resource} not found after update.", resource_name=self.name)
 
         model = self.parse_to_model(response)
 
@@ -229,16 +242,16 @@ class BaseResource(ABC, Generic[_BaseModel, _QuerySet]):
 
         return model
 
-    def delete(self, resource_id: int) -> None:
+    def delete(self, model_id: int) -> None:
         """
         Delete a resource.
 
         Args:
-            resource_id: ID of the resource.
+            model_id: ID of the resource.
 
         """
         # Signal before deleting resource
-        signal_params = {"resource": self.name, "resource_id": resource_id}
+        signal_params = {"resource": self.name, "model_id": model_id}
         SignalRegistry.emit(
             "resource.delete:before", "Emitted before deleting a resource", args=[self], kwargs=signal_params
         )
@@ -246,7 +259,7 @@ class BaseResource(ABC, Generic[_BaseModel, _QuerySet]):
         if not (template := self.endpoints.get("delete")):
             raise ConfigurationError(f"Delete endpoint not defined for resource {self.name}")
 
-        url = template.safe_substitute(resource=self.name, pk=resource_id)
+        url = template.safe_substitute(resource=self.name, pk=model_id)
         self.client.request("DELETE", url)
 
         # Signal after deleting resource
@@ -421,19 +434,19 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet], Generic[
     model_class: type[_StandardModel]
 
     @override
-    def get(self, resource_id: int, *args, **kwargs: Any) -> _StandardModel:
+    def get(self, model_id: int, *args, **kwargs: Any) -> _StandardModel:
         """
         Get a model within this resource by ID.
 
         Args:
-            resource_id: ID of the model to retrieve.
+            model_id: ID of the model to retrieve.
 
         Returns:
             The model retrieved
 
         """
         # Signal before getting resource
-        signal_params = {"resource": self.name, "resource_id": resource_id}
+        signal_params = {"resource": self.name, "model_id": model_id}
         SignalRegistry.emit(
             "resource.get:before", "Emitted before getting a resource", args=[self], kwargs=signal_params
         )
@@ -442,15 +455,15 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet], Generic[
             raise ConfigurationError(f"Get detail endpoint not defined for resource {self.name}")
 
         # Provide template substitutions for endpoints
-        url = template.safe_substitute(resource=self.name, pk=resource_id)
+        url = template.safe_substitute(resource=self.name, pk=model_id)
 
         if not (response := self.client.request("GET", url)):
-            raise ObjectNotFoundError(resource_type=self.name, resource_id=resource_id)
+            raise ObjectNotFoundError(resource_name=self.name, model_id=model_id)
 
         # If the response doesn't have an ID, it's likely a 404
         if not response.get("id"):
             message = response.get("detail") or f"No ID found in {self.name} response"
-            raise ObjectNotFoundError(message, resource_type=self.name, resource_id=resource_id)
+            raise ObjectNotFoundError(message, resource_name=self.name, model_id=model_id)
 
         model = self.parse_to_model(response)
 
@@ -463,3 +476,19 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet], Generic[
         )
 
         return model
+
+    @override
+    def update(self, model: _StandardModel) -> _StandardModel:
+        """
+        Update a model.
+
+        Args:
+            model: The model to update.
+
+        Returns:
+            The updated model.
+
+        """
+        data = model.to_dict()
+        data = self.transform_data_output(**data)
+        return self.update_dict(model.id, **data)

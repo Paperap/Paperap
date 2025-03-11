@@ -75,25 +75,6 @@ class DocumentNote(StandardModel):
         """
         return value.isoformat() if value else None
 
-    @classmethod
-    @field_validator("deleted_at", "restored_at", "created", mode="before")
-    def validate_deleted_at(cls, value: datetime | str | None) -> datetime | None:
-        """
-        Validate and return the deleted_at field.
-
-        Args:
-            value: The deleted_at field to validate.
-
-        Returns:
-            The validated deleted_at field.
-
-        """
-        if value is None:
-            return None
-        if isinstance(value, str):
-            return datetime.fromisoformat(value)
-        return value
-
     def get_document(self) -> "Document":
         """
         Get the document associated with this note.
@@ -393,25 +374,6 @@ class Document(StandardModel):
 
         """
         return value or False
-
-    @classmethod
-    @field_validator("deleted_at", "created_date", "updated", "created", mode="before")
-    def validate_dates(cls, value: datetime | str | None) -> datetime | None:
-        """
-        Validate and return the deleted_at field.
-
-        Args:
-            value: The deleted_at field to validate.
-
-        Returns:
-            The validated deleted_at field.
-
-        """
-        if value is None:
-            return None
-        if isinstance(value, str):
-            return datetime.fromisoformat(value)
-        return value
 
     @property
     def custom_field_ids(self) -> list[int]:
@@ -763,13 +725,22 @@ class Document(StandardModel):
             **kwargs: Additional data to update the document with.
 
         Raises:
-            ValueError: If attempting to set notes to None when they are not already None.
+            NotImplementedError: If attempting to set notes or tags to None when they are not already None.
 
         """
-        # Paperless does not support setting notes to None if notes is not already None
+        # Paperless does not support setting notes or tags to None if not already None
         if self._meta.original_data["notes"]:
             if "notes" in kwargs and not kwargs.get("notes"):
                 # TODO: Gracefully delete the notes instead of raising an error.
-                raise ValueError(f"Cannot set notes to None. Notes currently: {self._meta.original_data['notes']}")
+                raise NotImplementedError(
+                    f"Cannot set notes to None. Notes currently: {self._meta.original_data['notes']}"
+                )
+
+        if self._meta.original_data["tag_ids"]:
+            if "tag_ids" in kwargs and not kwargs.get("tag_ids"):
+                # TODO: Gracefully delete the tags instead of raising an error.
+                raise NotImplementedError(
+                    f"Cannot set tag_ids to None. Tags currently: {self._meta.original_data['tag_ids']}"
+                )
 
         return super().update_locally(from_db, **kwargs)

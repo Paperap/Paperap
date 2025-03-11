@@ -349,7 +349,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         self,
         *,
         include_read_only: bool = True,
-        exclude_none: bool = True,
+        exclude_none: bool = False,
         exclude_unset: bool = True,
     ) -> dict[str, Any]:
         """
@@ -432,6 +432,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         from_db = from_db if from_db is not None else False
 
+        # Avoid infinite saving loops
         with StatusContext(self, ModelStatus.UPDATING):
             for name, value in kwargs.items():
                 setattr(self, name, value)
@@ -590,7 +591,7 @@ class StandardModel(BaseModel, ABC):
                 },
             )
 
-            new_model = self._meta.resource.update(self.id, current_data)
+            new_model = self._meta.resource.update(self)
             new_data = new_model.to_dict()
             self.update_locally(from_db=True, **new_data)
 

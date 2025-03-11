@@ -487,15 +487,13 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
 
         # Initial fetch
         iterator = self._request_iter(params=self.filters)
-        response = self._last_response
 
         # Collect results from initial page
         self._result_cache.extend(list(iterator))
 
         # Fetch additional pages if available
-        while response and (next_url := self._get_next(response)):
-            iterator = self._request_iter(url=next_url)
-            response = self._last_response
+        while self._last_response and self._next_url:
+            iterator = self._request_iter(url=self._next_url)
             self._result_cache.extend(list(iterator))
 
         self._fetch_all = True
@@ -539,10 +537,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
             response = self._last_response
 
         # Last response is not set
-        if not response:
-            return None
-
-        if not (next_url := response.get("next")):
+        if not response or not (next_url := response.get("next")):
             self._next_url = None
             return None
 
@@ -554,6 +549,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
                 next_url,
                 self._urls_fetched,
             )
+            self._next_url = None
             return
 
         # Cache it
@@ -604,23 +600,25 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         if not self._iter:
             # Start a new iteration
             self._iter = self._request_iter(params=self.filters)
-            self._get_next()
 
             # Yield objects from the current page
             for obj in self._iter:
                 self._result_cache.append(obj)
                 yield obj
+
+            self._get_next()
 
         # If there are more pages, keep going
         next_url = self._next_url
         while next_url:
             self._iter = self._request_iter(url=next_url)
-            next_url = self._get_next()
 
             # Yield objects from the current page
             for obj in self._iter:
                 self._result_cache.append(obj)
                 yield obj
+
+            self._get_next()
 
         # We've fetched everything
         self._fetch_all = True

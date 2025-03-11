@@ -158,6 +158,10 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource, _St
     model_type : type[_StandardModel] | None = None
     queryset_type : type[_StandardQuerySet] | None = None
 
+    @property
+    def _meta(self) -> StandardModel.Meta:
+        return self.model._meta # type: ignore # Allow private attribute access in tests
+
     @override
     def setUp(self):
         """

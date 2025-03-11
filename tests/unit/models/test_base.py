@@ -45,6 +45,7 @@ class ExampleModel(StandardModel):
     an_int : int
     a_float : float
     a_bool : bool
+    an_optional_str : str | None = None
 
     @field_serializer("a_date")
     def serialize_datetime(self, value: datetime | None, _info):
@@ -68,7 +69,8 @@ class TestBase(TestCase):
             "a_date": "2020-05-12T12:00:00Z",
             "an_int": 42,
             "a_float": 3.14,
-            "a_bool": True
+            "a_bool": True,
+            "an_optional_str": None
         }
 
 class TestWithModel(TestBase):
@@ -113,6 +115,10 @@ class TestModelToDict(TestWithModel):
 
         model_dict = self.model.to_dict(exclude_none=False)
         self.assertIn("a_str", model_dict)
+        self.assertIn("an_optional_str", model_dict)
+
+        model_dict = self.model.to_dict(exclude_none=True)
+        self.assertNotIn("an_optional_str", model_dict)
 
     def test_create_method(self):
         # Test if a new model instance can be created
@@ -215,7 +221,7 @@ class TestModel(TestWithModel):
 
 class TestClassAttributes(TestCase):
     def test_filtering_fields(self):
-        expected_fields = {"id", "a_str", "a_date", "an_int", "a_float", "a_bool"}
+        expected_fields = {"id", "a_str", "a_date", "an_int", "a_float", "a_bool", "an_optional_str"}
         self.assertEqual(set(ExampleModel._meta.filtering_fields), expected_fields)
 
     def test_new_fields_in_filtering_fields(self):

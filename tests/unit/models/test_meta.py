@@ -10,7 +10,7 @@
         File:    test_meta.py
         Project: paperap
         Created: 2025-03-07
-        Version: 0.0.2
+        Version: 0.0.4
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -41,63 +41,63 @@ class TestStatusContext(DocumentTest):
         for status_initial in ModelStatus:
             for status_context in ModelStatus:
                 with self.subTest(status_initial=status_initial, status_context=status_context):
-                    self.model._meta.status = status_initial
+                    self._meta.status = status_initial
                     with StatusContext(self.model, status_context):
-                        self.assertEqual(self.model._meta.status, status_context)
-                    self.assertEqual(self.model._meta.status, status_initial)
+                        self.assertEqual(self._meta.status, status_context)
+                    self.assertEqual(self._meta.status, status_initial)
 
     def test_default_initial(self):
         """Ensure that status changes and reverts after the context exits."""
-        self.assertEqual(self.model._meta.status, ModelStatus.READY, "Test assumptions failed. Cannot run test")
+        self.assertEqual(self._meta.status, ModelStatus.READY, "Test assumptions failed. Cannot run test")
         with StatusContext(self.model, ModelStatus.UPDATING):
-            self.assertEqual(self.model._meta.status, ModelStatus.UPDATING)
-        self.assertEqual(self.model._meta.status, ModelStatus.READY)
+            self.assertEqual(self._meta.status, ModelStatus.UPDATING)
+        self.assertEqual(self._meta.status, ModelStatus.READY)
 
     def test_status_changes_and_reverts_to_non_default(self):
         """Ensure that status changes and reverts to a non-default status after the context exits."""
-        self.assertEqual(self.model._meta.status, ModelStatus.READY, "Test assumptions failed. Cannot run test")
-        self.model._meta.status = ModelStatus.SAVING
+        self.assertEqual(self._meta.status, ModelStatus.READY, "Test assumptions failed. Cannot run test")
+        self._meta.status = ModelStatus.SAVING
         with StatusContext(self.model, ModelStatus.UPDATING):
-            self.assertEqual(self.model._meta.status, ModelStatus.UPDATING)
-        self.assertEqual(self.model._meta.status, ModelStatus.SAVING)
+            self.assertEqual(self._meta.status, ModelStatus.UPDATING)
+        self.assertEqual(self._meta.status, ModelStatus.SAVING)
 
     def test_status_reverts_on_exception(self):
         """Ensure that the previous status is restored even if an exception occurs."""
-        self.assertEqual(self.model._meta.status, ModelStatus.READY, "Test assumptions failed. Cannot run test")
+        self.assertEqual(self._meta.status, ModelStatus.READY, "Test assumptions failed. Cannot run test")
         try:
             with StatusContext(self.model, ModelStatus.UPDATING):
-                self.assertEqual(self.model._meta.status, ModelStatus.UPDATING)
+                self.assertEqual(self._meta.status, ModelStatus.UPDATING)
                 raise ValueError("Intentional exception")
         except ValueError:
-            self.assertEqual(self.model._meta.status, ModelStatus.READY, "Status was not reverted within except block.")
-        self.assertEqual(self.model._meta.status, ModelStatus.READY, "Status change did not persist after catching exception.")
+            self.assertEqual(self._meta.status, ModelStatus.READY, "Status was not reverted within except block.")
+        self.assertEqual(self._meta.status, ModelStatus.READY, "Status change did not persist after catching exception.")
 
     def test_status_reverts_after_change(self):
         """Ensure that the status reverts after a change is made."""
-        self.assertEqual(self.model._meta.status, ModelStatus.READY, "Test assumptions failed. Cannot run test")
+        self.assertEqual(self._meta.status, ModelStatus.READY, "Test assumptions failed. Cannot run test")
         with StatusContext(self.model, ModelStatus.UPDATING):
-            self.assertEqual(self.model._meta.status, ModelStatus.UPDATING)
-            self.model._meta.status = ModelStatus.SAVING
-            self.assertEqual(self.model._meta.status, ModelStatus.SAVING)
-        self.assertEqual(self.model._meta.status, ModelStatus.READY, "Status change did not revert after manual change.")
+            self.assertEqual(self._meta.status, ModelStatus.UPDATING)
+            self._meta.status = ModelStatus.SAVING
+            self.assertEqual(self._meta.status, ModelStatus.SAVING)
+        self.assertEqual(self._meta.status, ModelStatus.READY, "Status change did not revert after manual change.")
 
     def test_nested(self):
         """Ensure that nested contexts work as expected."""
-        self.assertEqual(self.model._meta.status, ModelStatus.READY, "Test assumptions failed. Cannot run test")
+        self.assertEqual(self._meta.status, ModelStatus.READY, "Test assumptions failed. Cannot run test")
         with StatusContext(self.model, ModelStatus.UPDATING):
-            self.assertEqual(self.model._meta.status, ModelStatus.UPDATING)
+            self.assertEqual(self._meta.status, ModelStatus.UPDATING)
             with StatusContext(self.model, ModelStatus.SAVING):
-                self.assertEqual(self.model._meta.status, ModelStatus.SAVING)
-            self.assertEqual(self.model._meta.status, ModelStatus.UPDATING)
-        self.assertEqual(self.model._meta.status, ModelStatus.READY)
+                self.assertEqual(self._meta.status, ModelStatus.SAVING)
+            self.assertEqual(self._meta.status, ModelStatus.UPDATING)
+        self.assertEqual(self._meta.status, ModelStatus.READY)
 
     def test_status_reverts_with_no_initial_status(self):
         """Ensure that the status properly reverts even when no initial status exists."""
-        self.model._meta.status = None # type: ignore
+        self._meta.status = None # type: ignore
         with StatusContext(self.model, ModelStatus.UPDATING):
-            self.assertEqual(self.model._meta.status, ModelStatus.UPDATING)
+            self.assertEqual(self._meta.status, ModelStatus.UPDATING)
 
-        self.assertEqual(self.model._meta.status, ModelStatus.ERROR)
+        self.assertEqual(self._meta.status, ModelStatus.ERROR)
 
     def test_passing_bad_model(self):
         """Ensure that passing a bad model raises an exception."""

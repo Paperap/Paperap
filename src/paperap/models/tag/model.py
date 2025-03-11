@@ -50,8 +50,8 @@ class Tag(StandardModel, MatcherMixin):
         read_only_fields = {"slug", "document_count"}
         queryset = TagQuerySet
 
-    @classmethod
     @field_validator("colour", mode="before")
+    @classmethod
     def validate_colour(cls, value: str | int | None) -> str | None:
         if value is None:
             return None

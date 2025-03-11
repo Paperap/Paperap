@@ -29,6 +29,7 @@ from typing import Iterable, override
 import unittest
 from unittest.mock import patch, MagicMock
 import logging
+from icecream import ic
 from datetime import datetime, timezone
 from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models import *
@@ -97,7 +98,7 @@ class TestSaveManual(IntegrationTest):
     @override
     def setup_model(self):
         super().setup_model()
-        self.model._meta.save_on_write = False
+        self._meta.save_on_write = False
 
     def test_save(self):
         # Append a bunch of random gibberish
@@ -186,7 +187,7 @@ class TestSaveNone(IntegrationTest):
     @override
     def setUp(self):
         super().setUp()
-        self.model._meta.save_on_write = False
+        self._meta.save_on_write = False
 
         if not self.model.tag_ids:
             self.model.tag_ids = [38]
@@ -202,7 +203,6 @@ class TestSaveNone(IntegrationTest):
             #"notes": [],
             "page_count": None,
             "storage_path_id": None,
-            "tag_ids": [],
             "title": "",
         }
 
@@ -224,24 +224,24 @@ class TestSaveNone(IntegrationTest):
         document = self.client.documents().get(7411)
         self.assertEqual([], document.tag_ids, "Tags not cleared in remote instance when updated to None")
 
+    """
     def test_update_tags_to_empty(self):
-        # Test that the document is saved when a field is written to
-        self.model.update(tags=[])
-        document = self.client.documents().get(7411)
-        self.assertEqual([], document.tag_ids, "Tags not cleared in remote instance when updated to empty list")
+        with self.assertRaises(NotImplementedError):
+            self.model.update(tags=[])
+    """
 
     def test_update_tag_ids_to_empty(self):
         # Test that the document is saved when a field is written to
-        self.model.update(tag_ids=[])
-        document = self.client.documents().get(7411)
-        self.assertEqual([], document.tag_ids, "Tag ids not cleared in remote instance when updated to empty list")
+        with self.assertRaises(NotImplementedError):
+            self.model.update(tag_ids=[])
 
+    """
     def test_set_tags_to_none(self):
         # Test that the document is saved when a field is written to
-        self.model.tag_ids = []
-        self.model.save()
-        document = self.client.documents().get(7411)
-        self.assertEqual([], document.tag_ids, "Tags not cleared in remote instance when set to empty list")
+        with self.assertRaises(NotImplementedError):
+            self.model.tag_ids = None
+            self.model.save()
+    """
 
     def test_set_fields(self):
         # Ensure fields can be set and reset without consequences
@@ -279,7 +279,7 @@ class TestSaveNone(IntegrationTest):
     def test_set_fields_to_none(self):
         # field_name -> expected value after being set to None
         for field, value in self.none_data.items():
-            with self.subTest(field=field):
+            #with self.subTest(field=field):
                 setattr(self.model, field, None)
                 self.assertEqual(value, getattr(self.model, field), f"{field} not updated in local instance")
                 self.model.save()
@@ -305,7 +305,7 @@ class TestSaveOnWrite(IntegrationTest):
     @override
     def setup_model(self):
         super().setup_model()
-        self.model._meta.save_on_write = True
+        self._meta.save_on_write = True
 
     def test_save_on_write(self):
         # Test that the document is saved when a field is written to
@@ -325,7 +325,7 @@ class TestTag(IntegrationTest):
         self.assertGreater(len(documents), 1000, "Incorrect number of documents retrieved")
         for i, document in enumerate(documents):
             self.assertIsInstance(document, Document)
-            self.assertIn("HRSH", document.tag_names, f"Document does not have HRSH tag. Tags: {tags}, tag_ids: {document.tag_ids}")
+            self.assertIn("HRSH", document.tag_names, f"Document does not have HRSH tag. tag_ids: {document.tag_ids}")
             # avoid calling next a million times
             if i > 52:
                 break

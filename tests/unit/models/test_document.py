@@ -277,12 +277,6 @@ class TestRequest(DocumentTest):
 
     def test_get(self):
         document = self.get_resource(DocumentResource, self.model_data_parsed["id"])
-        """
-        from icecream import ic
-        ic(self.model_data_parsed)
-        ic(document)
-        ic(document.__dict__)
-        """
         self.assertIsInstance(document, Document)
         fields = {
             "id": int,
