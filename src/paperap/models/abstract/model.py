@@ -268,6 +268,7 @@ class BaseModel(pydantic.BaseModel, ABC):
     model_config = pydantic.ConfigDict(
         populate_by_name=True,
         validate_assignment=True,
+        use_enum_values=True,
         extra="ignore",
     )
 

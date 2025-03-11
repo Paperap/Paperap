@@ -10,7 +10,7 @@ METADATA:
 File:    model.py
         Project: paperap
 Created: 2025-03-09
-        Version: 0.0.4
+        Version: 0.0.5
 Author:  Jess Mann
 Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -136,7 +136,7 @@ class Document(StandardModel):
     archived_file_name: str | None = None
     content: str = ""
     is_shared_by_requester: bool = False
-    notes: "list[DocumentNote]" = Field(default_factory=list)  # TODO unknown subtype
+    notes: "list[DocumentNote]" = Field(default_factory=list)
     original_file_name: str | None = None
     owner: int | None = None
     page_count: int | None = None

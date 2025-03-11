@@ -145,6 +145,19 @@ Run pre-commit:
 pre-commit run --all-files
 ```
 
+## TODO
+* Replace yarl with pydantic urls
+* unit tests to 100% coverage
+* Make integration tests easier to setup for other users
+* Compile sphinx documentation
+* Deleting tags, custom fields, etc
+* devcontainer
+* git action to distribute to pypi
+* Remove validators that pydantic handles natively
+* cli tools
+* batch editing
+* vscode tasks
+
 ## License
 
 Paperap is released under the MIT License.
