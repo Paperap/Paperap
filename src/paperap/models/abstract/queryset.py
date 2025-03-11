@@ -6,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.4
+        Version: 0.0.5
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,8 +25,9 @@ import copy
 import logging
 from datetime import datetime
 from string import Template
-from typing import TYPE_CHECKING, Any, Generic, Iterable, Iterator, Optional, Self, TypeVar, Union, override
+from typing import TYPE_CHECKING, Any, Generic, Iterable, Iterator, Optional, Self, Union, override
 
+from typing_extensions import TypeVar
 from yarl import URL
 
 from paperap.exceptions import FilterDisabledError, MultipleObjectsFoundError, ObjectNotFoundError
@@ -35,8 +36,8 @@ if TYPE_CHECKING:
     from paperap.models.abstract.model import BaseModel, StandardModel
     from paperap.resources.base import BaseResource, StandardResource
 
-_BaseModel = TypeVar("_BaseModel", bound="BaseModel", covariant=True)
-_StandardModel = TypeVar("_StandardModel", bound="StandardModel", covariant=True)
+_BaseModel = TypeVar("_BaseModel", bound="BaseModel", default="BaseModel", covariant=True)
+_StandardModel = TypeVar("_StandardModel", bound="StandardModel", default="StandardModel", covariant=True)
 
 logger = logging.getLogger(__name__)
 
@@ -550,7 +551,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
                 self._urls_fetched,
             )
             self._next_url = None
-            return
+            return None
 
         # Cache it
         self._next_url = next_url

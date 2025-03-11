@@ -6,7 +6,7 @@
        File:    base.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.4
+        Version: 0.0.5
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -117,7 +117,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         # Strategies for filtering.
         # This determines which of the above lists will be used to allow or deny filters to QuerySets.
         filtering_strategies: ClassVar[set[FilteringStrategies]] = {FilteringStrategies.BLACKLIST}
-        resource: "BaseResource[_Self]"
+        resource: "BaseResource"
         queryset: type[BaseQuerySet[_Self]] = BaseQuerySet
         # Updating attributes will not trigger save()
         status: ModelStatus = ModelStatus.INITIALIZING

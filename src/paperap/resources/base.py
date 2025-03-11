@@ -6,7 +6,7 @@
        File:    base.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.4
+        Version: 0.0.5
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -38,17 +38,17 @@ if TYPE_CHECKING:
     from paperap.client import PaperlessClient
     from paperap.models.abstract import BaseModel, BaseQuerySet, StandardModel, StandardQuerySet
 
-_BaseModel = TypeVar("_BaseModel", bound="BaseModel", covariant=True)
-_StandardModel = TypeVar("_StandardModel", bound="StandardModel", covariant=True, default="StandardModel")
-_QuerySet = TypeVar("_QuerySet", bound="BaseQuerySet", covariant=True, default="BaseQuerySet[_BaseModel]")
+_BaseModel = TypeVar("_BaseModel", bound="BaseModel")
+_StandardModel = TypeVar("_StandardModel", bound="StandardModel")
+_BaseQuerySet = TypeVar("_BaseQuerySet", bound="BaseQuerySet", default="BaseQuerySet[_BaseModel]", covariant=True)
 _StandardQuerySet = TypeVar(
-    "_StandardQuerySet", bound="StandardQuerySet", covariant=True, default="StandardQuerySet[_StandardModel]"
+    "_StandardQuerySet", bound="StandardQuerySet", default="StandardQuerySet[_StandardModel]", covariant=True
 )
 
 logger = logging.getLogger(__name__)
 
 
-class BaseResource(ABC, Generic[_BaseModel, _QuerySet]):
+class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
     """
     Base class for API resources.
 
@@ -119,7 +119,7 @@ class BaseResource(ABC, Generic[_BaseModel, _QuerySet]):
     def _meta(self) -> "BaseModel.Meta[_BaseModel]":
         return self.model_class._meta  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
 
-    def all(self) -> _QuerySet:
+    def all(self) -> _BaseQuerySet:
         """
         Return a QuerySet representing all objects of this resource type.
 
@@ -129,7 +129,7 @@ class BaseResource(ABC, Generic[_BaseModel, _QuerySet]):
         """
         return self._meta.queryset(self)  # type: ignore # _meta.queryset is always the right queryset type
 
-    def filter(self, **kwargs: Any) -> _QuerySet:
+    def filter(self, **kwargs: Any) -> _BaseQuerySet:
         """
         Return a QuerySet filtered by the given parameters.
 
@@ -326,7 +326,10 @@ class BaseResource(ABC, Generic[_BaseModel, _QuerySet]):
             A new model instance.
 
         """
-        return self.model_class(**kwargs, resource=self)
+        # Mypy output:
+        # base.py:326:52: error: Argument "resource" to "BaseModel" has incompatible type
+        # "BaseResource[_BaseModel, _BaseQuerySet]"; expected "BaseResource[BaseModel, BaseQuerySet[BaseModel]] | None
+        return self.model_class(**kwargs, resource=self)  # type: ignore
 
     def request_raw(
         self,
@@ -402,7 +405,7 @@ class BaseResource(ABC, Generic[_BaseModel, _QuerySet]):
             )
             yield self.parse_to_model(item)
 
-    def __call__(self, *args, **keywords) -> _QuerySet:
+    def __call__(self, *args, **keywords) -> _BaseQuerySet:
         """
         Make the resource callable to get a BaseQuerySet.
 
