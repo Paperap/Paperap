@@ -4,12 +4,12 @@
   "description": "A wrapper for the paperless ngx rest api",
   "scripts": {
     "prettier": "prettier --write **/*.{json,js,md,yml,yaml} *.{json,js,md,yml,yaml}",
-    "test": "uv run coverage run --source=src python -m unittest discover -s tests/unit --failfast",
-    "integration": "uv run python -m unittest discover -s tests/integration --failfast",
-    "pre-commit": "pre-commit run --all-files",
-    "mypy": "uv run mypy src",
-    "coverage": "uv run coverage report -m",
-    "coverage-html": "uv run coverage html"
+    "test": "python -m unittest discover -s tests/unit --failfast",
+    "integration": "python -m unittest discover -s tests/integration --failfast",
+    "pre-commit": "uv run pre-commit run --all-files",
+    "mypy": "uv run mypy -p src/paperap",
+    "coverage-test": "uv run coverage run --source=src -m unittest discover -s tests/unit --failfast",
+    "coverage-html": "uv run coverage html -d tests/coverage"
   },
   "author": "Jess Mann <jess@jmann.me>",
   "license": "MIT",

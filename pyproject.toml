@@ -1001,6 +1001,11 @@ init_forbid_extra = true
 init_typed = true
 warn_required_dynamic_aliases = true
 
+[tool.coverage.report]
+exclude_lines = [
+    "if TYPE_CHECKING:"
+]
+
 [tool.uv.workspace]
 members = ["tmp"]
 

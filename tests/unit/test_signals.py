@@ -22,16 +22,16 @@
 
 """
 import unittest
-from typing import Any, Dict
+from typing import Any, Dict, override
 from paperap.signals import Signal, SignalPriority, SignalRegistry
 
 class TestSignalSystem(unittest.TestCase):
-
+    @override
     def setUp(self):
         # Reset the singleton for each test
         if hasattr(SignalRegistry, "_instance"):
             delattr(SignalRegistry, "_instance")
-        SignalRegistry.get_instance()  # Initialize the singleton
+        self.registry = SignalRegistry.get_instance()  # Initialize the singleton
 
     def test_basic_signal_emit(self):
         # Simple transformation handler
@@ -40,11 +40,11 @@ class TestSignalSystem(unittest.TestCase):
             return data
 
         # Register a signal and connect a handler
-        SignalRegistry.connect("test.signal", add_field)
+        self.registry.connect("test.signal", add_field)
 
         # Emit the signal
         initial_data = {"original": "data"}
-        result = SignalRegistry.emit("test.signal", args=initial_data)
+        result = self.registry.emit("test.signal", args=initial_data)
 
         # Verify the result
         self.assertIsInstance(result, dict, "Result is not a dictionary")
@@ -68,12 +68,12 @@ class TestSignalSystem(unittest.TestCase):
             return data
 
         # Connect handlers with explicit priorities
-        SignalRegistry.connect("priority.test", third_handler, SignalPriority.LOW)  # 75
-        SignalRegistry.connect("priority.test", first_handler, SignalPriority.FIRST)  # 0
-        SignalRegistry.connect("priority.test", second_handler, 30)  # Custom priority
+        self.registry.connect("priority.test", third_handler, SignalPriority.LOW)  # 75
+        self.registry.connect("priority.test", first_handler, SignalPriority.FIRST)  # 0
+        self.registry.connect("priority.test", second_handler, 30)  # Custom priority
 
         # Emit the signal
-        SignalRegistry.emit("priority.test")
+        self.registry.emit("priority.test")
 
         # Verify execution order
         self.assertEqual(results, ["first", "second", "third"])
@@ -90,12 +90,12 @@ class TestSignalSystem(unittest.TestCase):
             return number - 3
 
         # Connect handlers
-        SignalRegistry.connect("transform", add_one, SignalPriority.FIRST)
-        SignalRegistry.connect("transform", multiply_by_two, SignalPriority.NORMAL)
-        SignalRegistry.connect("transform", subtract_three, SignalPriority.LAST)
+        self.registry.connect("transform", add_one, SignalPriority.FIRST)
+        self.registry.connect("transform", multiply_by_two, SignalPriority.NORMAL)
+        self.registry.connect("transform", subtract_three, SignalPriority.LAST)
 
         # Emit signal with initial value 5
-        result = SignalRegistry.emit("transform", args=5)
+        result = self.registry.emit("transform", args=5)
 
         # Verify transformation: ((5 + 1) * 2) - 3 = 9
         self.assertEqual(result, 9)
@@ -109,18 +109,20 @@ class TestSignalSystem(unittest.TestCase):
             return data
 
         # Connect handler
-        SignalRegistry.connect("with.context", format_with_context)
+        self.registry.connect("with.context", format_with_context)
 
         # Create a simple model class
         class Model:
+            @override
             def __init__(self, name):
                 self.name = name
+                super().__init__()
 
         model_instance = Model("TestModel")
 
         # Emit with data and model in kwargs
         data = {"original": "value"}
-        result = SignalRegistry.emit(
+        result = self.registry.emit(
             "with.context",
             return_type = dict[str, Any],
             args=data,
@@ -137,20 +139,20 @@ class TestSignalSystem(unittest.TestCase):
             return data
 
         # Connect the handler
-        SignalRegistry.connect("toggle.test", add_field)
+        self.registry.connect("toggle.test", add_field)
 
         # Normal execution
-        result1 = SignalRegistry.emit("toggle.test", args={})
+        result1 = self.registry.emit("toggle.test", args={})
         self.assertEqual(result1["field"], "value")
 
         # Disable the handler
-        SignalRegistry.disable("toggle.test", add_field)
-        result2 = SignalRegistry.emit("toggle.test", args={})
+        self.registry.disable("toggle.test", add_field)
+        result2 = self.registry.emit("toggle.test", args={})
         self.assertNotIn("field", result2)
 
         # Enable the handler again
-        SignalRegistry.enable("toggle.test", add_field)
-        result3 = SignalRegistry.emit("toggle.test", args={})
+        self.registry.enable("toggle.test", add_field)
+        result3 = self.registry.emit("toggle.test", args={})
         self.assertEqual(result3["field"], "value")
 
     def test_queued_connection(self):
@@ -159,10 +161,10 @@ class TestSignalSystem(unittest.TestCase):
             data["transformed"] = True
             return data
 
-        SignalRegistry.connect("future.signal", transform)
+        self.registry.connect("future.signal", transform)
 
         # Later, create and emit the signal
-        result = SignalRegistry.emit("future.signal", "A signal created after connection", args={})
+        result = self.registry.emit("future.signal", "A signal created after connection", args={})
 
         # Verify the handler was properly connected
         self.assertTrue(result["transformed"])

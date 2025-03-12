@@ -32,7 +32,7 @@ from yarl import URL
 
 from paperap.const import URLS, Endpoints
 from paperap.exceptions import ConfigurationError, ObjectNotFoundError, ResourceNotFoundError, ResponseParsingError
-from paperap.signals import SignalRegistry
+from paperap.signals import registry
 
 if TYPE_CHECKING:
     from paperap.client import PaperlessClient
@@ -171,7 +171,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         """
         # Signal before creating resource
         signal_params = {"resource": self.name, "data": data}
-        SignalRegistry.emit("resource.create:before", "Emitted before creating a resource", kwargs=signal_params)
+        registry.emit("resource.create:before", "Emitted before creating a resource", kwargs=signal_params)
 
         if not (template := self.endpoints.get("create")):
             raise ConfigurationError(f"Create endpoint not defined for resource {self.name}")
@@ -183,7 +183,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         model = self.parse_to_model(response)
 
         # Signal after creating resource
-        SignalRegistry.emit(
+        registry.emit(
             "resource.create:after",
             "Emitted after creating a resource",
             args=[self],
@@ -222,7 +222,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         """
         # Signal before updating resource
         signal_params = {"resource": self.name, "model_id": model_id, "data": data}
-        SignalRegistry.emit("resource.update:before", "Emitted before updating a resource", kwargs=signal_params)
+        registry.emit("resource.update:before", "Emitted before updating a resource", kwargs=signal_params)
 
         if not (template := self.endpoints.get("update")):
             raise ConfigurationError(f"Update endpoint not defined for resource {self.name}")
@@ -234,7 +234,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         model = self.parse_to_model(response)
 
         # Signal after updating resource
-        SignalRegistry.emit(
+        registry.emit(
             "resource.update:after",
             "Emitted after updating a resource",
             args=[self],
@@ -253,7 +253,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         """
         # Signal before deleting resource
         signal_params = {"resource": self.name, "model_id": model_id}
-        SignalRegistry.emit(
+        registry.emit(
             "resource.delete:before", "Emitted before deleting a resource", args=[self], kwargs=signal_params
         )
 
@@ -264,7 +264,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         self.client.request("DELETE", url)
 
         # Signal after deleting resource
-        SignalRegistry.emit(
+        registry.emit(
             "resource.delete:after", "Emitted after deleting a resource", args=[self], kwargs=signal_params
         )
 
@@ -279,9 +279,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             The parsed model instance.
 
         """
-        # print(f'Parsing to model: {item}')
         data = self.transform_data_input(**item)
-        # print(f'Transformed: {data}')
         return self.model_class.model_validate(data)
 
     def transform_data_input(self, **data: Any) -> dict[str, Any]:
@@ -362,13 +360,13 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         response = self.client.request(method, url, params=params, data=data)
         return response
 
-    def handle_response(self, response: dict[str, Any]) -> Iterator[_BaseModel]:
+    def handle_response(self, **response: Any) -> Iterator[_BaseModel]:
         """
         Handle a response from the API and yield results.
 
         Override in subclasses to implement custom response logic.
         """
-        SignalRegistry.emit(
+        registry.emit(
             "resource._handle_response:before",
             "Emitted before listing resources",
             return_type=dict[str, Any],
@@ -379,7 +377,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             return
 
         # Signal after receiving response
-        SignalRegistry.emit(
+        registry.emit(
             "resource._handle_response:after",
             "Emitted after list response, before processing",
             args=[self],
@@ -398,7 +396,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             if not isinstance(item, dict):
                 raise ResponseParsingError(f"Expected type of elements in results is dict, got {type(item)}")
 
-            SignalRegistry.emit(
+            registry.emit(
                 "resource._handle_results:before",
                 "Emitted for each item in a list response",
                 args=[self],
@@ -451,7 +449,7 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet], Generic[
         """
         # Signal before getting resource
         signal_params = {"resource": self.name, "model_id": model_id}
-        SignalRegistry.emit(
+        registry.emit(
             "resource.get:before", "Emitted before getting a resource", args=[self], kwargs=signal_params
         )
 
@@ -472,7 +470,7 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet], Generic[
         model = self.parse_to_model(response)
 
         # Signal after getting resource
-        SignalRegistry.emit(
+        registry.emit(
             "resource.get:after",
             "Emitted after getting a single resource by id",
             args=[self],

@@ -1,0 +1,130 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"presentation": {
+		"reveal": "never",
+		"revealProblems": "onProblem"
+	},
+	"close": true,
+	"tasks": [
+		{
+			"label": "open-sphinx",
+			"type": "shell",
+			"command": "start chrome http://localhost:9000",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"hide": true
+		},
+		{
+			"label": "serve-docs",
+			"type": "shell",
+			"command": "python",
+			"args": [
+				"-m",
+				"http.server",
+				"9000",
+				"--directory",
+				"docs/sphinx/build/html"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"isBackground": true,
+			"problemMatcher": [],
+			"hide": true
+		},
+		{
+			"label": "test",
+			"type": "shell",
+			"command": "uv run coverage run --source=src python -m unittest discover -s tests/unit --failfast",
+			"options": {
+				"cwd": "${workspaceFolder}/src/paperap"
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			},
+			"problemMatcher": [],
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "pre-commit",
+			"type": "shell",
+			"command": "pre-commit run --all-files",
+			"options": {
+				"cwd": "${workspaceFolder}/src/paperap"
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			}
+		},
+		{
+			"label": "prospector",
+			"type": "shell",
+			"command": "prospector --profile .prospector.yaml src/paperap/",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"presentation": {
+				"focus": true,
+				"panel": "new"
+			}
+		},
+		{
+			"label": "ruff",
+			"type": "shell",
+			"command": "ruff check --fix .",
+			"options": {
+				"cwd": "${workspaceFolder}/src/paperap"
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			}
+		},
+		{
+			"label": "mypy",
+			"type": "shell",
+			"command": "mypy -p paperap",
+			"options": {
+				"cwd": "${workspaceFolder}/src/"
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			}
+		},
+		{
+			"label": "bandit",
+			"type": "shell",
+			"command": "bandit -c pyproject.toml -r src/paperap/",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			}
+		},
+		{
+			"label": "documentation",
+			"dependsOn": [
+				"serve-docs",
+				"open-sphinx"
+			]
+		},
+		{
+			"label": "lint",
+			"dependsOn": [
+				"mypy",
+				"pre-commit"
+			]
+		}
+	]
+}

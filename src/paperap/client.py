@@ -63,7 +63,7 @@ from paperap.resources import (
     WorkflowTriggerResource,
 )
 from paperap.settings import Settings, SettingsArgs
-from paperap.signals import SignalRegistry
+from paperap.signals import registry
 
 logger = logging.getLogger(__name__)
 
@@ -458,14 +458,14 @@ class PaperlessClient:
             "json_response": json_response,
         }
 
-        SignalRegistry.emit(
+        registry.emit(
             "client.request:before", "Before a request is sent to the Paperless server", args=[self], kwargs=kwargs
         )
 
         if not (response := self._request(method, endpoint, params=params, data=data, files=files)):
             return None
 
-        SignalRegistry.emit(
+        registry.emit(
             "client.request__response",
             "After a response is received, before it is parsed",
             args=[response],
@@ -473,7 +473,7 @@ class PaperlessClient:
         )
 
         parsed_response = self._handle_response(response, json_response=json_response)
-        parsed_response = SignalRegistry.emit(
+        parsed_response = registry.emit(
             "client.request:after",
             "After a request is parsed.",
             args=parsed_response,
@@ -540,7 +540,7 @@ class PaperlessClient:
 
         url = f"{base_url.rstrip('/')}/api/token/"
 
-        SignalRegistry.emit(
+        registry.emit(
             "client.generate_token__before",
             "Before a new token is generated",
             kwargs={"url": url, "username": username},
@@ -557,7 +557,7 @@ class PaperlessClient:
             response.raise_for_status()
             data = response.json()
 
-            SignalRegistry.emit(
+            registry.emit(
                 "client.generate_token__after",
                 "After a new token is generated",
                 kwargs={"url": url, "username": username, "response": data},

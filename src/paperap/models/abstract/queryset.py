@@ -527,7 +527,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
 
         self._last_response = response
 
-        yield from self.resource.handle_response(response)
+        yield from self.resource.handle_response(**response)
 
     def _get_next(self, response: dict[str, Any] | None = None) -> str | None:
         """
@@ -610,9 +610,10 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
             self._get_next()
 
         # If there are more pages, keep going
-        next_url = self._next_url
-        while next_url:
-            self._iter = self._request_iter(url=next_url)
+        count = 0
+        while self._next_url:
+            count += 1
+            self._iter = self._request_iter(url=self._next_url)
 
             # Yield objects from the current page
             for obj in self._iter:

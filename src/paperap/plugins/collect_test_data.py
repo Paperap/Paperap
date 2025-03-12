@@ -37,7 +37,7 @@ from faker import Faker
 
 from paperap.models import BaseModel
 from paperap.plugins.base import Plugin
-from paperap.signals import SignalPriority, SignalRegistry
+from paperap.signals import SignalPriority, registry
 
 if TYPE_CHECKING:
     from paperap.client import PaperlessClient
@@ -87,16 +87,16 @@ class TestDataCollector(Plugin):
     @override
     def setup(self) -> None:
         """Register signal handlers."""
-        SignalRegistry.connect("resource._handle_response:after", self.save_list_response, SignalPriority.LOW)
-        SignalRegistry.connect("resource._handle_results:before", self.save_first_item, SignalPriority.LOW)
-        SignalRegistry.connect("client.request:after", self.save_parsed_response, SignalPriority.LOW)
+        registry.connect("resource._handle_response:after", self.save_list_response, SignalPriority.LOW)
+        registry.connect("resource._handle_results:before", self.save_first_item, SignalPriority.LOW)
+        registry.connect("client.request:after", self.save_parsed_response, SignalPriority.LOW)
 
     @override
     def teardown(self) -> None:
         """Unregister signal handlers."""
-        SignalRegistry.disconnect("resource._handle_response:after", self.save_list_response)
-        SignalRegistry.disconnect("resource._handle_results:before", self.save_first_item)
-        SignalRegistry.disconnect("client.request:after", self.save_parsed_response)
+        registry.disconnect("resource._handle_response:after", self.save_list_response)
+        registry.disconnect("resource._handle_results:before", self.save_first_item)
+        registry.disconnect("client.request:after", self.save_parsed_response)
 
     @staticmethod
     def _json_serializer(obj: Any) -> Any:
@@ -181,7 +181,7 @@ class TestDataCollector(Plugin):
         self.save_response(filepath, item)
 
         # Disable this handler after saving the first item
-        SignalRegistry.disable("resource._handle_results:before", self.save_first_item)
+        registry.disable("resource._handle_results:before", self.save_first_item)
 
         return item
 

@@ -38,7 +38,7 @@ from paperap.const import FilteringStrategies, ModelStatus
 from paperap.exceptions import ConfigurationError
 from paperap.models.abstract.meta import StatusContext
 from paperap.models.abstract.queryset import BaseQuerySet
-from paperap.signals import SignalRegistry
+from paperap.signals import registry
 
 if TYPE_CHECKING:
     from paperap.client import PaperlessClient
@@ -583,7 +583,7 @@ class StandardModel(BaseModel, ABC):
                 return
 
             current_data = self.to_dict(include_read_only=False, exclude_none=False, exclude_unset=True)
-            SignalRegistry.emit(
+            registry.emit(
                 "model.save:before",
                 "Fired before the model data is sent to paperless ngx to be saved.",
                 kwargs={
@@ -596,7 +596,7 @@ class StandardModel(BaseModel, ABC):
             new_data = new_model.to_dict()
             self.update_locally(from_db=True, **new_data)
 
-            SignalRegistry.emit(
+            registry.emit(
                 "model.save:after",
                 "Fired after the model data is saved in paperless ngx.",
                 kwargs={

@@ -116,7 +116,7 @@ class Signal(Generic[_ReturnType]):
         self._handlers[priority].append(handler)
 
         # Check if the handler was temporarily disabled in the registry
-        if SignalRegistry.is_queued("disable", self.name, handler):
+        if SignalRegistry.get_instance().is_queued("disable", self.name, handler):
             self._disabled_handlers.add(handler)
 
     def disconnect(self, handler: Callable[..., _ReturnType]) -> None:
@@ -221,6 +221,16 @@ class SignalRegistry:
     _signals: dict[str, Signal]
     _queue: QueueType
 
+    def __init__(self) -> None:
+        self._signals = {}
+        self._queue = {
+            "connect": {},  # {signal_name: {(handler, priority), ...}}
+            "disconnect": {},  # {signal_name: {handler, ...}}
+            "disable": {},  # {signal_name: {handler, ...}}
+            "enable": {},  # {signal_name: {handler, ...}}
+        }
+        super().__init__()
+
     def __new__(cls) -> Self:
         """
         Ensure that only one instance of the class is created.
@@ -231,13 +241,6 @@ class SignalRegistry:
         """
         if not hasattr(cls, "_instance"):
             cls._instance = super().__new__(cls)
-            cls._signals = {}
-            cls._queue = {
-                "connect": {},  # {signal_name: {(handler, priority), ...}}
-                "disconnect": {},  # {signal_name: {handler, ...}}
-                "disable": {},  # {signal_name: {handler, ...}}
-                "enable": {},  # {signal_name: {handler, ...}}
-            }
         return cls._instance
 
     @classmethod
@@ -253,8 +256,7 @@ class SignalRegistry:
             cls._instance = cls()
         return cls._instance
 
-    @classmethod
-    def register(cls, signal: Signal) -> None:
+    def register(self, signal: Signal) -> None:
         """
         Register a signal and process queued actions.
 
@@ -262,27 +264,26 @@ class SignalRegistry:
             signal: The signal to register.
 
         """
-        cls._signals[signal.name] = signal
+        self._signals[signal.name] = signal
 
         # Process queued connections
-        for handler, priority in cls._queue["connect"].pop(signal.name, set()):
+        for handler, priority in self._queue["connect"].pop(signal.name, set()):
             signal.connect(handler, priority)
 
         # Process queued disconnections
-        for handler in cls._queue["disconnect"].pop(signal.name, set()):
+        for handler in self._queue["disconnect"].pop(signal.name, set()):
             signal.disconnect(handler)
 
         # Process queued disables
-        for handler in cls._queue["disable"].pop(signal.name, set()):
+        for handler in self._queue["disable"].pop(signal.name, set()):
             signal.disable(handler)
 
         # Process queued enables
-        for handler in cls._queue["enable"].pop(signal.name, set()):
+        for handler in self._queue["enable"].pop(signal.name, set()):
             signal.enable(handler)
 
-    @classmethod
     def queue_action(
-        cls, action: ActionType, name: str, handler: Callable[..., _ReturnType], priority: int | None = None
+        self, action: ActionType, name: str, handler: Callable[..., _ReturnType], priority: int | None = None
     ) -> None:
         """
         Queue any signal-related action to be processed when the signal is registered.
@@ -297,17 +298,16 @@ class SignalRegistry:
             ValueError: If the action is invalid.
 
         """
-        if action not in cls._queue:
+        if action not in self._queue:
             raise ValueError(f"Invalid queue action: {action}")
 
         if action == "connect":
             priority = priority if priority is not None else SignalPriority.NORMAL
-            cls._queue[action].setdefault(name, set()).add((handler, priority))
+            self._queue[action].setdefault(name, set()).add((handler, priority))
         else:
-            cls._queue[action].setdefault(name, set()).add(handler)
+            self._queue[action].setdefault(name, set()).add(handler)
 
-    @classmethod
-    def get(cls, name: str) -> Signal | None:
+    def get(self, name: str) -> Signal | None:
         """
         Get a signal by name.
 
@@ -318,10 +318,9 @@ class SignalRegistry:
             The signal instance, or None if not found.
 
         """
-        return cls._signals.get(name)
+        return self._signals.get(name)
 
-    @classmethod
-    def list_signals(cls) -> list[str]:
+    def list_signals(self) -> list[str]:
         """
         List all registered signal names.
 
@@ -329,10 +328,9 @@ class SignalRegistry:
             A list of signal names.
 
         """
-        return list(cls._signals.keys())
+        return list(self._signals.keys())
 
-    @classmethod
-    def create(cls, name: str, description: str = "", return_type: type[_ReturnType] | None = None) -> Signal:
+    def create(self, name: str, description: str = "", return_type: type[_ReturnType] | None = None) -> Signal:
         """
         Create and register a new signal.
 
@@ -346,13 +344,12 @@ class SignalRegistry:
 
         """
         signal = Signal[_ReturnType](name, description)
-        cls.register(signal)
+        self.register(signal)
         return signal
 
-    @classmethod
     @overload
     def emit(
-        cls,
+        self,
         name: str,
         description: str = "",
         *,
@@ -361,10 +358,9 @@ class SignalRegistry:
         kwargs: dict[str, Any] | None = None,
     ) -> _ReturnType: ...
 
-    @classmethod
     @overload
     def emit(
-        cls,
+        self,
         name: str,
         description: str = "",
         *,
@@ -373,10 +369,9 @@ class SignalRegistry:
         kwargs: dict[str, Any] | None = None,
     ) -> _ReturnType: ...
 
-    @classmethod
     @overload
     def emit(
-        cls,
+        self,
         name: str,
         description: str = "",
         *,
@@ -385,9 +380,8 @@ class SignalRegistry:
         kwargs: dict[str, Any] | None = None,
     ) -> None: ...
 
-    @classmethod
     def emit(
-        cls,
+        self,
         name: str,
         description: str = "",
         *,
@@ -411,15 +405,14 @@ class SignalRegistry:
             The transformed first argument after all handlers have processed it
 
         """
-        if not (signal := cls.get(name)):
-            signal = cls.create(name, description, return_type)
+        if not (signal := self.get(name)):
+            signal = self.create(name, description, return_type)
 
         arg_tuple = (args,)
         kwargs = kwargs or {}
         return signal.emit(*arg_tuple, **kwargs)
 
-    @classmethod
-    def connect(cls, name: str, handler: Callable[..., _ReturnType], priority: int = SignalPriority.NORMAL) -> None:
+    def connect(self, name: str, handler: Callable[..., _ReturnType], priority: int = SignalPriority.NORMAL) -> None:
         """
         Connect a handler to a signal, or queue it if the signal is not yet registered.
 
@@ -429,13 +422,12 @@ class SignalRegistry:
             priority: The priority level for this handler (lower numbers execute first
 
         """
-        if signal := cls.get(name):
+        if signal := self.get(name):
             signal.connect(handler, priority)
         else:
-            cls.queue_action("connect", name, handler, priority)
+            self.queue_action("connect", name, handler, priority)
 
-    @classmethod
-    def disconnect(cls, name: str, handler: Callable[..., _ReturnType]) -> None:
+    def disconnect(self, name: str, handler: Callable[..., _ReturnType]) -> None:
         """
         Disconnect a handler from a signal, or queue it if the signal is not yet registered.
 
@@ -444,13 +436,12 @@ class SignalRegistry:
             handler: The handler function to disconnect.
 
         """
-        if signal := cls.get(name):
+        if signal := self.get(name):
             signal.disconnect(handler)
         else:
-            cls.queue_action("disconnect", name, handler)
+            self.queue_action("disconnect", name, handler)
 
-    @classmethod
-    def disable(cls, name: str, handler: Callable[..., _ReturnType]) -> None:
+    def disable(self, name: str, handler: Callable[..., _ReturnType]) -> None:
         """
         Temporarily disable a handler for a signal, or queue it if the signal is not yet registered.
 
@@ -459,13 +450,12 @@ class SignalRegistry:
             handler: The handler function to disable
 
         """
-        if signal := cls.get(name):
+        if signal := self.get(name):
             signal.disable(handler)
         else:
-            cls.queue_action("disable", name, handler)
+            self.queue_action("disable", name, handler)
 
-    @classmethod
-    def enable(cls, name: str, handler: Callable[..., _ReturnType]) -> None:
+    def enable(self, name: str, handler: Callable[..., _ReturnType]) -> None:
         """
         Enable a previously disabled handler, or queue it if the signal is not yet registered.
 
@@ -474,13 +464,12 @@ class SignalRegistry:
             handler: The handler function to enable.
 
         """
-        if signal := cls.get(name):
+        if signal := self.get(name):
             signal.enable(handler)
         else:
-            cls.queue_action("enable", name, handler)
+            self.queue_action("enable", name, handler)
 
-    @classmethod
-    def is_queued(cls, action: ActionType, name: str, handler: Callable[..., _ReturnType]) -> bool:
+    def is_queued(self, action: ActionType, name: str, handler: Callable[..., _ReturnType]) -> bool:
         """
         Check if a handler is queued for a signal action.
 
@@ -493,7 +482,6 @@ class SignalRegistry:
             True if the handler is queued, False otherwise.
 
         """
-        return handler in cls._queue[action].get(name, set())
-
+        return handler in self._queue[action].get(name, set())
 
 registry = SignalRegistry.get_instance()

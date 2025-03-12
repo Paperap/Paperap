@@ -156,11 +156,13 @@ class TestCase(unittest.TestCase, Generic[_StandardModel, _StandardResource, _St
             self.resource = getattr(self, "resource", self._meta.resource) # type: ignore
             self.resource_class = getattr(self, "resource_class", self.resource.__class__) # type: ignore
             self.queryset_type = getattr(self, "queryset_type", self._meta.queryset) # type: ignore
+        '''
         if hasattr(self, "factory"):
-            self.model_type = getattr(self, "model_type", self.factory.Meta.model) # type: ignore
+            self.model_type = getattr(self, "model_type", self.factory._meta.model) # type: ignore
             self.resource = getattr(self, "resource", self.model_type._meta.resource) # type: ignore
             self.resource_class = getattr(self, "resource_class", self.resource.__class__) # type: ignore
             self.queryset_type = getattr(self, "queryset_type", self.model_type._meta.queryset) # type: ignore
+        '''
         if hasattr(self, "resource"):
             self.resource_class = getattr(self, "resource_class", self.resource.__class__) # type: ignore
             self.model_type = getattr(self, "model_type", self.resource.model_class) # type: ignore
