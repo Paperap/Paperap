@@ -36,9 +36,9 @@ from paperap.signals import registry
 
 if TYPE_CHECKING:
     from paperap.client import PaperlessClient
-    from paperap.models.abstract import BaseModel, BaseQuerySet, StandardModel, StandardQuerySet
+    from paperap.models.abstract import StandardModel, BaseQuerySet, StandardModel, StandardQuerySet
 
-_BaseModel = TypeVar("_BaseModel", bound="BaseModel")
+_BaseModel = TypeVar("_BaseModel", bound="StandardModel")
 _StandardModel = TypeVar("_StandardModel", bound="StandardModel")
 _BaseQuerySet = TypeVar("_BaseQuerySet", bound="BaseQuerySet", default="BaseQuerySet[_BaseModel]", covariant=True)
 _StandardQuerySet = TypeVar(
@@ -117,7 +117,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             }
 
     @property
-    def _meta(self) -> "BaseModel.Meta[_BaseModel]":
+    def _meta(self) -> "StandardModel.Meta[_BaseModel]":
         return self.model_class._meta  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
 
     def all(self) -> _BaseQuerySet:

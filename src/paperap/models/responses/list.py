@@ -24,10 +24,10 @@ LAST MODIFIED:
 
 from __future__ import annotations
 
-from paperap.models.abstract import BaseModel
+from paperap.models.abstract import StandardModel
 
 
-class ListResponse(BaseModel):
+class ListResponse(StandardModel):
     """
     Not currently used, but kept for documentation or future expansion.
 
@@ -38,4 +38,4 @@ class ListResponse(BaseModel):
     next: str | None
     previous: str | None
     all: list[int]
-    results: list[BaseModel]
+    results: list[StandardModel]

@@ -113,7 +113,7 @@ class TestStatusContext(DocumentUnitTest):
         ]
         for value in test_cases:
             with self.assertRaises(AttributeError):
-                with StatusContext(value, ModelStatus.UPDATING):
+                with StatusContext(value, ModelStatus.UPDATING): # type: ignore
                     pass
 
     def test_params_are_required(self):

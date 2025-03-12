@@ -59,6 +59,7 @@ class DummyResource(StandardResource[DummyModel]):
 
     def __init__(self):
         self.name = "dummy"
+        super().__init__(self.client)
 
 class TestQuerySetFilterBase(UnitTestCase):
     @patch("paperap.client.PaperlessClient.request")
@@ -74,11 +75,11 @@ class TestQuerySetFilterBase(UnitTestCase):
 class TestUpdateFilters(TestQuerySetFilterBase):
     def test_update_filters(self):
         self.assertEqual(self.qs.filters, {"init": "value"}, "test assumptions failed")
-        self.qs._update_filters({"new_filter": 123})
+        self.qs._update_filters({"new_filter": 123}) # type: ignore
         self.assertEqual(self.qs.filters, {"init": "value", "new_filter": 123})
-        self.qs._update_filters({"another_new_filter": 456})
+        self.qs._update_filters({"another_new_filter": 456}) # type: ignore
         self.assertEqual(self.qs.filters, {"init": "value", "new_filter": 123, "another_new_filter": 456})
-        self.qs._update_filters({"new_filter": 789})
+        self.qs._update_filters({"new_filter": 789}) # type: ignore
         self.assertEqual(self.qs.filters, {"init": "value", "new_filter": 789, "another_new_filter": 456})
 
 class TestChain(TestQuerySetFilterBase):
@@ -86,13 +87,13 @@ class TestChain(TestQuerySetFilterBase):
         self.assertEqual(self.qs.filters, {"init": "value"}, "test assumptions failed")
 
         # Test no params
-        qs2 = self.qs._chain()
+        qs2 = self.qs._chain()  # type: ignore
         self.assertIsInstance(qs2, StandardQuerySet, "chain did not return a queryset instance")
         self.assertIsNot(qs2, self.qs, "chain did not return a NEW queryset")
         self.assertEqual(qs2.filters, {"init": "value"}, "chain modified the original filters")
 
         # Do it again for qs2
-        qs3 = qs2._chain()
+        qs3 = qs2._chain()  # type: ignore
         self.assertIsInstance(qs3, StandardQuerySet, "chain did not return a queryset instance")
         self.assertIsNot(qs3, qs2, "chain did not return a NEW queryset")
         self.assertEqual(qs3.filters, {"init": "value"}, "chain modified the original filters on the second chain")
@@ -101,13 +102,13 @@ class TestChain(TestQuerySetFilterBase):
         self.assertEqual(self.qs.filters, {"init": "value"}, "test assumptions failed")
 
         # Test new filter
-        qs3 = self.qs._chain(filters={"new_filter": 123})
+        qs3 = self.qs._chain(filters={"new_filter": 123}) # type: ignore
         self.assertIsInstance(qs3, StandardQuerySet, "chain did not return a queryset instance when filters were passed")
         self.assertIsNot(qs3, self.qs, "chain did not return a NEW queryset when filters were passed")
         self.assertEqual(qs3.filters, {"init": "value", "new_filter": 123}, "chain did not add new filters correctly")
 
         # Do it again for qs3
-        qs4 = qs3._chain(filters={"another_new_filter": 456})
+        qs4 = qs3._chain(filters={"another_new_filter": 456}) # type: ignore
         self.assertIsInstance(qs4, StandardQuerySet, "chain did not return a queryset instance when filters were passed")
         self.assertIsNot(qs4, qs3, "chain did not return a NEW queryset when filters were passed")
         self.assertEqual(qs4.filters, {"init": "value", "new_filter": 123, "another_new_filter": 456}, "chain did not add new filters correctly")
@@ -116,13 +117,13 @@ class TestChain(TestQuerySetFilterBase):
         self.assertEqual(self.qs.filters, {"init": "value"}, "test assumptions failed")
 
         # Test 2 new filters
-        qs4 = self.qs._chain(filters={"another_new_filter": 456, "third_new_filter": 123})
+        qs4 = self.qs._chain(filters={"another_new_filter": 456, "third_new_filter": 123}) # type: ignore
         self.assertIsInstance(qs4, StandardQuerySet, "chain did not return a queryset instance when 2 filters were passed")
         self.assertIsNot(qs4, self.qs, "chain did not return a NEW queryset when 2 filters were passed")
         self.assertEqual(qs4.filters, {"init": "value", "another_new_filter": 456, "third_new_filter": 123}, "chain did not add 2 new filters correctly")
 
         # Do it again for qs4
-        qs5 = qs4._chain(filters={"fourth_new_filter": 789, "fifth_new_filter": 101112})
+        qs5 = qs4._chain(filters={"fourth_new_filter": 789, "fifth_new_filter": 101112}) # type: ignore
         self.assertIsInstance(qs5, StandardQuerySet, "chain did not return a queryset instance when 2 filters were passed")
         self.assertIsNot(qs5, qs4, "chain did not return a NEW queryset when 2 filters were passed")
         self.assertEqual(qs5.filters, {"init": "value", "another_new_filter": 456, "third_new_filter": 123, "fourth_new_filter": 789, "fifth_new_filter": 101112}, "chain did not add 2 new filters correctly")
@@ -130,13 +131,13 @@ class TestChain(TestQuerySetFilterBase):
     def test_chain_update_filter(self):
         self.assertEqual(self.qs.filters, {"init": "value"}, "test assumptions failed")
         # Test update filter
-        qs5 = self.qs._chain(filters={"init": "new_value"})
+        qs5 = self.qs._chain(filters={"init": "new_value"}) # type: ignore
         self.assertIsInstance(qs5, StandardQuerySet, "chain did not return a queryset instance when updating a filter")
         self.assertIsNot(qs5, self.qs, "chain did not return a NEW queryset when updating a filter")
         self.assertEqual(qs5.filters, {"init": "new_value"}, "chain did not update the filter correctly")
 
         # Do it again for qs5
-        qs6 = qs5._chain(filters={"init": "another_new_value"})
+        qs6 = qs5._chain(filters={"init": "another_new_value"}) # type: ignore
         self.assertIsInstance(qs6, StandardQuerySet, "chain did not return a queryset instance when updating a filter")
         self.assertIsNot(qs6, qs5, "chain did not return a NEW queryset when updating a filter")
         self.assertEqual(qs6.filters, {"init": "another_new_value"}, "chain did not update the filter correctly")
@@ -196,7 +197,7 @@ class TestQuerySetGetCache(DocumentUnitTest):
         self.modified_document = MagicMock(spec=Document)
         self.modified_document.id = self.modified_doc_id
         self.modified_document.title = self.modified_doc_title
-        self.qs._result_cache = [self.modified_document]
+        self.qs._result_cache = [self.modified_document] # type: ignore
 
     def test_get_with_id(self):
         result = self.qs.get(self.modified_doc_id)
@@ -215,7 +216,7 @@ class TestQuerySetGetCacheFailure(DocumentUnitTest):
         self.modified_document = MagicMock(spec=Document)
         self.modified_document.id = self.modified_doc_id
         self.modified_document.title = self.modified_doc_title
-        self.qs._result_cache = [self.modified_document]
+        self.qs._result_cache = [self.modified_document] # type: ignore
 
     @patch("paperap.client.PaperlessClient.request")
     def test_get_with_id(self, mock_request):
@@ -268,12 +269,12 @@ class TestQuerySetFirst(UnitTestCase):
 
     def test_first_with_cache(self):
         self.qs._result_cache = ["first", "second"]  # type: ignore # Allow edit ClassVar in tests
-        self.qs._fetch_all = True
+        self.qs._fetch_all = True # type: ignore
         self.assertEqual(self.qs.first(), "first")
 
     def test_first_without_cache(self):
         with patch.object(self.qs, "_chain", return_value=iter(["chain_item"])) as mock_chain:
-            self.qs._result_cache = []
+            self.qs._result_cache = [] # type: ignore
             result = self.qs.first()
             self.assertEqual(result, "chain_item")
             mock_chain.assert_called_once()
@@ -291,9 +292,9 @@ class TestQuerySetLast(UnitTestCase):
 
     def test_last(self):
         self.qs._result_cache = ["first", "middle", "last"]  # type: ignore # Allow edit ClassVar in tests
-        self.qs._fetch_all = True
+        self.qs._fetch_all = True # type: ignore
         self.assertEqual(self.qs.last(), "last")
-        self.qs._result_cache = []
+        self.qs._result_cache = [] # type: ignore
         self.assertIsNone(self.qs.last())
 
 class TestQuerySetExists(UnitTestCase):
@@ -351,35 +352,35 @@ class TestQuerySetGetItem(UnitTestCase):
 
     def test_getitem_index_cached(self):
         self.qs._result_cache = ["zero", "one", "two"]  # type: ignore # Allow edit ClassVar in tests
-        self.qs._fetch_all = True
+        self.qs._fetch_all = True # type: ignore
         self.assertEqual(self.qs[1], "one")
 
     @patch.object(BaseQuerySet, "_chain", return_value=iter(["fetched_item"]))
     def test_getitem_index_not_cached(self, mock_chain):
         # Reset filters to empty so that the expected filters match.
         self.qs.filters = {}
-        self.qs._result_cache = []
+        self.qs._result_cache = [] # type: ignore
         result = self.qs[5]
         self.assertEqual(result, "fetched_item")
         mock_chain.assert_called_once_with(filters={'limit': 1, 'offset': 5})
 
     def test_getitem_index_negative(self):
         self.qs._result_cache = ["a", "b", "c"]  # type: ignore # Allow edit ClassVar in tests
-        self.qs._fetch_all = True
+        self.qs._fetch_all = True # type: ignore
         self.assertEqual(self.qs[-1], "c")
 
     def test_getitem_slice_positive(self):
         # Use a fresh BaseQuerySet with empty filters to test slicing optimization.
         qs_clone = StandardQuerySet(self.resource, filters={})
         with patch.object(qs_clone, "_chain", return_value=iter(["item1", "item2"])) as mock_chain:
-            qs_clone._result_cache = []  # force using _chain
+            qs_clone._result_cache = [] # type: ignore # force using _chain
             result = qs_clone[0:2]
             self.assertEqual(result, ["item1", "item2"])
             mock_chain.assert_called_once_with(filters={'limit': 2})
 
     def test_getitem_slice_negative(self):
         self.qs._result_cache = ["a", "b", "c", "d"]  # type: ignore # Allow edit ClassVar in tests
-        self.qs._fetch_all = True
+        self.qs._fetch_all = True # type: ignore
         result = self.qs[1:-1]
         self.assertEqual(result, ["b", "c"])
 

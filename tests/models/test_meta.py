@@ -126,11 +126,11 @@ class TestStandardModelMeta(UnitTestCase):
         subchild = SubChildModel()
 
         self.assertIsInstance(parent.Meta, type(StandardModel.Meta))
-        self.assertIsInstance(parent._meta, StandardModel.Meta)
+        self.assertIsInstance(parent._meta, StandardModel.Meta) # type: ignore
         self.assertEqual(parent.Meta.foo, "parent-foo")
-        self.assertEqual(parent._meta.foo, "parent-foo")
+        self.assertEqual(parent._meta.foo, "parent-foo") # type: ignore
         self.assertEqual(parent.Meta.bar, "parent-bar")
-        self.assertEqual(parent._meta.bar, "parent-bar")
+        self.assertEqual(parent._meta.bar, "parent-bar") # type: ignore
         self.assertEqual(parent.field1, "parent-field1")
         self.assertIn("parent_field", parent.Meta.read_only_fields)
         self.assertIn("parent_filter", parent.Meta.supported_filtering_params)
@@ -138,19 +138,19 @@ class TestStandardModelMeta(UnitTestCase):
         self.assertNotIn("child_filter", parent.Meta.supported_filtering_params)
         self.assertNotIn("sub_child_field", parent.Meta.read_only_fields)
         self.assertNotIn("sub_child_filter", parent.Meta.supported_filtering_params)
-        self.assertIn("parent_field", parent._meta.read_only_fields)
-        self.assertIn("parent_filter", parent._meta.supported_filtering_params)
-        self.assertNotIn("child_field", parent._meta.read_only_fields)
-        self.assertNotIn("child_filter", parent._meta.supported_filtering_params)
-        self.assertNotIn("sub_child_field", parent._meta.read_only_fields)
-        self.assertNotIn("sub_child_filter", parent._meta.supported_filtering_params)
+        self.assertIn("parent_field", parent._meta.read_only_fields) # type: ignore
+        self.assertIn("parent_filter", parent._meta.supported_filtering_params) # type: ignore
+        self.assertNotIn("child_field", parent._meta.read_only_fields) # type: ignore
+        self.assertNotIn("child_filter", parent._meta.supported_filtering_params) # type: ignore
+        self.assertNotIn("sub_child_field", parent._meta.read_only_fields) # type: ignore
+        self.assertNotIn("sub_child_filter", parent._meta.supported_filtering_params) # type: ignore
 
         self.assertIsInstance(child.Meta, type(StandardModel.Meta))
-        self.assertIsInstance(child._meta, StandardModel.Meta)
+        self.assertIsInstance(child._meta, StandardModel.Meta) # type: ignore
         self.assertEqual(child.Meta.foo, "parent-subclass-foo-update")
-        self.assertEqual(child._meta.foo, "parent-subclass-foo-update")
+        self.assertEqual(child._meta.foo, "parent-subclass-foo-update") # type: ignore
         self.assertEqual(child.Meta.bar, "child-bar")
-        self.assertEqual(child._meta.bar, "child-bar")
+        self.assertEqual(child._meta.bar, "child-bar") # type: ignore
         self.assertEqual(child.field1, "child-field1")
         self.assertEqual(child.field2, "child-field2")
         self.assertIn("parent_field", child.Meta.read_only_fields)
@@ -159,19 +159,19 @@ class TestStandardModelMeta(UnitTestCase):
         self.assertIn("child_filter", child.Meta.supported_filtering_params)
         self.assertNotIn("sub_child_field", child.Meta.read_only_fields)
         self.assertNotIn("sub_child_filter", child.Meta.supported_filtering_params)
-        self.assertIn("parent_field", child._meta.read_only_fields)
-        self.assertIn("parent_filter", child._meta.supported_filtering_params)
-        self.assertIn("child_field", child._meta.read_only_fields)
-        self.assertIn("child_filter", child._meta.supported_filtering_params)
-        self.assertNotIn("sub_child_field", child._meta.read_only_fields)
-        self.assertNotIn("sub_child_filter", child._meta.supported_filtering_params)
+        self.assertIn("parent_field", child._meta.read_only_fields) # type: ignore
+        self.assertIn("parent_filter", child._meta.supported_filtering_params) # type: ignore
+        self.assertIn("child_field", child._meta.read_only_fields) # type: ignore
+        self.assertIn("child_filter", child._meta.supported_filtering_params) # type: ignore
+        self.assertNotIn("sub_child_field", child._meta.read_only_fields) # type: ignore
+        self.assertNotIn("sub_child_filter", child._meta.supported_filtering_params) # type: ignore
 
         self.assertIsInstance(subchild.Meta, type(StandardModel.Meta))
-        self.assertIsInstance(subchild._meta, StandardModel.Meta)
+        self.assertIsInstance(subchild._meta, StandardModel.Meta) # type: ignore
         self.assertEqual(subchild.Meta.foo, "child-subclass-foo-update")
-        self.assertEqual(subchild._meta.foo, "child-subclass-foo-update")
+        self.assertEqual(subchild._meta.foo, "child-subclass-foo-update") # type: ignore
         self.assertEqual(subchild.Meta.bar, "subchild-bar")
-        self.assertEqual(subchild._meta.bar, "subchild-bar")
+        self.assertEqual(subchild._meta.bar, "subchild-bar") # type: ignore
         self.assertEqual(subchild.field1, "sub-child-field1")
         self.assertEqual(subchild.field2, "sub-child-field2")
         self.assertEqual(subchild.field3, "sub-child-field3")
@@ -181,12 +181,12 @@ class TestStandardModelMeta(UnitTestCase):
         self.assertIn("child_filter", subchild.Meta.supported_filtering_params)
         self.assertIn("sub_child_field", subchild.Meta.read_only_fields)
         self.assertIn("sub_child_filter", subchild.Meta.supported_filtering_params)
-        self.assertIn("parent_field", subchild._meta.read_only_fields)
-        self.assertIn("parent_filter", subchild._meta.supported_filtering_params)
-        self.assertIn("child_field", subchild._meta.read_only_fields)
-        self.assertIn("child_filter", subchild._meta.supported_filtering_params)
-        self.assertIn("sub_child_field", subchild._meta.read_only_fields)
-        self.assertIn("sub_child_filter", subchild._meta.supported_filtering_params)
+        self.assertIn("parent_field", subchild._meta.read_only_fields) # type: ignore
+        self.assertIn("parent_filter", subchild._meta.supported_filtering_params) # type: ignore
+        self.assertIn("child_field", subchild._meta.read_only_fields) # type: ignore
+        self.assertIn("child_filter", subchild._meta.supported_filtering_params) # type: ignore
+        self.assertIn("sub_child_field", subchild._meta.read_only_fields) # type: ignore
+        self.assertIn("sub_child_filter", subchild._meta.supported_filtering_params) # type: ignore
 
     def test_subclass_meta_missing(self):
         """
@@ -267,44 +267,44 @@ class TestStandardModelMeta(UnitTestCase):
         subchild = SubChildModel()
 
         self.assertIsInstance(parent.Meta, type(StandardModel.Meta))
-        self.assertIsInstance(parent._meta, StandardModel.Meta)
+        self.assertIsInstance(parent._meta, StandardModel.Meta) # type: ignore
         self.assertEqual(parent.Meta.foo, "parent-foo")
-        self.assertEqual(parent._meta.foo, "parent-foo")
+        self.assertEqual(parent._meta.foo, "parent-foo") # type: ignore
         self.assertEqual(parent.Meta.bar, "parent-bar")
-        self.assertEqual(parent._meta.bar, "parent-bar")
+        self.assertEqual(parent._meta.bar, "parent-bar") # type: ignore
         self.assertEqual(parent.field1, "parent-field1")
         self.assertIn("parent_field", parent.Meta.read_only_fields)
         self.assertIn("parent_filter", parent.Meta.supported_filtering_params)
         self.assertNotIn("sub_child_field", parent.Meta.read_only_fields)
         self.assertNotIn("sub_child_filter", parent.Meta.supported_filtering_params)
-        self.assertIn("parent_field", parent._meta.read_only_fields)
-        self.assertIn("parent_filter", parent._meta.supported_filtering_params)
-        self.assertNotIn("sub_child_field", parent._meta.read_only_fields)
-        self.assertNotIn("sub_child_filter", parent._meta.supported_filtering_params)
+        self.assertIn("parent_field", parent._meta.read_only_fields) # type: ignore
+        self.assertIn("parent_filter", parent._meta.supported_filtering_params) # type: ignore
+        self.assertNotIn("sub_child_field", parent._meta.read_only_fields) # type: ignore
+        self.assertNotIn("sub_child_filter", parent._meta.supported_filtering_params) # type: ignore
 
         self.assertIsInstance(child.Meta, type(StandardModel.Meta))
-        self.assertIsInstance(child._meta, StandardModel.Meta)
+        self.assertIsInstance(child._meta, StandardModel.Meta) # type: ignore
         self.assertEqual(child.Meta.foo, "parent-subclass-foo-update")
-        self.assertEqual(child._meta.foo, "parent-subclass-foo-update")
+        self.assertEqual(child._meta.foo, "parent-subclass-foo-update") # type: ignore
         self.assertEqual(child.Meta.bar, "parent-bar")
-        self.assertEqual(child._meta.bar, "parent-bar")
+        self.assertEqual(child._meta.bar, "parent-bar") # type: ignore
         self.assertEqual(child.field1, "child-field1")
         self.assertEqual(child.field2, "child-field2")
         self.assertIn("parent_field", child.Meta.read_only_fields)
         self.assertIn("parent_filter", child.Meta.supported_filtering_params)
         self.assertNotIn("sub_child_field", child.Meta.read_only_fields)
         self.assertNotIn("sub_child_filter", child.Meta.supported_filtering_params)
-        self.assertIn("parent_field", child._meta.read_only_fields)
-        self.assertIn("parent_filter", child._meta.supported_filtering_params)
-        self.assertNotIn("sub_child_field", child._meta.read_only_fields)
-        self.assertNotIn("sub_child_filter", child._meta.supported_filtering_params)
+        self.assertIn("parent_field", child._meta.read_only_fields) # type: ignore
+        self.assertIn("parent_filter", child._meta.supported_filtering_params) # type: ignore
+        self.assertNotIn("sub_child_field", child._meta.read_only_fields) # type: ignore
+        self.assertNotIn("sub_child_filter", child._meta.supported_filtering_params) # type: ignore
 
         self.assertIsInstance(subchild.Meta, type(StandardModel.Meta))
-        self.assertIsInstance(subchild._meta, StandardModel.Meta)
+        self.assertIsInstance(subchild._meta, StandardModel.Meta) # type: ignore
         self.assertEqual(subchild.Meta.foo, "child-subclass-foo-update")
-        self.assertEqual(subchild._meta.foo, "child-subclass-foo-update")
+        self.assertEqual(subchild._meta.foo, "child-subclass-foo-update") # type: ignore
         self.assertEqual(subchild.Meta.bar, "subchild-bar")
-        self.assertEqual(subchild._meta.bar, "subchild-bar")
+        self.assertEqual(subchild._meta.bar, "subchild-bar") # type: ignore
         self.assertEqual(subchild.field1, "sub-child-field1")
         self.assertEqual(subchild.field2, "sub-child-field2")
         self.assertEqual(subchild.field3, "sub-child-field3")
@@ -312,10 +312,10 @@ class TestStandardModelMeta(UnitTestCase):
         self.assertIn("parent_filter", subchild.Meta.supported_filtering_params)
         self.assertIn("sub_child_field", subchild.Meta.read_only_fields)
         self.assertIn("sub_child_filter", subchild.Meta.supported_filtering_params)
-        self.assertIn("parent_field", subchild._meta.read_only_fields)
-        self.assertIn("parent_filter", subchild._meta.supported_filtering_params)
-        self.assertIn("sub_child_field", subchild._meta.read_only_fields)
-        self.assertIn("sub_child_filter", subchild._meta.supported_filtering_params)
+        self.assertIn("parent_field", subchild._meta.read_only_fields) # type: ignore
+        self.assertIn("parent_filter", subchild._meta.supported_filtering_params) # type: ignore
+        self.assertIn("sub_child_field", subchild._meta.read_only_fields) # type: ignore
+        self.assertIn("sub_child_filter", subchild._meta.supported_filtering_params) # type: ignore
 
     def test_auto_create_meta_when_missing(self):
         """Ensure a Meta class is automatically created when missing in a subclass."""

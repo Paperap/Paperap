@@ -33,22 +33,14 @@ from paperap.models.document import Document
 from paperap.client import PaperlessClient
 from paperap.resources.documents import DocumentResource
 from paperap.models.tag import Tag
-from paperap.tests import UnitTestCase, load_sample_data
+from paperap.tests import UnitTestCase, load_sample_data, DocumentUnitTest
 
 sample_document_list = load_sample_data('documents_list.json')
 sample_document = load_sample_data('documents_item.json')
 
-class DocumentTestCase(UnitTestCase):
+class TestDocumentInit(DocumentUnitTest):
     @override
     def setUp(self):
-        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
-        with patch.dict(os.environ, env_data, clear=True):
-            self.client = PaperlessClient()
-
-class TestDocumentInit(DocumentTestCase):
-    @override
-    def setUp(self):
-        super().setUp()
         super().setUp()
         # Setup a sample model instance
         self.resource = self.client.documents
@@ -76,7 +68,7 @@ class TestDocumentInit(DocumentTestCase):
         self.assertEqual(model.created, datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc), f"created wrong value after from_dict {model.created}")
         self.assertEqual(model.updated, datetime(2025, 3, 2, 12, 0, 0, tzinfo=timezone.utc), f"updated wrong value after from_dict {model.updated}")
 
-class TestDocument(DocumentTestCase):
+class TestDocument(DocumentUnitTest):
     @override
     def setUp(self):
         super().setUp()
@@ -128,17 +120,12 @@ class TestDocument(DocumentTestCase):
         self.assertEqual(model_dict["document_type_id"], 1)
         self.assertEqual(model_dict["tag_ids"], [1, 2, 3])
 
-class TestGetTags(UnitTestCase):
+class TestGetTags(DocumentUnitTest):
     @override
     def setUp(self):
         super().setUp()
-        super().setUp()
         # Setup a sample model instance
         self.documents = self.client.documents()
-
-    @override
-    def setup_client(self):
-        self.client = PaperlessClient()
 
     """
     # Working test when connected to a real server. Needs proper mocking for the request.
@@ -161,7 +148,7 @@ class TestGetTags(UnitTestCase):
             self.assertEqual(count, expected_count, f"Expected to iterate over {expected_count} tags, only saw {count}")
         """
 
-class TestRequestDocumentList(DocumentTestCase):
+class TestRequestDocumentList(DocumentUnitTest):
     def test_get_documents(self):
         with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = sample_document_list
@@ -171,14 +158,7 @@ class TestRequestDocumentList(DocumentTestCase):
             expected = sample_document_list["count"]
             self.assertEqual(total, expected, f"Expected {expected} documents, got {total}")
 
-class TestRequestDocument(UnitTestCase):
-
-    @override
-    def setup_client(self):
-        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
-        with patch.dict(os.environ, env_data, clear=True):
-            self.client = PaperlessClient()
-
+class TestRequestDocument(DocumentUnitTest):
     def test_get_document(self):
         with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = sample_document

@@ -1017,6 +1017,7 @@ dev = [
     "datamodel-code-generator>=0.28.4",
     "devtools>=0.12.2",
     "factory-boy>=3.3.3",
+    "hypothesis>=6.129.0",
     "icecream>=2.1.4",
     "mypy>=1.15.0",
     "pre-commit>=4.1.0",

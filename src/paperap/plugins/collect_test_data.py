@@ -35,7 +35,7 @@ from typing import TYPE_CHECKING, Any, override
 
 from faker import Faker
 
-from paperap.models import BaseModel
+from paperap.models import StandardModel
 from paperap.plugins.base import Plugin
 from paperap.signals import SignalPriority, registry
 
@@ -107,9 +107,9 @@ class TestDataCollector(Plugin):
             return str(obj)
         if isinstance(obj, Decimal):
             return float(obj)
-        if isinstance(obj, BaseModel):
+        if isinstance(obj, StandardModel):
             return obj.to_dict()
-        if isinstance(obj, BaseModel):
+        if isinstance(obj, StandardModel):
             return obj.model_dump()
         if isinstance(obj, set):
             return list(obj)
