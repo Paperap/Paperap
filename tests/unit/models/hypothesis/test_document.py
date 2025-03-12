@@ -10,7 +10,7 @@
         File:    test_document.py
         Project: paperap
         Created: 2025-03-12
-        Version: 0.0.6
+        Version: 0.0.7
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -26,7 +26,7 @@ from typing import Union
 import datetime
 from hypothesis import example, given, strategies as st
 from pydantic import ValidationError
-from paperap.models import CustomFieldDict, Document, DocumentNote, DocumentQuerySet
+from paperap.models import CustomFieldValues, Document, DocumentNote, DocumentQuerySet
 from paperap.tests import random_json, create_resource, defaults as d
 from paperap.resources.documents import DocumentResource
 from paperap.tests.factories import DocumentFactory, DocumentNoteFactory
@@ -131,7 +131,7 @@ def test_fuzz_Document(**kwargs) -> None:
 #@example(value=[{"id":None, "value": None}]).xfail(raises=ValueError)
 #@example(value=[{"value": "something"}]).xfail(raises=ValueError)
 #@example(value=[{"id": 5}]).xfail(raises=ValueError)
-def test_fuzz_document_validate_custom_fields(value: list[CustomFieldDict] | None) -> None:
+def test_fuzz_document_validate_custom_fields(value: list[CustomFieldValues] | None) -> None:
     # Will raise error if invalid
     Document.validate_custom_fields(value=value)
 

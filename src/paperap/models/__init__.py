@@ -6,7 +6,7 @@
        File:    __init__.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.6
+        Version: 0.0.7
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -22,7 +22,7 @@
 from paperap.models.abstract import BaseModel, BaseQuerySet, StandardModel, StandardQuerySet
 from paperap.models.correspondent import Correspondent, CorrespondentQuerySet
 from paperap.models.custom_field import CustomField, CustomFieldQuerySet
-from paperap.models.document import CustomFieldDict, Document, DocumentNote, DocumentQuerySet
+from paperap.models.document import Document, DocumentNote, DocumentQuerySet, CustomFieldValues
 from paperap.models.document_type import DocumentType, DocumentTypeQuerySet
 from paperap.models.profile import Profile, ProfileQuerySet
 from paperap.models.saved_view import SavedView, SavedViewQuerySet

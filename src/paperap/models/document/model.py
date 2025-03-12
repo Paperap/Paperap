@@ -9,7 +9,7 @@ METADATA:
 File:    model.py
         Project: paperap
 Created: 2025-03-09
-        Version: 0.0.6
+        Version: 0.0.7
 Author:  Jess Mann
 Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -21,14 +21,13 @@ LAST MODIFIED:
 2025-03-09     By Jess Mann
 
 """
-
 from __future__ import annotations
 
 from datetime import datetime
 from typing import TYPE_CHECKING, Annotated, Any, Iterable, Iterator, Optional, TypedDict, cast, override
 
 import pydantic
-from pydantic import Field, conlist, field_serializer, field_validator, model_serializer
+from pydantic import ConfigDict, Field, conlist, field_serializer, field_validator, model_serializer
 from typing_extensions import TypeVar
 from yarl import URL
 
@@ -49,10 +48,26 @@ class CustomFieldTypedDict(TypedDict):
     value: Any
 
 
-class CustomFieldDict(pydantic.BaseModel):
+class CustomFieldValues(pydantic.BaseModel):
     field: int
     value: Any
 
+    model_config = ConfigDict({
+        "extra": "forbid",
+        "use_enum_values": True,
+    })
+
+    @override
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, dict):
+            if other.keys() != {"field", "value"}:
+                return False
+            return self.field == other.get("field") and self.value == other.get("value")
+
+        if isinstance(other, CustomFieldValues):
+            return self.field == other.field and self.value == other.value
+
+        return super().__eq__(other)
 
 class DocumentNote(StandardModel):
     """
@@ -158,7 +173,7 @@ class Document(StandardModel):
     updated: datetime | None = Field(description="Last update timestamp", default=None)
     deleted_at: datetime | None = None
 
-    custom_field_dicts: Annotated[list[CustomFieldDict], Field(default_factory=list)]
+    custom_field_dicts: Annotated[list[CustomFieldValues], Field(default_factory=list)]
     correspondent_id: int | None = None
     document_type_id: int | None = None
     storage_path_id: int | None = None
@@ -332,7 +347,7 @@ class Document(StandardModel):
 
     @field_validator("custom_field_dicts", mode="before")
     @classmethod
-    def validate_custom_fields(cls, value: Any) -> list[CustomFieldDict]:
+    def validate_custom_fields(cls, value: Any) -> list[CustomFieldValues]:
         """
         Validate and return custom field dictionaries.
 
@@ -694,7 +709,7 @@ class Document(StandardModel):
         return self._client.custom_fields().id(self.custom_field_ids)
 
     @custom_fields.setter
-    def custom_fields(self, value: "Iterable[CustomField | CustomFieldDict] | CustomFieldTypedDict | None") -> None:
+    def custom_fields(self, value: "Iterable[CustomField | CustomFieldValues | CustomFieldTypedDict] | None") -> None:
         """
         Set the custom fields for this document.
 
@@ -707,16 +722,21 @@ class Document(StandardModel):
             return
 
         if isinstance(value, Iterable):
-            new_list: list[CustomFieldDict] = []
+            new_list: list[CustomFieldValues] = []
             for field in value:
-                # Check against StandardModel to avoid circular imports
+                if isinstance(field, CustomFieldValues):
+                    new_list.append(field)
+                    continue
+
+                # isinstance(field, CustomField)
+                # Check against StandardModel (instead of CustomField) to avoid circular imports
                 # If it is the wrong type of standard model (e.g. a User), pydantic validators will complain
                 if isinstance(field, StandardModel):
-                    new_list.append(CustomFieldDict(field=field.id, value=getattr(field, "value")))
+                    new_list.append(CustomFieldValues(field=field.id, value=getattr(field, "value")))
                     continue
 
                 if isinstance(field, dict):
-                    new_list.append(CustomFieldDict(**field))
+                    new_list.append(CustomFieldValues(**field))
                     continue
 
                 raise TypeError(f"Invalid type for custom fields: {type(field)}")
