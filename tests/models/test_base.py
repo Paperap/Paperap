@@ -26,7 +26,7 @@ import os
 import unittest
 from datetime import datetime, timezone
 from unittest.mock import patch
-from paperap.tests import TestCase
+from paperap.tests import UnitTestCase
 from paperap.models import BaseModel
 from paperap.client import PaperlessClient
 from paperap.resources.base import BaseResource
@@ -48,7 +48,7 @@ class ExampleResource(BaseResource):
     name = "example"
     model_class = ExampleModel
 
-class TestModel(TestCase):
+class TestModel(UnitTestCase):
     def setUp(self):
         # Setup a sample model instance
         env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}

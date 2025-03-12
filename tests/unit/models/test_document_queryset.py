@@ -39,13 +39,13 @@ from paperap.models import (
 )
 from paperap.resources.documents import DocumentResource
 from paperap.models.tag import Tag, TagQuerySet
-from paperap.tests import TestCase, load_sample_data, DocumentTest
+from paperap.tests import UnitTestCase, load_sample_data, DocumentUnitTest
 from paperap.exceptions import FilterDisabledError
 
 sample_document_list = load_sample_data('documents_list.json')
 sample_document = load_sample_data('documents_item.json')
 
-class BaseTest(DocumentTest):
+class BaseTest(DocumentUnitTest):
     def setUp(self):
         super().setUp()
         self.queryset = self.client.documents()

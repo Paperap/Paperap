@@ -50,11 +50,11 @@ from paperap.models.user import Group, User
 from paperap.models.workflow import Workflow, WorkflowAction, WorkflowTrigger
 from paperap.tests.factories import *
 
-from paperap.tests import TestCase
+from paperap.tests import UnitTestCase
 
 logger = logging.getLogger(__name__)
 
-class ModelTestCase(TestCase):
+class ModelTestCase(UnitTestCase):
     MAX_RECURSION_DEPTH = 2
     model_to_resource : dict[type[BaseModel], BaseResource]
     model_to_factories : dict[type[BaseModel], type[PydanticFactory]]

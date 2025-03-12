@@ -30,12 +30,12 @@ from datetime import datetime
 from paperap.models import *
 from paperap.resources.tags import TagResource
 from paperap.models.document import DocumentQuerySet
-from paperap.tests import TestCase, load_sample_data, TagTest
+from paperap.tests import UnitTestCase, load_sample_data, TagUnitTest
 
 sample_tag_list = load_sample_data('tags_list.json')
 sample_tag = load_sample_data('tags_item.json')
 
-class TestTagsInit(TagTest):
+class TestTagsInit(TagUnitTest):
 
     @override
     def setup_model_data(self):
@@ -73,7 +73,7 @@ class TestTagsInit(TagTest):
             self.assertIsInstance(value, field_type, f"Expected {field} to be a {field_type}, got {type(value)}")
             self.assertEqual(value, self.model_data_parsed[field], f"Expected {field} to match sample data")
 
-class TestTag(TagTest):
+class TestTag(TagUnitTest):
 
     @override
     def setup_model_data(self):
@@ -131,7 +131,7 @@ class TestTag(TagTest):
             self.assertIsInstance(value, field_type, f"Expected {field} to be a {field_type}, got {type(value)}")
             self.assertEqual(value, self.model_data_parsed[field], f"Expected {field} to match sample data")
 
-class TestRelationships(TagTest):
+class TestRelationships(TagUnitTest):
 
     @override
     def setup_model_data(self):

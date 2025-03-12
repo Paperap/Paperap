@@ -21,11 +21,18 @@
         2025-03-04     By Jess Mann
 
 """
-
-from paperap.tests.testcase import (CorrespondentTest, DocumentTest,
-                                    DocumentTypeTest, GroupTest, ProfileTest,
-                                    SavedViewTest, ShareLinksTest,
-                                    StoragePathTest, TagTest, TaskTest,
-                                    TestCase, UISettingsTest, UserTest,
-                                    WorkflowActionTest, WorkflowTest,
-                                    WorkflowTriggerTest, load_sample_data)
+from paperap.tests.testcase import TestMixin, load_sample_data
+from paperap.tests.unittest import (CorrespondentUnitTest, CustomFieldUnitTest, DocumentUnitTest,
+                                    DocumentTypeUnitTest, GroupUnitTest, ProfileUnitTest,
+                                    SavedViewUnitTest, ShareLinksUnitTest,
+                                    StoragePathUnitTest, TagUnitTest, TaskUnitTest,
+                                    UnitTestCase, UISettingsUnitTest, UserUnitTest,
+                                    WorkflowActionUnitTest, WorkflowUnitTest,
+                                    WorkflowTriggerUnitTest)
+from paperap.tests.pytest import (CorrespondentPyTest, CustomFieldPyTest, DocumentPyTest,
+                                    DocumentTypePyTest, GroupPyTest, ProfilePyTest,
+                                    SavedViewPyTest, ShareLinksPyTest,
+                                    StoragePathPyTest, TagPyTest, TaskPyTest,
+                                    PyTestCase, UISettingsPyTest, UserPyTest,
+                                    WorkflowActionPyTest, WorkflowPyTest,
+                                    WorkflowTriggerPyTest)

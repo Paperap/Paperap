@@ -35,14 +35,14 @@ from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models import *
 from paperap.resources.documents import DocumentResource
 from paperap.models.tag import Tag, TagQuerySet
-from paperap.tests import load_sample_data, DocumentTest
+from paperap.tests import load_sample_data, DocumentUnitTest
 
 logger = logging.getLogger(__name__)
 
 sample_document_list = load_sample_data('documents_list.json')
 sample_document = load_sample_data('documents_item.json')
 
-class TestDocumentInit(DocumentTest):
+class TestDocumentInit(DocumentUnitTest):
     @override
     def setup_model_data(self):
         self.model_data_parsed = {
@@ -79,7 +79,7 @@ class TestDocumentInit(DocumentTest):
         self.assertEqual(self.model.document_type_id, 1)
         self.assertIsInstance(self.model.tags, TagQuerySet)
 
-class TestDocument(DocumentTest):
+class TestDocument(DocumentUnitTest):
     @override
     def setup_model_data(self):
         self.model_data_parsed = {
@@ -126,7 +126,7 @@ class TestDocument(DocumentTest):
         self.assertEqual(model_dict["document_type_id"], 1)
         self.assertEqual(model_dict["tag_ids"], [1, 2, 3])
 
-class TestGetRelationships(DocumentTest):
+class TestGetRelationships(DocumentUnitTest):
     def test_get_tags(self):
         sample_data = load_sample_data('tags_list_id__in_38,162,160,191.json')
         with patch("paperap.client.PaperlessClient.request") as mock_request:
@@ -248,7 +248,7 @@ class TestGetRelationships(DocumentTest):
                 self.assertIsInstance(value, field_type, f"Expected storage_path.{field} to be a {field_type}, got {type(value)}")
                 self.assertEqual(value, sample_data[field], f"Expected storage_path.{field} to match sample data")
 
-class TestRequestDocumentList(DocumentTest):
+class TestRequestDocumentList(DocumentUnitTest):
     def test_get_documents(self):
         with patch("paperap.client.PaperlessClient.request") as mock_request:
             mock_request.return_value = sample_document_list
@@ -258,7 +258,7 @@ class TestRequestDocumentList(DocumentTest):
             expected = sample_document_list["count"]
             self.assertEqual(total, expected, f"Expected {expected} documents, got {total}")
 
-class TestRequest(DocumentTest):
+class TestRequest(DocumentUnitTest):
     def test_manual(self):
         """Test getting the document without using any of our custom unit test functionality, just in case."""
         with patch("paperap.client.PaperlessClient.request") as mock_request:
@@ -313,7 +313,7 @@ class TestRequest(DocumentTest):
             self.assertIsInstance(document.storage_path_id, int)
             self.assertEqual(document.storage_path_id, self.model_data_parsed["storage_path"])
 
-class TestCustomFieldAccess(DocumentTest):
+class TestCustomFieldAccess(DocumentUnitTest):
 
     @override
     def setUp(self):

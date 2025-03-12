@@ -28,12 +28,12 @@ from enum import StrEnum
 
 from paperap.const import ModelStatus
 from paperap.models.abstract.meta import StatusContext
-from paperap.tests import TestCase, load_sample_data, DocumentTest
+from paperap.tests import UnitTestCase, load_sample_data, DocumentUnitTest
 from paperap.models.document import Document
 from paperap.resources.documents import DocumentResource
 
 # Unit tests
-class TestStatusContext(DocumentTest):
+class TestStatusContext(DocumentUnitTest):
     def test_status_changes_and_reverts(self):
         """Ensure that all statuses are valid."""
         for status_initial in ModelStatus:

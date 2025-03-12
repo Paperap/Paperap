@@ -161,8 +161,10 @@ pre-commit run --all-files
 - [ ] updating permissions, ownership, sharing, etc
 - [ ] changing settings
 - [ ] local queryset filtering not supported by api
-- [ ] raise errors for intuitive features unsupported by api
+- [ ] raise errors for intuitive features unsupported by api (partially done)
+- [ ] enforce read-only fields
 - [ ] unit tests for additional edge cases
+- [ ] migrate to pytest
 - [x] fetch each model synchronously and validate data types
 - [x] lazy loading querysets
 - [x] relationships between models using querysets

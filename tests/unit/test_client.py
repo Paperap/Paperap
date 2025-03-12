@@ -29,7 +29,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 from pathlib import Path
 from paperap.resources.documents import DocumentResource
-from paperap.tests import TestCase, load_sample_data
+from paperap.tests import UnitTestCase, load_sample_data
 from paperap.models.abstract import BaseQuerySet
 from paperap.models.document import Document
 from paperap.models.tag import Tag
@@ -37,7 +37,7 @@ from paperap.models.tag import Tag
 # Load sample response from tests/sample_data/documents_list.json
 sample_data = load_sample_data('documents_list.json')
 
-class TestClient(TestCase):
+class TestClient(UnitTestCase):
     resource_class = DocumentResource
 
     @patch("paperap.client.PaperlessClient.request")

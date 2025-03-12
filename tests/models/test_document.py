@@ -33,12 +33,12 @@ from paperap.models.document import Document
 from paperap.client import PaperlessClient
 from paperap.resources.documents import DocumentResource
 from paperap.models.tag import Tag
-from paperap.tests import TestCase, load_sample_data
+from paperap.tests import UnitTestCase, load_sample_data
 
 sample_document_list = load_sample_data('documents_list.json')
 sample_document = load_sample_data('documents_item.json')
 
-class DocumentTestCase(TestCase):
+class DocumentTestCase(UnitTestCase):
     @override
     def setUp(self):
         env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
@@ -128,7 +128,7 @@ class TestDocument(DocumentTestCase):
         self.assertEqual(model_dict["document_type_id"], 1)
         self.assertEqual(model_dict["tag_ids"], [1, 2, 3])
 
-class TestGetTags(TestCase):
+class TestGetTags(UnitTestCase):
     @override
     def setUp(self):
         super().setUp()
@@ -171,7 +171,7 @@ class TestRequestDocumentList(DocumentTestCase):
             expected = sample_document_list["count"]
             self.assertEqual(total, expected, f"Expected {expected} documents, got {total}")
 
-class TestRequestDocument(TestCase):
+class TestRequestDocument(UnitTestCase):
 
     @override
     def setup_client(self):

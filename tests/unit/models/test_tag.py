@@ -29,12 +29,12 @@ from unittest.mock import MagicMock, patch
 from datetime import datetime, timezone
 from paperap.models.tag import Tag
 from paperap.resources.tags import TagResource
-from paperap.tests import TestCase, load_sample_data, TagTest
+from paperap.tests import UnitTestCase, load_sample_data, TagUnitTest
 
 # Load sample response from tests/sample_data/tags_list.json
 sample_data = load_sample_data('tags_list.json')
 
-class TestTagInit(TagTest):
+class TestTagInit(TagUnitTest):
     @override
     def setup_model_data(self):
         self.model_data_parsed = {
@@ -59,7 +59,7 @@ class TestTagInit(TagTest):
         self.assertEqual(self.model.is_insensitive, self.model_data_parsed["is_insensitive"], f"Tag is_insensitive is wrong when created from dict: {self.model.is_insensitive}")
         self.assertEqual(self.model.is_inbox_tag, self.model_data_parsed["is_inbox_tag"], f"Tag is_inbox_tag is wrong when created from dict: {self.model.is_inbox_tag}")
 
-class TestTag(TagTest):
+class TestTag(TagUnitTest):
     @override
     def setup_model_data(self):
         self.model_data_parsed = {

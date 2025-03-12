@@ -24,7 +24,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Optional
 
-from pydantic import Field, field_validator
+from pydantic import Field, ValidationError, field_validator
 
 from paperap.models.abstract.model import StandardModel
 from paperap.models.mixins.models import MatcherMixin
@@ -54,10 +54,12 @@ class Tag(StandardModel, MatcherMixin):
 
     @field_validator("colour", mode="before")
     @classmethod
-    def validate_colour(cls, value: str | int | None) -> str | None:
+    def validate_colour(cls, value: Any) -> str | None:
         if value is None:
             return None
-        return str(value)
+        if isinstance(value, (str, int)):
+            return str(value)
+        raise TypeError(f"Colour must be a string or integer, not {type(value)}")
 
     @property
     def documents(self) -> "DocumentQuerySet":

@@ -25,7 +25,7 @@ from typing import Any, ClassVar, override
 import unittest
 from paperap.models.abstract import StandardModel
 from paperap.resources.base import StandardResource
-from paperap.tests import TestCase
+from paperap.tests import UnitTestCase
 
 class SampleResource(StandardResource):
     """
@@ -34,7 +34,7 @@ class SampleResource(StandardResource):
     name = "sample"
     model_class = StandardModel
 
-class TestStandardModelMeta(TestCase):
+class TestStandardModelMeta(UnitTestCase):
     @override
     def setUp(self):
         super().setUp()

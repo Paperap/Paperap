@@ -35,14 +35,14 @@ from paperap.models import *
 from paperap.client import PaperlessClient
 from paperap.resources.documents import DocumentResource
 from paperap.models.tag import Tag, TagQuerySet
-from paperap.tests import load_sample_data, DocumentTest
+from paperap.tests import load_sample_data, DocumentUnitTest
 
 logger = logging.getLogger(__name__)
 
 sample_document_list = load_sample_data('documents_list.json')
 sample_document = load_sample_data('documents_item.json')
 
-class IntegrationTest(DocumentTest):
+class IntegrationTest(DocumentUnitTest):
     mock_env = False
 
     @override

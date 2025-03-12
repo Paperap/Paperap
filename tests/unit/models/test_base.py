@@ -29,9 +29,9 @@ from unittest.mock import patch
 from pydantic import field_serializer
 from paperap.exceptions import FilterDisabledError
 from paperap.models.abstract.queryset import StandardQuerySet
-from paperap.tests import TestCase
+from paperap.tests import UnitTestCase
 from unittest.mock import patch
-from paperap.tests import TestCase
+from paperap.tests import UnitTestCase
 from paperap.models import StandardModel
 from paperap.resources.base import BaseResource, StandardResource, StandardResource
 
@@ -57,7 +57,7 @@ class ExampleResource(StandardResource):
     name = "example"
     model_class = ExampleModel
 
-class TestBase(TestCase):
+class TestBase(UnitTestCase):
     def setUp(self):
         super().setUp()
 
@@ -218,7 +218,7 @@ class TestModel(TestWithModel):
             self.model.update_locally(**update_data)
             self.assertEqual(self.model.a_bool, expected_value)
 
-class TestClassAttributes(TestCase):
+class TestClassAttributes(UnitTestCase):
     def test_filtering_fields(self):
         expected_fields = {"id", "a_str", "a_date", "an_int", "a_float", "a_bool", "an_optional_str"}
         self.assertEqual(set(ExampleModel._meta.filtering_fields), expected_fields)
@@ -301,7 +301,7 @@ class TestClassAttributes(TestCase):
         self.assertIn("an_int", DisabledInheritedModel._meta.filtering_fields)
         self.assertIn("a_date", DisabledInheritedModel._meta.filtering_fields)
 
-class TestFilters(TestCase):
+class TestFilters(UnitTestCase):
     def setUp(self):
         super().setUp()
 

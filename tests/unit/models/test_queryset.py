@@ -38,7 +38,7 @@ from paperap.models.document import Document
 from paperap.resources import BaseResource, StandardResource
 from paperap.client import PaperlessClient
 from paperap.resources.documents import DocumentResource
-from paperap.tests import load_sample_data, TestCase, DocumentTest
+from paperap.tests import load_sample_data, UnitTestCase, DocumentUnitTest
 
 MockClient = MagicMock(PaperlessClient)
 
@@ -60,7 +60,7 @@ class DummyResource(StandardResource[DummyModel]):
     def __init__(self):
         self.name = "dummy"
 
-class TestQuerySetFilterBase(TestCase):
+class TestQuerySetFilterBase(UnitTestCase):
     @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
         super().setUp()
@@ -154,7 +154,7 @@ class TestExclude(TestQuerySetFilterBase):
         expected = {"init": "value", "field__not": 1, "title__not_contains": "invoice"}
         self.assertEqual(qs2.filters, expected)
 
-class TestQuerySetGetNoCache(DocumentTest):
+class TestQuerySetGetNoCache(DocumentUnitTest):
     @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
         super().setUp()
@@ -170,7 +170,7 @@ class TestQuerySetGetNoCache(DocumentTest):
         self.assertEqual(result.id, doc_id)
         self.assertEqual(result.title, sample_document["title"])
 
-class TestQuerySetGetNoCacheFailure(DocumentTest):
+class TestQuerySetGetNoCacheFailure(DocumentUnitTest):
     @override
     def setUp(self):
         super().setUp()
@@ -182,7 +182,7 @@ class TestQuerySetGetNoCacheFailure(DocumentTest):
         with self.assertRaises(ObjectNotFoundError):
             self.qs.get(999999)
 
-class TestQuerySetGetCache(DocumentTest):
+class TestQuerySetGetCache(DocumentUnitTest):
     @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
         super().setUp()
@@ -204,7 +204,7 @@ class TestQuerySetGetCache(DocumentTest):
         self.assertEqual(result.id, self.modified_doc_id)
         self.assertEqual(result.title, self.modified_doc_title)
 
-class TestQuerySetGetCacheFailure(DocumentTest):
+class TestQuerySetGetCacheFailure(DocumentUnitTest):
     @override
     def setUp(self):
         super().setUp()
@@ -223,7 +223,7 @@ class TestQuerySetGetCacheFailure(DocumentTest):
         with self.assertRaises(ObjectNotFoundError):
             self.qs.get(999999)
 
-class TestQuerySetAll(TestCase):
+class TestQuerySetAll(UnitTestCase):
     @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
         super().setUp()
@@ -239,7 +239,7 @@ class TestQuerySetAll(TestCase):
         self.assertIsNot(qs_all, self.qs)
         self.assertEqual(qs_all.filters, self.qs.filters)
 
-class TestQuerySetOrderBy(TestCase):
+class TestQuerySetOrderBy(UnitTestCase):
     @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
         super().setUp()
@@ -255,7 +255,7 @@ class TestQuerySetOrderBy(TestCase):
         expected_order = "name,-date"
         self.assertEqual(qs_ordered.filters.get("ordering"), expected_order)
 
-class TestQuerySetFirst(TestCase):
+class TestQuerySetFirst(UnitTestCase):
     @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
         super().setUp()
@@ -278,7 +278,7 @@ class TestQuerySetFirst(TestCase):
             self.assertEqual(result, "chain_item")
             mock_chain.assert_called_once()
 
-class TestQuerySetLast(TestCase):
+class TestQuerySetLast(UnitTestCase):
     @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
         super().setUp()
@@ -296,7 +296,7 @@ class TestQuerySetLast(TestCase):
         self.qs._result_cache = []
         self.assertIsNone(self.qs.last())
 
-class TestQuerySetExists(TestCase):
+class TestQuerySetExists(UnitTestCase):
     @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
         super().setUp()
@@ -314,7 +314,7 @@ class TestQuerySetExists(TestCase):
         self.qs._result_cache = [] # type: ignore
         self.assertFalse(self.qs.exists())
 
-class TestQuerySetIter(TestCase):
+class TestQuerySetIter(UnitTestCase):
     @patch("paperap.client.PaperlessClient.request")
     def setUp(self, mock_request):
         super().setUp()
@@ -340,7 +340,7 @@ class TestQuerySetIter(TestCase):
         self.assertEqual(result, ["a", "b"])
     """
 
-class TestQuerySetGetItem(TestCase):
+class TestQuerySetGetItem(UnitTestCase):
     @override
     def setUp(self):
         super().setUp()

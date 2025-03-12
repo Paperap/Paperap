@@ -29,7 +29,7 @@ from unittest.mock import patch
 from yarl import URL
 from paperap.settings import Settings
 from paperap.exceptions import ConfigurationError
-from paperap.tests import TestCase
+from paperap.tests import UnitTestCase
 
 TOKEN_DATA = {
     'token': 'abc123',
@@ -48,7 +48,7 @@ AUTH_DATA = {
 }
 
 # By default, patch os.environ to prevent environment variables from affecting tests
-class NoEnvTestCase(TestCase):
+class NoEnvTestCase(UnitTestCase):
     def setUp(self):
         self.patcher = patch.dict(os.environ, {}, clear=True)
         self.patcher.start()
@@ -191,7 +191,7 @@ class TestSettingsSSL(NoEnvTestCase):
         settings = Settings(**params)
         self.assertEqual(settings.base_url, URL('https://example.com'), "URL was changed require_ssl is True")
 
-class TestSettingsEnvPrefix(TestCase):
+class TestSettingsEnvPrefix(UnitTestCase):
     def test_env_prefix_token_defaults(self):
         """Test that the environment prefix is applied correctly."""
         env_data = {f'PAPERLESS_{key.upper()}': str(value) for key, value in TOKEN_DATA.items() if value is not None}
