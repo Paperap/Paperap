@@ -57,8 +57,11 @@ class Tag(StandardModel, MatcherMixin):
     def validate_colour(cls, value: Any) -> str | None:
         if value is None:
             return None
+
+        # It seems like int should not be allowed, but my sample data contains an int??
         if isinstance(value, (str, int)):
             return str(value)
+
         raise TypeError(f"Colour must be a string or integer, not {type(value)}")
 
     @property

@@ -165,6 +165,9 @@ pre-commit run --all-files
 - [ ] enforce read-only fields
 - [ ] unit tests for additional edge cases
 - [ ] migrate to pytest
+- [ ] immutability (resources, response dicts, (optionally) for models)
+- [ ] contracts
+- [ ] hypothesis
 - [x] fetch each model synchronously and validate data types
 - [x] lazy loading querysets
 - [x] relationships between models using querysets

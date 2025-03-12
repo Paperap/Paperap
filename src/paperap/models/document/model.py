@@ -297,7 +297,7 @@ class Document(StandardModel):
 
     @field_validator("tag_ids", mode="before")
     @classmethod
-    def validate_tags(cls, value: list[int] | None) -> list[int]:
+    def validate_tags(cls, value: Any) -> list[int]:
         """
         Validate and convert tag IDs to a list of integers.
 
@@ -310,11 +310,18 @@ class Document(StandardModel):
         """
         if value is None:
             return []
-        return [int(tag) for tag in value]
+
+        if isinstance(value, list):
+            return [int(tag) for tag in value]
+
+        if isinstance(value, int):
+            return [value]
+
+        raise TypeError(f"Invalid type for tags: {type(value)}")
 
     @field_validator("custom_field_dicts", mode="before")
     @classmethod
-    def validate_custom_fields(cls, value: list[CustomFieldDict] | None) -> list[CustomFieldDict]:
+    def validate_custom_fields(cls, value: Any) -> list[CustomFieldDict]:
         """
         Validate and return custom field dictionaries.
 
@@ -327,11 +334,15 @@ class Document(StandardModel):
         """
         if value is None:
             return []
-        return value
+
+        if isinstance(value, list):
+            return value
+        
+        raise TypeError(f"Invalid type for custom fields: {type(value)}")
 
     @field_validator("content", "title", mode="before")
     @classmethod
-    def validate_text(cls, value: str | None) -> str:
+    def validate_text(cls, value: Any) -> str:
         """
         Validate and return a text field.
 
@@ -342,11 +353,17 @@ class Document(StandardModel):
             The validated text value.
 
         """
-        return value or ""
+        if value is None:
+            return ""
+
+        if isinstance(value, (str, int)):
+            return str(value)
+
+        raise TypeError(f"Invalid type for text: {type(value)}")
 
     @field_validator("notes", mode="before")
     @classmethod
-    def validate_notes(cls, value: list[Any] | None) -> list[Any]:
+    def validate_notes(cls, value: Any) -> list[Any]:
         """
         Validate and return the list of notes.
 
@@ -357,11 +374,20 @@ class Document(StandardModel):
             The validated list of notes.
 
         """
-        return value or []
+        if value is None:
+            return []
+
+        if isinstance(value, list):
+            return value
+
+        if isinstance(value, DocumentNote):
+            return [value]
+
+        raise TypeError(f"Invalid type for notes: {type(value)}")
 
     @field_validator("is_shared_by_requester", mode="before")
     @classmethod
-    def validate_is_shared_by_requester(cls, value: bool | None) -> bool:
+    def validate_is_shared_by_requester(cls, value: Any) -> bool:
         """
         Validate and return the is_shared_by_requester flag.
 
@@ -372,7 +398,13 @@ class Document(StandardModel):
             The validated flag.
 
         """
-        return value or False
+        if value is None:
+            return False
+        
+        if isinstance(value, bool):
+            return value
+
+        raise TypeError(f"Invalid type for is_shared_by_requester: {type(value)}")
 
     @property
     def custom_field_ids(self) -> list[int]:

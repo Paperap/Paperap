@@ -26,7 +26,7 @@ from typing import TYPE_CHECKING, Any, Iterable, Literal
 from paperap.const import ModelStatus
 
 if TYPE_CHECKING:
-    from paperap.models.abstract import StandardModel
+    from paperap.models.abstract import BaseModel
 
 
 class StatusContext:
@@ -46,17 +46,17 @@ class StatusContext:
 
     """
 
-    _model: "StandardModel"
+    _model: "BaseModel"
     _new_status: ModelStatus
     _previous_status: ModelStatus | None
 
     @property
-    def model(self) -> "StandardModel":
+    def model(self) -> "BaseModel":
         """Read-only access to the model."""
         return self._model
 
     @property
-    def _meta(self) -> "StandardModel.Meta":
+    def _meta(self) -> "BaseModel.Meta":
         """Read-only access to the model's meta."""
         return self.model._meta  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
 
@@ -70,7 +70,7 @@ class StatusContext:
         """Read-only access to the previous status."""
         return self._previous_status
 
-    def __init__(self, model: "StandardModel", new_status: ModelStatus) -> None:
+    def __init__(self, model: "BaseModel", new_status: ModelStatus) -> None:
         self._model = model
         self._new_status = new_status
         self._previous_status = None

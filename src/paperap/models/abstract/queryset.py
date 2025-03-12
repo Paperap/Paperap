@@ -33,10 +33,10 @@ from yarl import URL
 from paperap.exceptions import FilterDisabledError, MultipleObjectsFoundError, ObjectNotFoundError
 
 if TYPE_CHECKING:
-    from paperap.models.abstract.model import StandardModel, StandardModel
+    from paperap.models.abstract.model import StandardModel, BaseModel
     from paperap.resources.base import BaseResource, StandardResource
 
-_BaseModel = TypeVar("_BaseModel", bound="StandardModel", default="StandardModel", covariant=True)
+_BaseModel = TypeVar("_BaseModel", bound="BaseModel", default="BaseModel", covariant=True)
 _StandardModel = TypeVar("_StandardModel", bound="StandardModel", default="StandardModel", covariant=True)
 
 logger = logging.getLogger(__name__)
@@ -119,7 +119,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         return self.resource.model_class
 
     @property
-    def _meta(self) -> "StandardModel.Meta":
+    def _meta(self) -> "BaseModel.Meta":
         """
         Return the model's metadata.
 

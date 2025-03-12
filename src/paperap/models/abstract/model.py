@@ -27,7 +27,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from decimal import Decimal
 from enum import StrEnum
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, Literal, Self, cast, override
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, Literal, Self, TypedDict, cast, override
 
 import pydantic
 from pydantic import Field, PrivateAttr
@@ -48,6 +48,18 @@ logger = logging.getLogger(__name__)
 
 _Self = TypeVar("_Self", bound="BaseModel")
 
+class ModelConfigType(TypedDict):
+    populate_by_name: bool
+    validate_assignment: bool
+    use_enum_values: bool
+    extra: Literal["ignore"]
+    
+BASE_MODEL_CONFIG : ModelConfigType = {
+    "populate_by_name": True,
+    "validate_assignment": True,
+    "use_enum_values": True,
+    "extra": "ignore",
+}
 
 class BaseModel(pydantic.BaseModel, ABC):
     """
@@ -265,34 +277,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             cls._meta.name = cls.__name__.lower()
 
     # Configure Pydantic behavior
-    model_config = pydantic.ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        use_enum_values=True,
-        extra="ignore",
-    )
-
-    @property
-    def _resource(self) -> "BaseResource[Self]":
-        """
-        Get the resource associated with this model.
-
-        Returns:
-            The BaseResource instance.
-
-        """
-        return self._meta.resource
-
-    @property
-    def _client(self) -> "PaperlessClient":
-        """
-        Get the client associated with this model.
-
-        Returns:
-            The PaperlessClient instance.
-
-        """
-        return self._meta.resource.client
+    model_config = pydantic.ConfigDict(**BASE_MODEL_CONFIG)
 
     def __init__(self, resource: "BaseResource[Self] | None" = None, **data: Any) -> None:
         """
@@ -316,6 +301,28 @@ class BaseModel(pydantic.BaseModel, ABC):
                 f"Resource required. Initialize resource for {self.__class__.__name__} before instantiating models."
             )
 
+    @property
+    def _resource(self) -> "BaseResource[Self]":
+        """
+        Get the resource associated with this model.
+
+        Returns:
+            The BaseResource instance.
+
+        """
+        return self._meta.resource
+
+    @property
+    def _client(self) -> "PaperlessClient":
+        """
+        Get the client associated with this model.
+
+        Returns:
+            The PaperlessClient instance.
+
+        """
+        return self._meta.resource.client
+    
     @override
     def model_post_init(self, __context) -> None:
         super().model_post_init(__context)

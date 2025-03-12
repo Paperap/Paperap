@@ -27,9 +27,8 @@ import os
 import paperap.models.document
 import paperap.models.document.model
 from typing import Any, Iterator, Union, Optional
-from hypothesis import given, strategies as st
-from paperap.models.document import CustomFieldDict
-from paperap.models.document.model import DocumentNote
+from hypothesis import example, given, strategies as st
+from paperap.models import CustomFieldDict, Document, DocumentNote, DocumentQuerySet
 import paperap.models.document.parser
 from paperap.client import PaperlessClient
 from paperap.resources.correspondents import CorrespondentResource
@@ -72,8 +71,8 @@ with patch.dict(os.environ, env_data, clear=True):
     created_date=st.none(),
     updated_on=st.none(),
     deleted_at=st.none(),
-    custom_field_dicts=st.from_type(
-        list[paperap.models.document.parser.CustomFieldDict]
+    custom_field_dicts=st.builds(
+        list[CustomFieldDict]
     ),
     correspondent_id=st.none(),
     document_type_id=st.none(),
@@ -87,7 +86,7 @@ def test_fuzz_Document(
     archived_file_name: Union[str, None],
     content: str,
     is_shared_by_requester: bool,
-    notes: list[paperap.models.document.model.DocumentNote],
+    notes: list[DocumentNote],
     original_file_name: Union[str, None],
     owner: Union[int, None],
     page_count: Union[int, None],
@@ -97,14 +96,14 @@ def test_fuzz_Document(
     created_date: Union[str, None],
     updated_on: Union[datetime.datetime, None],
     deleted_at: Union[datetime.datetime, None],
-    custom_field_dicts: list[paperap.models.document.CustomFieldDict],
+    custom_field_dicts: list[CustomFieldDict],
     correspondent_id: Union[int, None],
     document_type_id: Union[int, None],
     storage_path_id: Union[int, None],
     tag_ids: list[int],
 ) -> None:
-    paperap.models.document.model.Document(
-        resource=resource,
+    Document(
+        resource=resource, # type: ignore # I'm not sure why pylint complains about this
         id=id,
         added=added,
         archive_serial_number=archive_serial_number,
@@ -128,41 +127,38 @@ def test_fuzz_Document(
         tag_ids=tag_ids,
     )
 
+@given(value=st.one_of(st.lists(st.builds(CustomFieldDict)), st.none()))
+@example(value=None)
+@example(value=[])
+@example(value=[{'id': 1, 'value': 'test'}])
+@example(value=[{'id': 10, 'value': None}])
+def test_fuzz_document_validate_custom_fields(value: list[CustomFieldDict] | None) -> None:
+    Document.validate_custom_fields(value=value)
 
-@given(
-    value=st.from_type(
-        list[paperap.models.document.parser.CustomFieldDict] | None
-    )
-)
-def test_fuzz_Document_validate_custom_fields(
-    value: Union[list[paperap.models.document.CustomFieldDict], None],
-) -> None:
-    paperap.models.document.model.Document.validate_custom_fields(value=value)
-
-
+@given(value=st.one_of(st.lists(st.builds(DocumentNote)), st.none()))
+@example(value=None)
+@example(value=[])
+def test_fuzz_document_validate_notes(value: list[Any] | None) -> None:
+    Document.validate_notes(value=value)
+    
 @given(value=st.one_of(st.none(), st.booleans()))
-def test_fuzz_Document_validate_is_shared_by_requester(
+def test_fuzz_document_validate_is_shared_by_requester(
     value: Union[bool, None],
 ) -> None:
-    paperap.models.document.model.Document.validate_is_shared_by_requester(value=value)
-
-
-@given(value=st.from_type(list[Any] | None))
-def test_fuzz_Document_validate_notes(
-    value: Union[list[Any], None],
-) -> None:
-    paperap.models.document.model.Document.validate_notes(value=value)
-
+    Document.validate_is_shared_by_requester(value=value)
 
 @given(value=st.one_of(st.none(), st.lists(st.integers())))
-def test_fuzz_Document_validate_tags(value: Union[list[int], None]) -> None:
-    paperap.models.document.model.Document.validate_tags(value=value)
+@example(value=None)
+@example(value=[])
+def test_fuzz_document_validate_tags(value: Union[list[int], None]) -> None:
+    Document.validate_tags(value=value)
 
 
 @given(value=st.one_of(st.none(), st.text()))
-def test_fuzz_Document_validate_text(value: Union[str, None]) -> None:
-    paperap.models.document.model.Document.validate_text(value=value)
-
+@example(value=None)
+@example(value="")
+def test_fuzz_document_validate_text(value: Union[str, None]) -> None:
+    Document.validate_text(value=value)
 
 @given(
     id=st.integers(),
@@ -184,8 +180,8 @@ def test_fuzz_DocumentNote(
     document: int,
     user: int,
 ) -> None:
-    paperap.models.document.model.DocumentNote(
-        resource=resource,
+    DocumentNote(
+        resource=resource, # type: ignore # I'm not sure why pylint complains about this
         id=id,
         deleted_at=deleted_at,
         restored_at=restored_at,
@@ -215,8 +211,8 @@ def test_fuzz_DocumentQuerySet(
     _iter: Optional[Iterator],
     _urls_fetched: Optional[list[str]],
 ) -> None:
-    paperap.models.document.model.DocumentQuerySet(
-        resource=resource,
+    DocumentQuerySet(
+        resource=resource, # type: ignore # I'm not sure why pylint complains about this
         filters=filters,
         _cache=_cache,
         _fetch_all=_fetch_all,
