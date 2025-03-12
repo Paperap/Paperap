@@ -24,7 +24,7 @@
 
 from paperap.tests.factories.models import (CorrespondentFactory,
                                             CustomFieldFactory,
-                                            DocumentFactory,
+                                            DocumentFactory, DocumentNoteFactory,
                                             DocumentTypeFactory, GroupFactory,
                                             ProfileFactory, PydanticFactory,
                                             SavedViewFactory,

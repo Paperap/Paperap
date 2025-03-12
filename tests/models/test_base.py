@@ -52,7 +52,7 @@ class ExampleResource(StandardResource):
 class TestModel(UnitTestCase):
     model : ExampleModel
     model_class : type[ExampleModel]
-    
+
     @override
     def setUp(self):
         # Setup a sample model instance

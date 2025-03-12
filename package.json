@@ -5,6 +5,7 @@
   "scripts": {
     "prettier": "prettier --write **/*.{json,js,md,yml,yaml} *.{json,js,md,yml,yaml}",
     "test": "python -m unittest discover -s tests/unit --failfast",
+    "pytest": "pytest tests/unit/models/hypothesis --hypothesis-show-statistics",
     "integration": "python -m unittest discover -s tests/integration --failfast",
     "pre-commit": "uv run pre-commit run --all-files",
     "mypy": "uv run mypy -p src/paperap",

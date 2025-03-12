@@ -145,7 +145,7 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
             self.validate_field("age", test_cases)
         """
         raise NotImplementedError("Method must be implemented in subclasses.")
-    
+
     def setup_references(self) -> None:
         # Check if we have each attrib, and set all the others we can
         if hasattr(self, "modal_type"):

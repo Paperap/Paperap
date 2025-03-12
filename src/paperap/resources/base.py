@@ -25,7 +25,7 @@ import copy
 import logging
 from abc import ABC, ABCMeta
 from string import Template
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, Iterator, Optional, override
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, Iterator, Optional, overload, override
 
 from typing_extensions import TypeVar
 from yarl import URL
@@ -301,17 +301,36 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
                 data[value] = data.pop(key)
         return data
 
-    def transform_data_output(self, **data: Any) -> dict[str, Any]:
+    @overload
+    def transform_data_output(self, model: _BaseModel, exclude_unset : bool = True) -> dict[str, Any]: ...
+
+    @overload
+    def transform_data_output(self, **data: Any) -> dict[str, Any]: ...
+
+    def transform_data_output(
+        self, 
+        model : _BaseModel | None = None, 
+        exclude_unset : bool = True, 
+        **data: Any
+    ) -> dict[str, Any]:
         """
         Transform data before sending it to the API.
 
         Args:
+            model: The model to transform.
+            exclude_unset: If model is provided, exclude unset fields when calling to_dict()
             data: The data to transform.
 
         Returns:
             The transformed data.
 
         """
+        if model:
+            if data:
+                # Combining model.to_dict() and data is ambiguous, so not allowed.
+                raise ValueError("Only one of model or data should be provided")
+            data = model.to_dict(exclude_unset = exclude_unset)
+            
         for key, value in self._meta.field_map.items():
             if value in data:
                 data[key] = data.pop(value)

@@ -74,8 +74,8 @@ _StandardResource = TypeVar("_StandardResource", bound="StandardResource", defau
 _StandardQuerySet = TypeVar("_StandardQuerySet", bound="StandardQuerySet", default="StandardQuerySet")
 
 class UnitTestCase(
-    unittest.TestCase, 
-    TestMixin[_StandardModel, _StandardResource, _StandardQuerySet], 
+    unittest.TestCase,
+    TestMixin[_StandardModel, _StandardResource, _StandardQuerySet],
     Generic[_StandardModel, _StandardResource, _StandardQuerySet]
 ):
 
@@ -128,8 +128,8 @@ class UnitTestCase(
                     real_value = getattr(self.model, field_name)
                     self.assertIsInstance(real_value, type(expected), f"Setting {self.model.__class__.__name__} field {field_name} failed with input {input_value}, expected {expected}")
                     self.assertEqual(
-                        real_value, 
-                        expected, 
+                        real_value,
+                        expected,
                         f"Setting {self.model.__class__.__name__} field {field_name} failed with input {input_value}"
                     )
 

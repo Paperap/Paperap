@@ -142,9 +142,10 @@ class Document(StandardModel):
     title: str = ""
     user_can_change: bool | None = None
 
-    created: datetime | None = Field(description="Creation timestamp", default=None, alias="created_on")
+    created: datetime | None = Field(description="Creation timestamp", default=None)
     created_date: str | None = None
-    updated: datetime | None = Field(description="Last update timestamp", default=None, alias="updated_on")
+    # where did this come from? It's not in sample data?
+    updated: datetime | None = Field(description="Last update timestamp", default=None)
     deleted_at: datetime | None = None
 
     custom_field_dicts: list[CustomFieldDict] = Field(default_factory=list)
@@ -337,7 +338,7 @@ class Document(StandardModel):
 
         if isinstance(value, list):
             return value
-        
+
         raise TypeError(f"Invalid type for custom fields: {type(value)}")
 
     @field_validator("content", "title", mode="before")
@@ -400,7 +401,7 @@ class Document(StandardModel):
         """
         if value is None:
             return False
-        
+
         if isinstance(value, bool):
             return value
 

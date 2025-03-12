@@ -188,10 +188,10 @@ bool_loose_tests = [
 class TestTagValidation(TagUnitTest):
     def test_name_field(self):
         self.validate_field("name", string_tests)
-    
+
     def test_slug_field(self):
         self.validate_field("slug", string_tests)
-    
+
     def test_colour_field(self):
         self.validate_field("colour", [
             ("#ff0000", "#ff0000"),
@@ -204,27 +204,27 @@ class TestTagValidation(TagUnitTest):
             ({"dict", "value"}, TypeError),
             (5.5, TypeError),
         ])
-    
+
     def test_is_inbox_tag_field(self):
         self.validate_field("is_inbox_tag", bool_loose_tests)
-    
+
     def test_document_count_field(self):
         self.validate_field("document_count", [
             #*positive_int_tests, # TODO
             *any_int_tests,
             (None, ValidationError),
         ])
-    
+
     def test_owner_field(self):
         self.validate_field("owner", [
             #*positive_int_tests # TODO
             *any_int_tests,
             (None, None),
         ])
- 
+
     def test_user_can_change_field(self):
         self.validate_field("user_can_change", bool_loose_tests)
-    
+
     def test_match_field(self):
         self.validate_field("match", [
             ("regex pattern", "regex pattern"),
@@ -232,14 +232,14 @@ class TestTagValidation(TagUnitTest):
             (123, ValidationError),
             (True, ValidationError),
         ])
- 
+
     def test_matching_algorithm_field(self):
         self.validate_field("matching_algorithm", [
             #*positive_int_tests # TODO
             *any_int_tests,
             (None, None),
         ])
-    
+
     def test_is_insensitive_field(self):
         self.validate_field("is_insensitive", bool_loose_tests)
 

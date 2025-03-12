@@ -53,7 +53,7 @@ class ModelConfigType(TypedDict):
     validate_assignment: bool
     use_enum_values: bool
     extra: Literal["ignore"]
-    
+
 BASE_MODEL_CONFIG : ModelConfigType = {
     "populate_by_name": True,
     "validate_assignment": True,
@@ -322,7 +322,7 @@ class BaseModel(pydantic.BaseModel, ABC):
 
         """
         return self._meta.resource.client
-    
+
     @override
     def model_post_init(self, __context) -> None:
         super().model_post_init(__context)

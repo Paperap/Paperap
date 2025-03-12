@@ -33,6 +33,7 @@ import paperap.models.document.parser
 from paperap.tests import random_json, defaults as d
 from paperap.client import PaperlessClient
 from paperap.resources.correspondents import CorrespondentResource
+from paperap.tests.factories import DocumentFactory, DocumentNoteFactory
 from unittest.mock import patch
 import json
 import random
@@ -46,29 +47,27 @@ with patch.dict(os.environ, env_data, clear=True):
     client = PaperlessClient()
     resource = CorrespondentResource(client=client)
 
-doc = {
-    "id": 1,
-    "added": datetime.datetime.now(),
-    "archive_serial_number": 1,
-    "archived_file_name": "test.pdf",
-    "content": "Test content",
-    "is_shared_by_requester": True,
-    "notes": None,
-    "original_file_name": "test.pdf",
-    "owner": 1,
-    "page_count": 1,
-    "title": "Test title",
-    "user_can_change": True,
-    "created_on": datetime.datetime.now(),
-    "created_date": "2025-03-12",
-    "updated_on": datetime.datetime.now(),
-    "deleted_at": None,
-    "custom_field_dicts": None,
-    "correspondent_id": 1,
-    "document_type_id": 1,
-    "storage_path_id": 1,
-    "tag_ids": [],
-}
+custom_field_strategy = st.builds(
+    CustomFieldDict,
+    field=st.integers(min_value=1, max_value=10**6),
+    value=st.one_of(
+        st.none(),
+        st.integers(),
+        st.floats(allow_nan=False),
+        st.booleans(),
+        st.text(min_size=1, max_size=200),
+        st.lists(st.integers(), max_size=10),
+        st.lists(st.text(), max_size=10),
+        st.dictionaries(keys=st.text(), values=st.integers(), max_size=5),
+        st.dictionaries(keys=st.text(), values=st.text(), max_size=5),
+        st.lists(
+            st.dictionaries(keys=st.text(), values=st.one_of(st.integers(), st.text())),
+            max_size=100
+        ),
+    ),
+)
+
+doc = DocumentFactory.create_api_data()
 @given(
     id=st.integers(min_value=0),
     added=st.one_of(st.none(), st.datetimes()),
@@ -94,18 +93,18 @@ doc = {
     page_count=st.one_of(st.none(), st.integers(min_value=0, max_value=10**5)),
     title=st.text(min_size=1, max_size=300),
     user_can_change=st.one_of(st.none(), st.booleans()),
-    created_on=st.one_of(st.none(), st.datetimes()),
     created_date=st.one_of(st.none(), st.text().map(lambda x: x[:10] if x else None)),  # Limit to YYYY-MM-DD
-    updated_on=st.one_of(st.none(), st.datetimes()),
+    created=st.one_of(st.none(), st.datetimes()),
+    updated=st.one_of(st.none(), st.datetimes()),
     deleted_at=st.one_of(st.none(), st.datetimes()),
-    custom_field_dicts=st.one_of(st.lists(st.builds(CustomFieldDict)), st.none()),
-    correspondent_id=st.one_of(st.none(), st.integers(min_value=0)),
-    document_type_id=st.one_of(st.none(), st.integers(min_value=0)),
-    storage_path_id=st.one_of(st.none(), st.integers(min_value=0)),
-    tag_ids=st.lists(st.integers(min_value=0, max_value=10**6), max_size=1000),
+    custom_fields=st.one_of(st.lists(custom_field_strategy), st.none()),
+    correspondent=st.one_of(st.none(), st.integers(min_value=0)),
+    document_type=st.one_of(st.none(), st.integers(min_value=0)),
+    storage_path=st.one_of(st.none(), st.integers(min_value=0)),
+    tags=st.lists(st.integers(min_value=0, max_value=10**6), max_size=1000),
 )
-@example(**d(doc, id=1, title="", content="", tag_ids=[]))  # Edge case: minimal data
-@example(**d(doc, id=10**9, title="A"*300, content="B"*5000, tag_ids=[1, 2, 3]*100))  # Max limits
+@example(**d(doc, id=1, title="", content="", tags=[]))  # Edge case: minimal data
+@example(**d(doc, id=10**9, title="A"*300, content="B"*5000, tags=[1, 2, 3]*100))  # Max limits
 def test_fuzz_Document(**kwargs) -> None:
     Document(resource=resource, **kwargs) # type: ignore # I'm not sure why pyright is complaining
 
@@ -149,16 +148,7 @@ def test_fuzz_document_validate_tags(value: Union[list[int], None]) -> None:
 def test_fuzz_document_validate_text(value: Union[str, None]) -> None:
     Document.validate_text(value=value)
 
-note = {
-    "id": 1,
-    "deleted_at": None,
-    "restored_at": None,
-    "transaction_id": None,
-    "note": "Test note",
-    "created": datetime.datetime.now(),
-    "document": 1,
-    "user": 1,
-}
+note = DocumentNoteFactory.create_api_data()
 @given(
     id=st.integers(min_value=1, max_value=10**6),
     deleted_at=st.one_of(st.none(), st.datetimes()),

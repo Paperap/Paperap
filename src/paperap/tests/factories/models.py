@@ -25,25 +25,70 @@ from __future__ import annotations
 
 from abc import ABC
 from datetime import datetime, timezone
-from typing import Any, Generic
+from typing import TYPE_CHECKING, Any, Generic, override
 
 import factory
+from factory.base import StubObject
 from faker import Faker
 from typing_extensions import TypeVar
 
-from paperap.models import (Correspondent, CustomField, Document, DocumentNote,
-                            DocumentType, Group, Profile, SavedView,
+from paperap.models import (StandardModel, Correspondent, CustomField, Document,
+                            DocumentNote, DocumentType, Group, Profile, SavedView,
                             ShareLinks, StoragePath, Tag, Task, UISettings,
                             User, Workflow, WorkflowAction, WorkflowTrigger)
+if TYPE_CHECKING:
+    from paperap.resources import BaseResource
 
 fake = Faker()
 
-class PydanticFactory(factory.Factory):
-    """Base factory for Pydantic models."""
+_StandardModel = TypeVar("_StandardModel", bound="StandardModel", default="StandardModel")
 
-class CorrespondentFactory(PydanticFactory):
+class PydanticFactory(factory.Factory[_StandardModel], Generic[_StandardModel]):
+    """Base factory for Pydantic models."""
     class Meta: # type: ignore # pyright handles this wrong
-        model = Correspondent
+        abstract = True
+
+    @classmethod
+    def get_resource(cls) -> "BaseResource":
+        """
+        Get the resource for the model.
+
+        Returns:
+            The resource for the model specified in this factory's Meta.model
+        """
+        return cls._meta.model._meta.resource # type: ignore # model is always defined on subclasses
+    
+    @classmethod
+    def create_api_data(cls, **kwargs : Any) -> dict[str, Any]:
+        """
+        Create a model, then transform its fields into sample API data.
+
+        Args:
+            **kwargs: Arbitrary keyword arguments to pass to the model creation.
+
+        Returns:
+            dict: A dictionary of the model's fields.
+        """
+        _instance = cls.create(**kwargs)
+        return cls.get_resource().transform_data_output(_instance, exclude_unset = False)
+
+    @classmethod
+    def to_dict(cls, **kwargs) -> dict[str, Any]:
+        """
+        Create a model, and return a dictionary of the model's fields.
+
+        Args:
+            **kwargs: Arbitrary keyword arguments to pass to the model creation.
+
+        Returns:
+            dict: A dictionary of the model's fields.
+        """
+        _instance = cls.create(**kwargs)
+        return _instance.to_dict()
+
+class CorrespondentFactory(PydanticFactory[Correspondent]):
+    class Meta: # type: ignore # pyright handles this wrong
+        model = Correspondent    
 
     slug = factory.LazyFunction(fake.slug)
     name = factory.Faker("name")
@@ -54,7 +99,7 @@ class CorrespondentFactory(PydanticFactory):
     owner = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
     user_can_change = factory.Faker("boolean")
 
-class CustomFieldFactory(PydanticFactory):
+class CustomFieldFactory(PydanticFactory[CustomField]):
     class Meta: # type: ignore # pyright handles this wrong
         model = CustomField
 
@@ -63,7 +108,7 @@ class CustomFieldFactory(PydanticFactory):
     extra_data = factory.Dict({"key": fake.word(), "value": fake.word()})
     document_count = factory.Faker("random_int", min=0, max=100)
 
-class DocumentNoteFactory(PydanticFactory):
+class DocumentNoteFactory(PydanticFactory[DocumentNote]):
     class Meta: # type: ignore # pyright handles this wrong
         model = DocumentNote
 
@@ -75,7 +120,7 @@ class DocumentNoteFactory(PydanticFactory):
     document = factory.Faker("random_int", min=1, max=1000)
     user = factory.Faker("random_int", min=1, max=1000)
 
-class DocumentFactory(PydanticFactory):
+class DocumentFactory(PydanticFactory[Document]):
     class Meta: # type: ignore # pyright handles this wrong
         model = Document
 
@@ -94,13 +139,13 @@ class DocumentFactory(PydanticFactory):
     owner = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
     page_count = factory.Faker("random_int", min=1, max=500)
     storage_path = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
-    tags = factory.List([factory.Faker("random_int", min=1, max=50) for _ in range(5)])
+    tag_ids = factory.List([factory.Faker("random_int", min=1, max=50) for _ in range(5)])
     title = factory.Faker("sentence")
     user_can_change = factory.Faker("boolean")
     # notes is a list of DocumentNote instances
-    notes = factory.LazyFunction(lambda: [DocumentNoteFactory() for _ in range(3)])
+    notes = factory.LazyFunction(lambda: [DocumentNoteFactory.create() for _ in range(3)])
 
-class DocumentTypeFactory(PydanticFactory):
+class DocumentTypeFactory(PydanticFactory[DocumentType]):
     class Meta: # type: ignore # pyright handles this wrong
         model = DocumentType
 
@@ -113,7 +158,7 @@ class DocumentTypeFactory(PydanticFactory):
     owner = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
     user_can_change = factory.Faker("boolean")
 
-class TagFactory(PydanticFactory):
+class TagFactory(PydanticFactory[Tag]):
     class Meta: # type: ignore # pyright handles this wrong
         model = Tag
 
@@ -128,7 +173,7 @@ class TagFactory(PydanticFactory):
     owner = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
     user_can_change = factory.Faker("boolean")
 
-class ProfileFactory(PydanticFactory):
+class ProfileFactory(PydanticFactory[Profile]):
     class Meta: # type: ignore # pyright handles this wrong
         model = Profile
 
@@ -140,7 +185,7 @@ class ProfileFactory(PydanticFactory):
     social_accounts = factory.List([factory.Faker("url") for _ in range(3)])
     has_usable_password = factory.Faker("boolean")
 
-class UserFactory(PydanticFactory):
+class UserFactory(PydanticFactory[User]):
     class Meta: # type: ignore # pyright handles this wrong
         model = User
 
@@ -157,7 +202,7 @@ class UserFactory(PydanticFactory):
     user_permissions = factory.List([factory.Faker("word") for _ in range(5)])
     inherited_permissions = factory.List([factory.Faker("word") for _ in range(5)])
 
-class StoragePathFactory(PydanticFactory):
+class StoragePathFactory(PydanticFactory[StoragePath]):
     class Meta: # type: ignore # pyright handles this wrong
         model = StoragePath
 
@@ -171,7 +216,7 @@ class StoragePathFactory(PydanticFactory):
     owner = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
     user_can_change = factory.Faker("boolean")
 
-class SavedViewFactory(PydanticFactory):
+class SavedViewFactory(PydanticFactory[SavedView]):
     class Meta: # type: ignore # pyright handles this wrong
         model = SavedView
 
@@ -187,7 +232,7 @@ class SavedViewFactory(PydanticFactory):
     owner = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
     user_can_change = factory.Faker("boolean")
 
-class ShareLinksFactory(PydanticFactory):
+class ShareLinksFactory(PydanticFactory[ShareLinks]):
     class Meta: # type: ignore # pyright handles this wrong
         model = ShareLinks
 
@@ -197,7 +242,7 @@ class ShareLinksFactory(PydanticFactory):
     created = factory.LazyFunction(datetime.now)
     file_version = factory.Faker("word")
 
-class TaskFactory(PydanticFactory):
+class TaskFactory(PydanticFactory[Task]):
     class Meta: # type: ignore # pyright handles this wrong
         model = Task
 
@@ -210,7 +255,7 @@ class TaskFactory(PydanticFactory):
     acknowledged = factory.Faker("boolean")
     related_document = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=1000), None)
 
-class UISettingsFactory(PydanticFactory):
+class UISettingsFactory(PydanticFactory[UISettings]):
     class Meta: # type: ignore # pyright handles this wrong
         model = UISettings
 
@@ -218,14 +263,14 @@ class UISettingsFactory(PydanticFactory):
     settings = factory.Dict({"dashboard_layout": "grid", "notification_settings": {"email": True}})
     permissions = factory.List([factory.Faker("word") for _ in range(5)])
 
-class GroupFactory(PydanticFactory):
+class GroupFactory(PydanticFactory[Group]):
     class Meta: # type: ignore # pyright handles this wrong
         model = Group
 
     name = factory.Faker("word")
     permissions = factory.List([factory.Faker("word") for _ in range(5)])
 
-class WorkflowTriggerFactory(PydanticFactory):
+class WorkflowTriggerFactory(PydanticFactory[WorkflowTrigger]):
     class Meta: # type: ignore # pyright handles this wrong
         model = WorkflowTrigger
 
@@ -241,7 +286,7 @@ class WorkflowTriggerFactory(PydanticFactory):
     filter_has_correspondent = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
     filter_has_document_type = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
 
-class WorkflowActionFactory(PydanticFactory):
+class WorkflowActionFactory(PydanticFactory[WorkflowAction]):
     class Meta: # type: ignore # pyright handles this wrong
         model = WorkflowAction
 
@@ -257,7 +302,7 @@ class WorkflowActionFactory(PydanticFactory):
     remove_all_tags = factory.Faker("boolean")
     remove_all_custom_fields = factory.Faker("boolean")
 
-class WorkflowFactory(PydanticFactory):
+class WorkflowFactory(PydanticFactory[Workflow]):
     class Meta: # type: ignore # pyright handles this wrong
         model = Workflow
 

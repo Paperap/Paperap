@@ -74,14 +74,14 @@ _StandardResource = TypeVar("_StandardResource", bound="StandardResource", defau
 _StandardQuerySet = TypeVar("_StandardQuerySet", bound="StandardQuerySet", default="StandardQuerySet")
 
 class PyTestCase(
-    TestMixin[_StandardModel, _StandardResource, _StandardQuerySet], 
+    TestMixin[_StandardModel, _StandardResource, _StandardQuerySet],
     Generic[_StandardModel, _StandardResource, _StandardQuerySet]
 ):
     @pytest.fixture(autouse=True)
     def setUp(self, mocker) -> None:
         """
         Set up the test case by initializing the client, resource, and model data.
-        """        
+        """
         self.setup_references()
         self.setup_client(mocker)
         self.setup_resource()
