@@ -77,7 +77,7 @@ class TestTag(TagUnitTest):
 
     @override
     def setup_model_data(self):
-        self.model_data_parsed = {
+        self.model_data_unparsed = {
             "id": 1,
             "name": "Test Tag",
             "slug": "test-tag",
@@ -129,13 +129,13 @@ class TestTag(TagUnitTest):
         for field, field_type in fields.items():
             value = model_dict[field]
             self.assertIsInstance(value, field_type, f"Expected {field} to be a {field_type}, got {type(value)}")
-            self.assertEqual(value, self.model_data_parsed[field], f"Expected {field} to match sample data")
+            self.assertEqual(value, self.model_data_unparsed[field], f"Expected {field} to match sample data")
 
 class TestRelationships(TagUnitTest):
 
     @override
     def setup_model_data(self):
-        self.model_data_parsed = {
+        self.model_data_unparsed = {
             "id": 1337,
             "name": "Test Tag",
             "slug": "test-tag",

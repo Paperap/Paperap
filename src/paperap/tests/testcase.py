@@ -198,7 +198,10 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
         Load model data if the resource is set.
         """
         if getattr(self, "resource", None):
-            self.load_model_data()
+            if unparsed := getattr(self, 'model_data_unparsed', None):
+                self.model_data_parsed = self.model_data_parsed or self.resource.transform_data_output(**unparsed)
+            else:
+                self.load_model_data()
 
     def setup_model(self) -> None:
         """

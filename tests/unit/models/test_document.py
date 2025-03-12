@@ -45,15 +45,19 @@ sample_document = load_sample_data('documents_item.json')
 class TestDocumentInit(DocumentUnitTest):
     @override
     def setup_model_data(self):
-        self.model_data_parsed = {
+        self.model_data_unparsed = {
             "id": 1,
             "created": "2025-03-01T12:00:00Z",
             "updated": "2025-03-02T12:00:00Z",
             "title": "Test Document",
             "correspondent_id": 1,
             "document_type_id": 1,
-            "tag_ids": [1, 2, 3],
+            "tags": [1, 2, 3],
         }
+        self.model_data_parsed = {
+            **self.model_data_unparsed,
+        }
+        self.model_data_parsed['tag_ids'] = self.model_data_parsed.pop('tags')
 
     def test_from_dict(self):
         fields = {
@@ -66,7 +70,7 @@ class TestDocumentInit(DocumentUnitTest):
                 self.assertIsNone(value)
             else:
                 self.assertIsInstance(value, field_type, f"Expected {field} to be a {field_type}, got {type(value)}")
-            self.assertEqual(value, self.model_data_parsed[field], f"Expected {field} to match sample data")
+            self.assertEqual(value, self.model_data_unparsed[field], f"Expected {field} to match sample data")
         self.assertIsInstance(self.model.created, datetime, f"created wrong type after from_dict {type(self.model.created)}")
         self.assertIsInstance(self.model.updated, datetime, f"updated wrong type after from_dict {type(self.model.updated)}")
         self.assertEqual(self.model.created, datetime(2025, 3, 1, 12, 0, 0, tzinfo=timezone.utc), f"created wrong value after from_dict {self.model.created}")
@@ -82,7 +86,7 @@ class TestDocumentInit(DocumentUnitTest):
 class TestDocument(DocumentUnitTest):
     @override
     def setup_model_data(self):
-        self.model_data_parsed = {
+        self.model_data_unparsed = {
             "id": 1,
             "created": "2025-03-01T12:00:00Z",
             "updated": "2025-03-02T12:00:00Z",

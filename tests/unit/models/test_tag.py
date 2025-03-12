@@ -37,7 +37,7 @@ sample_data = load_sample_data('tags_list.json')
 class TestTagInit(TagUnitTest):
     @override
     def setup_model_data(self):
-        self.model_data_parsed = {
+        self.model_data_unparsed = {
             "id": 1,
             "name": "Test Tag",
             "slug": "test-tag",
@@ -50,19 +50,19 @@ class TestTagInit(TagUnitTest):
 
     def test_from_dict(self):
         self.assertIsInstance(self.model, Tag, f"Expected Tag, got {type(self.model)}")
-        self.assertEqual(self.model.id, self.model_data_parsed["id"], f"Tag id is wrong when created from dict: {self.model.id}")
-        self.assertEqual(self.model.name, self.model_data_parsed["name"], f"Tag name is wrong when created from dict: {self.model.name}")
-        self.assertEqual(self.model.slug, self.model_data_parsed["slug"], f"Tag slug is wrong when created from dict: {self.model.slug}")
-        self.assertEqual(self.model.colour, self.model_data_parsed["color"], f"Tag color is wrong when created from dict: {self.model.colour}")
-        self.assertEqual(self.model.match, self.model_data_parsed["match"], f"Tag match is wrong when created from dict: {self.model.match}")
-        self.assertEqual(self.model.matching_algorithm, self.model_data_parsed["matching_algorithm"], f"Tag matching_algorithm is wrong when created from dict: {self.model.matching_algorithm}")
-        self.assertEqual(self.model.is_insensitive, self.model_data_parsed["is_insensitive"], f"Tag is_insensitive is wrong when created from dict: {self.model.is_insensitive}")
-        self.assertEqual(self.model.is_inbox_tag, self.model_data_parsed["is_inbox_tag"], f"Tag is_inbox_tag is wrong when created from dict: {self.model.is_inbox_tag}")
+        self.assertEqual(self.model.id, self.model_data_unparsed["id"], f"Tag id is wrong when created from dict: {self.model.id}")
+        self.assertEqual(self.model.name, self.model_data_unparsed["name"], f"Tag name is wrong when created from dict: {self.model.name}")
+        self.assertEqual(self.model.slug, self.model_data_unparsed["slug"], f"Tag slug is wrong when created from dict: {self.model.slug}")
+        self.assertEqual(self.model.colour, self.model_data_unparsed["color"], f"Tag color is wrong when created from dict: {self.model.colour}")
+        self.assertEqual(self.model.match, self.model_data_unparsed["match"], f"Tag match is wrong when created from dict: {self.model.match}")
+        self.assertEqual(self.model.matching_algorithm, self.model_data_unparsed["matching_algorithm"], f"Tag matching_algorithm is wrong when created from dict: {self.model.matching_algorithm}")
+        self.assertEqual(self.model.is_insensitive, self.model_data_unparsed["is_insensitive"], f"Tag is_insensitive is wrong when created from dict: {self.model.is_insensitive}")
+        self.assertEqual(self.model.is_inbox_tag, self.model_data_unparsed["is_inbox_tag"], f"Tag is_inbox_tag is wrong when created from dict: {self.model.is_inbox_tag}")
 
 class TestTag(TagUnitTest):
     @override
     def setup_model_data(self):
-        self.model_data_parsed = {
+        self.model_data_unparsed = {
             "id": 1,
             "created": "2025-03-01T12:00:00Z",
             "updated": "2025-03-02T12:00:00Z",
@@ -77,23 +77,23 @@ class TestTag(TagUnitTest):
 
     def test_model_string_parsing(self):
         # Test if string fields are parsed correctly
-        self.assertEqual(self.model.name, self.model_data_parsed["name"])
+        self.assertEqual(self.model.name, self.model_data_unparsed["name"])
 
     def test_model_int_parsing(self):
         # Test if integer fields are parsed correctly
-        self.assertEqual(self.model.matching_algorithm, self.model_data_parsed["matching_algorithm"])
+        self.assertEqual(self.model.matching_algorithm, self.model_data_unparsed["matching_algorithm"])
 
     def test_model_to_dict(self):
         # Test if the model can be converted back to a dictionary
         model_dict = self.model.to_dict()
 
-        self.assertEqual(model_dict["name"], self.model_data_parsed["name"])
-        self.assertEqual(model_dict["slug"], self.model_data_parsed["slug"])
-        self.assertEqual(model_dict["colour"], self.model_data_parsed["color"])
-        self.assertEqual(model_dict["match"], self.model_data_parsed["match"])
-        self.assertEqual(model_dict["matching_algorithm"], self.model_data_parsed["matching_algorithm"])
-        self.assertEqual(model_dict["is_insensitive"], self.model_data_parsed["is_insensitive"])
-        self.assertEqual(model_dict["is_inbox_tag"], self.model_data_parsed["is_inbox_tag"])
+        self.assertEqual(model_dict["name"], self.model_data_unparsed["name"])
+        self.assertEqual(model_dict["slug"], self.model_data_unparsed["slug"])
+        self.assertEqual(model_dict["colour"], self.model_data_unparsed["color"])
+        self.assertEqual(model_dict["match"], self.model_data_unparsed["match"])
+        self.assertEqual(model_dict["matching_algorithm"], self.model_data_unparsed["matching_algorithm"])
+        self.assertEqual(model_dict["is_insensitive"], self.model_data_unparsed["is_insensitive"])
+        self.assertEqual(model_dict["is_inbox_tag"], self.model_data_unparsed["is_inbox_tag"])
 
 if __name__ == "__main__":
     unittest.main()
