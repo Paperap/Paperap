@@ -33,7 +33,7 @@ from yarl import URL
 from paperap.exceptions import FilterDisabledError, MultipleObjectsFoundError, ObjectNotFoundError
 
 if TYPE_CHECKING:
-    from paperap.models.abstract.model import StandardModel, BaseModel
+    from paperap.models.abstract.model import BaseModel, StandardModel
     from paperap.resources.base import BaseResource, StandardResource
 
 _BaseModel = TypeVar("_BaseModel", bound="BaseModel", default="BaseModel", covariant=True)

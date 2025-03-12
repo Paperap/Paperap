@@ -10,7 +10,7 @@
         File:    utils.py
         Project: paperap
         Created: 2025-03-12
-        Version: 0.0.5
+        Version: 0.0.6
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -24,10 +24,19 @@
 """
 from __future__ import annotations
 import json
+import os
 from pathlib import Path
 import random
 import string
-from typing import Any
+from typing import Any, TYPE_CHECKING
+from typing_extensions import TypeVar
+from unittest.mock import patch
+from paperap.client import PaperlessClient
+
+if TYPE_CHECKING:
+    from paperap.resources import BaseResource
+
+_BaseResource = TypeVar("_BaseResource", bound="BaseResource")
 
 def defaults(defaults : dict[str, Any], **kwargs : Any) -> dict[str, Any]:
     """
@@ -73,3 +82,13 @@ def random_json():
         "id": random.randint(1, 10**9),
         "value": random.choice([None, random_string(15), 123, 3.14, True, {}, []])
     })
+
+def create_client() -> PaperlessClient:
+    # patch env
+    env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+    with patch.dict(os.environ, env_data, clear=True):
+        return PaperlessClient()
+
+def create_resource(resource : type[_BaseResource]) -> _BaseResource:
+    client = create_client()
+    return resource(client=client)

@@ -48,18 +48,21 @@ logger = logging.getLogger(__name__)
 
 _Self = TypeVar("_Self", bound="BaseModel")
 
+
 class ModelConfigType(TypedDict):
     populate_by_name: bool
     validate_assignment: bool
     use_enum_values: bool
     extra: Literal["ignore"]
 
-BASE_MODEL_CONFIG : ModelConfigType = {
+
+BASE_MODEL_CONFIG: ModelConfigType = {
     "populate_by_name": True,
     "validate_assignment": True,
     "use_enum_values": True,
     "extra": "ignore",
 }
+
 
 class BaseModel(pydantic.BaseModel, ABC):
     """

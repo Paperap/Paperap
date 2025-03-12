@@ -36,10 +36,7 @@ from paperap.signals import registry
 
 if TYPE_CHECKING:
     from paperap.client import PaperlessClient
-    from paperap.models.abstract import (
-        StandardModel, StandardQuerySet,
-        BaseQuerySet, BaseModel
-    )
+    from paperap.models.abstract import BaseModel, BaseQuerySet, StandardModel, StandardQuerySet
 
 _BaseModel = TypeVar("_BaseModel", bound="BaseModel")
 _StandardModel = TypeVar("_StandardModel", bound="StandardModel")
@@ -256,9 +253,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         """
         # Signal before deleting resource
         signal_params = {"resource": self.name, "model_id": model_id}
-        registry.emit(
-            "resource.delete:before", "Emitted before deleting a resource", args=[self], kwargs=signal_params
-        )
+        registry.emit("resource.delete:before", "Emitted before deleting a resource", args=[self], kwargs=signal_params)
 
         if not (template := self.endpoints.get("delete")):
             raise ConfigurationError(f"Delete endpoint not defined for resource {self.name}")
@@ -267,9 +262,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         self.client.request("DELETE", url)
 
         # Signal after deleting resource
-        registry.emit(
-            "resource.delete:after", "Emitted after deleting a resource", args=[self], kwargs=signal_params
-        )
+        registry.emit("resource.delete:after", "Emitted after deleting a resource", args=[self], kwargs=signal_params)
 
     def parse_to_model(self, item: dict[str, Any]) -> _BaseModel:
         """
@@ -302,16 +295,13 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         return data
 
     @overload
-    def transform_data_output(self, model: _BaseModel, exclude_unset : bool = True) -> dict[str, Any]: ...
+    def transform_data_output(self, model: _BaseModel, exclude_unset: bool = True) -> dict[str, Any]: ...
 
     @overload
     def transform_data_output(self, **data: Any) -> dict[str, Any]: ...
 
     def transform_data_output(
-        self, 
-        model : _BaseModel | None = None, 
-        exclude_unset : bool = True, 
-        **data: Any
+        self, model: _BaseModel | None = None, exclude_unset: bool = True, **data: Any
     ) -> dict[str, Any]:
         """
         Transform data before sending it to the API.
@@ -329,8 +319,8 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             if data:
                 # Combining model.to_dict() and data is ambiguous, so not allowed.
                 raise ValueError("Only one of model or data should be provided")
-            data = model.to_dict(exclude_unset = exclude_unset)
-            
+            data = model.to_dict(exclude_unset=exclude_unset)
+
         for key, value in self._meta.field_map.items():
             if value in data:
                 data[key] = data.pop(value)
@@ -471,9 +461,7 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet], Generic[
         """
         # Signal before getting resource
         signal_params = {"resource": self.name, "model_id": model_id}
-        registry.emit(
-            "resource.get:before", "Emitted before getting a resource", args=[self], kwargs=signal_params
-        )
+        registry.emit("resource.get:before", "Emitted before getting a resource", args=[self], kwargs=signal_params)
 
         if not (template := self.endpoints.get("detail")):
             raise ConfigurationError(f"Get detail endpoint not defined for resource {self.name}")

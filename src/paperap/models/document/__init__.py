@@ -6,7 +6,7 @@
        File:    __init__.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.6
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -19,6 +19,5 @@
 
 """
 
-from paperap.models.document.model import Document, DocumentNote
-from paperap.models.document.parser import CustomFieldDict
+from paperap.models.document.model import CustomFieldDict, Document, DocumentNote
 from paperap.models.document.queryset import DocumentQuerySet

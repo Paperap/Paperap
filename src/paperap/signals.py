@@ -484,4 +484,5 @@ class SignalRegistry:
         """
         return handler in self._queue[action].get(name, set())
 
+
 registry = SignalRegistry.get_instance()

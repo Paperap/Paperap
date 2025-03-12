@@ -167,7 +167,7 @@ pre-commit run --all-files
 - [ ] migrate to pytest
 - [ ] immutability (resources, response dicts, (optionally) for models)
 - [ ] contracts
-- [ ] hypothesis
+- [ ] hypothesis testing (in progress)
 - [x] fetch each model synchronously and validate data types
 - [x] lazy loading querysets
 - [x] relationships between models using querysets

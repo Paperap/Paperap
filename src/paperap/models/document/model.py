@@ -9,7 +9,7 @@ METADATA:
 File:    model.py
         Project: paperap
 Created: 2025-03-09
-        Version: 0.0.5
+        Version: 0.0.6
 Author:  Jess Mann
 Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,14 +25,14 @@ LAST MODIFIED:
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Iterable, Iterator, Optional, TypedDict, cast, override
+from typing import TYPE_CHECKING, Annotated, Any, Iterable, Iterator, Optional, TypedDict, cast, override
 
-from pydantic import Field, field_serializer, field_validator, model_serializer
+import pydantic
+from pydantic import Field, conlist, field_serializer, field_validator, model_serializer
 from typing_extensions import TypeVar
 from yarl import URL
 
 from paperap.models.abstract import FilteringStrategies, StandardModel
-from paperap.models.document.parser import CustomFieldDict
 from paperap.models.document.queryset import DocumentQuerySet
 
 if TYPE_CHECKING:
@@ -42,6 +42,16 @@ if TYPE_CHECKING:
     from paperap.models.storage_path import StoragePath
     from paperap.models.tag import Tag, TagQuerySet
     from paperap.models.user import User
+
+
+class CustomFieldTypedDict(TypedDict):
+    field: int
+    value: Any
+
+
+class CustomFieldDict(pydantic.BaseModel):
+    field: int
+    value: Any
 
 
 class DocumentNote(StandardModel):
@@ -148,11 +158,11 @@ class Document(StandardModel):
     updated: datetime | None = Field(description="Last update timestamp", default=None)
     deleted_at: datetime | None = None
 
-    custom_field_dicts: list[CustomFieldDict] = Field(default_factory=list)
+    custom_field_dicts: Annotated[list[CustomFieldDict], Field(default_factory=list)]
     correspondent_id: int | None = None
     document_type_id: int | None = None
     storage_path_id: int | None = None
-    tag_ids: list[int] = Field(default_factory=list)
+    tag_ids: Annotated[list[int], Field(default_factory=list)]
 
     _correspondent: tuple[int, Correspondent] | None = None
     _document_type: tuple[int, DocumentType] | None = None
@@ -412,14 +422,14 @@ class Document(StandardModel):
         """
         Get the IDs of the custom fields for this document.
         """
-        return [field["field"] for field in self.custom_field_dicts]
+        return [element.field for element in self.custom_field_dicts]
 
     @property
     def custom_field_values(self) -> list[Any]:
         """
         Get the values of the custom fields for this document.
         """
-        return [field["value"] for field in self.custom_field_dicts]
+        return [element.value for element in self.custom_field_dicts]
 
     @property
     def tag_names(self) -> list[str]:
@@ -684,7 +694,7 @@ class Document(StandardModel):
         return self._client.custom_fields().id(self.custom_field_ids)
 
     @custom_fields.setter
-    def custom_fields(self, value: "Iterable[CustomField | CustomFieldDict] | None") -> None:
+    def custom_fields(self, value: "Iterable[CustomField | CustomFieldDict] | CustomFieldTypedDict | None") -> None:
         """
         Set the custom fields for this document.
 
@@ -700,13 +710,13 @@ class Document(StandardModel):
             new_list: list[CustomFieldDict] = []
             for field in value:
                 # Check against StandardModel to avoid circular imports
-                # If it is another type of standard model, pydantic validators will complain
+                # If it is the wrong type of standard model (e.g. a User), pydantic validators will complain
                 if isinstance(field, StandardModel):
-                    new_list.append({"field": field.id, "value": None})
+                    new_list.append(CustomFieldDict(field=field.id, value=getattr(field, "value")))
                     continue
 
                 if isinstance(field, dict):
-                    new_list.append(field)
+                    new_list.append(CustomFieldDict(**field))
                     continue
 
                 raise TypeError(f"Invalid type for custom fields: {type(field)}")
@@ -730,8 +740,8 @@ class Document(StandardModel):
 
         """
         for field in self.custom_field_dicts:
-            if field["field"] == field_id:
-                return field["value"]
+            if field.field == field_id:
+                return field.value
 
         if raise_errors:
             raise ValueError(f"Custom field {field_id} not found")

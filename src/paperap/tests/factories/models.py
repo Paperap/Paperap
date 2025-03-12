@@ -9,7 +9,7 @@
         File:    models.py
         Project: paperap
         Created: 2025-03-07
-        Version: 0.0.5
+        Version: 0.0.6
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -57,9 +57,9 @@ class PydanticFactory(factory.Factory[_StandardModel], Generic[_StandardModel]):
             The resource for the model specified in this factory's Meta.model
         """
         return cls._meta.model._meta.resource # type: ignore # model is always defined on subclasses
-    
+
     @classmethod
-    def create_api_data(cls, **kwargs : Any) -> dict[str, Any]:
+    def create_api_data(cls, exclude_unset : bool = False, **kwargs : Any) -> dict[str, Any]:
         """
         Create a model, then transform its fields into sample API data.
 
@@ -70,25 +70,26 @@ class PydanticFactory(factory.Factory[_StandardModel], Generic[_StandardModel]):
             dict: A dictionary of the model's fields.
         """
         _instance = cls.create(**kwargs)
-        return cls.get_resource().transform_data_output(_instance, exclude_unset = False)
+        return cls.get_resource().transform_data_output(_instance, exclude_unset = exclude_unset)
 
     @classmethod
-    def to_dict(cls, **kwargs) -> dict[str, Any]:
+    def to_dict(cls, exclude_unset : bool = False, **kwargs) -> dict[str, Any]:
         """
         Create a model, and return a dictionary of the model's fields.
 
         Args:
+            exclude_unset (bool): Whether to exclude fields that are unset.
             **kwargs: Arbitrary keyword arguments to pass to the model creation.
 
         Returns:
             dict: A dictionary of the model's fields.
         """
         _instance = cls.create(**kwargs)
-        return _instance.to_dict()
+        return _instance.to_dict(exclude_unset=exclude_unset)
 
 class CorrespondentFactory(PydanticFactory[Correspondent]):
     class Meta: # type: ignore # pyright handles this wrong
-        model = Correspondent    
+        model = Correspondent
 
     slug = factory.LazyFunction(fake.slug)
     name = factory.Faker("name")
