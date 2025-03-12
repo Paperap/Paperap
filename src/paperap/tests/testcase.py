@@ -24,7 +24,6 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-import json
 import logging
 import os
 import unittest
@@ -57,6 +56,7 @@ from paperap.resources import (BaseResource, CorrespondentResource,
                                TagResource, TaskResource, UISettingsResource,
                                UserResource, WorkflowActionResource,
                                WorkflowResource, WorkflowTriggerResource)
+from paperap.tests.utils import load_sample_data
 from paperap.tests.factories import (CorrespondentFactory, DocumentFactory,
                                      DocumentTypeFactory, GroupFactory,
                                      ProfileFactory, PydanticFactory,
@@ -71,23 +71,6 @@ logger = logging.getLogger(__name__)
 _StandardModel = TypeVar("_StandardModel", bound="StandardModel", default="StandardModel")
 _StandardResource = TypeVar("_StandardResource", bound="StandardResource", default="StandardResource")
 _StandardQuerySet = TypeVar("_StandardQuerySet", bound="StandardQuerySet", default="StandardQuerySet")
-
-def load_sample_data(filename : str) -> dict[str, Any]:
-    """
-    Load sample data from a JSON file.
-
-    Args:
-        filename: The name of the file to load.
-
-    Returns:
-        A dictionary containing the sample data.
-    """
-    # Load sample response from tests/sample_data/{model}_{endpoint}.json
-    sample_data_filepath = Path(__file__).parent.parent.parent.parent / "tests" / "sample_data" / filename
-    with open(sample_data_filepath, "r", encoding="utf-8") as f:
-        text = f.read()
-        sample_data = json.loads(text)
-    return sample_data
 
 class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySet]):
     """

@@ -30,9 +30,13 @@ from typing import Any, Iterator, Union, Optional
 from hypothesis import example, given, strategies as st
 from paperap.models import CustomFieldDict, Document, DocumentNote, DocumentQuerySet
 import paperap.models.document.parser
+from paperap.tests import random_json, defaults as d
 from paperap.client import PaperlessClient
 from paperap.resources.correspondents import CorrespondentResource
 from unittest.mock import patch
+import json
+import random
+import string
 
 # TODO: replace st.nothing() with an appropriate strategy
 
@@ -42,183 +46,142 @@ with patch.dict(os.environ, env_data, clear=True):
     client = PaperlessClient()
     resource = CorrespondentResource(client=client)
 
+doc = {
+    "id": 1,
+    "added": datetime.datetime.now(),
+    "archive_serial_number": 1,
+    "archived_file_name": "test.pdf",
+    "content": "Test content",
+    "is_shared_by_requester": True,
+    "notes": None,
+    "original_file_name": "test.pdf",
+    "owner": 1,
+    "page_count": 1,
+    "title": "Test title",
+    "user_can_change": True,
+    "created_on": datetime.datetime.now(),
+    "created_date": "2025-03-12",
+    "updated_on": datetime.datetime.now(),
+    "deleted_at": None,
+    "custom_field_dicts": None,
+    "correspondent_id": 1,
+    "document_type_id": 1,
+    "storage_path_id": 1,
+    "tag_ids": [],
+}
 @given(
-    id=st.integers(),
-    added=st.none(),
-    archive_serial_number=st.none(),
-    archived_file_name=st.none(),
-    content=st.text(),
+    id=st.integers(min_value=0),
+    added=st.one_of(st.none(), st.datetimes()),
+    archive_serial_number=st.one_of(st.none(), st.integers(min_value=0, max_value=10**6)),
+    archived_file_name=st.one_of(st.none(), st.text(min_size=0, max_size=255)),
+    content=st.text(min_size=0, max_size=100000),
     is_shared_by_requester=st.booleans(),
     notes=st.lists(
         st.builds(
             DocumentNote,
             created=st.datetimes(),
-            deleted_at=st.one_of(st.none(), st.none(), st.datetimes()),
-            document=st.integers(),
-            id=st.one_of(st.just(0), st.integers()),
-            note=st.text(),
-            restored_at=st.one_of(st.none(), st.none(), st.datetimes()),
-            transaction_id=st.one_of(st.none(), st.none(), st.integers()),
-            user=st.integers(),
+            deleted_at=st.one_of(st.none(), st.datetimes()),
+            document=st.integers(min_value=0),
+            id=st.one_of(st.just(0), st.integers(min_value=0, max_value=10**6)),
+            note=st.text(min_size=0, max_size=10000),
+            restored_at=st.one_of(st.none(), st.datetimes()),
+            transaction_id=st.one_of(st.none(), st.integers(min_value=0)),
+            user=st.integers(min_value=0),
         )
     ),
-    original_file_name=st.none(),
-    owner=st.none(),
-    page_count=st.none(),
-    title=st.text(),
-    user_can_change=st.none(),
-    created_on=st.none(),
-    created_date=st.none(),
-    updated_on=st.none(),
-    deleted_at=st.none(),
-    custom_field_dicts=st.builds(
-        list[CustomFieldDict]
-    ),
-    correspondent_id=st.none(),
-    document_type_id=st.none(),
-    storage_path_id=st.none(),
-    tag_ids=st.lists(st.integers()),
+    original_file_name=st.one_of(st.none(), st.text(min_size=0, max_size=255)),
+    owner=st.one_of(st.none(), st.integers(min_value=0)),
+    page_count=st.one_of(st.none(), st.integers(min_value=0, max_value=10**5)),
+    title=st.text(min_size=1, max_size=300),
+    user_can_change=st.one_of(st.none(), st.booleans()),
+    created_on=st.one_of(st.none(), st.datetimes()),
+    created_date=st.one_of(st.none(), st.text().map(lambda x: x[:10] if x else None)),  # Limit to YYYY-MM-DD
+    updated_on=st.one_of(st.none(), st.datetimes()),
+    deleted_at=st.one_of(st.none(), st.datetimes()),
+    custom_field_dicts=st.one_of(st.lists(st.builds(CustomFieldDict)), st.none()),
+    correspondent_id=st.one_of(st.none(), st.integers(min_value=0)),
+    document_type_id=st.one_of(st.none(), st.integers(min_value=0)),
+    storage_path_id=st.one_of(st.none(), st.integers(min_value=0)),
+    tag_ids=st.lists(st.integers(min_value=0, max_value=10**6), max_size=1000),
 )
-def test_fuzz_Document(
-    id: int,
-    added: Union[datetime.datetime, None],
-    archive_serial_number: Union[int, None],
-    archived_file_name: Union[str, None],
-    content: str,
-    is_shared_by_requester: bool,
-    notes: list[DocumentNote],
-    original_file_name: Union[str, None],
-    owner: Union[int, None],
-    page_count: Union[int, None],
-    title: str,
-    user_can_change: Union[bool, None],
-    created_on: Union[datetime.datetime, None],
-    created_date: Union[str, None],
-    updated_on: Union[datetime.datetime, None],
-    deleted_at: Union[datetime.datetime, None],
-    custom_field_dicts: list[CustomFieldDict],
-    correspondent_id: Union[int, None],
-    document_type_id: Union[int, None],
-    storage_path_id: Union[int, None],
-    tag_ids: list[int],
-) -> None:
-    Document(
-        resource=resource, # type: ignore # I'm not sure why pylint complains about this
-        id=id,
-        added=added,
-        archive_serial_number=archive_serial_number,
-        archived_file_name=archived_file_name,
-        content=content,
-        is_shared_by_requester=is_shared_by_requester,
-        notes=notes,
-        original_file_name=original_file_name,
-        owner=owner,
-        page_count=page_count,
-        title=title,
-        user_can_change=user_can_change,
-        created_on=created_on,
-        created_date=created_date,
-        updated_on=updated_on,
-        deleted_at=deleted_at,
-        custom_field_dicts=custom_field_dicts,
-        correspondent_id=correspondent_id,
-        document_type_id=document_type_id,
-        storage_path_id=storage_path_id,
-        tag_ids=tag_ids,
-    )
+@example(**d(doc, id=1, title="", content="", tag_ids=[]))  # Edge case: minimal data
+@example(**d(doc, id=10**9, title="A"*300, content="B"*5000, tag_ids=[1, 2, 3]*100))  # Max limits
+def test_fuzz_Document(**kwargs) -> None:
+    Document(resource=resource, **kwargs) # type: ignore # I'm not sure why pyright is complaining
 
 @given(value=st.one_of(st.lists(st.builds(CustomFieldDict)), st.none()))
 @example(value=None)
 @example(value=[])
-@example(value=[{'id': 1, 'value': 'test'}])
-@example(value=[{'id': 10, 'value': None}])
+@example(value=[{"id":1, "value": None}])  # None value
+@example(value=[{"id":10**9, "value": "x" * 100}])  # Large id, long text
+@example(value=[{"id":123, "value": json.loads(random_json())}])  # Random JSON
 def test_fuzz_document_validate_custom_fields(value: list[CustomFieldDict] | None) -> None:
     Document.validate_custom_fields(value=value)
 
 @given(value=st.one_of(st.lists(st.builds(DocumentNote)), st.none()))
 @example(value=None)
 @example(value=[])
-def test_fuzz_document_validate_notes(value: list[Any] | None) -> None:
+@example(value=[DocumentNote(id=0, note="", created=datetime.datetime.now(), document=1, user=1)])
+@example(value=[DocumentNote(id=10**9, note="Extreme Note!", created=datetime.datetime.now(), document=2, user=2)])
+def test_fuzz_document_validate_notes(value: list[DocumentNote] | None) -> None:
     Document.validate_notes(value=value)
-    
+
 @given(value=st.one_of(st.none(), st.booleans()))
-def test_fuzz_document_validate_is_shared_by_requester(
-    value: Union[bool, None],
-) -> None:
+@example(value=None)
+@example(value=True)
+@example(value=False)
+def test_fuzz_document_validate_is_shared_by_requester(value: Union[bool, None]) -> None:
     Document.validate_is_shared_by_requester(value=value)
 
 @given(value=st.one_of(st.none(), st.lists(st.integers())))
 @example(value=None)
 @example(value=[])
+@example(value=[1, 2, 3])
+@example(value=[10**6]*100)  # Large list
 def test_fuzz_document_validate_tags(value: Union[list[int], None]) -> None:
     Document.validate_tags(value=value)
-
 
 @given(value=st.one_of(st.none(), st.text()))
 @example(value=None)
 @example(value="")
+@example(value="Hello, world!")
+@example(value="𓀀𓂀𓃰")  # Unicode characters
 def test_fuzz_document_validate_text(value: Union[str, None]) -> None:
     Document.validate_text(value=value)
 
+note = {
+    "id": 1,
+    "deleted_at": None,
+    "restored_at": None,
+    "transaction_id": None,
+    "note": "Test note",
+    "created": datetime.datetime.now(),
+    "document": 1,
+    "user": 1,
+}
 @given(
-    id=st.integers(),
+    id=st.integers(min_value=1, max_value=10**6),
     deleted_at=st.one_of(st.none(), st.datetimes()),
     restored_at=st.one_of(st.none(), st.datetimes()),
     transaction_id=st.one_of(st.none(), st.integers()),
-    note=st.text(),
+    note=st.text(min_size=0, max_size=1000),
     created=st.datetimes(),
     document=st.integers(),
     user=st.integers(),
 )
-def test_fuzz_DocumentNote(
-    id: int,
-    deleted_at: Union[datetime.datetime, None],
-    restored_at: Union[datetime.datetime, None],
-    transaction_id: Union[int, None],
-    note: str,
-    created: datetime.datetime,
-    document: int,
-    user: int,
-) -> None:
-    DocumentNote(
-        resource=resource, # type: ignore # I'm not sure why pylint complains about this
-        id=id,
-        deleted_at=deleted_at,
-        restored_at=restored_at,
-        transaction_id=transaction_id,
-        note=note,
-        created=created,
-        document=document,
-        user=user,
-    )
-
+@example(**d(note, id=0, note="", created=datetime.datetime.now(), document=1, user=1))
+@example(**d(note, id=10**6, note="Extreme Case Note!", created=datetime.datetime.now(), document=99999, user=99999))
+def test_fuzz_DocumentNote(**kwargs) -> None:
+    DocumentNote(resource=resource, **kwargs) # type: ignore # I'm not sure why pyright is complaining
 
 @given(
-    filters=st.none(),
-    _cache=st.none(),
+    filters=st.one_of(st.none(), st.dictionaries(keys=st.text(), values=st.text())),
+    _cache=st.one_of(st.none(), st.lists(st.dictionaries(keys=st.text(), values=st.text()))),
     _fetch_all=st.booleans(),
-    _next_url=st.none(),
-    _last_response=st.none(),
-    _iter=st.none(),
-    _urls_fetched=st.none(),
+    _next_url=st.one_of(st.none(), st.text()),
+    _last_response=st.one_of(st.none(), st.dictionaries(keys=st.text(), values=st.text())),
+    _iter=st.one_of(st.none(), st.iterables(st.text())),
+    _urls_fetched=st.one_of(st.none(), st.lists(st.text())),
 )
-def test_fuzz_DocumentQuerySet(
-    filters: Optional[dict[str, Any]],
-    _cache: Optional[list],
-    _fetch_all: bool,
-    _next_url: Union[str, None],
-    _last_response: Optional[dict[str, Any]],
-    _iter: Optional[Iterator],
-    _urls_fetched: Optional[list[str]],
-) -> None:
-    DocumentQuerySet(
-        resource=resource, # type: ignore # I'm not sure why pylint complains about this
-        filters=filters,
-        _cache=_cache,
-        _fetch_all=_fetch_all,
-        _next_url=_next_url,
-        _last_response=_last_response,
-        _iter=_iter,
-        _urls_fetched=_urls_fetched,
-    )
-
+def test_fuzz_DocumentQuerySet(**kwargs) -> None:
+    DocumentQuerySet(resource=resource, **kwargs) # type: ignore # I'm not sure why pyright is complaining
