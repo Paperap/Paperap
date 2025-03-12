@@ -7,3 +7,4 @@ uv.lock
 node_modules/
 dist/
 .vscode/settings.json
+.hypothesis
