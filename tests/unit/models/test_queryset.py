@@ -441,7 +441,7 @@ class TestQuerySetGetItem(UnitTestCase):
 
 class TestContains(UnitTestCase):
     """Test the __contains__ method."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @override
     def setUp(self):
@@ -487,7 +487,7 @@ class TestContains(UnitTestCase):
 
 class TestRequestIter(UnitTestCase):
     """Test the _request_iter method."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @override
     def setUp(self):
@@ -534,7 +534,7 @@ class TestRequestIter(UnitTestCase):
 
 class TestGetNext(UnitTestCase):
     """Test the _get_next method."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @override
     def setUp(self):
@@ -585,7 +585,7 @@ class TestGetNext(UnitTestCase):
 
 class TestReset(UnitTestCase):
     """Test the _reset method."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @override
     def setUp(self):
@@ -617,7 +617,7 @@ class TestReset(UnitTestCase):
 
 class TestFetchAllResults(UnitTestCase):
     """Test the _fetch_all_results method."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @override
     def setUp(self):
@@ -688,7 +688,7 @@ class TestFetchAllResults(UnitTestCase):
 
 class TestNone(UnitTestCase):
     """Test the none method."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @override
     def setUp(self):
@@ -754,7 +754,7 @@ class TestFilterFieldByStr(UnitTestCase):
 
 class TestStandardQuerySetMethods(UnitTestCase):
     """Test the StandardQuerySet-specific methods."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @override
     def setUp(self):

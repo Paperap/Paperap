@@ -197,7 +197,6 @@ class TestSignalSystem(unittest.TestCase):
 
     def test_signal_disconnect(self):
         """Test disconnecting a handler from a signal."""
-        # TODO: AI Generated Test. Will remove this note when it is reviewed.
         # Create handlers
         def add_field1(data, **kwargs: Any):
             data["field1"] = True
@@ -223,6 +222,11 @@ class TestSignalSystem(unittest.TestCase):
         result2 = self.registry.emit("disconnect.test", args={})
         self.assertNotIn("field1", result2)
         self.assertTrue(result2["field2"])
+
+        # Disconnect all handlers
+        self.registry.disconnect("disconnect.test", add_field2)
+        result3 = self.registry.emit("disconnect.test", args={})
+        self.assertEqual(result3, {})
 
     def test_list_signals(self):
         """Test listing all registered signals."""
@@ -275,12 +279,12 @@ class TestSignalSystem(unittest.TestCase):
         self.registry.disconnect("future.queue", handler2)
 
         # Check if actions are queued
-        self.assertTrue(self.registry.is_queued("connect", "future.queue", handler1))
-        self.assertTrue(self.registry.is_queued("disable", "future.queue", handler1))
-        self.assertFalse(self.registry.is_queued("enable", "future.queue", handler1))
+        self.assertTrue(self.registry.is_queued("connect", "future.queue", handler1), f"Handler1 not queued for connect: {self.registry._queue['connect'].__repr__()}")
+        self.assertTrue(self.registry.is_queued("disable", "future.queue", handler1), f"Handler1 not queued for disable: {self.registry._queue['disable'].__repr__()}")
+        self.assertFalse(self.registry.is_queued("enable", "future.queue", handler1), f"Handler1 queued for enable: {self.registry._queue['enable'].__repr__()}")
 
         # Create the signal - this should process the queue
-        signal = self.registry.create("future.queue", "A signal with queued actions")
+        _signal = self.registry.create("future.queue", "A signal with queued actions")
 
         # Verify queue was processed
         self.assertFalse(self.registry.is_queued("connect", "future.queue", handler1))

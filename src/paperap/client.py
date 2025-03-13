@@ -133,10 +133,11 @@ class PaperlessClient:
             settings = Settings(**kwargs)  # type: ignore # base_url is a URL, but accepts str | URL
 
         self.settings = settings
-        if self.settings.token:
-            self.auth = TokenAuth(token=self.settings.token)
-        elif self.settings.username and self.settings.password:
+        # Prioritize username/password over token if both are provided
+        if self.settings.username and self.settings.password:
             self.auth = BasicAuth(username=self.settings.username, password=self.settings.password)
+        elif self.settings.token:
+            self.auth = TokenAuth(token=self.settings.token)
         else:
             raise ValueError("Provide a token, or a username and password")
 
@@ -266,12 +267,23 @@ class PaperlessClient:
             PaperlessError: For other errors.
 
         """
-        endpoint = str(endpoint)
-
-        if endpoint.startswith("http"):
-            url = endpoint
+        # Handle different endpoint types
+        if isinstance(endpoint, Template):
+            # Convert Template to string representation
+            url = f"{self.base_url}/{endpoint.template.lstrip('/')}"
+        elif isinstance(endpoint, URL):
+            # Use URL object directly
+            if endpoint.is_absolute():
+                url = str(endpoint)
+            else:
+                url = f"{self.base_url}/{str(endpoint).lstrip('/')}"
+        elif isinstance(endpoint, str):
+            if endpoint.startswith("http"):
+                url = endpoint
+            else:
+                url = f"{self.base_url}/{endpoint.lstrip('/')}"
         else:
-            url = f"{self.base_url}/{endpoint.lstrip('/')}"
+            url = f"{self.base_url}/{str(endpoint).lstrip('/')}"
 
         logger.debug("Requesting %s %s", method, url)
 
@@ -378,10 +390,11 @@ class PaperlessClient:
             try:
                 return response.json()
             except ValueError as e:
+                url = getattr(response, 'url', 'unknown URL')
                 logger.error(
-                    "Failed to parse JSON response: %s -> url %s -> content: %s", e, response.url, response.content
+                    "Failed to parse JSON response: %s -> url %s -> content: %s", e, url, response.content
                 )
-                raise ResponseParsingError(f"Failed to parse JSON response: {str(e)} -> url {response.url}") from e
+                raise ResponseParsingError(f"Failed to parse JSON response: {str(e)} -> url {url}") from e
 
         return response.content
 

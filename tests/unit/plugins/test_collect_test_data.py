@@ -44,7 +44,7 @@ from paperap.tests import UnitTestCase
 
 class TestDataCollectorUnitTest(UnitTestCase):
     """Base test case for TestDataCollector tests."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @override
     def setUp(self) -> None:
@@ -74,7 +74,7 @@ class TestDataCollectorUnitTest(UnitTestCase):
 
 class TestPluginInitialization(TestDataCollectorUnitTest):
     """Test the initialization of the TestDataCollector plugin."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     def test_init_with_path_object(self):
         """Test initializing with a Path object."""
@@ -107,7 +107,7 @@ class TestPluginInitialization(TestDataCollectorUnitTest):
 
 class TestPluginSetupTeardown(TestDataCollectorUnitTest):
     """Test the setup and teardown methods of the TestDataCollector plugin."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @patch('paperap.signals.registry.connect')
     def test_setup_connects_signals(self, mock_connect):
@@ -138,7 +138,7 @@ class TestPluginSetupTeardown(TestDataCollectorUnitTest):
 
 class TestJsonSerializer(TestDataCollectorUnitTest):
     """Test the JSON serializer method."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     def test_serialize_datetime(self):
         """Test serializing a datetime object."""
@@ -188,7 +188,7 @@ class TestJsonSerializer(TestDataCollectorUnitTest):
 
 class TestSanitization(TestDataCollectorUnitTest):
     """Test the sanitization methods."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @patch('paperap.plugins.collect_test_data.TestDataCollector._sanitize_value_recursive')
     def test_sanitize_response(self, mock_sanitize_value):
@@ -248,7 +248,7 @@ class TestSanitization(TestDataCollectorUnitTest):
 
 class TestSaveResponse(TestDataCollectorUnitTest):
     """Test the save_response method."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @patch('paperap.plugins.collect_test_data.TestDataCollector._sanitize_response')
     @patch('json.dump')
@@ -300,7 +300,7 @@ class TestSaveResponse(TestDataCollectorUnitTest):
 
 class TestSaveListResponse(TestDataCollectorUnitTest):
     """Test the save_list_response method."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @patch('paperap.plugins.collect_test_data.TestDataCollector.save_response')
     def test_save_list_response(self, mock_save_response):
@@ -345,7 +345,7 @@ class TestSaveListResponse(TestDataCollectorUnitTest):
 
 class TestSaveFirstItem(TestDataCollectorUnitTest):
     """Test the save_first_item method."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @patch('paperap.plugins.collect_test_data.TestDataCollector.save_response')
     @patch('paperap.signals.registry.disable')
@@ -386,7 +386,7 @@ class TestSaveFirstItem(TestDataCollectorUnitTest):
 
 class TestSaveParsedResponse(TestDataCollectorUnitTest):
     """Test the save_parsed_response method."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @patch('paperap.plugins.collect_test_data.TestDataCollector.save_response')
     def test_save_parsed_response(self, mock_save_response):
@@ -494,7 +494,7 @@ class TestSaveParsedResponse(TestDataCollectorUnitTest):
 
 class TestConfigSchema(unittest.TestCase):
     """Test the configuration schema."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     def test_get_config_schema(self):
         """Test that get_config_schema returns the expected schema."""

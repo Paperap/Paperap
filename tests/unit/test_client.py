@@ -25,7 +25,7 @@ from __future__ import annotations
 import json
 import os
 import requests
-from typing import Any, Dict, Iterator
+from typing import Any, Dict, Iterator, override
 import unittest
 from unittest.mock import MagicMock, Mock, patch, PropertyMock
 from pathlib import Path
@@ -103,7 +103,7 @@ class TestClient(UnitTestCase):
 
 class TestClientInitialization(unittest.TestCase):
     """Test the initialization of the PaperlessClient class."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this note when it is reviewed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
     def test_init_with_token(self):
         """Test initializing with a token."""
@@ -120,13 +120,16 @@ class TestClientInitialization(unittest.TestCase):
             password="testpass"
         ))
         self.assertIsInstance(client.auth, BasicAuth)
+        assert client.auth is BasicAuth
         self.assertEqual(client.auth.username, "testuser")
         self.assertEqual(client.auth.password, "testpass")
 
     def test_init_missing_auth(self):
         """Test that initialization fails without auth credentials."""
-        with self.assertRaises(ValueError):
-            PaperlessClient(Settings(base_url="https://example.com"))
+        # Patch the env to be empty
+        with patch.dict(os.environ, {}, clear=True):
+            with self.assertRaises(ConfigurationError):
+                PaperlessClient(Settings(base_url="https://example.com"))
 
     def test_init_resources(self):
         """Test that all resources are initialized."""
@@ -157,9 +160,10 @@ class TestClientInitialization(unittest.TestCase):
 
 class TestClientRequests(unittest.TestCase):
     """Test the request methods of the PaperlessClient class."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this note when it is reviewed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
 
+    @override
     def setUp(self):
         self.client = PaperlessClient(Settings(base_url="https://example.com", token="test-token"))
         self.session_patcher = patch('requests.Session.request')
@@ -172,6 +176,7 @@ class TestClientRequests(unittest.TestCase):
         self.mock_response.content = b'{"key": "value"}'
         self.mock_session_request.return_value = self.mock_response
 
+    @override
     def tearDown(self):
         self.session_patcher.stop()
 
@@ -227,7 +232,7 @@ class TestClientRequests(unittest.TestCase):
         url = URL("api/documents/")
         self.client.request("GET", url)
         call_args = self.mock_session_request.call_args[1]
-        self.assertEqual(call_args["url"], "https://example.com/api/documents")
+        self.assertEqual(call_args["url"], "https://example.com/api/documents/")
 
     def test_request_no_content_response(self):
         """Test handling a 204 No Content response."""
@@ -239,6 +244,7 @@ class TestClientRequests(unittest.TestCase):
         """Test handling a non-JSON response."""
         self.mock_response.json.side_effect = ValueError("Invalid JSON")
         self.mock_response.content = b"Not JSON"
+        self.mock_response.url = "https://example.com/api/documents/"
         with self.assertRaises(ResponseParsingError):
             self.client.request("GET", "api/documents/")
 
@@ -263,9 +269,9 @@ class TestClientRequests(unittest.TestCase):
 
 class TestClientErrorHandling(unittest.TestCase):
     """Test the error handling of the PaperlessClient class."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this note when it is reviewed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
-
+    @override
     def setUp(self):
         self.client = PaperlessClient(Settings(base_url="https://example.com", token="test-token"))
         self.session_patcher = patch('requests.Session.request')
@@ -276,6 +282,7 @@ class TestClientErrorHandling(unittest.TestCase):
         self.mock_response.url = "https://example.com/api/documents/"
         self.mock_session_request.return_value = self.mock_response
 
+    @override
     def tearDown(self):
         self.session_patcher.stop()
 
@@ -372,7 +379,7 @@ class TestClientErrorHandling(unittest.TestCase):
 
 class TestClientUtilityMethods(unittest.TestCase):
     """Test the utility methods of the PaperlessClient class."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this note when it is reviewed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
 
     def setUp(self):
@@ -427,7 +434,7 @@ class TestClientUtilityMethods(unittest.TestCase):
 
 class TestTokenGeneration(unittest.TestCase):
     """Test the token generation functionality."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this note when it is reviewed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
 
     def setUp(self):
@@ -448,9 +455,13 @@ class TestTokenGeneration(unittest.TestCase):
         )
 
         mock_post.assert_called_once()
-        call_args = mock_post.call_args[1]
-        self.assertEqual(call_args["url"], "https://example.com/api/token/")
-        self.assertEqual(call_args["json"], {"username": "testuser", "password": "testpass"})
+        # mock_post.call_args:
+        # call('https://example.com/api/token/', json={'username': 'testuser', 'password': 'testpass'}, headers={'Accept': 'application/json'}, timeout=60)
+        # mock_post.call_args[0]:
+        # ('https://example.com/api/token/',)
+        call_args = mock_post.call_args
+        self.assertEqual(call_args[0][0], "https://example.com/api/token/", f"URL Not in {call_args}")
+        self.assertEqual(call_args[1]["json"], {"username": "testuser", "password": "testpass"})
         self.assertEqual(token, "new-token")
 
     @patch("requests.post")
@@ -467,8 +478,12 @@ class TestTokenGeneration(unittest.TestCase):
             password="testpass"
         )
 
-        call_args = mock_post.call_args[1]
-        self.assertEqual(call_args["url"], "http://example.com/api/token/")
+        # mock_post.call_args:
+        # call('http://example.com/api/token/', json={'username': 'testuser', 'password': 'testpass'}, headers={'Accept': 'application/json'}, timeout=60)
+        # mock_post.call_args[0]:
+        # ('https://example.com/api/token/',)
+        call_args = mock_post.call_args
+        self.assertEqual(call_args[0][0], "http://example.com/api/token/", f"URL Not in {call_args}")
         self.assertEqual(token, "new-token")
 
     @patch("requests.post")
@@ -485,8 +500,12 @@ class TestTokenGeneration(unittest.TestCase):
             password="testpass"
         )
 
-        call_args = mock_post.call_args[1]
-        self.assertEqual(call_args["url"], "https://example.com/api/token/")
+        # mock_post.call_args:
+        # call('https://example.com/api/token/', json={'username': 'testuser', 'password': 'testpass'}, headers={'Accept': 'application/json'}, timeout=60)
+        # mock_post.call_args[0]:
+        # ('https://example.com/api/token/',)
+        call_args = mock_post.call_args
+        self.assertEqual(call_args[0][0], "https://example.com/api/token/", f"URL Not in {call_args}")
         self.assertEqual(token, "new-token")
 
     @patch("requests.post")

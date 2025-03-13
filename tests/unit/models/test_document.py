@@ -377,7 +377,7 @@ class TestCustomFieldAccess(DocumentUnitTest):
 
 class TestDocumentNotes(DocumentUnitTest):
     """Test the DocumentNote model and related functionality."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this note when it is reviewed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
     @override
     def setUp(self):
@@ -438,7 +438,7 @@ class TestDocumentNotes(DocumentUnitTest):
 
 class TestCustomFieldValues(unittest.TestCase):
     """Test the CustomFieldValues model."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this note when it is reviewed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
 
     def test_init(self):
@@ -489,7 +489,7 @@ class TestCustomFieldValues(unittest.TestCase):
 
 class TestDocumentSetters(DocumentUnitTest):
     """Test the setter methods for Document relationships."""
-    # TODO: All methods in this class are AI Generated Tests. Will remove this note when it is reviewed.
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
 
     @override
@@ -545,7 +545,7 @@ class TestDocumentSetters(DocumentUnitTest):
 
     def test_correspondent_setter_with_correspondent_object(self):
         """Test setting correspondent with a Correspondent object."""
-        correspondent = Correspondent(id=1, name="Test Correspondent")
+        correspondent = Correspondent(id=1, name="Test Correspondent", is_insensitive = True)
         self.model.correspondent = correspondent
         self.assertEqual(self.model.correspondent_id, 1)
         # Test that the cache is populated
@@ -568,7 +568,7 @@ class TestDocumentSetters(DocumentUnitTest):
 
     def test_document_type_setter_with_document_type_object(self):
         """Test setting document_type with a DocumentType object."""
-        doc_type = DocumentType(id=1, name="Test Document Type")
+        doc_type = DocumentType(id=1, name="Test Document Type", is_insensitive = False)
         self.model.document_type = doc_type
         self.assertEqual(self.model.document_type_id, 1)
         # Test that the cache is populated

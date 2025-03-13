@@ -9,7 +9,7 @@ METADATA:
 File:    signals.py
         Project: paperap
 Created: 2025-03-09
-        Version: 0.0.5
+        Version: 0.0.7
 Author:  Jess Mann
 Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -302,6 +302,7 @@ class SignalRegistry:
             raise ValueError(f"Invalid queue action: {action}")
 
         if action == "connect":
+            # If it's in the disconnect queue, remove it
             priority = priority if priority is not None else SignalPriority.NORMAL
             self._queue[action].setdefault(name, set()).add((handler, priority))
         else:
@@ -482,7 +483,9 @@ class SignalRegistry:
             True if the handler is queued, False otherwise.
 
         """
-        return handler in self._queue[action].get(name, set())
-
+        for queued_handler in self._queue[action].get(name, set()):
+            if queued_handler == handler:
+                return True
+        return False
 
 registry = SignalRegistry.get_instance()

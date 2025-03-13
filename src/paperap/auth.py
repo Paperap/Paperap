@@ -6,7 +6,7 @@
        File:    auth.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.7
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -45,6 +45,12 @@ class TokenAuth(AuthBase):
     """Authentication using a token."""
 
     token: str
+
+    @pydantic.field_validator("token", mode="before")
+    def validate_token(cls, value : Any) -> str:
+        if not isinstance(value, str) or not value.strip(): 
+            raise ValueError("Token cannot be empty or whitespace")
+        return value
 
     @override
     def get_auth_headers(self) -> dict[str, str]:
