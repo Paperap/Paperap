@@ -306,6 +306,7 @@ class SignalRegistry:
             priority = priority if priority is not None else SignalPriority.NORMAL
             self._queue[action].setdefault(name, set()).add((handler, priority))
         else:
+            # For non-connect actions, just add the handler without priority
             self._queue[action].setdefault(name, set()).add(handler)
 
     def get(self, name: str) -> Signal | None:

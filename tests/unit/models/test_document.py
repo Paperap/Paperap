@@ -512,14 +512,14 @@ class TestDocumentSetters(DocumentUnitTest):
 
     def test_tags_setter_with_tag_objects(self):
         """Test setting tags with Tag objects."""
-        tag1 = Tag(id=1, name="Tag 1")
-        tag2 = Tag(id=2, name="Tag 2")
+        tag1 = Tag(id=1, name="Tag 1", is_insensitive=False)
+        tag2 = Tag(id=2, name="Tag 2", is_insensitive=False)
         self.model.tags = [tag1, tag2]
         self.assertEqual(self.model.tag_ids, [1, 2])
 
     def test_tags_setter_with_mixed_types(self):
         """Test setting tags with a mix of integers and Tag objects."""
-        tag = Tag(id=2, name="Tag 2")
+        tag = Tag(id=2, name="Tag 2", is_insensitive=False)
         self.model.tags = [1, tag, 3]
         self.assertEqual(self.model.tag_ids, [1, 2, 3])
 
@@ -591,7 +591,7 @@ class TestDocumentSetters(DocumentUnitTest):
 
     def test_storage_path_setter_with_storage_path_object(self):
         """Test setting storage_path with a StoragePath object."""
-        storage_path = StoragePath(id=1, name="Test Storage Path")
+        storage_path = StoragePath(id=1, name="Test Storage Path", is_insensitive=False)
         self.model.storage_path = storage_path
         self.assertEqual(self.model.storage_path_id, 1)
         # Test that the cache is populated
