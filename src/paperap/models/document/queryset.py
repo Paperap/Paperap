@@ -134,27 +134,35 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             client.documents().all().correspondent("John Doe", id=1)
 
         """
-        qs = self
+        # Track if any filters were applied
+        filters_applied = False
+        result = self
+        
         if value is not None:
             if isinstance(value, int):
-                qs = qs.correspondent_id(value)
+                result = self.correspondent_id(value)
+                filters_applied = True
             elif isinstance(value, str):
-                qs = qs.correspondent_name(value, exact=exact, case_insensitive=case_insensitive)
+                result = self.correspondent_name(value, exact=exact, case_insensitive=case_insensitive)
+                filters_applied = True
             else:
                 raise TypeError("Invalid value type for correspondent filter")
 
         if (slug := kwargs.get("slug")) is not None:
-            qs = qs.correspondent_slug(slug, exact=exact, case_insensitive=case_insensitive)
+            result = result.correspondent_slug(slug, exact=exact, case_insensitive=case_insensitive)
+            filters_applied = True
         if (pk := kwargs.get("id")) is not None:
-            qs = qs.correspondent_id(pk)
+            result = result.correspondent_id(pk)
+            filters_applied = True
         if (name := kwargs.get("name")) is not None:
-            qs = qs.correspondent_name(name, exact=exact, case_insensitive=case_insensitive)
+            result = result.correspondent_name(name, exact=exact, case_insensitive=case_insensitive)
+            filters_applied = True
 
         # If no filters have been applied, raise an error
-        if qs is self:
+        if not filters_applied:
             raise ValueError("No valid filters provided for correspondent")
 
-        return qs
+        return result
 
     def correspondent_id(self, correspondent_id: int) -> Self:
         """
@@ -235,25 +243,32 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             client.documents().all().document_type("Invoice", id=1)
 
         """
-        qs = self
+        # Track if any filters were applied
+        filters_applied = False
+        result = self
+        
         if value is not None:
             if isinstance(value, int):
-                qs = qs.document_type_id(value)
+                result = self.document_type_id(value)
+                filters_applied = True
             elif isinstance(value, str):
-                qs = qs.document_type_name(value, exact=exact, case_insensitive=case_insensitive)
+                result = self.document_type_name(value, exact=exact, case_insensitive=case_insensitive)
+                filters_applied = True
             else:
                 raise TypeError("Invalid value type for document type filter")
 
         if (pk := kwargs.get("id")) is not None:
-            qs = qs.document_type_id(pk)
+            result = result.document_type_id(pk)
+            filters_applied = True
         if (name := kwargs.get("name")) is not None:
-            qs = qs.document_type_name(name, exact=exact, case_insensitive=case_insensitive)
+            result = result.document_type_name(name, exact=exact, case_insensitive=case_insensitive)
+            filters_applied = True
 
         # If no filters have been applied, raise an error
-        if qs is self:
+        if not filters_applied:
             raise ValueError("No valid filters provided for document type")
 
-        return qs
+        return result
 
     def document_type_id(self, document_type_id: int) -> Self:
         """
@@ -282,7 +297,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter_field_by_str("document_type__name", name, exact=exact, case_insensitive=case_insensitive)
 
-    def storage_path(self, value: int | str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def storage_path(
+        self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs
+    ) -> Self:
         """
         Filter documents by storage path.
 
@@ -318,9 +335,32 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             client.documents().all().storage_path("Invoices", id=1)
 
         """
-        if isinstance(value, int):
-            return self.storage_path_id(value)
-        return self.storage_path_name(value, exact=exact, case_insensitive=case_insensitive)
+        # Track if any filters were applied
+        filters_applied = False
+        result = self
+        
+        if value is not None:
+            if isinstance(value, int):
+                result = self.storage_path_id(value)
+                filters_applied = True
+            elif isinstance(value, str):
+                result = self.storage_path_name(value, exact=exact, case_insensitive=case_insensitive)
+                filters_applied = True
+            else:
+                raise TypeError("Invalid value type for storage path filter")
+
+        if (pk := kwargs.get("id")) is not None:
+            result = result.storage_path_id(pk)
+            filters_applied = True
+        if (name := kwargs.get("name")) is not None:
+            result = result.storage_path_name(name, exact=exact, case_insensitive=case_insensitive)
+            filters_applied = True
+
+        # If no filters have been applied, raise an error
+        if not filters_applied:
+            raise ValueError("No valid filters provided for storage path")
+
+        return result
 
     def storage_path_id(self, storage_path_id: int) -> Self:
         """

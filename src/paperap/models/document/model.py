@@ -503,6 +503,8 @@ class Document(StandardModel):
             return
 
         if isinstance(value, Iterable):
+            # Reset tag_ids to ensure we only have the new values
+            self.tag_ids = []
             for tag in value:
                 if isinstance(tag, int):
                     self.tag_ids.append(tag)

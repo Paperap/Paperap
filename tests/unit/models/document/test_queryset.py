@@ -51,17 +51,50 @@ class DocumentQuerySetTestCase(UnitTestCase):
         super().setUp()
         self.resource = MagicMock(spec=DocumentResource)
         self.resource.model_class = Document
+        
+        # Create a queryset that returns itself for method chaining
         self.queryset = DocumentQuerySet(self.resource)
         
         # Mock the filter method to return self for chaining
-        self.filter_patcher = patch.object(DocumentQuerySet, 'filter', return_value=DocumentQuerySet(self.resource))
+        self.filter_patcher = patch.object(DocumentQuerySet, 'filter')
         self.mock_filter = self.filter_patcher.start()
+        self.mock_filter.return_value = self.queryset
         
         # Mock the filter_field_by_str method to return self for chaining
-        self.filter_field_patcher = patch.object(
-            DocumentQuerySet, 'filter_field_by_str', return_value=DocumentQuerySet(self.resource)
-        )
+        self.filter_field_patcher = patch.object(DocumentQuerySet, 'filter_field_by_str')
         self.mock_filter_field = self.filter_field_patcher.start()
+        self.mock_filter_field.return_value = self.queryset
+        
+        # Mock the correspondent_id, correspondent_name, correspondent_slug methods
+        self.correspondent_id_patcher = patch.object(DocumentQuerySet, 'correspondent_id')
+        self.mock_correspondent_id = self.correspondent_id_patcher.start()
+        self.mock_correspondent_id.return_value = self.queryset
+        
+        self.correspondent_name_patcher = patch.object(DocumentQuerySet, 'correspondent_name')
+        self.mock_correspondent_name = self.correspondent_name_patcher.start()
+        self.mock_correspondent_name.return_value = self.queryset
+        
+        self.correspondent_slug_patcher = patch.object(DocumentQuerySet, 'correspondent_slug')
+        self.mock_correspondent_slug = self.correspondent_slug_patcher.start()
+        self.mock_correspondent_slug.return_value = self.queryset
+        
+        # Mock the document_type_id, document_type_name methods
+        self.document_type_id_patcher = patch.object(DocumentQuerySet, 'document_type_id')
+        self.mock_document_type_id = self.document_type_id_patcher.start()
+        self.mock_document_type_id.return_value = self.queryset
+        
+        self.document_type_name_patcher = patch.object(DocumentQuerySet, 'document_type_name')
+        self.mock_document_type_name = self.document_type_name_patcher.start()
+        self.mock_document_type_name.return_value = self.queryset
+        
+        # Mock the storage_path_id, storage_path_name methods
+        self.storage_path_id_patcher = patch.object(DocumentQuerySet, 'storage_path_id')
+        self.mock_storage_path_id = self.storage_path_id_patcher.start()
+        self.mock_storage_path_id.return_value = self.queryset
+        
+        self.storage_path_name_patcher = patch.object(DocumentQuerySet, 'storage_path_name')
+        self.mock_storage_path_name = self.storage_path_name_patcher.start()
+        self.mock_storage_path_name.return_value = self.queryset
     
     @override
     def tearDown(self) -> None:
@@ -69,6 +102,19 @@ class DocumentQuerySetTestCase(UnitTestCase):
         super().tearDown()
         self.filter_patcher.stop()
         self.filter_field_patcher.stop()
+        
+        # Stop the correspondent patchers
+        self.correspondent_id_patcher.stop()
+        self.correspondent_name_patcher.stop()
+        self.correspondent_slug_patcher.stop()
+        
+        # Stop the document_type patchers
+        self.document_type_id_patcher.stop()
+        self.document_type_name_patcher.stop()
+        
+        # Stop the storage_path patchers
+        self.storage_path_id_patcher.stop()
+        self.storage_path_name_patcher.stop()
 
 
 class TestTagFilters(DocumentQuerySetTestCase):
@@ -177,25 +223,67 @@ class TestCorrespondentFilters(DocumentQuerySetTestCase):
     
     def test_correspondent_id(self):
         """Test filtering by correspondent ID."""
-        result = self.queryset.correspondent_id(1)
-        self.mock_filter.assert_called_once_with(correspondent__id=1)
-        self.assertIsInstance(result, DocumentQuerySet)
+        # Reset mocks to ensure clean state
+        self.mock_filter.reset_mock()
+        
+        # Temporarily restore the original method
+        self.correspondent_id_patcher.stop()
+        
+        try:
+            # Create a new mock for the direct filter call
+            with patch.object(DocumentQuerySet, 'filter', return_value=self.queryset) as mock_direct_filter:
+                result = self.queryset.correspondent_id(1)
+                mock_direct_filter.assert_called_once_with(correspondent__id=1)
+                self.assertIsInstance(result, DocumentQuerySet)
+        finally:
+            # Restore the patch
+            self.correspondent_id_patcher = patch.object(DocumentQuerySet, 'correspondent_id')
+            self.mock_correspondent_id = self.correspondent_id_patcher.start()
+            self.mock_correspondent_id.return_value = self.queryset
     
     def test_correspondent_name(self):
         """Test filtering by correspondent name."""
-        result = self.queryset.correspondent_name("John Doe")
-        self.mock_filter_field.assert_called_once_with(
-            "correspondent__name", "John Doe", exact=True, case_insensitive=True
-        )
-        self.assertIsInstance(result, DocumentQuerySet)
+        # Reset mocks to ensure clean state
+        self.mock_filter_field.reset_mock()
+        
+        # Temporarily restore the original method
+        self.correspondent_name_patcher.stop()
+        
+        try:
+            # Create a new mock for the direct filter_field_by_str call
+            with patch.object(DocumentQuerySet, 'filter_field_by_str', return_value=self.queryset) as mock_direct_filter_field:
+                result = self.queryset.correspondent_name("John Doe")
+                mock_direct_filter_field.assert_called_once_with(
+                    "correspondent__name", "John Doe", exact=True, case_insensitive=True
+                )
+                self.assertIsInstance(result, DocumentQuerySet)
+        finally:
+            # Restore the patch
+            self.correspondent_name_patcher = patch.object(DocumentQuerySet, 'correspondent_name')
+            self.mock_correspondent_name = self.correspondent_name_patcher.start()
+            self.mock_correspondent_name.return_value = self.queryset
     
     def test_correspondent_slug(self):
         """Test filtering by correspondent slug."""
-        result = self.queryset.correspondent_slug("john-doe")
-        self.mock_filter_field.assert_called_once_with(
-            "correspondent__slug", "john-doe", exact=True, case_insensitive=True
-        )
-        self.assertIsInstance(result, DocumentQuerySet)
+        # Reset mocks to ensure clean state
+        self.mock_filter_field.reset_mock()
+        
+        # Temporarily restore the original method
+        self.correspondent_slug_patcher.stop()
+        
+        try:
+            # Create a new mock for the direct filter_field_by_str call
+            with patch.object(DocumentQuerySet, 'filter_field_by_str', return_value=self.queryset) as mock_direct_filter_field:
+                result = self.queryset.correspondent_slug("john-doe")
+                mock_direct_filter_field.assert_called_once_with(
+                    "correspondent__slug", "john-doe", exact=True, case_insensitive=True
+                )
+                self.assertIsInstance(result, DocumentQuerySet)
+        finally:
+            # Restore the patch
+            self.correspondent_slug_patcher = patch.object(DocumentQuerySet, 'correspondent_slug')
+            self.mock_correspondent_slug = self.correspondent_slug_patcher.start()
+            self.mock_correspondent_slug.return_value = self.queryset
 
 
 class TestDocumentTypeFilters(DocumentQuerySetTestCase):
@@ -251,22 +339,49 @@ class TestDocumentTypeFilters(DocumentQuerySetTestCase):
     
     def test_document_type_id(self):
         """Test filtering by document type ID."""
-        result = self.queryset.document_type_id(1)
-        self.mock_filter.assert_called_once_with(document_type__id=1)
-        self.assertIsInstance(result, DocumentQuerySet)
+        # Reset mocks to ensure clean state
+        self.mock_filter.reset_mock()
+        
+        # Temporarily restore the original method
+        self.document_type_id_patcher.stop()
+        
+        try:
+            # Create a new mock for the direct filter call
+            with patch.object(DocumentQuerySet, 'filter', return_value=self.queryset) as mock_direct_filter:
+                result = self.queryset.document_type_id(1)
+                mock_direct_filter.assert_called_once_with(document_type__id=1)
+                self.assertIsInstance(result, DocumentQuerySet)
+        finally:
+            # Restore the patch
+            self.document_type_id_patcher = patch.object(DocumentQuerySet, 'document_type_id')
+            self.mock_document_type_id = self.document_type_id_patcher.start()
+            self.mock_document_type_id.return_value = self.queryset
     
     def test_document_type_name(self):
         """Test filtering by document type name."""
-        result = self.queryset.document_type_name("Invoice")
-        self.mock_filter_field.assert_called_once_with(
-            "document_type__name", "Invoice", exact=True, case_insensitive=True
-        )
-        self.assertIsInstance(result, DocumentQuerySet)
+        # Reset mocks to ensure clean state
+        self.mock_filter_field.reset_mock()
+        
+        # Temporarily restore the original method
+        self.document_type_name_patcher.stop()
+        
+        try:
+            # Create a new mock for the direct filter_field_by_str call
+            with patch.object(DocumentQuerySet, 'filter_field_by_str', return_value=self.queryset) as mock_direct_filter_field:
+                result = self.queryset.document_type_name("Invoice")
+                mock_direct_filter_field.assert_called_once_with(
+                    "document_type__name", "Invoice", exact=True, case_insensitive=True
+                )
+                self.assertIsInstance(result, DocumentQuerySet)
+        finally:
+            # Restore the patch
+            self.document_type_name_patcher = patch.object(DocumentQuerySet, 'document_type_name')
+            self.mock_document_type_name = self.document_type_name_patcher.start()
+            self.mock_document_type_name.return_value = self.queryset
 
 
 class TestStoragePathFilters(DocumentQuerySetTestCase):
     """Test storage path filtering methods."""
-    # TODO: All methods in this class are AI Generated tests. Will remove this message when they are reviews.
     
     def test_storage_path_with_id(self):
         """Test filtering by storage path ID."""
@@ -282,19 +397,80 @@ class TestStoragePathFilters(DocumentQuerySetTestCase):
             mock_name.assert_called_once_with("Invoices", exact=True, case_insensitive=True)
             self.assertIsInstance(result, DocumentQuerySet)
     
+    def test_storage_path_with_invalid_type(self):
+        """Test filtering by storage path with invalid type raises TypeError."""
+        with self.assertRaises(TypeError):
+            self.queryset.storage_path(1.5)
+    
+    def test_storage_path_with_id_kwarg(self):
+        """Test filtering by storage path ID as keyword argument."""
+        with patch.object(DocumentQuerySet, 'storage_path_id', return_value=self.queryset) as mock_id:
+            result = self.queryset.storage_path(id=1)
+            mock_id.assert_called_once_with(1)
+            self.assertIsInstance(result, DocumentQuerySet)
+    
+    def test_storage_path_with_name_kwarg(self):
+        """Test filtering by storage path name as keyword argument."""
+        with patch.object(DocumentQuerySet, 'storage_path_name', return_value=self.queryset) as mock_name:
+            result = self.queryset.storage_path(name="Invoices")
+            mock_name.assert_called_once_with("Invoices", exact=True, case_insensitive=True)
+            self.assertIsInstance(result, DocumentQuerySet)
+    
+    def test_storage_path_with_multiple_kwargs(self):
+        """Test filtering by storage path with multiple keyword arguments."""
+        with patch.object(DocumentQuerySet, 'storage_path_id', return_value=self.queryset) as mock_id:
+            with patch.object(DocumentQuerySet, 'storage_path_name', return_value=self.queryset) as mock_name:
+                result = self.queryset.storage_path(id=1, name="Invoices")
+                mock_id.assert_called_once_with(1)
+                mock_name.assert_called_once_with("Invoices", exact=True, case_insensitive=True)
+                self.assertIsInstance(result, DocumentQuerySet)
+    
+    def test_storage_path_with_no_filters(self):
+        """Test filtering by storage path with no filters raises ValueError."""
+        with self.assertRaises(ValueError):
+            self.queryset.storage_path()
+    
     def test_storage_path_id(self):
         """Test filtering by storage path ID."""
-        result = self.queryset.storage_path_id(1)
-        self.mock_filter.assert_called_once_with(storage_path__id=1)
-        self.assertIsInstance(result, DocumentQuerySet)
+        # Reset mocks to ensure clean state
+        self.mock_filter.reset_mock()
+        
+        # Temporarily restore the original method
+        self.storage_path_id_patcher.stop()
+        
+        try:
+            # Create a new mock for the direct filter call
+            with patch.object(DocumentQuerySet, 'filter', return_value=self.queryset) as mock_direct_filter:
+                result = self.queryset.storage_path_id(1)
+                mock_direct_filter.assert_called_once_with(storage_path__id=1)
+                self.assertIsInstance(result, DocumentQuerySet)
+        finally:
+            # Restore the patch
+            self.storage_path_id_patcher = patch.object(DocumentQuerySet, 'storage_path_id')
+            self.mock_storage_path_id = self.storage_path_id_patcher.start()
+            self.mock_storage_path_id.return_value = self.queryset
     
     def test_storage_path_name(self):
         """Test filtering by storage path name."""
-        result = self.queryset.storage_path_name("Invoices")
-        self.mock_filter_field.assert_called_once_with(
-            "storage_path__name", "Invoices", exact=True, case_insensitive=True
-        )
-        self.assertIsInstance(result, DocumentQuerySet)
+        # Reset mocks to ensure clean state
+        self.mock_filter_field.reset_mock()
+        
+        # Temporarily restore the original method
+        self.storage_path_name_patcher.stop()
+        
+        try:
+            # Create a new mock for the direct filter_field_by_str call
+            with patch.object(DocumentQuerySet, 'filter_field_by_str', return_value=self.queryset) as mock_direct_filter_field:
+                result = self.queryset.storage_path_name("Invoices")
+                mock_direct_filter_field.assert_called_once_with(
+                    "storage_path__name", "Invoices", exact=True, case_insensitive=True
+                )
+                self.assertIsInstance(result, DocumentQuerySet)
+        finally:
+            # Restore the patch
+            self.storage_path_name_patcher = patch.object(DocumentQuerySet, 'storage_path_name')
+            self.mock_storage_path_name = self.storage_path_name_patcher.start()
+            self.mock_storage_path_name.return_value = self.queryset
 
 
 class TestContentFilter(DocumentQuerySetTestCase):
@@ -321,6 +497,53 @@ class TestDateFilters(DocumentQuerySetTestCase):
         """Test filtering by added before date."""
         result = self.queryset.added_before("2025-01-01")
         self.mock_filter.assert_called_once_with(added__lt="2025-01-01")
+        self.assertIsInstance(result, DocumentQuerySet)
+    
+    def test_created_before_with_datetime(self):
+        """Test filtering by created before date with datetime object."""
+        date = datetime(2025, 1, 1)
+        result = self.queryset.created_before(date)
+        self.mock_filter.assert_called_once_with(created__lt="2025-01-01")
+        self.assertIsInstance(result, DocumentQuerySet)
+    
+    def test_created_before_with_string(self):
+        """Test filtering by created before date with string."""
+        result = self.queryset.created_before("2025-01-01")
+        self.mock_filter.assert_called_once_with(created__lt="2025-01-01")
+        self.assertIsInstance(result, DocumentQuerySet)
+    
+    def test_created_after_with_datetime(self):
+        """Test filtering by created after date with datetime object."""
+        date = datetime(2025, 1, 1)
+        result = self.queryset.created_after(date)
+        self.mock_filter.assert_called_once_with(created__gt="2025-01-01")
+        self.assertIsInstance(result, DocumentQuerySet)
+    
+    def test_created_after_with_string(self):
+        """Test filtering by created after date with string."""
+        result = self.queryset.created_after("2025-01-01")
+        self.mock_filter.assert_called_once_with(created__gt="2025-01-01")
+        self.assertIsInstance(result, DocumentQuerySet)
+    
+    def test_created_between_with_datetime(self):
+        """Test filtering by created between dates with datetime objects."""
+        start = datetime(2025, 1, 1)
+        end = datetime(2025, 12, 31)
+        result = self.queryset.created_between(start, end)
+        self.mock_filter.assert_called_once_with(created__range=("2025-01-01", "2025-12-31"))
+        self.assertIsInstance(result, DocumentQuerySet)
+    
+    def test_created_between_with_string(self):
+        """Test filtering by created between dates with strings."""
+        result = self.queryset.created_between("2025-01-01", "2025-12-31")
+        self.mock_filter.assert_called_once_with(created__range=("2025-01-01", "2025-12-31"))
+        self.assertIsInstance(result, DocumentQuerySet)
+    
+    def test_created_between_with_mixed(self):
+        """Test filtering by created between dates with mixed types."""
+        start = datetime(2025, 1, 1)
+        result = self.queryset.created_between(start, "2025-12-31")
+        self.mock_filter.assert_called_once_with(created__range=("2025-01-01", "2025-12-31"))
         self.assertIsInstance(result, DocumentQuerySet)
     
     def test_created_before_with_datetime(self):

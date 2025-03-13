@@ -120,7 +120,6 @@ class TestClientInitialization(unittest.TestCase):
             password="testpass"
         ))
         self.assertIsInstance(client.auth, BasicAuth)
-        assert client.auth is BasicAuth
         self.assertEqual(client.auth.username, "testuser")
         self.assertEqual(client.auth.password, "testpass")
 

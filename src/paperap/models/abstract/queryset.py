@@ -808,7 +808,7 @@ class StandardQuerySet(BaseQuerySet[_StandardModel], Generic[_StandardModel]):
         return self.filter(id=value)
 
     @override
-    def __contains__(self, item: "StandardModel | int") -> bool:
+    def __contains__(self, item: Any) -> bool:
         """
         Return True if the QuerySet contains the given object.
 
@@ -822,6 +822,16 @@ class StandardQuerySet(BaseQuerySet[_StandardModel], Generic[_StandardModel]):
             True if the object is in the QuerySet
 
         """
-        # ID means a match, even if the data is outdated
-        pk = item if isinstance(item, int) else item.id
-        return any(obj.id == pk for obj in self)
+        # Handle integers directly
+        if isinstance(item, int):
+            return any(obj.id == item for obj in self)
+            
+        # Handle model objects that have an id attribute
+        try:
+            if hasattr(item, 'id'):
+                return any(obj.id == item.id for obj in self)
+        except (AttributeError, TypeError):
+            pass
+            
+        # For any other type, it's not in the queryset
+        return False
