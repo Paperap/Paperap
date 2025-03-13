@@ -32,9 +32,26 @@ class TestPluginManager(unittest.TestCase):
         self.manager = PluginManager()
 
     def test_discover_plugins(self):
-        with patch("importlib.import_module") as mock_import:
+        with patch("importlib.import_module") as mock_import, \
+             patch("pkgutil.iter_modules") as mock_iter_modules:
+            # Mock the package with __path__ attribute
+            mock_package = MagicMock()
+            mock_package.__path__ = ["some/path"]
+            mock_package.__name__ = "paperap.plugins"
+            mock_import.return_value = mock_package
+            
+            # Mock iter_modules to return some modules
+            mock_iter_modules.return_value = [
+                (None, "plugin1", False),
+                (None, "plugin2", True)
+            ]
+            
             self.manager.discover_plugins("paperap.plugins")
-            mock_import.assert_called()
+            mock_import.assert_called_with("paperap.plugins")
+            mock_iter_modules.assert_called_with(
+                mock_package.__path__, 
+                mock_package.__name__ + "."
+            )
 
     def test_configure(self):
         config = {"enabled_plugins": ["TestPlugin"], "settings": {}}

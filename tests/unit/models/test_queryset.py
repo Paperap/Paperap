@@ -334,10 +334,12 @@ class TestQuerySetIter(UnitTestCase):
             list(iter(self.qs))
 
     def test_iter_with_fully_fetched_cache(self):
-        self.qs._result_cache = ["a", "b"]  # type: ignore # Allow edit ClassVar in tests
+        # Create proper mock objects instead of strings
+        mock_models = [MagicMock(spec=DummyModel) for _ in range(2)]
+        self.qs._result_cache = mock_models  # type: ignore # Allow edit ClassVar in tests
         self.qs._fetch_all = True # type: ignore
         result = list(iter(self.qs))
-        self.assertEqual(result, ["a", "b"])
+        self.assertEqual(result, mock_models)
 
     @patch.object(StandardQuerySet, "_request_iter")
     def test_iter_with_pagination(self, mock_request_iter):
