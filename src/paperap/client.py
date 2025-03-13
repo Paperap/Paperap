@@ -6,7 +6,7 @@
        File:    client.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.7
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -26,7 +26,6 @@ from pathlib import Path
 from string import Template
 from typing import Any, Iterator, Literal, Union, Unpack, overload
 
-import icontract
 import requests
 from yarl import URL
 
@@ -68,10 +67,6 @@ from paperap.signals import registry
 
 logger = logging.getLogger(__name__)
 
-
-@icontract.inv(lambda self: hasattr(self, "auth") and self.auth is not None, "Client must have authentication")
-@icontract.inv(lambda self: hasattr(self, "session") and self.session is not None, "Client must have an active session")
-@icontract.inv(lambda self: hasattr(self, "settings") and self.settings is not None, "Client must have settings")
 class PaperlessClient:
     """
     Client for interacting with the Paperless-NgX API.
@@ -132,7 +127,6 @@ class PaperlessClient:
     workflow_triggers: WorkflowTriggerResource
     workflows: WorkflowResource
 
-    @icontract.require(lambda settings, **kwargs: settings is not None or kwargs, "Either settings or kwargs must be provided")
     def __init__(self, settings: Settings | None = None, **kwargs: Unpack[SettingsArgs]) -> None:
         if not settings:
             # Any params not provided in kwargs will be loaded from env vars
@@ -242,9 +236,6 @@ class PaperlessClient:
         if hasattr(self, "session") and self.session:
             self.session.close()
 
-    @icontract.require(lambda method: method in ["GET", "POST", "PUT", "DELETE", "PATCH"], "Method must be a valid HTTP method")
-    @icontract.require(lambda endpoint: endpoint is not None, "Endpoint must be provided")
-    @icontract.ensure(lambda result: result is None or isinstance(result, requests.Response), "Result must be a Response object or None")
     def _request(
         self,
         method: str,
@@ -330,10 +321,7 @@ class PaperlessClient:
             raise RequestError(f"Connection error: {str(ce)}") from ce
         except requests.exceptions.RequestException as re:
             raise RequestError(f"Request failed: {str(re)}") from re
-
-    @icontract.require(lambda response: response is not None, "Response must not be None")
-    @icontract.require(lambda response: response.status_code >= 400, "Response must have an error status code")
-    @icontract.require(lambda url: isinstance(url, str) and url.strip(), "URL must be a non-empty string")
+        
     def _handle_request_errors(
         self,
         response: requests.Response,
@@ -378,7 +366,6 @@ class PaperlessClient:
         self, response: requests.Response | None, *, json_response: bool = True
     ) -> dict[str, Any] | bytes | None: ...
 
-    @icontract.ensure(lambda result: result is None or isinstance(result, (dict, bytes)), "Result must be a dict, bytes, or None")
     def _handle_response(
         self, response: requests.Response | None, *, json_response: bool = True
     ) -> dict[str, Any] | bytes | None:
@@ -433,8 +420,6 @@ class PaperlessClient:
         json_response: bool = True,
     ) -> dict[str, Any] | bytes | None: ...
 
-    @icontract.require(lambda method: method in ["GET", "POST", "PUT", "DELETE", "PATCH"], "Method must be a valid HTTP method")
-    @icontract.require(lambda endpoint: endpoint is not None, "Endpoint must be provided")
     def request(
         self,
         method: str,
@@ -496,8 +481,6 @@ class PaperlessClient:
 
         return parsed_response
 
-    @icontract.require(lambda response: response is not None, "Response must not be None")
-    @icontract.ensure(lambda result: isinstance(result, str), "Result must be a string")
     def _extract_error_message(self, response: requests.Response) -> str:
         """Extract error message from response."""
         try:
@@ -524,10 +507,6 @@ class PaperlessClient:
         except ValueError:
             return response.text or f"HTTP {response.status_code}"
 
-    @icontract.require(lambda base_url: isinstance(base_url, str) and base_url.strip(), "Base URL must be a non-empty string")
-    @icontract.require(lambda username: isinstance(username, str) and username.strip(), "Username must be a non-empty string")
-    @icontract.require(lambda password: isinstance(password, str), "Password must be a string")
-    @icontract.ensure(lambda result: isinstance(result, str) and result.strip(), "Result must be a non-empty string token")
     def generate_token(
         self,
         base_url: str,
@@ -602,7 +581,6 @@ class PaperlessClient:
         except (ValueError, KeyError) as ve:
             raise ResponseParsingError(f"Failed to parse response when generating token: {str(ve)}") from ve
 
-    @icontract.ensure(lambda result: isinstance(result, dict), "Result must be a dictionary")
     def get_statistics(self) -> dict[str, Any]:
         """
         Get system statistics.
@@ -615,7 +593,6 @@ class PaperlessClient:
             return result
         raise APIError("Failed to get statistics")
 
-    @icontract.ensure(lambda result: isinstance(result, dict), "Result must be a dictionary")
     def get_system_status(self) -> dict[str, Any]:
         """
         Get system status.
@@ -628,7 +605,6 @@ class PaperlessClient:
             return result
         raise APIError("Failed to get system status")
 
-    @icontract.ensure(lambda result: isinstance(result, dict), "Result must be a dictionary")
     def get_config(self) -> dict[str, Any]:
         """
         Get system configuration.
