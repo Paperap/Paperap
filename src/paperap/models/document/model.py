@@ -182,7 +182,8 @@ class Document(StandardModel):
     _correspondent: tuple[int, Correspondent] | None = None
     _document_type: tuple[int, DocumentType] | None = None
     _storage_path: tuple[int, StoragePath] | None = None
-
+    __search_hit__: Optional[dict[str, Any]] = None
+    
     class Meta(StandardModel.Meta):
         # NOTE: Filtering appears to be disabled by paperless on page_count
         queryset = DocumentQuerySet
@@ -745,6 +746,14 @@ class Document(StandardModel):
             return
 
         raise TypeError(f"Invalid type for custom fields: {type(value)}")
+
+    @property
+    def has_search_hit(self) -> bool:
+        return self.__search_hit__ is not None
+    
+    @property
+    def search_hit(self) -> Optional[dict[str, Any]]:
+        return self.__search_hit__
 
     def custom_field_value(self, field_id: int, default: Any = None, *, raise_errors: bool = False) -> Any:
         """
