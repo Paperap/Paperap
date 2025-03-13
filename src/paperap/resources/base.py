@@ -6,7 +6,7 @@
        File:    base.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.7
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -404,6 +404,9 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
 
         Override in subclasses to implement custom result handling.
         """
+        if not isinstance(results, list):
+            raise ResponseParsingError(f"Expected results to be a list, got {type(results)}")
+
         for item in results:
             if not isinstance(item, dict):
                 raise ResponseParsingError(f"Expected type of elements in results is dict, got {type(item)}")

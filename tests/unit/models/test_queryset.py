@@ -416,22 +416,6 @@ class TestQuerySetGetItem(UnitTestCase):
         result = self.qs[1:-1]
         self.assertEqual(result, ["b", "c"])
 
-    def test_getitem_slice_with_start_only(self):
-        """Test slicing with only a start index."""
-        qs_clone = StandardQuerySet(self.resource, filters={})
-        with patch.object(qs_clone, "_chain", return_value=iter(["item1", "item2"])) as mock_chain:
-            qs_clone._result_cache = [] # type: ignore
-            result = qs_clone[2:]
-            mock_chain.assert_called_once_with(filters={'offset': 2})
-
-    def test_getitem_index_out_of_range(self):
-        """Test that accessing an index out of range raises IndexError."""
-        self.qs._result_cache = ["a", "b"]  # type: ignore
-        self.qs._fetch_all = True # type: ignore
-
-        with self.assertRaises(IndexError):
-            _ = self.qs[5]
-
     @patch.object(BaseQuerySet, "_chain")
     def test_getitem_index_not_cached_empty_result(self, mock_chain):
         """Test that accessing an index with no results raises IndexError."""

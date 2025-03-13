@@ -47,5 +47,5 @@ class TestFactories(DocumentUnitTest):
         self.factory = DocumentFactory # type: ignore
 
     def test_get_resource(self):
-        self.assertEqual(self.factory.get_resource(), DocumentResource)
+        self.assertIsInstance(self.factory.get_resource(), DocumentResource)
         self.assertEqual(self.factory._meta.model, Document) # type: ignore
