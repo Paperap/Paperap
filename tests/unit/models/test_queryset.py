@@ -9,7 +9,7 @@
         File:    test_queryset.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.7
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -333,13 +333,43 @@ class TestQuerySetIter(UnitTestCase):
         with self.assertRaises(ResponseParsingError):
             list(iter(self.qs))
 
-    """
     def test_iter_with_fully_fetched_cache(self):
         self.qs._result_cache = ["a", "b"]  # type: ignore # Allow edit ClassVar in tests
-        self.qs._fetch_all = True
+        self.qs._fetch_all = True # type: ignore
         result = list(iter(self.qs))
         self.assertEqual(result, ["a", "b"])
-    """
+
+    @patch.object(StandardQuerySet, "_request_iter")
+    def test_iter_with_pagination(self, mock_request_iter):
+        """Test iteration with pagination."""
+        # TODO: AI Generated Test
+        # Setup mock to return different results for first and second page
+        first_page_results = [MagicMock(spec=DummyModel) for _ in range(2)]
+        second_page_results = [MagicMock(spec=DummyModel) for _ in range(2)]
+
+        # Configure the mock to return different iterators for different calls
+        mock_request_iter.side_effect = [
+            iter(first_page_results),
+            iter(second_page_results)
+        ]
+
+        # Setup pagination
+        self.qs._result_cache = []  # type: ignore
+        self.qs._fetch_all = False  # type: ignore
+        self.qs._next_url = "http://example.com/api/next-page"
+
+        # Get all results
+        results = list(self.qs)
+
+        # Verify results
+        self.assertEqual(len(results), 4)
+        self.assertEqual(results, first_page_results + second_page_results)
+
+        # Verify _request_iter was called twice (once for each page)
+        self.assertEqual(mock_request_iter.call_count, 2)
+
+        # Verify _fetch_all is True after all pages are fetched
+        self.assertTrue(self.qs._fetch_all)
 
 class TestQuerySetGetItem(UnitTestCase):
     @override
@@ -383,6 +413,373 @@ class TestQuerySetGetItem(UnitTestCase):
         self.qs._fetch_all = True # type: ignore
         result = self.qs[1:-1]
         self.assertEqual(result, ["b", "c"])
+
+    def test_getitem_slice_with_start_only(self):
+        """Test slicing with only a start index."""
+        qs_clone = StandardQuerySet(self.resource, filters={})
+        with patch.object(qs_clone, "_chain", return_value=iter(["item1", "item2"])) as mock_chain:
+            qs_clone._result_cache = [] # type: ignore
+            result = qs_clone[2:]
+            mock_chain.assert_called_once_with(filters={'offset': 2})
+
+    def test_getitem_index_out_of_range(self):
+        """Test that accessing an index out of range raises IndexError."""
+        self.qs._result_cache = ["a", "b"]  # type: ignore
+        self.qs._fetch_all = True # type: ignore
+
+        with self.assertRaises(IndexError):
+            _ = self.qs[5]
+
+    @patch.object(BaseQuerySet, "_chain")
+    def test_getitem_index_not_cached_empty_result(self, mock_chain):
+        """Test that accessing an index with no results raises IndexError."""
+        mock_chain.return_value = iter([])  # Empty result
+        self.qs._result_cache = [] # type: ignore
+
+        with self.assertRaises(IndexError):
+            _ = self.qs[0]
+
+class TestContains(UnitTestCase):
+    """Test the __contains__ method."""
+    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+
+    @override
+    def setUp(self):
+        super().setUp()
+        self.resource = DummyResource()
+        self.qs = StandardQuerySet(self.resource)
+
+    @patch.object(StandardQuerySet, "__iter__")
+    def test_contains_with_model(self, mock_iter):
+        """Test checking if a model is in the queryset."""
+        # Create a model and a mock iterator that returns it
+        model = MagicMock(spec=DummyModel)
+        mock_iter.return_value = iter([model])
+
+        # Check if the model is in the queryset
+        self.assertTrue(model in self.qs)
+
+    @patch.object(StandardQuerySet, "__iter__")
+    def test_contains_with_non_model(self, mock_iter):
+        """Test checking if a non-model is in the queryset."""
+        # Create a non-model object
+        non_model = "not a model"
+
+        # Check if the non-model is in the queryset
+        self.assertFalse(non_model in self.qs)
+        # Verify __iter__ was not called
+        mock_iter.assert_not_called()
+
+    @patch.object(StandardQuerySet, "__iter__")
+    def test_contains_with_id(self, mock_iter):
+        """Test checking if a model ID is in the queryset."""
+        # Create models with different IDs
+        model1 = MagicMock(spec=DummyModel)
+        model1.id = 1
+        model2 = MagicMock(spec=DummyModel)
+        model2.id = 2
+
+        mock_iter.return_value = iter([model1, model2])
+
+        # Check if the ID is in the queryset
+        self.assertTrue(1 in self.qs)
+
+
+class TestRequestIter(UnitTestCase):
+    """Test the _request_iter method."""
+    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+
+    @override
+    def setUp(self):
+        super().setUp()
+        self.resource = DummyResource()
+        self.qs = StandardQuerySet(self.resource)
+
+    @patch.object(DummyResource, "request_raw")
+    @patch.object(DummyResource, "handle_response")
+    def test_request_iter_with_url(self, mock_handle_response, mock_request_raw):
+        """Test requesting with a specific URL."""
+        # Setup mocks
+        mock_request_raw.return_value = {"results": [{"id": 1}, {"id": 2}]}
+        mock_handle_response.return_value = iter([MagicMock(spec=DummyModel)])
+
+        # Call _request_iter with a URL
+        url = "http://example.com/api/endpoint"
+        results = list(self.qs._request_iter(url=url))
+
+        # Verify request_raw was called with the URL
+        mock_request_raw.assert_called_once_with(url=url, params=None)
+
+        # Verify handle_response was called with the response
+        mock_handle_response.assert_called_once_with(**mock_request_raw.return_value)
+
+        # Verify results
+        self.assertEqual(len(results), 1)
+
+    @patch.object(DummyResource, "request_raw")
+    def test_request_iter_no_response(self, mock_request_raw):
+        """Test requesting with no response."""
+        # Setup mock to return None
+        mock_request_raw.return_value = None
+
+        # Call _request_iter
+        results = list(self.qs._request_iter())
+
+        # Verify request_raw was called
+        mock_request_raw.assert_called_once()
+
+        # Verify no results
+        self.assertEqual(len(results), 0)
+
+
+class TestGetNext(UnitTestCase):
+    """Test the _get_next method."""
+    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+
+    @override
+    def setUp(self):
+        super().setUp()
+        self.resource = DummyResource()
+        self.qs = StandardQuerySet(self.resource)
+
+    def test_get_next_with_next_url(self):
+        """Test getting the next URL from a response with a next URL."""
+        # Create a response with a next URL
+        response = {"next": "http://example.com/api/next-page"}
+
+        # Get the next URL
+        next_url = self.qs._get_next(response)
+
+        # Verify the next URL
+        self.assertEqual(next_url, "http://example.com/api/next-page")
+        self.assertEqual(self.qs._next_url, "http://example.com/api/next-page")
+        self.assertEqual(self.qs._urls_fetched, ["http://example.com/api/next-page"])
+
+    def test_get_next_without_next_url(self):
+        """Test getting the next URL from a response without a next URL."""
+        # Create a response without a next URL
+        response = {"results": []}
+
+        # Get the next URL
+        next_url = self.qs._get_next(response)
+
+        # Verify no next URL
+        self.assertIsNone(next_url)
+        self.assertIsNone(self.qs._next_url)
+
+    def test_get_next_with_already_fetched_url(self):
+        """Test getting the next URL when it's already been fetched."""
+        # Set up a URL that's already been fetched
+        self.qs._urls_fetched = ["http://example.com/api/next-page"]
+
+        # Create a response with the same next URL
+        response = {"next": "http://example.com/api/next-page"}
+
+        # Get the next URL
+        next_url = self.qs._get_next(response)
+
+        # Verify no next URL is returned
+        self.assertIsNone(next_url)
+        self.assertIsNone(self.qs._next_url)
+
+
+class TestReset(UnitTestCase):
+    """Test the _reset method."""
+    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+
+    @override
+    def setUp(self):
+        super().setUp()
+        self.resource = DummyResource()
+        self.qs = StandardQuerySet(self.resource)
+
+    def test_reset(self):
+        """Test resetting the queryset."""
+        # Set up the queryset with some data
+        self.qs._result_cache = ["a", "b"]  # type: ignore
+        self.qs._fetch_all = True  # type: ignore
+        self.qs._next_url = "http://example.com/api/next-page"
+        self.qs._urls_fetched = ["http://example.com/api/page-1"]
+        self.qs._last_response = {"results": []}
+        self.qs._iter = iter([])  # type: ignore
+
+        # Reset the queryset
+        self.qs._reset()
+
+        # Verify all attributes are reset
+        self.assertEqual(self.qs._result_cache, [])
+        self.assertFalse(self.qs._fetch_all)
+        self.assertIsNone(self.qs._next_url)
+        self.assertEqual(self.qs._urls_fetched, [])
+        self.assertIsNone(self.qs._last_response)
+        self.assertIsNone(self.qs._iter)
+
+
+class TestFetchAllResults(UnitTestCase):
+    """Test the _fetch_all_results method."""
+    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+
+    @override
+    def setUp(self):
+        super().setUp()
+        self.resource = DummyResource()
+        self.qs = StandardQuerySet(self.resource)
+
+    @patch.object(StandardQuerySet, "_request_iter")
+    def test_fetch_all_results_already_fetched(self, mock_request_iter):
+        """Test fetching all results when they're already fetched."""
+        # Set up the queryset as already fetched
+        self.qs._fetch_all = True  # type: ignore
+
+        # Call _fetch_all_results
+        self.qs._fetch_all_results()
+
+        # Verify _request_iter was not called
+        mock_request_iter.assert_not_called()
+
+    @patch.object(StandardQuerySet, "_request_iter")
+    def test_fetch_all_results_single_page(self, mock_request_iter):
+        """Test fetching all results with a single page."""
+        # Set up mock to return a single page with no next URL
+        results = [MagicMock(spec=DummyModel) for _ in range(2)]
+        mock_request_iter.return_value = iter(results)
+        self.qs._last_response = {"results": results, "next": None}
+
+        # Call _fetch_all_results
+        self.qs._fetch_all_results()
+
+        # Verify _request_iter was called once
+        mock_request_iter.assert_called_once_with(params=self.qs.filters)
+
+        # Verify results were cached
+        self.assertEqual(self.qs._result_cache, results)
+
+        # Verify _fetch_all is True
+        self.assertTrue(self.qs._fetch_all)
+
+    @patch.object(StandardQuerySet, "_request_iter")
+    def test_fetch_all_results_multiple_pages(self, mock_request_iter):
+        """Test fetching all results with multiple pages."""
+        # Set up mock to return multiple pages
+        page1_results = [MagicMock(spec=DummyModel) for _ in range(2)]
+        page2_results = [MagicMock(spec=DummyModel) for _ in range(2)]
+
+        # Configure the mock to return different iterators for different calls
+        mock_request_iter.side_effect = [
+            iter(page1_results),
+            iter(page2_results)
+        ]
+
+        # Set up pagination
+        self.qs._next_url = "http://example.com/api/next-page"
+
+        # Call _fetch_all_results
+        self.qs._fetch_all_results()
+
+        # Verify _request_iter was called twice
+        self.assertEqual(mock_request_iter.call_count, 2)
+
+        # Verify results were cached
+        self.assertEqual(self.qs._result_cache, page1_results + page2_results)
+
+        # Verify _fetch_all is True
+        self.assertTrue(self.qs._fetch_all)
+
+
+class TestNone(UnitTestCase):
+    """Test the none method."""
+    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+
+    @override
+    def setUp(self):
+        super().setUp()
+        self.resource = DummyResource()
+        self.qs = StandardQuerySet(self.resource)
+
+    @patch.object(StandardQuerySet, "_chain")
+    def test_none(self, mock_chain):
+        """Test getting an empty queryset."""
+        # Call none
+        self.qs.none()
+
+        # Verify _chain was called with limit=0
+        mock_chain.assert_called_once_with(filters={"limit": 0})
+
+
+class TestFilterFieldByStr(UnitTestCase):
+    """Test the filter_field_by_str method."""
+
+    @override
+    def setUp(self):
+        super().setUp()
+        self.resource = DummyResource()
+        self.qs = StandardQuerySet(self.resource)
+
+    @patch.object(StandardQuerySet, "filter")
+    def test_filter_field_by_str_exact_case_sensitive(self, mock_filter):
+        """Test filtering by exact match, case sensitive."""
+        # Call filter_field_by_str
+        self.qs.filter_field_by_str("name", "test", exact=True, case_insensitive=False)
+
+        # Verify filter was called with the correct arguments
+        mock_filter.assert_called_once_with(name="test")
+
+    @patch.object(StandardQuerySet, "filter")
+    def test_filter_field_by_str_exact_case_insensitive(self, mock_filter):
+        """Test filtering by exact match, case insensitive."""
+        # Call filter_field_by_str
+        self.qs.filter_field_by_str("name", "test", exact=True, case_insensitive=True)
+
+        # Verify filter was called with the correct arguments
+        mock_filter.assert_called_once_with(name__iexact="test")
+
+    @patch.object(StandardQuerySet, "filter")
+    def test_filter_field_by_str_contains_case_sensitive(self, mock_filter):
+        """Test filtering by contains, case sensitive."""
+        # Call filter_field_by_str
+        self.qs.filter_field_by_str("name", "test", exact=False, case_insensitive=False)
+
+        # Verify filter was called with the correct arguments
+        mock_filter.assert_called_once_with(name__contains="test")
+
+    @patch.object(StandardQuerySet, "filter")
+    def test_filter_field_by_str_contains_case_insensitive(self, mock_filter):
+        """Test filtering by contains, case insensitive."""
+        # Call filter_field_by_str
+        self.qs.filter_field_by_str("name", "test", exact=False, case_insensitive=True)
+
+        # Verify filter was called with the correct arguments
+        mock_filter.assert_called_once_with(name__icontains="test")
+
+
+class TestStandardQuerySetMethods(UnitTestCase):
+    """Test the StandardQuerySet-specific methods."""
+    # TODO: All methods in this class are AI Generated Tests. Will remove this comment when they are removed.
+
+    @override
+    def setUp(self):
+        super().setUp()
+        self.resource = DummyResource()
+        self.qs = StandardQuerySet(self.resource)
+
+    @patch.object(StandardQuerySet, "filter")
+    def test_id_with_single_id(self, mock_filter):
+        """Test filtering by a single ID."""
+        # Call id
+        self.qs.id(1)
+
+        # Verify filter was called with the correct arguments
+        mock_filter.assert_called_once_with(id=1)
+
+    @patch.object(StandardQuerySet, "filter")
+    def test_id_with_list_of_ids(self, mock_filter):
+        """Test filtering by a list of IDs."""
+        # Call id
+        self.qs.id([1, 2, 3])
+
+        # Verify filter was called with the correct arguments
+        mock_filter.assert_called_once_with(id__in=[1, 2, 3])
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)

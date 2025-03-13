@@ -36,7 +36,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
     model_class = Document
     name = "documents"
-    
+
     def download(self, document_id: int, *, original: bool = False) -> bytes | None:
         url = f"documents/{document_id}/download"
         params = {"original": str(original).lower()}

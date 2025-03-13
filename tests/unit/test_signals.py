@@ -9,7 +9,7 @@
         File:    test_signals.py
         Project: paperap
         Created: 2025-03-08
-        Version: 0.0.5
+        Version: 0.0.7
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -18,11 +18,11 @@
 
     LAST MODIFIED:
 
-        2025-03-08     By Jess Mann
+        2025-03-12     By Jess Mann
 
 """
 import unittest
-from typing import Any, Dict, override
+from typing import Any, Dict, List, override
 from paperap.signals import Signal, SignalPriority, SignalRegistry
 
 class TestSignalSystem(unittest.TestCase):
@@ -168,6 +168,169 @@ class TestSignalSystem(unittest.TestCase):
 
         # Verify the handler was properly connected
         self.assertTrue(result["transformed"])
+
+    def test_direct_signal_creation(self):
+        """Test creating a Signal directly and registering it."""
+        # TODO: AI Generated Test. Will remove this note when it is reviewed.
+        # Create a signal directly
+        signal = Signal[Dict[str, Any]]("direct.signal", "A directly created signal")
+
+        # Register it with the registry
+        self.registry.register(signal)
+
+        # Connect a handler
+        def add_field(data, **kwargs: Any):
+            data["direct"] = True
+            return data
+
+        signal.connect(add_field)
+
+        # Emit the signal
+        result = signal.emit({"original": "data"})
+
+        # Verify the result
+        self.assertTrue(result["direct"])
+        self.assertEqual(result["original"], "data")
+
+        # Verify it's in the registry
+        self.assertIn("direct.signal", self.registry.list_signals())
+
+    def test_signal_disconnect(self):
+        """Test disconnecting a handler from a signal."""
+        # TODO: AI Generated Test. Will remove this note when it is reviewed.
+        # Create handlers
+        def add_field1(data, **kwargs: Any):
+            data["field1"] = True
+            return data
+
+        def add_field2(data, **kwargs: Any):
+            data["field2"] = True
+            return data
+
+        # Connect handlers
+        self.registry.connect("disconnect.test", add_field1)
+        self.registry.connect("disconnect.test", add_field2)
+
+        # Emit with both handlers
+        result1 = self.registry.emit("disconnect.test", args={})
+        self.assertTrue(result1["field1"])
+        self.assertTrue(result1["field2"])
+
+        # Disconnect one handler
+        self.registry.disconnect("disconnect.test", add_field1)
+
+        # Emit again
+        result2 = self.registry.emit("disconnect.test", args={})
+        self.assertNotIn("field1", result2)
+        self.assertTrue(result2["field2"])
+
+    def test_list_signals(self):
+        """Test listing all registered signals."""
+        # TODO: AI Generated Test. Will remove this note when it is reviewed.
+        # Create several signals
+        self.registry.emit("signal1", "First test signal")
+        self.registry.emit("signal2", "Second test signal")
+        self.registry.emit("signal3", "Third test signal")
+
+        # Get the list of signals
+        signals = self.registry.list_signals()
+
+        # Verify all signals are in the list
+        self.assertIn("signal1", signals)
+        self.assertIn("signal2", signals)
+        self.assertIn("signal3", signals)
+
+    def test_get_signal(self):
+        """Test getting a signal by name."""
+        # TODO: AI Generated Test. Will remove this note when it is reviewed.
+        # Create a signal
+        self.registry.emit("get.test", "A signal to retrieve")
+
+        # Get the signal
+        signal = self.registry.get("get.test")
+
+        # Verify it's the right signal
+        self.assertIsNotNone(signal)
+        self.assertEqual(signal.name, "get.test")
+        self.assertEqual(signal.description, "A signal to retrieve")
+
+        # Try getting a non-existent signal
+        nonexistent = self.registry.get("nonexistent.signal")
+        self.assertIsNone(nonexistent)
+
+    def test_queue_actions(self):
+        """Test queuing actions for signals that don't exist yet."""
+        # TODO: AI Generated Test. Will remove this note when it is reviewed.
+        # Create handlers
+        def handler1(data, **kwargs: Any):
+            return data
+
+        def handler2(data, **kwargs: Any):
+            return data
+
+        # Queue various actions
+        self.registry.connect("future.queue", handler1, SignalPriority.HIGH)
+        self.registry.disable("future.queue", handler1)
+        self.registry.connect("future.queue", handler2)
+        self.registry.disconnect("future.queue", handler2)
+
+        # Check if actions are queued
+        self.assertTrue(self.registry.is_queued("connect", "future.queue", handler1))
+        self.assertTrue(self.registry.is_queued("disable", "future.queue", handler1))
+        self.assertFalse(self.registry.is_queued("enable", "future.queue", handler1))
+
+        # Create the signal - this should process the queue
+        signal = self.registry.create("future.queue", "A signal with queued actions")
+
+        # Verify queue was processed
+        self.assertFalse(self.registry.is_queued("connect", "future.queue", handler1))
+        self.assertFalse(self.registry.is_queued("disable", "future.queue", handler1))
+
+    def test_invalid_queue_action(self):
+        """Test that invalid queue actions raise ValueError."""
+        # TODO: AI Generated Test. Will remove this note when it is reviewed.
+        def handler(data, **kwargs: Any):
+            return data
+
+        # Try to queue an invalid action
+        with self.assertRaises(ValueError):
+            self.registry.queue_action("invalid_action", "test.signal", handler)
+
+    def test_emit_with_no_args(self):
+        """Test emitting a signal with no args."""
+        # TODO: AI Generated Test. Will remove this note when it is reviewed.
+        # Create a handler that doesn't need args
+        results = []
+
+        def simple_handler(data, **kwargs: Any):
+            results.append("called")
+            return data
+
+        # Connect and emit
+        self.registry.connect("no.args", simple_handler)
+        self.registry.emit("no.args")
+
+        # Verify handler was called
+        self.assertEqual(results, ["called"])
+
+    def test_emit_with_return_type(self):
+        """Test emitting a signal with explicit return type."""
+        # TODO: AI Generated Test. Will remove this note when it is reviewed.
+        # Create a handler that returns a list
+        def list_handler(data: List[str], **kwargs: Any) -> List[str]:
+            data.append("item")
+            return data
+
+        # Connect and emit with return_type
+        self.registry.connect("typed.signal", list_handler)
+        result = self.registry.emit(
+            "typed.signal",
+            return_type=List[str],
+            args=["initial"]
+        )
+
+        # Verify result
+        self.assertEqual(result, ["initial", "item"])
 
 if __name__ == "__main__":
     unittest.main()

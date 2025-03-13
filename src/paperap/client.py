@@ -321,7 +321,7 @@ class PaperlessClient:
             raise RequestError(f"Connection error: {str(ce)}") from ce
         except requests.exceptions.RequestException as re:
             raise RequestError(f"Request failed: {str(re)}") from re
-        
+
     def _handle_request_errors(
         self,
         response: requests.Response,

@@ -10,7 +10,8 @@
     "pre-commit": "uv run pre-commit run --all-files",
     "mypy": "uv run mypy -p src/paperap",
     "coverage-test": "uv run coverage run --source=src -m unittest discover -s tests/unit --failfast",
-    "coverage-html": "uv run coverage html -d tests/coverage"
+    "coverage-html": "uv run coverage html -d tests/coverage",
+    "coverage": "pytest --cov=paperap --cov-report=html tests/unit"
   },
   "author": "Jess Mann <jess@jmann.me>",
   "license": "MIT",

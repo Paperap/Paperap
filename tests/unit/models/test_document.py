@@ -9,7 +9,7 @@
         File:    test_document.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.7
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -18,16 +18,16 @@
 
     LAST MODIFIED:
 
-        2025-03-04     By Jess Mann
+        2025-03-12     By Jess Mann
 
 """
 from __future__ import annotations
 
 import copy
 import os
-from typing import Iterable, override
+from typing import Any, Iterable, List, Optional, override
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, PropertyMock
 import logging
 from datetime import datetime, timezone
 from paperap.client import PaperlessClient
@@ -35,6 +35,7 @@ from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models import *
 from paperap.resources.documents import DocumentResource
 from paperap.models.tag import Tag, TagQuerySet
+from paperap.models.document.model import CustomFieldValues, CustomFieldTypedDict, DocumentNote
 from paperap.tests import load_sample_data, DocumentUnitTest
 
 logger = logging.getLogger(__name__)
@@ -360,3 +361,243 @@ class TestCustomFieldAccess(DocumentUnitTest):
             self.model.custom_field_value(3, raise_errors=True)
         with self.assertRaises(ValueError):
             self.model.custom_field_value(3, default="Some Default", raise_errors=True)
+
+    def test_custom_field_ids_property(self):
+        """Test the custom_field_ids property returns the correct field IDs."""
+        # TODO: AI Generated Test. Will remove this note when it is reviewed.
+        expected_ids = [field["field"] for field in self.custom_fields]
+        self.assertEqual(self.model.custom_field_ids, expected_ids)
+
+    def test_custom_field_values_property(self):
+        """Test the custom_field_values property returns the correct values."""
+        # TODO: AI Generated Test. Will remove this note when it is reviewed.
+        expected_values = [field["value"] for field in self.custom_fields]
+        self.assertEqual(self.model.custom_field_values, expected_values)
+
+
+class TestDocumentNotes(DocumentUnitTest):
+    """Test the DocumentNote model and related functionality."""
+    # TODO: All methods in this class are AI Generated Tests. Will remove this note when it is reviewed.
+
+    @override
+    def setUp(self):
+        super().setUp()
+        self.note_data = {
+            "id": 1,
+            "note": "Test note content",
+            "created": "2025-03-01T12:00:00Z",
+            "document": 1,
+            "user": 1
+        }
+        self.document_with_notes = self.bake_model(**{
+            "id": 1,
+            "title": "Test Document with Notes",
+            "notes": [self.note_data]
+        })
+
+    def test_document_note_init(self):
+        """Test creating a DocumentNote instance."""
+        note = DocumentNote(**self.note_data)
+        self.assertEqual(note.id, 1)
+        self.assertEqual(note.note, "Test note content")
+        self.assertIsInstance(note.created, datetime)
+        self.assertEqual(note.document, 1)
+        self.assertEqual(note.user, 1)
+
+    def test_document_notes_property(self):
+        """Test that document.notes returns the correct list of notes."""
+        self.assertEqual(len(self.document_with_notes.notes), 1)
+        self.assertIsInstance(self.document_with_notes.notes[0], DocumentNote)
+        self.assertEqual(self.document_with_notes.notes[0].note, "Test note content")
+
+    def test_document_note_serialization(self):
+        """Test that DocumentNote objects are properly serialized."""
+        note = DocumentNote(**self.note_data)
+        serialized = note.to_dict()
+        self.assertIsInstance(serialized, dict)
+        self.assertEqual(serialized["id"], 1)
+        self.assertEqual(serialized["note"], "Test note content")
+
+    @patch("paperap.client.PaperlessClient.request")
+    def test_get_document_method(self, mock_request):
+        """Test the get_document method on DocumentNote."""
+        mock_request.return_value = {"id": 1, "title": "Test Document"}
+        note = DocumentNote(**self.note_data, _client=self.client)
+        document = note.get_document()
+        self.assertIsInstance(document, Document)
+        self.assertEqual(document.id, 1)
+
+    @patch("paperap.client.PaperlessClient.request")
+    def test_get_user_method(self, mock_request):
+        """Test the get_user method on DocumentNote."""
+        mock_request.return_value = {"id": 1, "username": "testuser"}
+        note = DocumentNote(**self.note_data, _client=self.client)
+        user = note.get_user()
+        self.assertEqual(user.id, 1)
+
+
+class TestCustomFieldValues(unittest.TestCase):
+    """Test the CustomFieldValues model."""
+    # TODO: All methods in this class are AI Generated Tests. Will remove this note when it is reviewed.
+
+
+    def test_init(self):
+        """Test creating a CustomFieldValues instance."""
+        cfv = CustomFieldValues(field=1, value="test value")
+        self.assertEqual(cfv.field, 1)
+        self.assertEqual(cfv.value, "test value")
+
+    def test_equality_with_dict(self):
+        """Test equality comparison with a dictionary."""
+        cfv = CustomFieldValues(field=1, value="test value")
+
+        # Equal dict
+        self.assertEqual(cfv, {"field": 1, "value": "test value"})
+
+        # Different field
+        self.assertNotEqual(cfv, {"field": 2, "value": "test value"})
+
+        # Different value
+        self.assertNotEqual(cfv, {"field": 1, "value": "different value"})
+
+        # Missing key
+        self.assertNotEqual(cfv, {"field": 1})
+
+        # Extra key
+        self.assertNotEqual(cfv, {"field": 1, "value": "test value", "extra": "key"})
+
+    def test_equality_with_custom_field_values(self):
+        """Test equality comparison with another CustomFieldValues instance."""
+        cfv1 = CustomFieldValues(field=1, value="test value")
+        cfv2 = CustomFieldValues(field=1, value="test value")
+        cfv3 = CustomFieldValues(field=2, value="test value")
+        cfv4 = CustomFieldValues(field=1, value="different value")
+
+        self.assertEqual(cfv1, cfv2)
+        self.assertNotEqual(cfv1, cfv3)
+        self.assertNotEqual(cfv1, cfv4)
+
+    def test_equality_with_other_types(self):
+        """Test equality comparison with other types."""
+        cfv = CustomFieldValues(field=1, value="test value")
+
+        # Should use the parent class's __eq__ method
+        self.assertNotEqual(cfv, "not a dict or CustomFieldValues")
+        self.assertNotEqual(cfv, 123)
+        self.assertNotEqual(cfv, None)
+
+
+class TestDocumentSetters(DocumentUnitTest):
+    """Test the setter methods for Document relationships."""
+    # TODO: All methods in this class are AI Generated Tests. Will remove this note when it is reviewed.
+
+
+    @override
+    def setUp(self):
+        super().setUp()
+        self.model = self.bake_model(**{
+            "id": 1,
+            "title": "Test Document"
+        })
+
+    def test_tags_setter_with_none(self):
+        """Test setting tags to None."""
+        self.model.tags = None
+        self.assertEqual(self.model.tag_ids, [])
+
+    def test_tags_setter_with_integers(self):
+        """Test setting tags with integer IDs."""
+        self.model.tags = [1, 2, 3]
+        self.assertEqual(self.model.tag_ids, [1, 2, 3])
+
+    def test_tags_setter_with_tag_objects(self):
+        """Test setting tags with Tag objects."""
+        tag1 = Tag(id=1, name="Tag 1")
+        tag2 = Tag(id=2, name="Tag 2")
+        self.model.tags = [tag1, tag2]
+        self.assertEqual(self.model.tag_ids, [1, 2])
+
+    def test_tags_setter_with_mixed_types(self):
+        """Test setting tags with a mix of integers and Tag objects."""
+        tag = Tag(id=2, name="Tag 2")
+        self.model.tags = [1, tag, 3]
+        self.assertEqual(self.model.tag_ids, [1, 2, 3])
+
+    def test_tags_setter_with_invalid_type(self):
+        """Test setting tags with an invalid type raises TypeError."""
+        with self.assertRaises(TypeError):
+            self.model.tags = "not an iterable"
+
+    def test_tags_setter_with_invalid_item_type(self):
+        """Test setting tags with invalid item types raises TypeError."""
+        with self.assertRaises(TypeError):
+            self.model.tags = [1, "not an int or Tag", 3]
+
+    def test_correspondent_setter_with_none(self):
+        """Test setting correspondent to None."""
+        self.model.correspondent = None
+        self.assertIsNone(self.model.correspondent_id)
+
+    def test_correspondent_setter_with_integer(self):
+        """Test setting correspondent with an integer ID."""
+        self.model.correspondent = 1
+        self.assertEqual(self.model.correspondent_id, 1)
+
+    def test_correspondent_setter_with_correspondent_object(self):
+        """Test setting correspondent with a Correspondent object."""
+        correspondent = Correspondent(id=1, name="Test Correspondent")
+        self.model.correspondent = correspondent
+        self.assertEqual(self.model.correspondent_id, 1)
+        # Test that the cache is populated
+        self.assertEqual(self.model._correspondent, (1, correspondent))
+
+    def test_correspondent_setter_with_invalid_type(self):
+        """Test setting correspondent with an invalid type raises TypeError."""
+        with self.assertRaises(TypeError):
+            self.model.correspondent = "not an int or Correspondent"
+
+    def test_document_type_setter_with_none(self):
+        """Test setting document_type to None."""
+        self.model.document_type = None
+        self.assertIsNone(self.model.document_type_id)
+
+    def test_document_type_setter_with_integer(self):
+        """Test setting document_type with an integer ID."""
+        self.model.document_type = 1
+        self.assertEqual(self.model.document_type_id, 1)
+
+    def test_document_type_setter_with_document_type_object(self):
+        """Test setting document_type with a DocumentType object."""
+        doc_type = DocumentType(id=1, name="Test Document Type")
+        self.model.document_type = doc_type
+        self.assertEqual(self.model.document_type_id, 1)
+        # Test that the cache is populated
+        self.assertEqual(self.model._document_type, (1, doc_type))
+
+    def test_document_type_setter_with_invalid_type(self):
+        """Test setting document_type with an invalid type raises TypeError."""
+        with self.assertRaises(TypeError):
+            self.model.document_type = "not an int or DocumentType"
+
+    def test_storage_path_setter_with_none(self):
+        """Test setting storage_path to None."""
+        self.model.storage_path = None
+        self.assertIsNone(self.model.storage_path_id)
+
+    def test_storage_path_setter_with_integer(self):
+        """Test setting storage_path with an integer ID."""
+        self.model.storage_path = 1
+        self.assertEqual(self.model.storage_path_id, 1)
+
+    def test_storage_path_setter_with_storage_path_object(self):
+        """Test setting storage_path with a StoragePath object."""
+        storage_path = StoragePath(id=1, name="Test Storage Path")
+        self.model.storage_path = storage_path
+        self.assertEqual(self.model.storage_path_id, 1)
+        # Test that the cache is populated
+        self.assertEqual(self.model._storage_path, (1, storage_path))
+
+    def test_storage_path_setter_with_invalid_type(self):
+        """Test setting storage_path with an invalid type raises TypeError."""
+        with self.assertRaises(TypeError):
+            self.model.storage_path = "not an int or StoragePath"
