@@ -21,6 +21,7 @@ LAST MODIFIED:
 2025-03-09     By Jess Mann
 
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -52,10 +53,12 @@ class CustomFieldValues(pydantic.BaseModel):
     field: int
     value: Any
 
-    model_config = ConfigDict({
-        "extra": "forbid",
-        "use_enum_values": True,
-    })
+    model_config = ConfigDict(
+        {
+            "extra": "forbid",
+            "use_enum_values": True,
+        }
+    )
 
     @override
     def __eq__(self, other: Any) -> bool:
@@ -68,6 +71,7 @@ class CustomFieldValues(pydantic.BaseModel):
             return self.field == other.field and self.value == other.value
 
         return super().__eq__(other)
+
 
 class DocumentNote(StandardModel):
     """

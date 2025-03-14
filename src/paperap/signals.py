@@ -489,4 +489,5 @@ class SignalRegistry:
                 return True
         return False
 
+
 registry = SignalRegistry.get_instance()

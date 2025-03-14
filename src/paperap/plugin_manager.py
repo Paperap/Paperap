@@ -6,7 +6,7 @@
        File:    plugin_manager.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.7
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -28,6 +28,8 @@ import pkgutil
 from pathlib import Path
 from typing import Any, Optional, Set, TypedDict
 
+import pydantic
+
 from paperap.plugins.base import Plugin
 
 logger = logging.getLogger(__name__)
@@ -42,23 +44,19 @@ class PluginConfig(TypedDict):
     settings: dict[str, Any]
 
 
-class PluginManager:
+class PluginManager(pydantic.BaseModel):
     """Manages the discovery, configuration and initialization of plugins."""
 
-    plugins: dict[str, type[Plugin]]
-    instances: dict[str, Plugin]
-    config: PluginConfig
-    dependencies: dict[str, Set[str]]
+    plugins: dict[str, type[Plugin]] = {}
+    instances: dict[str, Plugin] = {}
+    config: PluginConfig = {
+        "enabled_plugins": [],
+        "settings": {},
+    }
 
-    def __init__(self) -> None:
-        self.plugins = {}
-        self.instances = {}
-        self.config = {
-            "enabled_plugins": [],
-            "settings": {},
-        }
-        self.dependencies = {}
-        super().__init__()
+    model_config = pydantic.ConfigDict({
+        "arbitrary_types_allowed": True,
+    })
 
     @property
     def enabled_plugins(self) -> list[str]:
@@ -108,7 +106,7 @@ class PluginManager:
             except Exception as e:
                 logger.error("Error loading plugin module %s: %s", module_name, e)
 
-    def configure(self, config: PluginConfig) -> None:
+    def configure(self, config: PluginConfig | None = None, **kwargs) -> None:
         """
         Configure the plugin manager with plugin-specific configurations.
 
@@ -116,7 +114,11 @@ class PluginManager:
             config: dictionary mapping plugin names to their configurations.
 
         """
-        self.config = config
+        if config:
+            self.config = config
+
+        if kwargs:
+            self.config.update(**kwargs)
 
     def get_plugin_config(self, plugin_name: str) -> dict[str, Any]:
         """Get the configuration for a specific plugin."""

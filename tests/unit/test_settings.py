@@ -9,7 +9,7 @@
         File:    test_settings.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.7
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -32,7 +32,7 @@ from paperap.exceptions import ConfigurationError
 from paperap.tests import UnitTestCase
 
 TOKEN_DATA = {
-    'token': 'abc123',
+    'token': '40characterslong40characterslong40charac',
     'base_url': 'https://example.com',
     'require_ssl': False,
     'timeout': 60,

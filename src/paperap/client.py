@@ -67,6 +67,7 @@ from paperap.signals import registry
 
 logger = logging.getLogger(__name__)
 
+
 class PaperlessClient:
     """
     Client for interacting with the Paperless-NgX API.
@@ -80,7 +81,7 @@ class PaperlessClient:
         client = PaperlessClient(
             Settings(
                 base_url="https://paperless.example.com",
-                token="your-token"
+                token="40characterslong40characterslong40charac"
             )
         )
 
@@ -390,10 +391,8 @@ class PaperlessClient:
             try:
                 return response.json()
             except ValueError as e:
-                url = getattr(response, 'url', 'unknown URL')
-                logger.error(
-                    "Failed to parse JSON response: %s -> url %s -> content: %s", e, url, response.content
-                )
+                url = getattr(response, "url", "unknown URL")
+                logger.error("Failed to parse JSON response: %s -> url %s -> content: %s", e, url, response.content)
                 raise ResponseParsingError(f"Failed to parse JSON response: {str(e)} -> url {url}") from e
 
         return response.content

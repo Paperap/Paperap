@@ -825,13 +825,13 @@ class StandardQuerySet(BaseQuerySet[_StandardModel], Generic[_StandardModel]):
         # Handle integers directly
         if isinstance(item, int):
             return any(obj.id == item for obj in self)
-            
+
         # Handle model objects that have an id attribute
         try:
-            if hasattr(item, 'id'):
+            if hasattr(item, "id"):
                 return any(obj.id == item.id for obj in self)
         except (AttributeError, TypeError):
             pass
-            
+
         # For any other type, it's not in the queryset
         return False

@@ -22,7 +22,7 @@
 from paperap.models.abstract import BaseModel, BaseQuerySet, StandardModel, StandardQuerySet
 from paperap.models.correspondent import Correspondent, CorrespondentQuerySet
 from paperap.models.custom_field import CustomField, CustomFieldQuerySet
-from paperap.models.document import Document, DocumentNote, DocumentQuerySet, CustomFieldValues
+from paperap.models.document import CustomFieldValues, Document, DocumentNote, DocumentQuerySet
 from paperap.models.document_type import DocumentType, DocumentTypeQuerySet
 from paperap.models.profile import Profile, ProfileQuerySet
 from paperap.models.saved_view import SavedView, SavedViewQuerySet

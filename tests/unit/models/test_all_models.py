@@ -11,7 +11,7 @@ least a base level of testing for all models.
         File:    test_from_dict.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.7
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -79,7 +79,7 @@ class ModelTestCase(UnitTestCase):
             WorkflowAction: self.client.workflow_actions,
             WorkflowTrigger: self.client.workflow_triggers,
         }
-        self.model_to_factories = {
+        self.model_to_factories = { # type: ignore
             Correspondent: CorrespondentFactory,
             CustomField: CustomFieldFactory,
             Document: DocumentFactory,

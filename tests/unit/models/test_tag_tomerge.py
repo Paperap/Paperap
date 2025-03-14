@@ -9,7 +9,7 @@
         File:    test_tag.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.7
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -42,7 +42,7 @@ class TestTagInit(unittest.TestCase):
     @override
     def setUp(self):
         # Setup a sample model instance
-        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': '40characterslong40characterslong40charac'}
         with patch.dict(os.environ, env_data, clear=True):
             self.client = PaperlessClient()
         self.resource = self.client.tags
@@ -75,7 +75,7 @@ class TestTag(unittest.TestCase):
     @override
     def setUp(self):
         # Setup a sample model instance
-        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': '40characterslong40characterslong40charac'}
         with patch.dict(os.environ, env_data, clear=True):
             self.client = PaperlessClient()
         self.resource = self.client.tags

@@ -40,12 +40,12 @@ class TestBaseResource(unittest.TestCase):
         self.resource = TestResource(self.mock_client)
 
     def test_all(self):
-        self.resource._meta.queryset = MagicMock(return_value="queryset")
+        self.resource._meta.queryset = MagicMock(return_value="queryset") # type: ignore
         self.assertEqual(self.resource.all(), "queryset")
 
     def test_filter(self):
-        self.resource._meta.queryset = MagicMock()
-        self.resource._meta.queryset.return_value.filter.return_value = "filtered_queryset"
+        self.resource._meta.queryset = MagicMock() # type: ignore
+        self.resource._meta.queryset.return_value.filter.return_value = "filtered_queryset" # type: ignore
         result = self.resource.filter(name="test")
         self.assertEqual(result, "filtered_queryset")
 

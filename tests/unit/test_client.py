@@ -107,9 +107,9 @@ class TestClientInitialization(unittest.TestCase):
 
     def test_init_with_token(self):
         """Test initializing with a token."""
-        client = PaperlessClient(Settings(base_url="https://example.com", token="test-token"))
+        client = PaperlessClient(Settings(base_url="https://example.com", token="40characterslong40characterslong40charac"))
         self.assertIsInstance(client.auth, TokenAuth)
-        self.assertEqual(client.auth.token, "test-token")
+        self.assertEqual(client.auth.token, "40characterslong40characterslong40charac")
         self.assertEqual(str(client.base_url), "https://example.com")
 
     def test_init_with_basic_auth(self):
@@ -120,8 +120,8 @@ class TestClientInitialization(unittest.TestCase):
             password="testpass"
         ))
         self.assertIsInstance(client.auth, BasicAuth)
-        self.assertEqual(client.auth.username, "testuser")
-        self.assertEqual(client.auth.password, "testpass")
+        self.assertEqual(client.auth.username, "testuser") # type: ignore
+        self.assertEqual(client.auth.password, "testpass") # type: ignore
 
     def test_init_missing_auth(self):
         """Test that initialization fails without auth credentials."""
@@ -132,7 +132,7 @@ class TestClientInitialization(unittest.TestCase):
 
     def test_init_resources(self):
         """Test that all resources are initialized."""
-        client = PaperlessClient(Settings(base_url="https://example.com", token="test-token"))
+        client = PaperlessClient(Settings(base_url="https://example.com", token="40characterslong40characterslong40charac"))
         self.assertIsInstance(client.documents, DocumentResource)
         self.assertIsInstance(client.correspondents, CorrespondentResource)
         self.assertIsInstance(client.tags, TagResource)
@@ -144,7 +144,7 @@ class TestClientInitialization(unittest.TestCase):
 
     def test_init_plugins(self):
         """Test that plugins are initialized."""
-        client = PaperlessClient(Settings(base_url="https://example.com", token="test-token"))
+        client = PaperlessClient(Settings(base_url="https://example.com", token="40characterslong40characterslong40charac"))
         self.assertIsInstance(client.plugins, dict)
         # At least the default TestDataCollector plugin should be present
         self.assertIn("TestDataCollector", client.plugins)
@@ -152,7 +152,7 @@ class TestClientInitialization(unittest.TestCase):
     def test_context_manager(self):
         """Test using the client as a context manager."""
         with patch('requests.Session.close') as mock_close:
-            with PaperlessClient(Settings(base_url="https://example.com", token="test-token")) as client:
+            with PaperlessClient(Settings(base_url="https://example.com", token="40characterslong40characterslong40charac")) as client:
                 self.assertIsInstance(client, PaperlessClient)
             mock_close.assert_called_once()
 
@@ -164,7 +164,7 @@ class TestClientRequests(unittest.TestCase):
 
     @override
     def setUp(self):
-        self.client = PaperlessClient(Settings(base_url="https://example.com", token="test-token"))
+        self.client = PaperlessClient(Settings(base_url="https://example.com", token="40characterslong40characterslong40charac"))
         self.session_patcher = patch('requests.Session.request')
         self.mock_session_request = self.session_patcher.start()
 
@@ -272,7 +272,7 @@ class TestClientErrorHandling(unittest.TestCase):
 
     @override
     def setUp(self):
-        self.client = PaperlessClient(Settings(base_url="https://example.com", token="test-token"))
+        self.client = PaperlessClient(Settings(base_url="https://example.com", token="40characterslong40characterslong40charac"))
         self.session_patcher = patch('requests.Session.request')
         self.mock_session_request = self.session_patcher.start()
 
@@ -342,19 +342,19 @@ class TestClientErrorHandling(unittest.TestCase):
     def test_extract_error_message_detail(self):
         """Test extracting error message with 'detail' field."""
         self.mock_response.json.return_value = {"detail": "Error message"}
-        message = self.client._extract_error_message(self.mock_response)
+        message = self.client._extract_error_message(self.mock_response) # type: ignore
         self.assertEqual(message, "Error message")
 
     def test_extract_error_message_error(self):
         """Test extracting error message with 'error' field."""
         self.mock_response.json.return_value = {"error": "Error message"}
-        message = self.client._extract_error_message(self.mock_response)
+        message = self.client._extract_error_message(self.mock_response) # type: ignore
         self.assertEqual(message, "Error message")
 
     def test_extract_error_message_non_field_errors(self):
         """Test extracting error message with 'non_field_errors' field."""
         self.mock_response.json.return_value = {"non_field_errors": ["Error 1", "Error 2"]}
-        message = self.client._extract_error_message(self.mock_response)
+        message = self.client._extract_error_message(self.mock_response) # type: ignore
         self.assertEqual(message, "Error 1, Error 2")
 
     def test_extract_error_message_nested(self):
@@ -363,7 +363,7 @@ class TestClientErrorHandling(unittest.TestCase):
             "title": ["This field is required"],
             "tags": ["Invalid tag ID"]
         }
-        message = self.client._extract_error_message(self.mock_response)
+        message = self.client._extract_error_message(self.mock_response) # type: ignore
         self.assertIn("title: This field is required", message)
         self.assertIn("tags: Invalid tag ID", message)
 
@@ -372,17 +372,16 @@ class TestClientErrorHandling(unittest.TestCase):
         self.mock_response.json.side_effect = ValueError("Invalid JSON")
         self.mock_response.text = "Not JSON"
         self.mock_response.status_code = 400
-        message = self.client._extract_error_message(self.mock_response)
+        message = self.client._extract_error_message(self.mock_response) # type: ignore
         self.assertEqual(message, "Not JSON")
 
 
 class TestClientUtilityMethods(unittest.TestCase):
     """Test the utility methods of the PaperlessClient class."""
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
-
-
+    @override
     def setUp(self):
-        self.client = PaperlessClient(Settings(base_url="https://example.com", token="test-token"))
+        self.client = PaperlessClient(Settings(base_url="https://example.com", token="40characterslong40characterslong40charac"))
 
     @patch("paperap.client.PaperlessClient.request")
     def test_get_statistics(self, mock_request):
@@ -434,17 +433,16 @@ class TestClientUtilityMethods(unittest.TestCase):
 class TestTokenGeneration(unittest.TestCase):
     """Test the token generation functionality."""
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
-
-
+    @override
     def setUp(self):
-        self.client = PaperlessClient(Settings(base_url="https://example.com", token="test-token"))
+        self.client = PaperlessClient(Settings(base_url="https://example.com", token="40characterslong40characterslong40charac"))
 
     @patch("requests.post")
     def test_generate_token_success(self, mock_post):
         """Test successful token generation."""
         mock_response = Mock(spec=requests.Response)
         mock_response.status_code = 200
-        mock_response.json.return_value = {"token": "new-token"}
+        mock_response.json.return_value = {"token": "40characterslong40characterslong40charac"}
         mock_post.return_value = mock_response
 
         token = self.client.generate_token(
@@ -461,14 +459,14 @@ class TestTokenGeneration(unittest.TestCase):
         call_args = mock_post.call_args
         self.assertEqual(call_args[0][0], "https://example.com/api/token/", f"URL Not in {call_args}")
         self.assertEqual(call_args[1]["json"], {"username": "testuser", "password": "testpass"})
-        self.assertEqual(token, "new-token")
+        self.assertEqual(token, "40characterslong40characterslong40charac")
 
     @patch("requests.post")
     def test_generate_token_with_http_prefix(self, mock_post):
         """Test token generation with http:// prefix in base_url."""
         mock_response = Mock(spec=requests.Response)
         mock_response.status_code = 200
-        mock_response.json.return_value = {"token": "new-token"}
+        mock_response.json.return_value = {"token": "40characterslong40characterslong40charac"}
         mock_post.return_value = mock_response
 
         token = self.client.generate_token(
@@ -483,14 +481,14 @@ class TestTokenGeneration(unittest.TestCase):
         # ('https://example.com/api/token/',)
         call_args = mock_post.call_args
         self.assertEqual(call_args[0][0], "http://example.com/api/token/", f"URL Not in {call_args}")
-        self.assertEqual(token, "new-token")
+        self.assertEqual(token, "40characterslong40characterslong40charac")
 
     @patch("requests.post")
     def test_generate_token_with_trailing_slash(self, mock_post):
         """Test token generation with trailing slash in base_url."""
         mock_response = Mock(spec=requests.Response)
         mock_response.status_code = 200
-        mock_response.json.return_value = {"token": "new-token"}
+        mock_response.json.return_value = {"token": "40characterslong40characterslong40charac"}
         mock_post.return_value = mock_response
 
         token = self.client.generate_token(
@@ -505,7 +503,7 @@ class TestTokenGeneration(unittest.TestCase):
         # ('https://example.com/api/token/',)
         call_args = mock_post.call_args
         self.assertEqual(call_args[0][0], "https://example.com/api/token/", f"URL Not in {call_args}")
-        self.assertEqual(token, "new-token")
+        self.assertEqual(token, "40characterslong40characterslong40charac")
 
     @patch("requests.post")
     def test_generate_token_auth_error(self, mock_post):

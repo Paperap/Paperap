@@ -9,7 +9,7 @@
         File:    models.py
         Project: paperap
         Created: 2025-03-07
-        Version: 0.0.6
+        Version: 0.0.7
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -182,7 +182,7 @@ class ProfileFactory(PydanticFactory[Profile]):
     password = factory.Faker("password")
     first_name = factory.Faker("first_name")
     last_name = factory.Faker("last_name")
-    auth_token = factory.Faker("uuid4")
+    auth_token = factory.Faker("uuid4", length=40)
     social_accounts = factory.List([factory.Faker("url") for _ in range(3)])
     has_usable_password = factory.Faker("boolean")
 

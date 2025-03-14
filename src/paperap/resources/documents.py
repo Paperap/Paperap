@@ -47,10 +47,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
     def upload(self, file_content: bytes, filename: str, **metadata) -> Document:
         """Upload a document with optional metadata."""
-        data = {
-            "document": (filename, file_content),
-            **metadata
-        }
+        data = {"document": (filename, file_content), **metadata}
         response = self.client.request("POST", "documents/post_document/", data=data)
         if not response:
             raise ResourceNotFoundError("Document upload failed")

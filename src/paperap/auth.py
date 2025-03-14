@@ -22,13 +22,15 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, override
+from typing import Annotated, Any, override
 
 import pydantic
+from pydantic import ConfigDict, Field
 
 
 class AuthBase(pydantic.BaseModel):
     """Base authentication class."""
+    model_config = ConfigDict(str_strip_whitespace = True)  
 
     @abstractmethod
     def get_auth_headers(self) -> dict[str, str]:
@@ -43,15 +45,9 @@ class AuthBase(pydantic.BaseModel):
 
 class TokenAuth(AuthBase):
     """Authentication using a token."""
-
-    token: str
-
-    @pydantic.field_validator("token", mode="before")
-    def validate_token(cls, value : Any) -> str:
-        if not isinstance(value, str) or not value.strip(): 
-            raise ValueError("Token cannot be empty or whitespace")
-        return value
-
+    # token length appears to be 40. Set to 30 just in case (will still catch egregious errors)
+    token: Annotated[str, Field(min_length=30, max_length=75, pattern=r"^[a-zA-Z0-9]+$")]
+    
     @override
     def get_auth_headers(self) -> dict[str, str]:
         """Get the authorization headers."""

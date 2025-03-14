@@ -832,9 +832,9 @@ include = ["."]
 exclude = [
     "**/.*",
     "**/_*",
-    "**/node_modules",
-    "**/tests",
-    "**/logs",
+    "node_modules",
+    "tests/",
+    "logs",
 ]
 ignore = ["docs"]
 defineConstant = { DEBUG = true }

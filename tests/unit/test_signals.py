@@ -282,18 +282,18 @@ class TestSignalSystem(unittest.TestCase):
         handler1_id = id(handler1)
         # For connect, we need to check the first element of the tuple
         self.assertTrue(
-            any(id(h) == handler1_id for h, _ in self.registry._queue["connect"]["future.queue"]), 
+            any(id(h) == handler1_id for h, _ in self.registry._queue["connect"]["future.queue"]),
             f"Handler1 not queued for connect: {self.registry._queue['connect'].__repr__()}"
         )
         # For disable, we directly check the handler
         self.assertTrue(
-            any(id(h) == handler1_id for h in self.registry._queue["disable"]["future.queue"]), 
+            any(id(h) == handler1_id for h in self.registry._queue["disable"]["future.queue"]),
             f"Handler1 not queued for disable: {self.registry._queue['disable'].__repr__()}"
         )
         # For enable, we check if it's not there
         self.assertFalse(
-            "future.queue" in self.registry._queue.get("enable", {}) and 
-            any(id(h) == handler1_id for h in self.registry._queue["enable"].get("future.queue", set())), 
+            "future.queue" in self.registry._queue.get("enable", {}) and
+            any(id(h) == handler1_id for h in self.registry._queue["enable"].get("future.queue", set())),
             f"Handler1 queued for enable: {self.registry._queue.get('enable', {}).__repr__()}"
         )
 

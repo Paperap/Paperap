@@ -10,7 +10,7 @@
         File:    utils.py
         Project: paperap
         Created: 2025-03-12
-        Version: 0.0.6
+        Version: 0.0.7
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -85,7 +85,7 @@ def random_json():
 
 def create_client() -> PaperlessClient:
     # patch env
-    env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+    env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': '40characterslong40characterslong40charac'}
     with patch.dict(os.environ, env_data, clear=True):
         return PaperlessClient()
 

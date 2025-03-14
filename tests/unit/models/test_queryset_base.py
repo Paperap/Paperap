@@ -28,6 +28,7 @@ import os
 from string import Template
 from typing import override
 import unittest
+from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 # Import the exceptions used by BaseQuerySet.
@@ -39,6 +40,7 @@ from paperap.resources import BaseResource, StandardResource
 from paperap.client import PaperlessClient
 from paperap.resources.documents import DocumentResource
 from paperap.tests import load_sample_data, UnitTestCase, DocumentUnitTest
+from paperap.tests.factories import DocumentFactory, PydanticFactory
 
 MockClient = MagicMock(PaperlessClient)
 
@@ -47,19 +49,28 @@ sample_document = load_sample_data('documents_item.json')
 sample_document_item_404 = load_sample_data('documents_item_404.json')
 
 class DummyModel(StandardModel):
-    pass
-
+    a_str : str | None = None
+    an_int : int | None = None
+    a_datetime : datetime | None = None
+    a_list_str : list[str] = []
+    a_list_int : list[int] = []
+    
 class DummyResource(StandardResource[DummyModel]):
     model_class = DummyModel
     endpoints = {
         "list": Template("http://dummy/api/list"),
         "detail": Template("http://dummy/api/detail/$id"),
     }
-    client = MockClient
 
-    def __init__(self):
-        self.name = "dummy"
-        super().__init__(self.client)
+class DummyFactory(PydanticFactory[DummyModel]):
+    a_str = "some string"
+    an_int = 5
+    a_datetime = datetime.now()
+    a_list_str = ["a", "b", "c"]
+    a_list_int = [1, 2, 3]
+    
+    class Meta: # type: ignore
+        model = DummyModel
 
 class TestQuerySetFilterBase(UnitTestCase):
     @patch("paperap.client.PaperlessClient.request")
@@ -67,7 +78,7 @@ class TestQuerySetFilterBase(UnitTestCase):
         super().setUp()
         self.mock_request = mock_request
         self.mock_request.return_value = sample_document_list
-        self.resource = DummyResource()
+        self.resource = DummyResource(client=self.client)
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
         self.qs = StandardQuerySet(self.resource, filters={"init": "value"})
@@ -194,9 +205,7 @@ class TestQuerySetGetCache(DocumentUnitTest):
 
         self.modified_doc_id = 1337
         self.modified_doc_title = "Paperap Unit Test - Modified Title"
-        self.modified_document = MagicMock(spec=Document)
-        self.modified_document.id = self.modified_doc_id
-        self.modified_document.title = self.modified_doc_title
+        self.modified_document = DocumentFactory.create(id=self.modified_doc_id, title=self.modified_doc_title)
         self.qs._result_cache = [self.modified_document] # type: ignore
 
     def test_get_with_id(self):
@@ -213,9 +222,7 @@ class TestQuerySetGetCacheFailure(DocumentUnitTest):
 
         self.modified_doc_id = 1337
         self.modified_doc_title = "Paperap Unit Test - Modified Title"
-        self.modified_document = MagicMock(spec=Document)
-        self.modified_document.id = self.modified_doc_id
-        self.modified_document.title = self.modified_doc_title
+        self.modified_document = DocumentFactory.create(id=self.modified_doc_id, title=self.modified_doc_title)
         self.qs._result_cache = [self.modified_document] # type: ignore
 
     @patch("paperap.client.PaperlessClient.request")
@@ -230,7 +237,7 @@ class TestQuerySetAll(UnitTestCase):
         super().setUp()
         self.mock_request = mock_request
         self.mock_request.return_value = sample_document_list
-        self.resource = DummyResource()
+        self.resource = DummyResource(client=self.client)
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
         self.qs = StandardQuerySet(self.resource, filters={"init": "value"})
@@ -246,7 +253,7 @@ class TestQuerySetOrderBy(UnitTestCase):
         super().setUp()
         self.mock_request = mock_request
         self.mock_request.return_value = sample_document_list
-        self.resource = DummyResource()
+        self.resource = DummyResource(client=self.client)
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
         self.qs = StandardQuerySet(self.resource, filters={"init": "value"})
@@ -262,7 +269,7 @@ class TestQuerySetFirst(UnitTestCase):
         super().setUp()
         self.mock_request = mock_request
         self.mock_request.return_value = sample_document_list
-        self.resource = DummyResource()
+        self.resource = DummyResource(client=self.client)
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
         self.qs = StandardQuerySet(self.resource, filters={"init": "value"})
@@ -285,7 +292,7 @@ class TestQuerySetLast(UnitTestCase):
         super().setUp()
         self.mock_request = mock_request
         self.mock_request.return_value = sample_document_list
-        self.resource = DummyResource()
+        self.resource = DummyResource(client=self.client)
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
         self.qs = StandardQuerySet(self.resource, filters={"init": "value"})
@@ -303,7 +310,7 @@ class TestQuerySetExists(UnitTestCase):
         super().setUp()
         self.mock_request = mock_request
         self.mock_request.return_value = sample_document_list
-        self.resource = DummyResource()
+        self.resource = DummyResource(client=self.client)
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
         self.qs = StandardQuerySet(self.resource, filters={"init": "value"})
@@ -321,7 +328,7 @@ class TestQuerySetIter(UnitTestCase):
         super().setUp()
         self.mock_request = mock_request
         self.mock_request.return_value = sample_document_list
-        self.resource = DummyResource()
+        self.resource = DummyResource(client=self.client)
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
         self.qs = StandardQuerySet(self.resource, filters={"init": "value"})
@@ -335,10 +342,15 @@ class TestQuerySetIter(UnitTestCase):
 
     def test_iter_with_fully_fetched_cache(self):
         # Create proper mock objects instead of strings
-        mock_models = [MagicMock(spec=DummyModel) for _ in range(2)]
+        mock_models = [DummyFactory.create() for _ in range(2)]
         self.qs._result_cache = mock_models  # type: ignore # Allow edit ClassVar in tests
         self.qs._fetch_all = True # type: ignore
-        result = list(iter(self.qs))
+        try:
+            result = list(iter(self.qs))
+        except Exception as e:
+            print(self.qs._last_response)
+            print(self.qs._result_cache)
+            self.fail(f"Iteration raised an unexpected exception: {e}")
         self.assertEqual(result, mock_models)
 
     @patch.object(StandardQuerySet, "_request_iter")
@@ -346,8 +358,8 @@ class TestQuerySetIter(UnitTestCase):
         """Test iteration with pagination."""
         # TODO: AI Generated Test
         # Setup mock to return different results for first and second page
-        first_page_results = [MagicMock(spec=DummyModel) for _ in range(2)]
-        second_page_results = [MagicMock(spec=DummyModel) for _ in range(2)]
+        first_page_results = [DummyFactory.create() for _ in range(2)]
+        second_page_results = [DummyFactory.create() for _ in range(2)]
 
         # Configure the mock to return different iterators for different calls
         mock_request_iter.side_effect = [
@@ -377,7 +389,7 @@ class TestQuerySetGetItem(UnitTestCase):
     @override
     def setUp(self):
         super().setUp()
-        self.resource = DummyResource()
+        self.resource = DummyResource(client=self.client)
         # Some tests expect a nonempty filter; others require an empty filter.
         # By default, we use a nonempty filter.
         self.qs = StandardQuerySet(self.resource, filters={"init": "value"})
@@ -432,14 +444,14 @@ class TestContains(UnitTestCase):
     @override
     def setUp(self):
         super().setUp()
-        self.resource = DummyResource()
+        self.resource = DummyResource(client=self.client)
         self.qs = StandardQuerySet(self.resource)
 
     @patch.object(StandardQuerySet, "__iter__")
     def test_contains_with_model(self, mock_iter):
         """Test checking if a model is in the queryset."""
         # Create a model and a mock iterator that returns it
-        model = MagicMock(spec=DummyModel)
+        model = DummyFactory.create()
         mock_iter.return_value = iter([model])
 
         # Check if the model is in the queryset
@@ -460,9 +472,9 @@ class TestContains(UnitTestCase):
     def test_contains_with_id(self, mock_iter):
         """Test checking if a model ID is in the queryset."""
         # Create models with different IDs
-        model1 = MagicMock(spec=DummyModel)
+        model1 = DummyFactory.create()
         model1.id = 1
-        model2 = MagicMock(spec=DummyModel)
+        model2 = DummyFactory.create()
         model2.id = 2
 
         mock_iter.return_value = iter([model1, model2])
@@ -478,7 +490,7 @@ class TestRequestIter(UnitTestCase):
     @override
     def setUp(self):
         super().setUp()
-        self.resource = DummyResource()
+        self.resource = DummyResource(client=self.client)
         self.qs = StandardQuerySet(self.resource)
 
     @patch.object(DummyResource, "request_raw")
@@ -487,7 +499,7 @@ class TestRequestIter(UnitTestCase):
         """Test requesting with a specific URL."""
         # Setup mocks
         mock_request_raw.return_value = {"results": [{"id": 1}, {"id": 2}]}
-        mock_handle_response.return_value = iter([MagicMock(spec=DummyModel)])
+        mock_handle_response.return_value = iter([DummyFactory.create()])
 
         # Call _request_iter with a URL
         url = "http://example.com/api/endpoint"
@@ -525,7 +537,7 @@ class TestGetNext(UnitTestCase):
     @override
     def setUp(self):
         super().setUp()
-        self.resource = DummyResource()
+        self.resource = DummyResource(client=self.client)
         self.qs = StandardQuerySet(self.resource)
 
     def test_get_next_with_next_url(self):
@@ -576,7 +588,7 @@ class TestReset(UnitTestCase):
     @override
     def setUp(self):
         super().setUp()
-        self.resource = DummyResource()
+        self.resource = DummyResource(client=self.client)
         self.qs = StandardQuerySet(self.resource)
 
     def test_reset(self):
@@ -608,7 +620,7 @@ class TestFetchAllResults(UnitTestCase):
     @override
     def setUp(self):
         super().setUp()
-        self.resource = DummyResource()
+        self.resource = DummyResource(client=self.client)
         self.qs = StandardQuerySet(self.resource)
 
     @patch.object(StandardQuerySet, "_request_iter")
@@ -627,7 +639,7 @@ class TestFetchAllResults(UnitTestCase):
     def test_fetch_all_results_single_page(self, mock_request_iter):
         """Test fetching all results with a single page."""
         # Set up mock to return a single page with no next URL
-        results = [MagicMock(spec=DummyModel) for _ in range(2)]
+        results = [DummyFactory.create() for _ in range(2)]
         mock_request_iter.return_value = iter(results)
         self.qs._last_response = {"results": results, "next": None}
 
@@ -647,8 +659,8 @@ class TestFetchAllResults(UnitTestCase):
     def test_fetch_all_results_multiple_pages(self, mock_request_iter):
         """Test fetching all results with multiple pages."""
         # Set up mock to return multiple pages
-        page1_results = [MagicMock(spec=DummyModel) for _ in range(2)]
-        page2_results = [MagicMock(spec=DummyModel) for _ in range(2)]
+        page1_results = [DummyFactory.create() for _ in range(2)]
+        page2_results = [DummyFactory.create() for _ in range(2)]
 
         # Configure the mock to return different iterators for different calls
         mock_request_iter.side_effect = [
@@ -679,7 +691,7 @@ class TestNone(UnitTestCase):
     @override
     def setUp(self):
         super().setUp()
-        self.resource = DummyResource()
+        self.resource = DummyResource(client=self.client)
         self.qs = StandardQuerySet(self.resource)
 
     @patch.object(StandardQuerySet, "_chain")
@@ -698,7 +710,7 @@ class TestFilterFieldByStr(UnitTestCase):
     @override
     def setUp(self):
         super().setUp()
-        self.resource = DummyResource()
+        self.resource = DummyResource(client=self.client)
         self.qs = StandardQuerySet(self.resource)
 
     @patch.object(StandardQuerySet, "filter")
@@ -745,7 +757,7 @@ class TestStandardQuerySetMethods(UnitTestCase):
     @override
     def setUp(self):
         super().setUp()
-        self.resource = DummyResource()
+        self.resource = DummyResource(client=self.client)
         self.qs = StandardQuerySet(self.resource)
 
     @patch.object(StandardQuerySet, "filter")

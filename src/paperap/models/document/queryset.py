@@ -137,7 +137,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         # Track if any filters were applied
         filters_applied = False
         result = self
-        
+
         if value is not None:
             if isinstance(value, int):
                 result = self.correspondent_id(value)
@@ -246,7 +246,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         # Track if any filters were applied
         filters_applied = False
         result = self
-        
+
         if value is not None:
             if isinstance(value, int):
                 result = self.document_type_id(value)
@@ -338,7 +338,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         # Track if any filters were applied
         filters_applied = False
         result = self
-        
+
         if value is not None:
             if isinstance(value, int):
                 result = self.storage_path_id(value)

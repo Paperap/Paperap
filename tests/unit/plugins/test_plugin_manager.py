@@ -22,12 +22,14 @@
         2025-03-13     By Jess Mann
 
 """
+from typing import Any, override
 import unittest
 from unittest.mock import MagicMock, patch
-from paperap.plugin_manager import PluginManager, Plugin
+from paperap.plugin_manager import PluginConfig, PluginManager, Plugin
 
 class TestPluginManager(unittest.TestCase):
     # All tests in this class were AI Generated (gpt-4o). Will remove this message when they are reviewed.
+    @override
     def setUp(self):
         self.manager = PluginManager()
 
@@ -53,14 +55,19 @@ class TestPluginManager(unittest.TestCase):
                 mock_package.__name__ + "."
             )
 
-    def test_configure(self):
-        config = {"enabled_plugins": ["TestPlugin"], "settings": {}}
+    def test_configure_with_kwargs(self):
+        config : dict[str, Any] = {"enabled_plugins": ["TestPlugin"], "settings": {}}
+        self.manager.configure(**config)
+        self.assertEqual(self.manager.config, config)
+        
+    def test_configure_with_dict(self):
+        config = PluginConfig(enabled_plugins=["TestPlugin"], settings={})
         self.manager.configure(config)
         self.assertEqual(self.manager.config, config)
 
     def test_initialize_plugin(self):
         mock_plugin = MagicMock(spec=Plugin)
-        self.manager.plugins["TestPlugin"] = mock_plugin
+        self.manager.plugins["TestPlugin"] = mock_plugin  # type: ignore
         client = MagicMock()
         instance = self.manager.initialize_plugin("TestPlugin", client)
         self.assertIsNotNone(instance)
@@ -72,9 +79,11 @@ class TestPluginManager(unittest.TestCase):
 
     def test_initialize_plugin_with_exception(self):
         class FailingPlugin(Plugin):
+            @override
             def setup(self):
                 raise RuntimeError("Setup failed")
 
+            @override
             def teardown(self):
                 pass
 

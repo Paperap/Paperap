@@ -22,6 +22,7 @@
         2025-03-13     By Jess Mann
 
 """
+from typing import Any, override
 import unittest
 from unittest.mock import MagicMock
 from paperap.plugins.base import Plugin
@@ -34,6 +35,7 @@ class TestPlugin(unittest.TestCase):
             @override
             def setup(self): 
                 pass
+            @override
             def teardown(self): 
                 pass
 
@@ -43,8 +45,10 @@ class TestPlugin(unittest.TestCase):
     def test_plugin_config(self):
         mock_client = MagicMock()
         class TestPlugin(Plugin):
+            @override
             def setup(self): 
                 pass
+            @override
             def teardown(self): 
                 pass
 
@@ -52,12 +56,47 @@ class TestPlugin(unittest.TestCase):
         self.assertEqual(plugin.config["option1"], "value1")
         self.assertEqual(plugin.config["option2"], 42)
 
+    def test_plugin_get_config_schema_default(self):
+        class TestPlugin(Plugin):
+            @override
+            def setup(self): 
+                pass
+            @override
+            def teardown(self): 
+                pass
+
+        self.assertEqual(TestPlugin.get_config_schema(), {"option1": str, "option2": int})
+
     def test_plugin_get_config_schema(self):
         class TestPlugin(Plugin):
-            def setup(self): pass
-            def teardown(self): pass
+            @override
+            def setup(self): 
+                pass
+            @override
+            def teardown(self): 
+                pass
+            
+            @override
+            @classmethod
+            def get_config_schema(cls) -> dict[str, Any]:
+                return {"option1": str, "option2": int}
 
-        self.assertEqual(TestPlugin.get_config_schema(), {})
+        self.assertEqual(TestPlugin.get_config_schema(), {"option1": str, "option2": int})
+
+    def test_plugin_get_config_schema_with_extra_option(self):
+        class ExtraOptionPlugin(Plugin):
+            @override
+            def setup(self): 
+                pass
+            @override
+            def teardown(self): 
+                pass
+            @override
+            @classmethod
+            def get_config_schema(cls) -> dict[str, Any]:
+                return {"option1": str, "option2": int, "option3": bool}
+
+        self.assertEqual(ExtraOptionPlugin.get_config_schema(), {"option1": str, "option2": int, "option3": bool})
 
 if __name__ == "__main__":
     unittest.main()

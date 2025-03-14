@@ -19,5 +19,5 @@
 
 """
 
-from paperap.models.document.model import Document, DocumentNote, CustomFieldValues
+from paperap.models.document.model import CustomFieldValues, Document, DocumentNote
 from paperap.models.document.queryset import DocumentQuerySet

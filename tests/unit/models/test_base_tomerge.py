@@ -9,7 +9,7 @@
         File:    test_base.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.7
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -27,6 +27,8 @@ from typing import override
 import unittest
 from datetime import datetime, timezone
 from unittest.mock import patch
+
+from pydantic import field_serializer
 from paperap.tests import UnitTestCase
 from paperap.models import StandardModel
 from paperap.client import PaperlessClient
@@ -42,6 +44,10 @@ class ExampleModel(StandardModel):
     a_float : float
     a_bool : bool
 
+    @field_serializer("a_date")
+    def serialize_date(self, value: datetime) -> str:
+        return value.isoformat()
+
 class ExampleResource(StandardResource):
     """
     Example resource for testing purposes.
@@ -56,7 +62,7 @@ class TestModel(UnitTestCase):
     @override
     def setUp(self):
         # Setup a sample model instance
-        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': 'abc123'}
+        env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': '40characterslong40characterslong40charac'}
         with patch.dict(os.environ, env_data, clear=True):
             self.client = PaperlessClient()
         self.resource = ExampleResource(self.client)  # type: ignore
