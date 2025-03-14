@@ -490,6 +490,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         iterator = self._request_iter(params=self.filters)
 
         # Collect results from initial page
+        # TODO: Consider itertools chain for performance reasons (?)
         self._result_cache.extend(list(iterator))
 
         # Fetch additional pages if available
@@ -597,6 +598,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         # If we have a fully populated cache, use it
         if self._fetch_all:
             yield from self._result_cache
+            return
 
         if not self._iter:
             # Start a new iteration

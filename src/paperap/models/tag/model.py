@@ -38,10 +38,9 @@ class Tag(StandardModel, MatcherMixin):
     """
     Represents a tag in Paperless-NgX.
     """
-
     name: str | None = None
     slug: str | None = None
-    colour: str | None = Field(alias="color", default=None)
+    colour: str | int | None = Field(alias="color", default=None)
     is_inbox_tag: bool | None = None
     document_count: int = 0
     owner: int | None = None
@@ -51,18 +50,6 @@ class Tag(StandardModel, MatcherMixin):
         # Fields that should not be modified
         read_only_fields = {"slug", "document_count"}
         queryset = TagQuerySet
-
-    @field_validator("colour", mode="before")
-    @classmethod
-    def validate_colour(cls, value: Any) -> str | None:
-        if value is None:
-            return None
-
-        # It seems like int should not be allowed, but my sample data contains an int??
-        if isinstance(value, (str, int)):
-            return str(value)
-
-        raise TypeError(f"Colour must be a string or integer, not {type(value)}")
 
     @property
     def documents(self) -> "DocumentQuerySet":

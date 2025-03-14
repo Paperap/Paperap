@@ -31,6 +31,7 @@ import factory
 from factory.base import StubObject
 from faker import Faker
 from typing_extensions import TypeVar
+import secrets
 
 from paperap.models import (StandardModel, Correspondent, CustomField, Document,
                             DocumentNote, DocumentType, Group, Profile, SavedView,
@@ -182,7 +183,7 @@ class ProfileFactory(PydanticFactory[Profile]):
     password = factory.Faker("password")
     first_name = factory.Faker("first_name")
     last_name = factory.Faker("last_name")
-    auth_token = factory.Faker("uuid4", length=40)
+    auth_token = factory.LazyFunction(lambda: secrets.token_hex(20)) 
     social_accounts = factory.List([factory.Faker("url") for _ in range(3)])
     has_usable_password = factory.Faker("boolean")
 

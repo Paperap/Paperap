@@ -102,7 +102,7 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
     model : _StandardModel
 
     # Types (TODO only one of these should be needed)
-    factory : type[PydanticFactory]
+    factory : type[PydanticFactory[_StandardModel]]
     resource_class : type[_StandardResource]
     model_type : type[_StandardModel] | None = None
     queryset_type : type[_StandardQuerySet] | None = None
@@ -186,6 +186,9 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
             else:
                 self.load_model_data()
 
+            if not self.model_data_unparsed and (parsed := getattr(self, "model_data_parsed")):
+                self.model_data_unparsed = self.resource.transform_data_input(**parsed)
+
     def setup_model(self) -> None:
         """
         Set up the model instance using the factory and model data.
@@ -204,7 +207,7 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
         Returns:
             A new model instance.
         """
-        return self.factory.build(*args, **kwargs)
+        return self.factory.create(*args, **kwargs)
 
     def create_list(self, count : int, *args, **kwargs : Any) -> list[_StandardModel]:
         """

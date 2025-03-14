@@ -32,6 +32,7 @@ from pydantic import ConfigDict, Field, conlist, field_serializer, field_validat
 from typing_extensions import TypeVar
 from yarl import URL
 
+from paperap.const import CustomFieldTypedDict, CustomFieldValues
 from paperap.models.abstract import FilteringStrategies, StandardModel
 from paperap.models.document.queryset import DocumentQuerySet
 
@@ -42,36 +43,6 @@ if TYPE_CHECKING:
     from paperap.models.storage_path import StoragePath
     from paperap.models.tag import Tag, TagQuerySet
     from paperap.models.user import User
-
-
-class CustomFieldTypedDict(TypedDict):
-    field: int
-    value: Any
-
-
-class CustomFieldValues(pydantic.BaseModel):
-    field: int
-    value: Any
-
-    model_config = ConfigDict(
-        {
-            "extra": "forbid",
-            "use_enum_values": True,
-        }
-    )
-
-    @override
-    def __eq__(self, other: Any) -> bool:
-        if isinstance(other, dict):
-            if other.keys() != {"field", "value"}:
-                return False
-            return self.field == other.get("field") and self.value == other.get("value")
-
-        if isinstance(other, CustomFieldValues):
-            return self.field == other.field and self.value == other.value
-
-        return super().__eq__(other)
-
 
 class DocumentNote(StandardModel):
     """
