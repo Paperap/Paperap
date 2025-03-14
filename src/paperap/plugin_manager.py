@@ -54,9 +54,11 @@ class PluginManager(pydantic.BaseModel):
         "settings": {},
     }
 
-    model_config = pydantic.ConfigDict({
-        "arbitrary_types_allowed": True,
-    })
+    model_config = pydantic.ConfigDict(
+        {
+            "arbitrary_types_allowed": True,
+        }
+    )
 
     @property
     def enabled_plugins(self) -> list[str]:

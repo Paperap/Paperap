@@ -30,7 +30,8 @@ from pydantic import ConfigDict, Field
 
 class AuthBase(pydantic.BaseModel):
     """Base authentication class."""
-    model_config = ConfigDict(str_strip_whitespace = True)  
+
+    model_config = ConfigDict(str_strip_whitespace=True)
 
     @abstractmethod
     def get_auth_headers(self) -> dict[str, str]:
@@ -45,9 +46,10 @@ class AuthBase(pydantic.BaseModel):
 
 class TokenAuth(AuthBase):
     """Authentication using a token."""
+
     # token length appears to be 40. Set to 30 just in case (will still catch egregious errors)
     token: Annotated[str, Field(min_length=30, max_length=75, pattern=r"^[a-zA-Z0-9]+$")]
-    
+
     @override
     def get_auth_headers(self) -> dict[str, str]:
         """Get the authorization headers."""
