@@ -153,10 +153,10 @@ class TestTagValidation(TagUnitTest):
             ("invalid-color", "invalid-color"),
             (None, None),
             (12345, 12345), # Paperless allows ints for color
-            (object(), TypeError),
-            (["list"], TypeError),
-            ({"dict", "value"}, TypeError),
-            (5.5, TypeError),
+            (object(), ValidationError),
+            (["list"], ValidationError),
+            ({"dict", "value"}, ValidationError),
+            (5.5, ValidationError),
         ])
 
     def test_is_inbox_tag_field(self):

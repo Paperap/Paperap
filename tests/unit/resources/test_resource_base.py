@@ -22,9 +22,12 @@
         2025-03-13     By Jess Mann
 
 """
+from string import Template
 from typing import override
 import unittest
 from unittest.mock import MagicMock
+
+from pydantic import ValidationError
 from paperap.resources.base import BaseResource
 
 class TestBaseResource(unittest.TestCase):
@@ -35,7 +38,9 @@ class TestBaseResource(unittest.TestCase):
         self.mock_client = MagicMock()
         class TestResource(BaseResource):
             model_class = MagicMock()
-            endpoints = {}
+            endpoints = {
+                "list": Template("http://example.com")
+            }
 
         self.resource = TestResource(self.mock_client)
 
@@ -56,6 +61,50 @@ class TestBaseResource(unittest.TestCase):
     def test_transform_data_output(self):
         transformed = self.resource.transform_data_output(name="TestModel")
         self.assertEqual(transformed["name"], "TestModel")
+
+    def test_endpoints_converted_to_template_setattr(self):
+        self.resource.endpoints = {
+            "list": "http://newdomain.com/list" # type: ignore
+        }
+        self.assertIsInstance(self.resource.endpoints, dict)
+        self.assertIsInstance(self.resource.endpoints["list"], Template)
+        self.assertEqual(self.resource.endpoints["list"], Template("http://newdomain.com/list"))
+
+    def test_update_endpoints_converted_to_template(self):
+        self.resource.endpoints["detail"] = "http://example.com/detail" # type: ignore
+        self.assertIsInstance(self.resource.endpoints, dict)
+        self.assertIsInstance(self.resource.endpoints["detail"], Template)
+        self.assertEqual(self.resource.endpoints["detail"], Template("http://example.com/detail"))
+
+    def test_endpoints_converted_to_template_init(self):
+        class FooResource(BaseResource):
+            model_class = MagicMock()
+            endpoints = {
+                "create": "http://example.com" # type: ignore
+            }
+
+        resource = FooResource(self.mock_client)
+        self.assertIsInstance(resource.endpoints, dict)
+        self.assertIsInstance(resource.endpoints["create"], Template) # type: ignore
+        self.assertEqual(resource.endpoints["create"], Template("http://example.com")) # type: ignore
+
+    def test_endpoints_del_list_required(self):
+        with self.assertRaises(ValidationError):
+            del self.resource.endpoints["list"] # type: ignore
+            
+    def test_endpoints_setattr_list_required(self):
+        with self.assertRaises(ValidationError):
+            self.resource.endpoints = { # type: ignore
+                "create": Template("http://example.com") 
+            }
+
+    def test_endpoints_init_list_required(self):
+        with self.assertRaises(ValidationError):
+            class BarResource(BaseResource): # type: ignore
+                model_class = MagicMock()
+                endpoints = {
+                    "create": Template("http://example.com") # type: ignore
+                }
 
 if __name__ == "__main__":
     unittest.main()

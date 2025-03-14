@@ -375,6 +375,7 @@ class TestQuerySetIter(UnitTestCase):
         self.qs._result_cache = []  # type: ignore
         self.qs._fetch_all = False  # type: ignore
         self.qs._next_url = "http://example.com/api/next-page" # type: ignore
+        self.qs._last_response = sample_document_list # type: ignore
 
         # Get all results
         results = list(self.qs)
@@ -658,7 +659,7 @@ class TestFetchAllResults(UnitTestCase):
 
         # Verify _fetch_all is True
         self.assertTrue(self.qs._fetch_all) # type: ignore
-
+        
     @patch.object(StandardQuerySet, "_request_iter")
     def test_fetch_all_results_multiple_pages(self, mock_request_iter):
         """Test fetching all results with multiple pages."""
@@ -666,27 +667,37 @@ class TestFetchAllResults(UnitTestCase):
         page1_results = [DummyFactory.create() for _ in range(2)]
         page2_results = [DummyFactory.create() for _ in range(2)]
 
-        # Configure the mock to return different iterators for different calls
-        mock_request_iter.side_effect = [
-            iter(page1_results),
-            iter(page2_results)
-        ]
+        # Function to mock _request_iter behavior dynamically
+        def mock_request_iter_side_effect(*args, **kwargs):
+            if self.qs._next_url == "http://example.com/api/next-page": # type: ignore
+                # Simulate another page
+                self.qs._next_url = "http://example.com/api/final-page"  # type: ignore
+                return iter(page1_results)
+            elif self.qs._next_url == "http://example.com/api/final-page": # type: ignore
+                # Simulate last page, stop pagination
+                self.qs._next_url = None  # type: ignore
+                return iter(page2_results)
+            # No more pages
+            return iter([])  
+
+        mock_request_iter.side_effect = mock_request_iter_side_effect
 
         # Set up pagination
-        self.qs._next_url = "http://example.com/api/next-page" # type: ignore
-        # Manually set _last_response to simulate API response
-        self.qs._last_response = {"next": "http://example.com/api/next-page"}  # type: ignore
+        self.qs._next_url = "http://example.com/api/next-page"  # type: ignore
+        self.qs._last_response = sample_document_list  # type: ignore
+
         # Call _fetch_all_results
-        self.qs._fetch_all_results() # type: ignore
+        self.qs._fetch_all_results()  # type: ignore
 
         # Verify _request_iter was called twice
         self.assertEqual(mock_request_iter.call_count, 2)
 
         # Verify results were cached
-        self.assertEqual(self.qs._result_cache, page1_results + page2_results) # type: ignore
+        self.assertEqual(self.qs._result_cache, page1_results + page2_results)  # type: ignore
 
         # Verify _fetch_all is True
-        self.assertTrue(self.qs._fetch_all) # type: ignore
+        self.assertTrue(self.qs._fetch_all)  # type: ignore
+
 
 
 class TestNone(UnitTestCase):

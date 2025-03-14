@@ -27,6 +27,7 @@ from abc import ABC, ABCMeta
 from string import Template
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, Iterator, Optional, overload, override
 
+from pydantic import ValidationError, field_validator
 from typing_extensions import TypeVar
 from yarl import URL
 
@@ -119,6 +120,28 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
     @property
     def _meta(self) -> "BaseModel.Meta[_BaseModel]":
         return self.model_class._meta  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
+
+    @field_validator('endpoints', mode="before")
+    @classmethod
+    def validate_endpoints(cls, value : Any) -> dict[str, Template]:
+        if not isinstance(value, dict):
+            raise ValidationError("endpoints must be a dictionary")
+
+        converted = {}
+        for k, v in value.items():
+            if isinstance(v, Template):
+                converted[k] = v
+                continue
+            
+            if not isinstance(v, str):
+                raise ValidationError(f"endpoints[{k}] must be a string or template")
+            
+            try:
+                converted[k] = Template(v)
+            except ValueError as e:
+                raise ValidationError(f"endpoints[{k}] is not a valid template: {e}") from e
+
+        return converted
 
     def all(self) -> _BaseQuerySet:
         """

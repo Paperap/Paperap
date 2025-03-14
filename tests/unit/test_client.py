@@ -244,8 +244,9 @@ class TestClientRequests(unittest.TestCase):
         self.mock_response.json.side_effect = ValueError("Invalid JSON")
         self.mock_response.content = b"Not JSON"
         self.mock_response.url = "https://example.com/api/documents/"
-        with self.assertRaises(ResponseParsingError):
-            self.client.request("GET", "api/documents/")
+        with self.assertLogs(level="WARNING"):
+            with self.assertRaises(ResponseParsingError):
+                self.client.request("GET", "api/documents/")
 
     def test_request_binary_response(self):
         """Test requesting binary content."""
@@ -256,8 +257,9 @@ class TestClientRequests(unittest.TestCase):
     def test_request_connection_error(self):
         """Test handling a connection error."""
         self.mock_session_request.side_effect = requests.exceptions.ConnectionError("Connection refused")
-        with self.assertRaises(RequestError):
-            self.client.request("GET", "api/documents/")
+        with self.assertLogs(level='WARNING'):
+            with self.assertRaises(RequestError):
+                self.client.request("GET", "api/documents/")
 
     def test_request_timeout(self):
         """Test handling a request timeout."""
