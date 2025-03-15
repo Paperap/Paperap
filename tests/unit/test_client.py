@@ -147,7 +147,7 @@ class TestClientInitialization(unittest.TestCase):
         client = PaperlessClient(Settings(base_url="https://example.com", token="40characterslong40characterslong40charac"))
         self.assertIsInstance(client.plugins, dict)
         # At least the default TestDataCollector plugin should be present
-        self.assertIn("TestDataCollector", client.plugins)
+        self.assertIn("SampleDataCollector", client.plugins)
 
     def test_context_manager(self):
         """Test using the client as a context manager."""

@@ -31,7 +31,11 @@ from pydantic import ConfigDict, Field
 class AuthBase(pydantic.BaseModel):
     """Base authentication class."""
 
-    model_config = ConfigDict(str_strip_whitespace=True)
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+        validate_default=True,
+        validate_assignment=True,
+    )
 
     @abstractmethod
     def get_auth_headers(self) -> dict[str, str]:

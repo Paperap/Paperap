@@ -38,15 +38,15 @@ class TestTokenAuth(unittest.TestCase):
         self.assertEqual(auth.get_auth_params(), {})
 
     def test_no_params(self):
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ValueError):
             TokenAuth() # type: ignore
 
     def test_empty_token(self):
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ValueError):
             TokenAuth(token="")
 
     def test_whitespace_token(self):
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ValueError):
             TokenAuth(token="   ")
 
     def test_strip_token(self):
@@ -54,19 +54,19 @@ class TestTokenAuth(unittest.TestCase):
         self.assertEqual(auth.token, "40characterslong40characterslong40charac")
 
     def test_strip_token_middle_whitespace(self):
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ValueError):
             TokenAuth(token=" 40charact  erslong40 characterslong40charac ")
 
     def test_short_token(self):
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ValueError):
             TokenAuth(token="20characterslong20ch")
 
     def test_short_token_with_padding(self):
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ValueError):
             TokenAuth(token="          40characterslong40ch          ")
 
     def test_long_token(self):
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ValueError):
             TokenAuth(token="80characterslong80characterslong80characterslong80characterslong80characterslong")
 
 class TestBasicAuth(unittest.TestCase):

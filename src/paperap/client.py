@@ -24,8 +24,7 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 from string import Template
-from typing import Any, Iterator, Literal, Union, Unpack, overload
-
+from typing import TYPE_CHECKING, Any, Iterator, Literal, Union, Unpack, overload
 import requests
 from yarl import URL
 
@@ -41,8 +40,6 @@ from paperap.exceptions import (
     ResourceNotFoundError,
     ResponseParsingError,
 )
-from paperap.plugin_manager import PluginConfig
-from paperap.plugins.base import Plugin
 from paperap.resources import (
     CorrespondentResource,
     CustomFieldResource,
@@ -64,6 +61,10 @@ from paperap.resources import (
 )
 from paperap.settings import Settings, SettingsArgs
 from paperap.signals import registry
+
+if TYPE_CHECKING:
+    from paperap.plugins.manager import PluginConfig
+    from paperap.plugins.base import Plugin
 
 logger = logging.getLogger(__name__)
 
@@ -103,11 +104,10 @@ class PaperlessClient:
         ```
 
     """
-
     settings: Settings
     auth: AuthBase
     session: requests.Session
-    plugins: dict[str, Plugin]
+    plugins: dict[str, "Plugin"]
 
     # Resources
     correspondents: CorrespondentResource
@@ -165,7 +165,7 @@ class PaperlessClient:
     def __enter__(self) -> PaperlessClient:
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> bool | None:
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.close()
 
     def _init_resources(self) -> None:
@@ -189,7 +189,7 @@ class PaperlessClient:
         self.workflow_triggers = WorkflowTriggerResource(self)
         self.workflows = WorkflowResource(self)
 
-    def _initialize_plugins(self, plugin_config: PluginConfig | None = None) -> None:
+    def _initialize_plugins(self, plugin_config: "PluginConfig | None" = None) -> None:
         """
         Initialize plugins based on configuration.
 
@@ -197,28 +197,28 @@ class PaperlessClient:
             plugin_config: Optional configuration dictionary for plugins.
 
         """
-        from paperap.plugin_manager import PluginManager  # type: ignore # pylint: disable=import-outside-toplevel
+        from paperap.plugins.manager import PluginManager  # type: ignore # pylint: disable=import-outside-toplevel
+        PluginManager.model_rebuild()
 
         # Create and configure the plugin manager
-        self.plugin_manager = PluginManager()
+        self.manager = PluginManager(client=self)
 
         # Discover available plugins
-        self.plugin_manager.discover_plugins()
+        self.manager.discover_plugins()
 
         # Configure plugins
-        default_config: PluginConfig = {
-            "enabled_plugins": ["TestDataCollector"],
+        plugin_config = plugin_config or {
+            "enabled_plugins": ["SampleDataCollector"],
             "settings": {
-                "TestDataCollector": {
+                "SampleDataCollector": {
                     "test_dir": str(Path(__file__).parent.parent.parent / "tests/sample_data"),
                 },
             },
         }
-        config = plugin_config or default_config
-        self.plugin_manager.configure(config)
+        self.manager.configure(plugin_config)
 
         # Initialize all enabled plugins
-        self.plugins = self.plugin_manager.initialize_all_plugins(self)
+        self.plugins = self.manager.initialize_all_plugins()
 
     def _get_auth_params(self) -> dict[str, Any]:
         """Get authentication parameters for requests."""

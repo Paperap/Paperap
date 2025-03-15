@@ -37,13 +37,13 @@ from unittest.mock import MagicMock, Mock, patch, call
 
 from paperap.client import PaperlessClient
 from paperap.models import StandardModel
-from paperap.plugins.collect_test_data import TestDataCollector, SANITIZE_KEYS
+from paperap.plugins.manager import PluginManager
+from paperap.plugins.collect_test_data import SampleDataCollector, SANITIZE_KEYS
 from paperap.signals import SignalRegistry
 from paperap.tests import UnitTestCase
 
-
 class TestDataCollectorUnitTest(UnitTestCase):
-    """Base test case for TestDataCollector tests."""
+    """Base test case for SampleDataCollector tests."""
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @override
@@ -55,7 +55,8 @@ class TestDataCollectorUnitTest(UnitTestCase):
         self.test_dir.mkdir(parents=True, exist_ok=True)
 
         # Create the plugin instance
-        self.plugin = TestDataCollector(self.client, test_dir=self.test_dir)
+        self.manager = PluginManager(client=self.client)
+        self.plugin = SampleDataCollector(manager=self.manager, test_dir=self.test_dir)
 
         # Reset the signal registry for each test
         if hasattr(SignalRegistry, "_instance"):
@@ -73,22 +74,22 @@ class TestDataCollectorUnitTest(UnitTestCase):
 
 
 class TestPluginInitialization(TestDataCollectorUnitTest):
-    """Test the initialization of the TestDataCollector plugin."""
+    """Test the initialization of the SampleDataCollector plugin."""
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     def test_init_with_path_object(self):
         """Test initializing with a Path object."""
-        plugin = TestDataCollector(self.client, test_dir=self.test_dir)
+        plugin = SampleDataCollector(manager=self.manager, test_dir=self.test_dir)
         self.assertEqual(plugin.test_dir, self.test_dir)
 
     def test_init_with_string_path(self):
         """Test initializing with a string path."""
-        plugin = TestDataCollector(self.client, test_dir=str(self.test_dir))
+        plugin = SampleDataCollector(manager=self.manager, test_dir=str(self.test_dir)) # type: ignore
         self.assertEqual(plugin.test_dir, self.test_dir)
 
     def test_init_without_path(self):
         """Test initializing without a path."""
-        plugin = TestDataCollector(self.client)
+        plugin = SampleDataCollector(manager=self.manager) # type: ignore
         self.assertEqual(plugin.test_dir, Path("tests/sample_data"))
 
     def test_init_creates_directory(self):
@@ -97,7 +98,7 @@ class TestPluginInitialization(TestDataCollectorUnitTest):
         if test_dir.exists():
             test_dir.rmdir()
 
-        plugin = TestDataCollector(self.client, test_dir=test_dir)
+        _plugin = SampleDataCollector(manager=self.manager, test_dir=test_dir)
         self.assertTrue(test_dir.exists())
         self.assertTrue(test_dir.is_dir())
 
@@ -106,7 +107,7 @@ class TestPluginInitialization(TestDataCollectorUnitTest):
 
 
 class TestPluginSetupTeardown(TestDataCollectorUnitTest):
-    """Test the setup and teardown methods of the TestDataCollector plugin."""
+    """Test the setup and teardown methods of the SampleDataCollector plugin."""
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @patch('paperap.signals.registry.connect')
@@ -143,38 +144,38 @@ class TestJsonSerializer(TestDataCollectorUnitTest):
     def test_serialize_datetime(self):
         """Test serializing a datetime object."""
         dt = datetime.datetime(2025, 3, 13, 12, 0, 0)
-        result = self.plugin._json_serializer(dt)
+        result = self.plugin._json_serializer(dt) # type: ignore
         self.assertEqual(result, "2025-03-13T12:00:00")
 
     def test_serialize_path(self):
         """Test serializing a Path object."""
         path = Path("/test/path")
-        result = self.plugin._json_serializer(path)
+        result = self.plugin._json_serializer(path) # type: ignore
         self.assertEqual(result, "/test/path")
 
     def test_serialize_decimal(self):
         """Test serializing a Decimal object."""
         decimal = Decimal("123.45")
-        result = self.plugin._json_serializer(decimal)
+        result = self.plugin._json_serializer(decimal) # type: ignore
         self.assertEqual(result, 123.45)
 
     def test_serialize_standard_model(self):
         """Test serializing a StandardModel object."""
         model = Mock(spec=StandardModel)
         model.to_dict.return_value = {"id": 1, "name": "Test"}
-        result = self.plugin._json_serializer(model)
+        result = self.plugin._json_serializer(model) # type: ignore
         self.assertEqual(result, {"id": 1, "name": "Test"})
 
     def test_serialize_set(self):
         """Test serializing a set."""
         test_set = {1, 2, 3}
-        result = self.plugin._json_serializer(test_set)
+        result = self.plugin._json_serializer(test_set) # type: ignore
         self.assertEqual(set(result), {1, 2, 3})
 
     def test_serialize_bytes(self):
         """Test serializing bytes."""
         test_bytes = b"test bytes"
-        result = self.plugin._json_serializer(test_bytes)
+        result = self.plugin._json_serializer(test_bytes) # type: ignore
         self.assertEqual(result, "test bytes")
 
     def test_serialize_unsupported_type(self):
@@ -183,17 +184,17 @@ class TestJsonSerializer(TestDataCollectorUnitTest):
             pass
 
         with self.assertRaises(TypeError):
-            self.plugin._json_serializer(UnsupportedType())
+            self.plugin._json_serializer(UnsupportedType()) # type: ignore
 
 
 class TestSanitization(TestDataCollectorUnitTest):
     """Test the sanitization methods."""
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
-    @patch('paperap.plugins.collect_test_data.TestDataCollector._sanitize_value_recursive')
+    @patch('paperap.plugins.collect_test_data.SampleDataCollector._sanitize_value_recursive')
     def test_sanitize_response(self, mock_sanitize_value):
         """Test sanitizing a response."""
-        mock_sanitize_value.side_effect = lambda k, v: f"sanitized_{v}"
+        mock_sanitize_value.side_effect = lambda _k, v: f"sanitized_{v}" # type: ignore
 
         response = {
             "key1": "value1",
@@ -201,7 +202,7 @@ class TestSanitization(TestDataCollectorUnitTest):
             "next": "https://paperless.example.org/api/documents/?page=2"
         }
 
-        result = self.plugin._sanitize_response(**response)
+        result = self.plugin._sanitize_response(**response) # type: ignore
 
         # Check that _sanitize_value_recursive was called for each key-value pair
         self.assertEqual(mock_sanitize_value.call_count, 3)
@@ -218,7 +219,7 @@ class TestSanitization(TestDataCollectorUnitTest):
             }
         }
 
-        result = self.plugin._sanitize_value_recursive("root", test_dict)
+        result = self.plugin._sanitize_value_recursive("root", test_dict) # type: ignore
 
         # Check that the dictionary was recursively sanitized
         self.assertIsInstance(result, dict)
@@ -230,11 +231,11 @@ class TestSanitization(TestDataCollectorUnitTest):
         """Test sanitizing values for keys in SANITIZE_KEYS."""
         for key in SANITIZE_KEYS:
             # Test with string value
-            result = self.plugin._sanitize_value_recursive(key, "sensitive data")
+            result = self.plugin._sanitize_value_recursive(key, "sensitive data") # type: ignore
             self.assertNotEqual(result, "sensitive data")
 
             # Test with list value
-            result = self.plugin._sanitize_value_recursive(key, ["item1", "item2"])
+            result = self.plugin._sanitize_value_recursive(key, ["item1", "item2"]) # type: ignore
             self.assertIsInstance(result, list)
             self.assertEqual(len(result), 2)
             self.assertNotEqual(result[0], "item1")
@@ -242,7 +243,7 @@ class TestSanitization(TestDataCollectorUnitTest):
 
     def test_sanitize_value_recursive_non_sanitize_keys(self):
         """Test that values for keys not in SANITIZE_KEYS are not sanitized."""
-        result = self.plugin._sanitize_value_recursive("not_sensitive", "regular data")
+        result = self.plugin._sanitize_value_recursive("not_sensitive", "regular data") # type: ignore
         self.assertEqual(result, "regular data")
 
 
@@ -250,7 +251,7 @@ class TestSaveResponse(TestDataCollectorUnitTest):
     """Test the save_response method."""
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
-    @patch('paperap.plugins.collect_test_data.TestDataCollector._sanitize_response')
+    @patch('paperap.plugins.collect_test_data.SampleDataCollector._sanitize_response')
     @patch('json.dump')
     def test_save_response_new_file(self, mock_json_dump, mock_sanitize):
         """Test saving a response to a new file."""
@@ -266,7 +267,7 @@ class TestSaveResponse(TestDataCollectorUnitTest):
 
         # Check that json.dump was called with the sanitized response
         mock_json_dump.assert_called_once()
-        args, kwargs = mock_json_dump.call_args
+        args, _kwargs = mock_json_dump.call_args
         self.assertEqual(args[0], {"sanitized": True})
 
     def test_save_response_existing_file(self):
@@ -302,7 +303,7 @@ class TestSaveListResponse(TestDataCollectorUnitTest):
     """Test the save_list_response method."""
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
-    @patch('paperap.plugins.collect_test_data.TestDataCollector.save_response')
+    @patch('paperap.plugins.collect_test_data.SampleDataCollector.save_response')
     def test_save_list_response(self, mock_save_response):
         """Test saving a list response."""
         response = {"count": 2, "results": [{"id": 1}, {"id": 2}]}
@@ -318,7 +319,7 @@ class TestSaveListResponse(TestDataCollectorUnitTest):
         # Check that the response was returned unchanged
         self.assertEqual(result, response)
 
-    @patch('paperap.plugins.collect_test_data.TestDataCollector.save_response')
+    @patch('paperap.plugins.collect_test_data.SampleDataCollector.save_response')
     def test_save_list_response_no_resource(self, mock_save_response):
         """Test that save_list_response does nothing if no resource is provided."""
         response = {"count": 2, "results": [{"id": 1}, {"id": 2}]}
@@ -331,7 +332,7 @@ class TestSaveListResponse(TestDataCollectorUnitTest):
         # Check that the response was returned unchanged
         self.assertEqual(result, response)
 
-    @patch('paperap.plugins.collect_test_data.TestDataCollector.save_response')
+    @patch('paperap.plugins.collect_test_data.SampleDataCollector.save_response')
     def test_save_list_response_empty_response(self, mock_save_response):
         """Test that save_list_response does nothing if the response is empty."""
         result = self.plugin.save_list_response(None, None, resource="documents")
@@ -347,7 +348,7 @@ class TestSaveFirstItem(TestDataCollectorUnitTest):
     """Test the save_first_item method."""
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
-    @patch('paperap.plugins.collect_test_data.TestDataCollector.save_response')
+    @patch('paperap.plugins.collect_test_data.SampleDataCollector.save_response')
     @patch('paperap.signals.registry.disable')
     def test_save_first_item(self, mock_disable, mock_save_response):
         """Test saving the first item from a list."""
@@ -370,7 +371,7 @@ class TestSaveFirstItem(TestDataCollectorUnitTest):
         # Check that the item was returned unchanged
         self.assertEqual(result, item)
 
-    @patch('paperap.plugins.collect_test_data.TestDataCollector.save_response')
+    @patch('paperap.plugins.collect_test_data.SampleDataCollector.save_response')
     def test_save_first_item_no_resource(self, mock_save_response):
         """Test that save_first_item does nothing if no resource is provided."""
         item = {"id": 1, "name": "Test Item"}
@@ -388,7 +389,7 @@ class TestSaveParsedResponse(TestDataCollectorUnitTest):
     """Test the save_parsed_response method."""
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
-    @patch('paperap.plugins.collect_test_data.TestDataCollector.save_response')
+    @patch('paperap.plugins.collect_test_data.SampleDataCollector.save_response')
     def test_save_parsed_response(self, mock_save_response):
         """Test saving a parsed response."""
         parsed_response = {"id": 1, "name": "Test"}
@@ -407,13 +408,13 @@ class TestSaveParsedResponse(TestDataCollectorUnitTest):
         # Check that save_response was called with the correct arguments
         mock_save_response.assert_called_once()
         args = mock_save_response.call_args[0]
-        self.assertEqual(args[0], self.test_dir / "documents___page|search.json")
+        self.assertEqual(args[0], self.test_dir / "documents___page_search.json")
         self.assertEqual(args[1], parsed_response)
 
         # Check that the response was returned unchanged
         self.assertEqual(result, parsed_response)
 
-    @patch('paperap.plugins.collect_test_data.TestDataCollector.save_response')
+    @patch('paperap.plugins.collect_test_data.SampleDataCollector.save_response')
     def test_save_parsed_response_post_method(self, mock_save_response):
         """Test saving a parsed response with POST method."""
         parsed_response = {"id": 1, "name": "Test"}
@@ -433,7 +434,7 @@ class TestSaveParsedResponse(TestDataCollectorUnitTest):
         args = mock_save_response.call_args[0]
         self.assertEqual(args[0], self.test_dir / "post__documents___title.json")
 
-    @patch('paperap.plugins.collect_test_data.TestDataCollector.save_response')
+    @patch('paperap.plugins.collect_test_data.SampleDataCollector.save_response')
     def test_save_parsed_response_complex_endpoint(self, mock_save_response):
         """Test saving a parsed response with a complex endpoint."""
         parsed_response = {"id": 1, "name": "Test"}
@@ -451,9 +452,9 @@ class TestSaveParsedResponse(TestDataCollectorUnitTest):
 
         # Check that save_response was called with the correct filename
         args = mock_save_response.call_args[0]
-        self.assertEqual(args[0], self.test_dir / "1_notes___page.json")
+        self.assertEqual(args[0], self.test_dir / "notes___page.json")
 
-    @patch('paperap.plugins.collect_test_data.TestDataCollector.save_response')
+    @patch('paperap.plugins.collect_test_data.SampleDataCollector.save_response')
     def test_save_parsed_response_no_json(self, mock_save_response):
         """Test that save_parsed_response does nothing for non-JSON responses."""
         parsed_response = b"Binary data"
@@ -472,7 +473,7 @@ class TestSaveParsedResponse(TestDataCollectorUnitTest):
         # Check that the response was returned unchanged
         self.assertEqual(result, parsed_response)
 
-    @patch('paperap.plugins.collect_test_data.TestDataCollector.save_response')
+    @patch('paperap.plugins.collect_test_data.SampleDataCollector.save_response')
     def test_save_parsed_response_no_params(self, mock_save_response):
         """Test that save_parsed_response does nothing if no params are provided."""
         parsed_response = {"id": 1, "name": "Test"}
@@ -498,11 +499,11 @@ class TestConfigSchema(unittest.TestCase):
 
     def test_get_config_schema(self):
         """Test that get_config_schema returns the expected schema."""
-        schema = TestDataCollector.get_config_schema()
+        schema = SampleDataCollector.get_config_schema()
 
         self.assertIsInstance(schema, dict)
         self.assertIn("test_dir", schema)
-        self.assertEqual(schema["test_dir"]["type"], "string")
+        self.assertEqual(schema["test_dir"]["type"], str)
         self.assertEqual(schema["test_dir"]["required"], False)
 
 

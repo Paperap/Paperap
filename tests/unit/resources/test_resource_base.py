@@ -80,26 +80,26 @@ class TestBaseResource(unittest.TestCase):
         class FooResource(BaseResource):
             model_class = MagicMock()
             endpoints = {
-                "create": "http://example.com" # type: ignore
+                "list": "http://example.com/fooresource/" # type: ignore
             }
 
         resource = FooResource(self.mock_client)
         self.assertIsInstance(resource.endpoints, dict)
-        self.assertIsInstance(resource.endpoints["create"], Template) # type: ignore
-        self.assertEqual(resource.endpoints["create"], Template("http://example.com")) # type: ignore
+        self.assertIsInstance(resource.endpoints["list"], Template) # type: ignore
+        self.assertEqual(resource.endpoints["list"].safe_substitute(), "http://example.com/fooresource/") # type: ignore
 
     def test_endpoints_del_list_required(self):
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ValueError):
             del self.resource.endpoints["list"] # type: ignore
             
     def test_endpoints_setattr_list_required(self):
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ValueError):
             self.resource.endpoints = { # type: ignore
                 "create": Template("http://example.com") 
             }
 
     def test_endpoints_init_list_required(self):
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ValueError):
             class BarResource(BaseResource): # type: ignore
                 model_class = MagicMock()
                 endpoints = {

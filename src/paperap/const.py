@@ -32,11 +32,13 @@ from yarl import URL
 logger = logging.getLogger(__name__)
 
 class ConstModel(pydantic.BaseModel):
-    model_config = ConfigDict({
-        "from_attributes": True,
-        "extra": "forbid",
-        "use_enum_values": True,
-    })
+    model_config = ConfigDict(
+        from_attributes= True,
+        extra= "forbid",
+        use_enum_values= True,
+        validate_default=True,
+        validate_assignment=True,
+    )
 
     @override
     def __eq__(self, other: Any) -> bool:

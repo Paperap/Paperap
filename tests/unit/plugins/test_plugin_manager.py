@@ -25,13 +25,15 @@
 from typing import Any, override
 import unittest
 from unittest.mock import MagicMock, patch
-from paperap.plugin_manager import PluginConfig, PluginManager, Plugin
+from paperap.plugins.manager import PluginConfig, PluginManager
+from paperap.plugins import Plugin
+from paperap.tests import UnitTestCase
 
-class TestPluginManager(unittest.TestCase):
+class TestPluginManager(UnitTestCase):
     # All tests in this class were AI Generated (gpt-4o). Will remove this message when they are reviewed.
     @override
     def setUp(self):
-        self.manager = PluginManager()
+        self.manager = PluginManager(client=self.client)
 
     def test_discover_plugins(self):
         with patch("importlib.import_module") as mock_import, \

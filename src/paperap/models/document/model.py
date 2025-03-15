@@ -28,7 +28,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Annotated, Any, Iterable, Iterator, Optional, TypedDict, cast, override
 
 import pydantic
-from pydantic import ConfigDict, Field, conlist, field_serializer, field_validator, model_serializer
+from pydantic import Field, field_serializer, field_validator, model_serializer
 from typing_extensions import TypeVar
 from yarl import URL
 

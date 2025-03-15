@@ -1,7 +1,4 @@
 """
-Usage example:
-       test_dir = Path(__file__).parent.parent.parent.parent / "tests/sample_data"
-       collector = TestDataCollector(test_dir)
 
 ----------------------------------------------------------------------------
 
@@ -10,7 +7,7 @@ Usage example:
        File:    collect_test_data.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.7
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -34,13 +31,12 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, override
 
 from faker import Faker
+from pydantic import field_validator
 
+from paperap.exceptions import ModelValidationError
 from paperap.models import StandardModel
 from paperap.plugins.base import Plugin
 from paperap.signals import SignalPriority, registry
-
-if TYPE_CHECKING:
-    from paperap.client import PaperlessClient
 
 logger = logging.getLogger(__name__)
 
@@ -64,26 +60,33 @@ SANITIZE_KEYS = [
 ]
 
 
-class TestDataCollector(Plugin):
+class SampleDataCollector(Plugin):
     """
     Plugin to collect test data from API responses.
     """
-
     name = "test_data_collector"
     description = "Collects sample data from API responses for testing purposes"
-    version = "0.0.2"
-    fake = Faker()
-    test_dir: Path
+    version = "0.0.3"
+    fake: Faker = Faker()
+    test_dir: Path = Path("tests/sample_data")
 
-    def __init__(self, client: "PaperlessClient", test_dir: Path | None = None, **kwargs: Any) -> None:
+    @field_validator("test_dir", mode="before")
+    @classmethod
+    def validate_test_dir(cls, value: Any) -> Path | None:
+        """Validate the test directory path."""
         # Convert string path to Path object if needed
-        if test_dir and isinstance(test_dir, str):
-            test_dir = Path(test_dir)
+        if not value:
+            value = Path("tests/sample_data")
+            
+        if isinstance(value, str):
+            value = Path(value)
 
-        self.test_dir = test_dir or Path(self.config.get("test_dir", "tests/sample_data"))
-        self.test_dir.mkdir(parents=True, exist_ok=True)
-        super().__init__(client, **kwargs)
+        if not isinstance(value, Path):
+            raise ModelValidationError("Test directory must be a string or Path object")
 
+        value.mkdir(parents=True, exist_ok=True)
+        return value
+    
     @override
     def setup(self) -> None:
         """Register signal handlers."""
@@ -225,7 +228,7 @@ class TestDataCollector(Plugin):
         """Define the configuration schema for this plugin."""
         return {
             "test_dir": {
-                "type": "string",
+                "type": str,
                 "description": "Directory to save test data files",
                 "required": False,
             }

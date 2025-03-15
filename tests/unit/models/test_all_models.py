@@ -228,7 +228,7 @@ class TestModelFromDict(ModelTestCase):
                     if int in field_types:
                         original = sample_data.get(attr)
                         sample_data[attr] = "invalid"
-                        with self.assertRaises(ValidationError, msg=f"{model_class.__name__} should raise ValidationError for field {attr}"):
+                        with self.assertRaises(ValueError, msg=f"{model_class.__name__} should raise ValueError for field {attr}"):
                             model_class.from_dict(sample_data)
                         sample_data[attr] = original
                         break

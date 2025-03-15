@@ -6,7 +6,7 @@
        File:    exceptions.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.7
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -20,13 +20,20 @@
 """
 
 from __future__ import annotations
-
+import pydantic
 from string import Template
 
 
 class PaperlessError(Exception):
     """Base exception for all paperless client errors."""
 
+class ModelValidationError(PaperlessError, ValueError):
+    """Raised when a model fails validation."""
+
+    def __init__(self, message : str | None = None, model : pydantic.BaseModel | None = None) -> None:
+        if not message:
+            message = f"Model failed validation for {model.__class__.__name__}."
+        super().__init__(message)
 
 class ConfigurationError(PaperlessError):
     """Raised when the configuration is invalid."""

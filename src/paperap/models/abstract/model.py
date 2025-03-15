@@ -6,7 +6,7 @@
        File:    base.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.7
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -52,6 +52,7 @@ _Self = TypeVar("_Self", bound="BaseModel")
 class ModelConfigType(TypedDict):
     populate_by_name: bool
     validate_assignment: bool
+    validate_default: bool
     use_enum_values: bool
     extra: Literal["ignore"]
 
@@ -59,6 +60,7 @@ class ModelConfigType(TypedDict):
 BASE_MODEL_CONFIG: ModelConfigType = {
     "populate_by_name": True,
     "validate_assignment": True,
+    "validate_default": True,
     "use_enum_values": True,
     "extra": "ignore",
 }
@@ -280,7 +282,8 @@ class BaseModel(pydantic.BaseModel, ABC):
             cls._meta.name = cls.__name__.lower()
 
     # Configure Pydantic behavior
-    model_config = pydantic.ConfigDict(**BASE_MODEL_CONFIG)
+    # type ignore because mypy complains about non-required keys
+    model_config = pydantic.ConfigDict(**BASE_MODEL_CONFIG) # type: ignore
 
     def __init__(self, resource: "BaseResource[Self] | None" = None, **data: Any) -> None:
         """
