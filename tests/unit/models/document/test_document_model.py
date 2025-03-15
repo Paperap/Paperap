@@ -716,6 +716,6 @@ class TestRequest(DocumentUnitTest):
             if getattr(sample_document, 'tags', None) is not None:
                 self.assertIsInstance(document.tag_ids, list, "Loading sample document, tags wrong type")
                 self.assertEqual(document.tag_ids, sample_document["tag_ids"], "Loading sample document tags mismatch")
-            
+
 if __name__ == "__main__":
     unittest.main()

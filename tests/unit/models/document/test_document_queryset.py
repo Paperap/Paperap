@@ -9,7 +9,7 @@
         File:    test_document_queryset.py
         Project: paperap
         Created: 2025-03-05
-        Version: 0.0.5
+        Version: 0.0.7
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -24,7 +24,7 @@
 from __future__ import annotations
 
 import os
-from typing import Any, Callable, Iterable
+from typing import Any, Callable, Iterable, override
 import unittest
 from unittest.mock import patch, MagicMock
 from datetime import datetime, timezone
@@ -46,6 +46,7 @@ sample_document_list = load_sample_data('documents_list.json')
 sample_document = load_sample_data('documents_item.json')
 
 class BaseTest(DocumentUnitTest):
+    @override
     def setUp(self):
         super().setUp()
         self.queryset = self.client.documents()
@@ -122,7 +123,7 @@ class TestMeta(BaseTest):
         ]
         for field_name in expected_fields:
             with self.subTest(field_name=field_name):
-                self.assertIn(field_name, Document._meta.filtering_fields)
+                self.assertIn(field_name, Document._meta.filtering_fields) # type: ignore
 
     def test_read_only_fields(self):
         # Non Exhaustive list, just in case the fields change
@@ -134,7 +135,7 @@ class TestMeta(BaseTest):
         ]
         for field_name in expected_fields:
             with self.subTest(field_name=field_name):
-                self.assertIn(field_name, Document._meta.read_only_fields)
+                self.assertIn(field_name, Document._meta.read_only_fields) # type: ignore
 
 class TestCorrespondent(BaseTest):
 
@@ -166,7 +167,7 @@ class TestCorrespondent(BaseTest):
         with patch('paperap.client.PaperlessClient.request') as mock_request:
             mock_request.return_value = sample_data
             for kwargs in test_cases:
-                qs = self.queryset.correspondent(**kwargs)
+                qs = self.queryset.correspondent(**kwargs) # type: ignore
                 self.assertIsInstance(qs, DocumentQuerySet)
                 for document in qs:
                     self.assertIsInstance(document, Document)
@@ -270,7 +271,7 @@ class BaseQuerySetTest(BaseTest):
             sample_data,
             sample_data['count'],
             key=key,
-            condition=lambda d: comparator(d, date_obj)
+            condition=lambda d: comparator(d, date_obj) # type: ignore
         )
 
 class TestTag(BaseQuerySetTest):
@@ -324,7 +325,7 @@ class TestContent(BaseQuerySetTest):
             sample_data,
             sample_data['count'],
             key="content",
-            condition=lambda content: search_string in (content or '')
+            condition=lambda content: search_string in (content or '') # type: ignore
         )
 
 class TestAdded(BaseQuerySetTest):
@@ -334,7 +335,7 @@ class TestAdded(BaseQuerySetTest):
             file='documents___added__lt__20250101.json',
             date_str='2025-01-01',
             key="added",
-            comparator=lambda d, ref: d < ref
+            comparator=lambda d, ref: d < ref # type: ignore
         )
 
     def test_added_after(self):
@@ -343,7 +344,7 @@ class TestAdded(BaseQuerySetTest):
             file='documents___added__gt__20250101.json',
             date_str='2025-01-01',
             key="added",
-            comparator=lambda d, ref: d > ref
+            comparator=lambda d, ref: d > ref # type: ignore
         )
 
 class TestCreated(BaseQuerySetTest):
@@ -353,7 +354,7 @@ class TestCreated(BaseQuerySetTest):
             file='documents___created__lt__20250101.json',
             date_str='2025-01-01',
             key="created",
-            comparator=lambda d, ref: d < ref
+            comparator=lambda d, ref: d < ref # type: ignore
         )
 
     def test_created_after(self):
@@ -362,7 +363,7 @@ class TestCreated(BaseQuerySetTest):
             file='documents___created__gt__20250101.json',
             date_str='2025-01-01',
             key="created",
-            comparator=lambda d, ref: d > ref
+            comparator=lambda d, ref: d > ref # type: ignore
         )
 
 class TestCustomFields(BaseQuerySetTest):
@@ -481,7 +482,7 @@ class TestCustomFields(BaseQuerySetTest):
         ]
         for value, expected in test_cases:
             with self.subTest(value=value, expected=expected):
-                result = self.queryset._normalize_custom_field_query_item(value)
+                result = self.queryset._normalize_custom_field_query_item(value) # type: ignore
                 self.assertEqual(result, expected, f'Expected {expected}. Got {result} of type {type(result)}')
 
     def test_normalize_custom_field_query(self):
@@ -508,7 +509,7 @@ class TestCustomFields(BaseQuerySetTest):
         for query, expected in test_cases:
             count += 1
             with self.subTest(query=query, expected=expected):
-                result = self.queryset._normalize_custom_field_query(query)
+                result = self.queryset._normalize_custom_field_query(query) # type: ignore
                 self.assertEqual(result, expected, f'Subtest {count}: Expected {expected}')
 
     def test_query_exact(self):
@@ -544,31 +545,6 @@ class TestCustomFields(BaseQuerySetTest):
                 break
 
             self.assertEqual(count, 1, "Documents were not iterated over.")
-
-    def ____test_has_id(self):
-        #sample_data = load_sample_data('documents___custom_fields__icontains__zoom.json')
-        #expected_count = sample_data['count']
-        #with patch('paperap.client.PaperlessClient.request') as mock_request:
-        #    mock_request.return_value = sample_data
-        qs = self.queryset.has_custom_field_id(27)
-        self.assertIsInstance(qs, DocumentQuerySet)
-        #self.assertEqual(qs.count(), expected_count)
-        count = 0
-        for document in qs:
-            count += 1
-            self.assertIsInstance(document, Document)
-            found : bool = False
-            for custom_field in document.custom_field_dicts:
-                self.assertIsInstance(custom_field, dict)
-                if custom_field['field'] == 27:
-                    found = True
-                    break
-            self.assertTrue(found, "Expected custom field with id 27")
-
-            # Avoid requesting next url (infinitely)
-            break
-
-        self.assertEqual(count, 1, "Documents were not iterated over.")
 
 class TestCustomFieldAccess(BaseQuerySetTest):
     def test_custom_field_noparams(self):

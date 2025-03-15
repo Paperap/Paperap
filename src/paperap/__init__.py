@@ -19,9 +19,9 @@
 
 """
 
-from paperap.exceptions import APIError, AuthenticationError, PaperlessError, ResourceNotFoundError
 from paperap import models
 from paperap.client import PaperlessClient
+from paperap.exceptions import APIError, AuthenticationError, PaperlessError, ResourceNotFoundError
 from paperap.plugins.manager import PluginManager
 
 __version__ = "0.1.0"

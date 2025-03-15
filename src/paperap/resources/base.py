@@ -32,7 +32,13 @@ from typing_extensions import TypeVar
 from yarl import URL
 
 from paperap.const import URLS, Endpoints
-from paperap.exceptions import ModelValidationError, ConfigurationError, ObjectNotFoundError, ResourceNotFoundError, ResponseParsingError
+from paperap.exceptions import (
+    ConfigurationError,
+    ModelValidationError,
+    ObjectNotFoundError,
+    ResourceNotFoundError,
+    ResponseParsingError,
+)
 from paperap.signals import registry
 
 if TYPE_CHECKING:
@@ -59,6 +65,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         model_class: The model class for this resource.
 
     """
+
     # The model class for this resource.
     model_class: type[_BaseModel]
     # The PaperlessClient instance.
@@ -70,7 +77,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
     # It will default to a standard schema used by the API
     # Setting it will allow you to contact a different schema or even a completely different API.
     # this will usually not need to be overridden
-    endpoints: Endpoints
+    endpoints: ClassVar[Endpoints]
 
     def __init__(self, client: "PaperlessClient") -> None:
         self.client = client
@@ -107,8 +114,8 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             raise ConfigurationError(f"model_class must be defined in {cls.__name__}")
 
         # API Endpoint must be defined
-        if not hasattr(cls, "endpoints"):
-            cls.endpoints = {
+        if not (endpoints := getattr(cls, "endpoints", {})):
+            endpoints = {
                 "list": URLS.list,
                 "detail": URLS.detail,
                 "create": URLS.create,
@@ -116,37 +123,36 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
                 "delete": URLS.delete,
             }
 
-        cls.endpoints = cls._validate_endpoints(cls.endpoints)
+        cls.endpoints = cls._validate_endpoints(endpoints)  # type: ignore # Allow assigning in subclass
 
     @property
     def _meta(self) -> "BaseModel.Meta[_BaseModel]":
         return self.model_class._meta  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
 
     @classmethod
-    def _validate_endpoints(cls, value : Any) -> Endpoints:    
+    def _validate_endpoints(cls, value: Any) -> Endpoints:
         if not isinstance(value, dict):
             raise ModelValidationError("endpoints must be a dictionary")
 
-        converted : dict[str, Template] = {}
+        converted: dict[str, Template] = {}
         for k, v in value.items():
-            
-            if k not in ['list', 'detail', 'create', 'update', 'delete']:
+            if k not in ["list", "detail", "create", "update", "delete"]:
                 raise ModelValidationError("endpoint keys must be list, detail, create, update, or delete")
-        
+
             if isinstance(v, Template):
                 converted[k] = v
                 continue
-            
+
             if not isinstance(v, str):
                 raise ModelValidationError(f"endpoints[{k}] must be a string or template")
-            
+
             try:
                 converted[k] = Template(v)
             except ValueError as e:
                 raise ModelValidationError(f"endpoints[{k}] is not a valid template: {e}") from e
-        
+
         # list is required
-        if 'list' not in converted:
+        if "list" not in converted:
             raise ModelValidationError("list endpoint is required")
 
         # We validated that converted matches endpoints above

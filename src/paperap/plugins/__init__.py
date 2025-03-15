@@ -18,4 +18,5 @@
        2025-03-04     By Jess Mann
 
 """
-from paperap.plugins.base import Plugin, ConfigType
+
+from paperap.plugins.base import ConfigType, Plugin

@@ -283,7 +283,7 @@ class BaseModel(pydantic.BaseModel, ABC):
 
     # Configure Pydantic behavior
     # type ignore because mypy complains about non-required keys
-    model_config = pydantic.ConfigDict(**BASE_MODEL_CONFIG) # type: ignore
+    model_config = pydantic.ConfigDict(**BASE_MODEL_CONFIG)  # type: ignore
 
     def __init__(self, resource: "BaseResource[Self] | None" = None, **data: Any) -> None:
         """

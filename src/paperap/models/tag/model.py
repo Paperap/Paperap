@@ -38,6 +38,7 @@ class Tag(StandardModel, MatcherMixin):
     """
     Represents a tag in Paperless-NgX.
     """
+
     name: str | None = None
     slug: str | None = None
     colour: str | int | None = Field(alias="color", default=None)

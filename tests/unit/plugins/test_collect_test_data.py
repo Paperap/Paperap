@@ -24,7 +24,7 @@
 """
 
 from __future__ import annotations
-
+import tempfile
 import datetime
 import json
 import os
@@ -51,7 +51,8 @@ class TestDataCollectorUnitTest(UnitTestCase):
         """Set up the test case."""
         super().setUp()
         # Create a temporary directory for test data
-        self.test_dir = Path("tests/temp_test_data")
+        self.dirname = tempfile.mkdtemp()
+        self.test_dir = Path(self.dirname)
         self.test_dir.mkdir(parents=True, exist_ok=True)
 
         # Create the plugin instance
@@ -65,12 +66,12 @@ class TestDataCollectorUnitTest(UnitTestCase):
     @override
     def tearDown(self) -> None:
         """Clean up after the test."""
-        super().tearDown()
         # Remove test files
         if self.test_dir.exists():
             for file in self.test_dir.glob("*.json"):
                 file.unlink()
             self.test_dir.rmdir()
+        super().tearDown()
 
 
 class TestPluginInitialization(TestDataCollectorUnitTest):
@@ -94,17 +95,13 @@ class TestPluginInitialization(TestDataCollectorUnitTest):
 
     def test_init_creates_directory(self):
         """Test that initialization creates the directory if it doesn't exist."""
-        test_dir = Path("tests/nonexistent_dir")
-        if test_dir.exists():
-            test_dir.rmdir()
+        with tempfile.TemporaryDirectory() as tempdir:
+            test_dir = Path(f"{tempdir}/nonexistent")
+            self.assertFalse(test_dir.exists(), "Test preconditions failed")
 
-        _plugin = SampleDataCollector(manager=self.manager, test_dir=test_dir)
-        self.assertTrue(test_dir.exists())
-        self.assertTrue(test_dir.is_dir())
-
-        # Clean up
-        test_dir.rmdir()
-
+            _plugin = SampleDataCollector(manager=self.manager, test_dir=test_dir)
+            self.assertTrue(test_dir.exists())
+            self.assertTrue(test_dir.is_dir())
 
 class TestPluginSetupTeardown(TestDataCollectorUnitTest):
     """Test the setup and teardown methods of the SampleDataCollector plugin."""
@@ -118,9 +115,9 @@ class TestPluginSetupTeardown(TestDataCollectorUnitTest):
         # Check that connect was called for each signal
         self.assertEqual(mock_connect.call_count, 3)
         mock_connect.assert_has_calls([
-            call("resource._handle_response:after", self.plugin.save_list_response, unittest.mock.ANY),
-            call("resource._handle_results:before", self.plugin.save_first_item, unittest.mock.ANY),
-            call("client.request:after", self.plugin.save_parsed_response, unittest.mock.ANY)
+            call("resource._handle_response:after", self.plugin.save_list_response, unittest.mock.ANY), # type: ignore
+            call("resource._handle_results:before", self.plugin.save_first_item, unittest.mock.ANY), # type: ignore
+            call("client.request:after", self.plugin.save_parsed_response, unittest.mock.ANY) # type: ignore
         ], any_order=True)
 
     @patch('paperap.signals.registry.disconnect')
@@ -284,19 +281,15 @@ class TestSaveResponse(TestDataCollectorUnitTest):
             # Check that json.dump was not called
             mock_json_dump.assert_not_called()
 
-    @patch('paperap.plugins.collect_test_data.logger.error')
-    def test_save_response_error(self, mock_logger_error):
+    def test_save_response_error(self):
         """Test that errors are logged but don't propagate."""
         filepath = self.test_dir / "error_file.json"
 
         # Create a response that will cause an error
         response = {"key": object()}  # object() is not JSON serializable
 
-        self.plugin.save_response(filepath, response)
-
-        # Check that an error was logged
-        mock_logger_error.assert_called_once()
-        self.assertIn("Error saving response to file", mock_logger_error.call_args[0][0])
+        with self.assertLogs(level="ERROR"):
+            self.plugin.save_response(filepath, response)
 
 
 class TestSaveListResponse(TestDataCollectorUnitTest):
@@ -408,7 +401,7 @@ class TestSaveParsedResponse(TestDataCollectorUnitTest):
         # Check that save_response was called with the correct arguments
         mock_save_response.assert_called_once()
         args = mock_save_response.call_args[0]
-        self.assertEqual(args[0], self.test_dir / "documents___page_search.json")
+        self.assertEqual(args[0], self.test_dir / "documents.__page=1|search=test.json")
         self.assertEqual(args[1], parsed_response)
 
         # Check that the response was returned unchanged
@@ -432,7 +425,7 @@ class TestSaveParsedResponse(TestDataCollectorUnitTest):
 
         # Check that save_response was called with the correct filename
         args = mock_save_response.call_args[0]
-        self.assertEqual(args[0], self.test_dir / "post__documents___title.json")
+        self.assertEqual(args[0], self.test_dir / "post__documents.__title=New_Document.json")
 
     @patch('paperap.plugins.collect_test_data.SampleDataCollector.save_response')
     def test_save_parsed_response_complex_endpoint(self, mock_save_response):
@@ -440,7 +433,8 @@ class TestSaveParsedResponse(TestDataCollectorUnitTest):
         parsed_response = {"id": 1, "name": "Test"}
         method = "GET"
         params = {"page": 1}
-        endpoint = "https://example.com/api/documents/1/notes/"
+        # Must not be "example.com" to avoid being skipped by the plugin
+        endpoint = "https://uniquedomain.com/api/documents/1/notes/"
 
         self.plugin.save_parsed_response(
             parsed_response,
@@ -452,7 +446,7 @@ class TestSaveParsedResponse(TestDataCollectorUnitTest):
 
         # Check that save_response was called with the correct filename
         args = mock_save_response.call_args[0]
-        self.assertEqual(args[0], self.test_dir / "notes___page.json")
+        self.assertEqual(args[0], self.test_dir / "notes.__page=1.json")
 
     @patch('paperap.plugins.collect_test_data.SampleDataCollector.save_response')
     def test_save_parsed_response_no_json(self, mock_save_response):
@@ -460,7 +454,7 @@ class TestSaveParsedResponse(TestDataCollectorUnitTest):
         parsed_response = b"Binary data"
 
         result = self.plugin.save_parsed_response(
-            parsed_response,
+            parsed_response,  # type: ignore
             method="GET",
             params={"page": 1},
             json_response=False,

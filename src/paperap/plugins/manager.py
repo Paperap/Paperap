@@ -27,12 +27,14 @@ import logging
 import pkgutil
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar, Optional, Self, Set, TypedDict
+
 import pydantic
 
 from paperap.client import PaperlessClient
 from paperap.plugins.base import Plugin
 
 logger = logging.getLogger(__name__)
+
 
 class PluginConfig(TypedDict):
     """
@@ -45,13 +47,14 @@ class PluginConfig(TypedDict):
 
 class PluginManager(pydantic.BaseModel):
     """Manages the discovery, configuration and initialization of plugins."""
+
     plugins: dict[str, type[Plugin]] = {}
     instances: dict[str, Plugin] = {}
     config: PluginConfig = {
         "enabled_plugins": [],
         "settings": {},
     }
-    client : PaperlessClient
+    client: PaperlessClient
 
     model_config = pydantic.ConfigDict(
         arbitrary_types_allowed=True,
@@ -158,7 +161,7 @@ class PluginManager(pydantic.BaseModel):
             logger.info("Initialized plugin: %s", plugin_name)
             return plugin_instance
         except Exception as e:
-            raise
+            # Do not allow plugins to interrupt the normal program flow.
             logger.error("Failed to initialize plugin %s: %s", plugin_name, e)
             return None
 

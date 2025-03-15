@@ -85,7 +85,7 @@ def random_json():
 
 def create_client() -> PaperlessClient:
     # patch env
-    env_data = {'PAPERLESS_BASE_URL': 'http://localhost:8000', 'PAPERLESS_TOKEN': '40characterslong40characterslong40charac'}
+    env_data = {'PAPERLESS_BASE_URL': 'http://example.com', 'PAPERLESS_TOKEN': '40characterslong40characterslong40charac'}
     with patch.dict(os.environ, env_data, clear=True):
         return PaperlessClient()
 

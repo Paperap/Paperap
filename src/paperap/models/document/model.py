@@ -44,6 +44,7 @@ if TYPE_CHECKING:
     from paperap.models.tag import Tag, TagQuerySet
     from paperap.models.user import User
 
+
 class DocumentNote(StandardModel):
     """
     Represents a note on a Paperless-NgX document.

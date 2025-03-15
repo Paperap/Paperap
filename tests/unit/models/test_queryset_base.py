@@ -54,7 +54,7 @@ class DummyModel(StandardModel):
     a_datetime : datetime | None = None
     a_list_str : list[str] = []
     a_list_int : list[int] = []
-    
+
 class DummyResource(StandardResource[DummyModel]):
     model_class = DummyModel
     endpoints = {
@@ -68,7 +68,7 @@ class DummyFactory(PydanticFactory[DummyModel]):
     a_datetime = datetime.now()
     a_list_str = ["a", "b", "c"]
     a_list_int = [1, 2, 3]
-    
+
     class Meta: # type: ignore
         model = DummyModel
 
@@ -659,7 +659,7 @@ class TestFetchAllResults(UnitTestCase):
 
         # Verify _fetch_all is True
         self.assertTrue(self.qs._fetch_all) # type: ignore
-        
+
     @patch.object(StandardQuerySet, "_request_iter")
     def test_fetch_all_results_multiple_pages(self, mock_request_iter):
         """Test fetching all results with multiple pages."""
@@ -678,7 +678,7 @@ class TestFetchAllResults(UnitTestCase):
                 self.qs._next_url = None  # type: ignore
                 return iter(page2_results)
             # No more pages
-            return iter([])  
+            return iter([])
 
         mock_request_iter.side_effect = mock_request_iter_side_effect
 

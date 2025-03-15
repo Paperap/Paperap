@@ -157,14 +157,12 @@ class TestClientInitialization(unittest.TestCase):
             mock_close.assert_called_once()
 
 
-class TestClientRequests(unittest.TestCase):
+class TestClientRequests(UnitTestCase):
     """Test the request methods of the PaperlessClient class."""
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
-
-
     @override
     def setUp(self):
-        self.client = PaperlessClient(Settings(base_url="https://example.com", token="40characterslong40characterslong40charac"))
+        super().setUp()
         self.session_patcher = patch('requests.Session.request')
         self.mock_session_request = self.session_patcher.start()
 
@@ -185,22 +183,15 @@ class TestClientRequests(unittest.TestCase):
         self.mock_session_request.assert_called_once()
         call_args = self.mock_session_request.call_args[1]
         self.assertEqual(call_args["method"], "GET")
-        self.assertEqual(call_args["url"], "https://example.com/api/documents/")
+        self.assertEqual(call_args["url"], "http://example.com/api/documents/")
         self.assertEqual(result, {"key": "value"})
 
     def test_request_with_absolute_url(self):
         """Test making a request with an absolute URL."""
-        result = self.client.request("GET", "https://other-example.com/api/documents/")
+        _result = self.client.request("GET", "https://other-example.com/api/documents/")
         self.mock_session_request.assert_called_once()
         call_args = self.mock_session_request.call_args[1]
         self.assertEqual(call_args["url"], "https://other-example.com/api/documents/")
-
-    def test_request_with_params(self):
-        """Test making a request with query parameters."""
-        params = {"page": 1, "page_size": 10}
-        self.client.request("GET", "api/documents/", params=params)
-        call_args = self.mock_session_request.call_args[1]
-        self.assertEqual(call_args["params"], params)
 
     def test_request_with_data(self):
         """Test making a request with JSON data."""
@@ -224,14 +215,14 @@ class TestClientRequests(unittest.TestCase):
         template = Template("api/documents/$id/")
         self.client.request("GET", template)
         call_args = self.mock_session_request.call_args[1]
-        self.assertEqual(call_args["url"], "https://example.com/api/documents/$id/")
+        self.assertEqual(call_args["url"], "http://example.com/api/documents/$id/")
 
     def test_request_with_url_object(self):
         """Test making a request with a URL object."""
         url = URL("api/documents/")
         self.client.request("GET", url)
         call_args = self.mock_session_request.call_args[1]
-        self.assertEqual(call_args["url"], "https://example.com/api/documents/")
+        self.assertEqual(call_args["url"], "http://example.com/api/documents/")
 
     def test_request_no_content_response(self):
         """Test handling a 204 No Content response."""

@@ -40,7 +40,7 @@ from paperap.signals import SignalPriority, registry
 
 logger = logging.getLogger(__name__)
 
-sanitize_pattern = re.compile(r"[^a-zA-Z0-9_-]")
+sanitize_pattern = re.compile(r"[^a-zA-Z0-9|.=_-]")
 
 SANITIZE_KEYS = [
     "email",
@@ -64,6 +64,7 @@ class SampleDataCollector(Plugin):
     """
     Plugin to collect test data from API responses.
     """
+
     name = "test_data_collector"
     description = "Collects sample data from API responses for testing purposes"
     version = "0.0.3"
@@ -77,7 +78,7 @@ class SampleDataCollector(Plugin):
         # Convert string path to Path object if needed
         if not value:
             value = Path("tests/sample_data")
-            
+
         if isinstance(value, str):
             value = Path(value)
 
@@ -86,7 +87,7 @@ class SampleDataCollector(Plugin):
 
         value.mkdir(parents=True, exist_ok=True)
         return value
-    
+
     @override
     def setup(self) -> None:
         """Register signal handlers."""
@@ -158,13 +159,14 @@ class SampleDataCollector(Plugin):
 
         try:
             response = self._sanitize_response(**response)
+            filepath.parent.mkdir(parents=True, exist_ok=True)
             with filepath.open("w") as f:
                 json.dump(response, f, indent=4, sort_keys=True, ensure_ascii=False, default=self._json_serializer)
         except (TypeError, OverflowError, OSError) as e:
             # Don't allow the plugin to interfere with normal operations in the event of failure
-            logger.error("Error saving response to file: %s", e)
+            logger.error("Error saving response to file (%s): %s", filepath.absolute(), e)
 
-    def save_list_response(self, sender: Any, response: dict[str, Any], **kwargs: Any) -> dict[str, Any]:
+    def save_list_response(self, sender: Any, response: dict[str, Any] | None, **kwargs: Any) -> dict[str, Any]:
         """Save the list response to a JSON file."""
         if not response or not (resource_name := kwargs.get("resource")):
             return response
@@ -202,20 +204,23 @@ class SampleDataCollector(Plugin):
 
         Connects to client.request:after signal.
         """
+        # If endpoint contains "example.com", we're testing, so skip it
+        if "example.com" in str(endpoint):
+            return parsed_response
+
         if not json_response or not params:
             return parsed_response
 
         # Strip url to final path segment
         resource_name = ".".join(endpoint.split("/")[-2:])
-        resource_name = sanitize_pattern.sub("_", resource_name)
 
-        combined_params = list(params.keys())
+        combined_params = list(f"{k}={v}" for k, v in params.items())
         params_str = "|".join(combined_params)
-        params_str = sanitize_pattern.sub("_", params_str)
         filename_prefix = ""
         if method.lower() != "get":
             filename_prefix = f"{method.lower()}__"
         filename = f"{filename_prefix}{resource_name}__{params_str}.json"
+        filename = sanitize_pattern.sub("_", filename)
 
         filepath = self.test_dir / filename
         self.save_response(filepath, parsed_response)

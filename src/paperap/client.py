@@ -25,6 +25,7 @@ import logging
 from pathlib import Path
 from string import Template
 from typing import TYPE_CHECKING, Any, Iterator, Literal, Union, Unpack, overload
+
 import requests
 from yarl import URL
 
@@ -63,8 +64,8 @@ from paperap.settings import Settings, SettingsArgs
 from paperap.signals import registry
 
 if TYPE_CHECKING:
-    from paperap.plugins.manager import PluginConfig
     from paperap.plugins.base import Plugin
+    from paperap.plugins.manager import PluginConfig
 
 logger = logging.getLogger(__name__)
 
@@ -104,6 +105,7 @@ class PaperlessClient:
         ```
 
     """
+
     settings: Settings
     auth: AuthBase
     session: requests.Session
@@ -198,6 +200,7 @@ class PaperlessClient:
 
         """
         from paperap.plugins.manager import PluginManager  # type: ignore # pylint: disable=import-outside-toplevel
+
         PluginManager.model_rebuild()
 
         # Create and configure the plugin manager

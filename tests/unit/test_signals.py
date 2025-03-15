@@ -187,6 +187,7 @@ class TestSignalSystem(unittest.TestCase):
 
         # Emit the signal
         result = signal.emit({"original": "data"})
+        assert result is not None # make mypy happy
 
         # Verify the result
         self.assertTrue(result["direct"])
@@ -255,6 +256,7 @@ class TestSignalSystem(unittest.TestCase):
 
         # Verify it's the right signal
         self.assertIsNotNone(signal)
+        assert signal is not None # make mypy happy
         self.assertEqual(signal.name, "get.test")
         self.assertEqual(signal.description, "A signal to retrieve")
 
@@ -282,19 +284,19 @@ class TestSignalSystem(unittest.TestCase):
         handler1_id = id(handler1)
         # For connect, we need to check the first element of the tuple
         self.assertTrue(
-            any(id(h) == handler1_id for h, _ in self.registry._queue["connect"]["future.queue"]),
-            f"Handler1 not queued for connect: {self.registry._queue['connect'].__repr__()}"
+            any(id(h) == handler1_id for h, _ in self.registry._queue["connect"]["future.queue"]), # type: ignore
+            f"Handler1 not queued for connect: {self.registry._queue['connect'].__repr__()}" # type: ignore
         )
         # For disable, we directly check the handler
         self.assertTrue(
-            any(id(h) == handler1_id for h in self.registry._queue["disable"]["future.queue"]),
-            f"Handler1 not queued for disable: {self.registry._queue['disable'].__repr__()}"
+            any(id(h) == handler1_id for h in self.registry._queue["disable"]["future.queue"]), # type: ignore
+            f"Handler1 not queued for disable: {self.registry._queue['disable'].__repr__()}" # type: ignore
         )
         # For enable, we check if it's not there
         self.assertFalse(
-            "future.queue" in self.registry._queue.get("enable", {}) and
-            any(id(h) == handler1_id for h in self.registry._queue["enable"].get("future.queue", set())),
-            f"Handler1 queued for enable: {self.registry._queue.get('enable', {}).__repr__()}"
+            "future.queue" in self.registry._queue.get("enable", {}) and # type: ignore
+            any(id(h) == handler1_id for h in self.registry._queue["enable"].get("future.queue", set())), # type: ignore
+            f"Handler1 queued for enable: {self.registry._queue.get('enable', {}).__repr__()}" # type: ignore
         )
 
         # Create the signal - this should process the queue
@@ -312,7 +314,7 @@ class TestSignalSystem(unittest.TestCase):
 
         # Try to queue an invalid action
         with self.assertRaises(ValueError):
-            self.registry.queue_action("invalid_action", "test.signal", handler)
+            self.registry.queue_action("invalid_action", "test.signal", handler) # type: ignore
 
     def test_emit_with_no_args(self):
         """Test emitting a signal with no args."""

@@ -18,24 +18,28 @@
        2025-03-04     By Jess Mann
 
 """
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, ClassVar, NotRequired, TypedDict
-from typing_extensions import Unpack
 
 import pydantic
 from pydantic import ConfigDict, field_validator
+from typing_extensions import Unpack
+
 from paperap.exceptions import ModelValidationError
 
 if TYPE_CHECKING:
     from paperap.client import PaperlessClient
     from paperap.plugins.manager import PluginManager
 
+
 class ConfigType(TypedDict, total=False):
     type: NotRequired[type]
     description: NotRequired[str]
     required: NotRequired[bool]
+
 
 class Plugin(pydantic.BaseModel, ABC):
     """Base class for all plugins."""
@@ -45,13 +49,12 @@ class Plugin(pydantic.BaseModel, ABC):
     description: ClassVar[str] = "No description provided"
     version: ClassVar[str] = "0.0.1"
     manager: "PluginManager"
-    config: dict[str, Any] = {}
 
     def __init_subclass__(cls, **kwargs: ConfigDict):
         # Enforce name is set
         if not getattr(cls, "name", None):
             raise ValueError("Plugin name must be set")
-        return super().__init_subclass__(**kwargs) # type: ignore # Not sure why pyright is complaining
+        return super().__init_subclass__(**kwargs)  # type: ignore # Not sure why pyright is complaining
 
     model_config = ConfigDict(
         from_attributes=True,
@@ -70,53 +73,11 @@ class Plugin(pydantic.BaseModel, ABC):
             **kwargs: Plugin-specific configuration.
 
         """
-        # Default to empty dict
-        config = kwargs.pop('config',{})
-        
-        if not isinstance(config, dict):
-            raise ModelValidationError("Configuration must be a dictionary")
-
-        # Grab config keys from kwargs, and apply to config
-        schema = self.get_config_schema()
-        config.update({key: kwargs.get(key) for key in list(kwargs) if key in schema})
-        kwargs['config'] = self.validate_config(config)
-        
-        # Call pydantic's init with the remaining kwargs
+        # Pydantic handles config
         super().__init__(**kwargs)
-        
+
         # Finalize setting up the plugin (defined by subclass)
         self.setup()
-
-    @field_validator("config", mode="before")
-    @classmethod
-    def validate_config(cls, config : Any) -> dict[str, ConfigType]:
-        """Validate the plugin configuration."""
-        # Default to empty dict
-        config = config or {}
-        
-        if not isinstance(config, dict):
-            raise ModelValidationError("Configuration must be a dictionary")
-
-        # Compare to the schema
-        schema = cls.get_config_schema()
-        for field, meta in schema.items():
-            if not isinstance(meta, dict):
-                raise ModelValidationError(f"Invalid schema for configuration parameter {field}")
-
-            value = config.get(field, None)
-            if meta.get('required', False):
-                if value is None:
-                    raise ModelValidationError(f"Missing required configuration parameter: {field} -> {config}")
-
-            # All other checks below are contingent on the value being present
-            if not value:
-                continue
-                
-            if element_type := meta.get('type', None):
-                if not isinstance(value, element_type):
-                    raise ModelValidationError(f"Invalid type for {field}: {element_type} expected, {type(value)} found -> {value}")
-
-        return config
 
     @property
     def client(self) -> "PaperlessClient":

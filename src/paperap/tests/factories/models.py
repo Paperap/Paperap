@@ -183,7 +183,7 @@ class ProfileFactory(PydanticFactory[Profile]):
     password = factory.Faker("password")
     first_name = factory.Faker("first_name")
     last_name = factory.Faker("last_name")
-    auth_token = factory.LazyFunction(lambda: secrets.token_hex(20)) 
+    auth_token = factory.LazyFunction(lambda: secrets.token_hex(20))
     social_accounts = factory.List([factory.Faker("url") for _ in range(3)])
     has_usable_password = factory.Faker("boolean")
 

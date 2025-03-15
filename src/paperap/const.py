@@ -18,24 +18,26 @@
        2025-03-04     By Jess Mann
 
 """
+
 from __future__ import annotations
 
+import logging
 from datetime import datetime
-from enum import Enum, StrEnum, IntEnum
+from enum import Enum, IntEnum, StrEnum
 from string import Template
 from typing import Any, Literal, NotRequired, Required, Self, TypedDict, override
-import logging
+
 import pydantic
 from pydantic import ConfigDict, Field
-from yarl import URL
 
 logger = logging.getLogger(__name__)
 
+
 class ConstModel(pydantic.BaseModel):
     model_config = ConfigDict(
-        from_attributes= True,
-        extra= "forbid",
-        use_enum_values= True,
+        from_attributes=True,
+        extra="forbid",
+        use_enum_values=True,
         validate_default=True,
         validate_assignment=True,
     )
@@ -55,6 +57,7 @@ class ConstModel(pydantic.BaseModel):
             return self.model_dump() == other.model_dump()
 
         return super().__eq__(other)
+
 
 class URLS:
     index: Template = Template("/api/")
@@ -97,6 +100,7 @@ class ModelStatus(StrEnum):
     READY = "ready"
     ERROR = "error"
 
+
 class CustomFieldTypes(StrEnum):
     STRING = "string"
     BOOLEAN = "boolean"
@@ -114,13 +118,16 @@ class CustomFieldTypes(StrEnum):
         logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
         return cls.UNKNOWN
 
+
 class CustomFieldValues(ConstModel):
     field: int
     value: Any
 
+
 class CustomFieldTypedDict(TypedDict):
     field: int
     value: Any
+
 
 class DocumentMetadataType(ConstModel):
     namespace: str | None = None
@@ -128,11 +135,13 @@ class DocumentMetadataType(ConstModel):
     key: str | None = None
     value: str | None = None
 
+
 class DocumentSearchHitType(ConstModel):
     score: float | None = None
     highlights: str | None = None
     note_highlights: str | None = None
     rank: int | None = None
+
 
 class MatchingAlgorithmType(IntEnum):
     NONE = 0
@@ -155,6 +164,7 @@ class PermissionSetType(ConstModel):
     users: list[int] = Field(default_factory=list)
     groups: list[int] = Field(default_factory=list)
 
+
 class PermissionTableType(ConstModel):
     view: PermissionSetType = Field(default_factory=PermissionSetType)
     change: PermissionSetType = Field(default_factory=PermissionSetType)
@@ -165,9 +175,11 @@ class RetrieveFileMode(StrEnum):
     PREVIEW = "preview"
     THUMBNAIL = "thumb"
 
+
 class SavedViewFilterRuleType(ConstModel):
     rule_type: int | None = None
     value: str | None = None
+
 
 class ShareLinkFileVersionType(StrEnum):
     ARCHIVE = "archive"
@@ -180,6 +192,7 @@ class ShareLinkFileVersionType(StrEnum):
         logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
         return cls.UNKNOWN
 
+
 class StatusType(StrEnum):
     OK = "OK"
     ERROR = "ERROR"
@@ -190,6 +203,7 @@ class StatusType(StrEnum):
     def _missing_(cls, value: object) -> "Literal[StatusType.UNKNOWN]":
         logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
         return cls.UNKNOWN
+
 
 class StatusDatabaseMigrationStatusType(ConstModel):
     latest_migration: str | None = None
@@ -258,6 +272,7 @@ class WorkflowTriggerType(IntEnum):
     def _missing_(cls, value: object) -> "Literal[WorkflowTriggerType.UNKNOWN]":
         logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
         return cls.UNKNOWN
+
 
 class WorkflowTriggerSourceType(IntEnum):
     CONSUME_FOLDER = 1

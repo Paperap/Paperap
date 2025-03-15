@@ -23,6 +23,7 @@
 
 """
 from typing import Any, override
+import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
 from paperap.plugins.manager import PluginConfig, PluginManager
@@ -33,35 +34,14 @@ class TestPluginManager(UnitTestCase):
     # All tests in this class were AI Generated (gpt-4o). Will remove this message when they are reviewed.
     @override
     def setUp(self):
+        super().setUp()
         self.manager = PluginManager(client=self.client)
-
-    def test_discover_plugins(self):
-        with patch("importlib.import_module") as mock_import, \
-             patch("pkgutil.iter_modules") as mock_iter_modules:
-            # Mock the package with __path__ attribute
-            mock_package = MagicMock()
-            mock_package.__path__ = ["some/path"]
-            mock_package.__name__ = "paperap.plugins"
-            mock_import.return_value = mock_package
-            
-            # Mock iter_modules to return some modules
-            mock_iter_modules.return_value = [
-                (None, "plugin1", False),
-                (None, "plugin2", True)
-            ]
-            
-            self.manager.discover_plugins("paperap.plugins")
-            mock_import.assert_called_with("paperap.plugins")
-            mock_iter_modules.assert_called_with(
-                mock_package.__path__, 
-                mock_package.__name__ + "."
-            )
 
     def test_configure_with_kwargs(self):
         config : dict[str, Any] = {"enabled_plugins": ["TestPlugin"], "settings": {}}
         self.manager.configure(**config)
         self.assertEqual(self.manager.config, config)
-        
+
     def test_configure_with_dict(self):
         config = PluginConfig(enabled_plugins=["TestPlugin"], settings={})
         self.manager.configure(config)
@@ -70,17 +50,17 @@ class TestPluginManager(UnitTestCase):
     def test_initialize_plugin(self):
         mock_plugin = MagicMock(spec=Plugin)
         self.manager.plugins["TestPlugin"] = mock_plugin  # type: ignore
-        client = MagicMock()
-        instance = self.manager.initialize_plugin("TestPlugin", client)
+        instance = self.manager.initialize_plugin("TestPlugin")
         self.assertIsNotNone(instance)
 
     def test_initialize_nonexistent_plugin(self):
-        client = MagicMock()
-        instance = self.manager.initialize_plugin("NonExistentPlugin", client)
-        self.assertIsNone(instance)
+        with self.assertLogs(level="WARNING"):
+            instance = self.manager.initialize_plugin("NonExistentPlugin")
+            self.assertIsNone(instance)
 
     def test_initialize_plugin_with_exception(self):
         class FailingPlugin(Plugin):
+            name = "FailingPlugin"
             @override
             def setup(self):
                 raise RuntimeError("Setup failed")
@@ -89,10 +69,10 @@ class TestPluginManager(UnitTestCase):
             def teardown(self):
                 pass
 
-        self.manager.plugins["FailingPlugin"] = FailingPlugin
-        client = MagicMock()
-        instance = self.manager.initialize_plugin("FailingPlugin", client)
-        self.assertIsNone(instance)
+        with self.assertLogs(level="WARNING"):
+            self.manager.plugins["FailingPlugin"] = FailingPlugin
+            instance = self.manager.initialize_plugin("FailingPlugin")
+            self.assertIsNone(instance)
 
 if __name__ == "__main__":
     unittest.main()

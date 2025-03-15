@@ -9,7 +9,7 @@
         File:    test_base.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.7
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -23,6 +23,7 @@
 """
 from __future__ import annotations
 import os
+from typing import override
 import unittest
 from datetime import datetime, timezone
 from unittest.mock import patch
@@ -33,7 +34,7 @@ from paperap.tests import UnitTestCase
 from unittest.mock import patch
 from paperap.tests import UnitTestCase
 from paperap.models import StandardModel
-from paperap.resources.base import BaseResource, StandardResource, StandardResource
+from paperap.resources.base import StandardResource
 
 class ExampleModel(StandardModel):
     """
@@ -50,14 +51,15 @@ class ExampleModel(StandardModel):
     def serialize_datetime(self, value: datetime | None, _info):
         return value.isoformat() if value else None
 
-class ExampleResource(StandardResource):
+class ExampleResource(StandardResource[ExampleModel]):
     """
     Example resource for testing purposes.
     """
     name = "example"
     model_class = ExampleModel
 
-class TestBase(UnitTestCase):
+class TestBase(UnitTestCase[ExampleModel, ExampleResource]):
+    @override
     def setUp(self):
         super().setUp()
 
@@ -73,7 +75,7 @@ class TestBase(UnitTestCase):
         }
 
 class TestWithModel(TestBase):
-
+    @override
     def setUp(self):
         super().setUp()
         self.model = ExampleModel.from_dict(self.model_data_parsed)
@@ -186,7 +188,7 @@ class TestModel(TestWithModel):
             ({"an_int": -1}, -1),
         ]
         for update_data, expected_value in test_cases:
-            self.model.update_locally(**update_data)
+            self.model.update_locally(**update_data) # type: ignore
             self.assertEqual(self.model.an_int, expected_value)
 
     def test_model_update_str(self):
@@ -196,7 +198,7 @@ class TestModel(TestWithModel):
             ({"a_str": " "}, " "),
         ]
         for update_data, expected_value in test_cases:
-            self.model.update_locally(**update_data)
+            self.model.update_locally(**update_data) # type: ignore
             self.assertEqual(self.model.a_str, expected_value)
 
     def test_model_update_float(self):
@@ -206,7 +208,7 @@ class TestModel(TestWithModel):
             ({"a_float": -1.0}, -1.0),
         ]
         for update_data, expected_value in test_cases:
-            self.model.update_locally(**update_data)
+            self.model.update_locally(**update_data) # type: ignore
             self.assertEqual(self.model.a_float, expected_value)
 
     def test_model_update_bool(self):
@@ -221,7 +223,7 @@ class TestModel(TestWithModel):
 class TestClassAttributes(UnitTestCase):
     def test_filtering_fields(self):
         expected_fields = {"id", "a_str", "a_date", "an_int", "a_float", "a_bool", "an_optional_str"}
-        self.assertEqual(set(ExampleModel._meta.filtering_fields), expected_fields)
+        self.assertEqual(set(ExampleModel._meta.filtering_fields), expected_fields) # type: ignore
 
     def test_new_fields_in_filtering_fields(self):
         class NewFieldsModel(StandardModel):
@@ -230,11 +232,11 @@ class TestClassAttributes(UnitTestCase):
             a_date : datetime
 
         # Inherited ID included
-        self.assertIn("id", NewFieldsModel._meta.filtering_fields)
+        self.assertIn("id", NewFieldsModel._meta.filtering_fields) # type: ignore
         # New fields included
-        self.assertIn("a_str", NewFieldsModel._meta.filtering_fields)
-        self.assertIn("an_int", NewFieldsModel._meta.filtering_fields)
-        self.assertIn("a_date", NewFieldsModel._meta.filtering_fields)
+        self.assertIn("a_str", NewFieldsModel._meta.filtering_fields) # type: ignore
+        self.assertIn("an_int", NewFieldsModel._meta.filtering_fields) # type: ignore
+        self.assertIn("a_date", NewFieldsModel._meta.filtering_fields) # type: ignore
 
     def test_filtering_fields_excludes_disabled(self):
         class DisabledFieldsModel(StandardModel):
@@ -250,16 +252,18 @@ class TestClassAttributes(UnitTestCase):
             class Meta(StandardModel.Meta):
                 filtering_disabled = {"a_str_no", "an_int_no", "a_date_no"}
 
+        fields = DisabledFieldsModel._meta.filtering_fields  # type: ignore
+
         # Inherited ID included
-        self.assertIn("id", DisabledFieldsModel._meta.filtering_fields)
+        self.assertIn("id", fields)
         # Disabled field excluded
-        self.assertNotIn("a_str_no", DisabledFieldsModel._meta.filtering_fields)
-        self.assertNotIn("an_int_no", DisabledFieldsModel._meta.filtering_fields)
-        self.assertNotIn("a_date_no", DisabledFieldsModel._meta.filtering_fields)
+        self.assertNotIn("a_str_no", fields)
+        self.assertNotIn("an_int_no", fields)
+        self.assertNotIn("a_date_no", fields)
         # Enabled field included
-        self.assertIn("a_str_yes", DisabledFieldsModel._meta.filtering_fields)
-        self.assertIn("an_int_yes", DisabledFieldsModel._meta.filtering_fields)
-        self.assertIn("a_date_yes", DisabledFieldsModel._meta.filtering_fields)
+        self.assertIn("a_str_yes", fields)
+        self.assertIn("an_int_yes", fields)
+        self.assertIn("a_date_yes", fields)
 
     def test_read_only_doesnt_influence_filtering_fields(self):
         class ReadOnlyFieldsModel(StandardModel):
@@ -275,15 +279,17 @@ class TestClassAttributes(UnitTestCase):
             class Meta(StandardModel.Meta):
                 read_only_fields = {"a_str_no", "an_int_no", "a_date_no"}
 
+        fields = ReadOnlyFieldsModel._meta.filtering_fields  # type: ignore
+
         # Inherited ID included
-        self.assertIn("id", ReadOnlyFieldsModel._meta.filtering_fields)
+        self.assertIn("id", fields)
         # All fields included
-        self.assertIn("a_str_no", ReadOnlyFieldsModel._meta.filtering_fields)
-        self.assertIn("an_int_no", ReadOnlyFieldsModel._meta.filtering_fields)
-        self.assertIn("a_date_no", ReadOnlyFieldsModel._meta.filtering_fields)
-        self.assertIn("a_str_yes", ReadOnlyFieldsModel._meta.filtering_fields)
-        self.assertIn("an_int_yes", ReadOnlyFieldsModel._meta.filtering_fields)
-        self.assertIn("a_date_yes", ReadOnlyFieldsModel._meta.filtering_fields)
+        self.assertIn("a_str_no", fields)
+        self.assertIn("an_int_no", fields)
+        self.assertIn("a_date_no", fields)
+        self.assertIn("a_str_yes", fields)
+        self.assertIn("an_int_yes", fields)
+        self.assertIn("a_date_yes", fields)
 
     def test_can_disable_inherited(self):
         class DisabledInheritedModel(StandardModel):
@@ -294,14 +300,17 @@ class TestClassAttributes(UnitTestCase):
             class Meta(StandardModel.Meta):
                 filtering_disabled = {"id"}
 
+        fields = DisabledInheritedModel._meta.filtering_fields  # type: ignore
+
         # Inherited ID excluded
-        self.assertNotIn("id", DisabledInheritedModel._meta.filtering_fields)
+        self.assertNotIn("id", fields)
         # New fields included
-        self.assertIn("a_str", DisabledInheritedModel._meta.filtering_fields)
-        self.assertIn("an_int", DisabledInheritedModel._meta.filtering_fields)
-        self.assertIn("a_date", DisabledInheritedModel._meta.filtering_fields)
+        self.assertIn("a_str", fields)
+        self.assertIn("an_int", fields)
+        self.assertIn("a_date", fields)
 
 class TestFilters(UnitTestCase):
+    @override
     def setUp(self):
         super().setUp()
 
