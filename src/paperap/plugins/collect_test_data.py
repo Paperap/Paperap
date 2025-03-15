@@ -166,7 +166,7 @@ class SampleDataCollector(Plugin):
             # Don't allow the plugin to interfere with normal operations in the event of failure
             logger.error("Error saving response to file (%s): %s", filepath.absolute(), e)
 
-    def save_list_response(self, sender: Any, response: dict[str, Any] | None, **kwargs: Any) -> dict[str, Any]:
+    def save_list_response(self, sender: Any, response: dict[str, Any] | None, **kwargs: Any) -> dict[str, Any] | None:
         """Save the list response to a JSON file."""
         if not response or not (resource_name := kwargs.get("resource")):
             return response
