@@ -6,7 +6,7 @@
        File:    base.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.7
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -313,8 +313,12 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             The parsed model instance.
 
         """
-        data = self.transform_data_input(**item)
-        return self.model_class.model_validate(data)
+        try:
+            data = self.transform_data_input(**item)
+            return self.model_class.model_validate(data)
+        except ValueError as ve:
+            logger.error('Error parsing model "%s" with data: %s -> %s', self.name, item, ve)
+            raise
 
     def transform_data_input(self, **data: Any) -> dict[str, Any]:
         """

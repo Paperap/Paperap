@@ -29,7 +29,7 @@ from tests.lib.unittest import (CorrespondentUnitTest, CustomFieldUnitTest, Docu
                                     StoragePathUnitTest, TagUnitTest, TaskUnitTest,
                                     UnitTestCase, UISettingsUnitTest, UserUnitTest,
                                     WorkflowActionUnitTest, WorkflowUnitTest,
-                                    WorkflowTriggerUnitTest)
+                                    WorkflowTriggerUnitTest, TestConfigurationError)
 from tests.lib.pytest import (CorrespondentPyTest, CustomFieldPyTest, DocumentPyTest,
                                     DocumentTypePyTest, GroupPyTest, ProfilePyTest,
                                     SavedViewPyTest, ShareLinksPyTest,

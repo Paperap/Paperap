@@ -6,7 +6,7 @@
        File:    meta.py
         Project: paperap
        Created: 2025-03-07
-        Version: 0.0.7
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -49,6 +49,7 @@ class StatusContext:
     _model: "BaseModel"
     _new_status: ModelStatus
     _previous_status: ModelStatus | None
+    _save_lock_acquired : bool = False
 
     @property
     def model(self) -> "BaseModel":
@@ -56,7 +57,7 @@ class StatusContext:
         return self._model
 
     @property
-    def _meta(self) -> "BaseModel.Meta":
+    def _model_meta(self) -> "BaseModel.Meta":
         """Read-only access to the model's meta."""
         return self.model._meta  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
 
@@ -76,9 +77,30 @@ class StatusContext:
         self._previous_status = None
         super().__init__()
 
+    def save_lock(self) -> None:
+        """
+        Acquire the save lock
+        """
+        # Trigger the self.model._save_lock (threading.RLock) to be acquired
+        self.model._save_lock.acquire()  # type: ignore # allow protected access
+        self._save_lock_acquired = True
+
+    def save_unlock(self) -> None:
+        """
+        Release the save lock, only if this statuscontext previous acquired it.
+        """
+        # Release the self.model._save_lock (threading.RLock)
+        if self._save_lock_acquired:
+            self.model._save_lock.release()  # type: ignore # allow protected access
+
     def __enter__(self) -> None:
-        self._previous_status = self._meta.status
-        self._meta.status = self.new_status
+        # Acquire a save lock
+        if self.new_status == ModelStatus.SAVING:
+            self.save_lock()
+            
+        self._previous_status = self._model_meta.status
+        self._model_meta.status = self.new_status
+        
         # Do NOT return context manager, because we want to guarantee that the status is reverted
         # so we do not want to allow access to the context manager object
 
@@ -86,6 +108,8 @@ class StatusContext:
         self, exc_type: type[BaseException] | None, exc_value: BaseException | None, traceback: Iterable[Any]
     ) -> None:
         if self.previous_status is not None:
-            self._meta.status = self.previous_status
+            self._model_meta.status = self.previous_status
         else:
-            self._meta.status = ModelStatus.ERROR
+            self._model_meta.status = ModelStatus.ERROR
+
+        self.save_unlock()

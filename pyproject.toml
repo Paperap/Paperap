@@ -833,10 +833,9 @@ exclude = [
     "**/.*",
     "**/_*",
     "node_modules",
-    "tests/",
     "logs",
 ]
-ignore = ["docs"]
+ignore = ["docs", "tests"]
 defineConstant = { DEBUG = true }
 stubPath = "../.pyright/stubs"
 pythonVersion = "3.12"

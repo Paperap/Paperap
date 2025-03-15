@@ -161,8 +161,7 @@ class TestClientRequests(UnitTestCase):
     """Test the request methods of the PaperlessClient class."""
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
     @override
-    def setUp(self):
-        super().setUp()
+    def patch_client(self):
         self.session_patcher = patch('requests.Session.request')
         self.mock_session_request = self.session_patcher.start()
 
@@ -176,6 +175,7 @@ class TestClientRequests(UnitTestCase):
     @override
     def tearDown(self):
         self.session_patcher.stop()
+        super().tearDown()
 
     def test_request_with_relative_endpoint(self):
         """Test making a request with a relative endpoint."""
@@ -259,13 +259,12 @@ class TestClientRequests(UnitTestCase):
             self.client.request("GET", "api/documents/")
 
 
-class TestClientErrorHandling(unittest.TestCase):
+class TestClientErrorHandling(UnitTestCase):
     """Test the error handling of the PaperlessClient class."""
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
     @override
-    def setUp(self):
-        self.client = PaperlessClient(Settings(base_url="https://example.com", token="40characterslong40characterslong40charac"))
+    def patch_client(self):
         self.session_patcher = patch('requests.Session.request')
         self.mock_session_request = self.session_patcher.start()
 
@@ -372,10 +371,6 @@ class TestClientErrorHandling(unittest.TestCase):
 class TestClientUtilityMethods(unittest.TestCase):
     """Test the utility methods of the PaperlessClient class."""
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
-    @override
-    def setUp(self):
-        self.client = PaperlessClient(Settings(base_url="https://example.com", token="40characterslong40characterslong40charac"))
-
     @patch("paperap.client.PaperlessClient.request")
     def test_get_statistics(self, mock_request):
         """Test getting system statistics."""
@@ -426,10 +421,6 @@ class TestClientUtilityMethods(unittest.TestCase):
 class TestTokenGeneration(unittest.TestCase):
     """Test the token generation functionality."""
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
-    @override
-    def setUp(self):
-        self.client = PaperlessClient(Settings(base_url="https://example.com", token="40characterslong40characterslong40charac"))
-
     @patch("requests.post")
     def test_generate_token_success(self, mock_post):
         """Test successful token generation."""

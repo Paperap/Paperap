@@ -37,7 +37,7 @@ from paperap.models import *
 from paperap.resources.documents import DocumentResource
 from paperap.models.tag import Tag, TagQuerySet
 from paperap.models.document.model import CustomFieldValues, CustomFieldTypedDict, DocumentNote
-from tests.lib import load_sample_data, DocumentUnitTest
+from tests.lib import load_sample_data, DocumentUnitTest, factories
 
 logger = logging.getLogger(__name__)
 
@@ -493,7 +493,6 @@ class TestDocumentSetters(DocumentUnitTest):
     """Test the setter methods for Document relationships."""
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
-
     @override
     def setUp(self):
         super().setUp()
@@ -501,6 +500,7 @@ class TestDocumentSetters(DocumentUnitTest):
             "id": 1,
             "title": "Test Document"
         })
+        self.client.settings.save_on_write = False
 
     def test_tags_setter_with_none(self):
         """Test setting tags to None."""
@@ -511,6 +511,7 @@ class TestDocumentSetters(DocumentUnitTest):
         """Test setting tags with integer IDs."""
         self.model.tags = [1, 2, 3]
         self.assertEqual(self.model.tag_ids, [1, 2, 3])
+        self.assertIsInstance(self.model.tags, TagQuerySet)
 
     def test_tags_setter_with_tag_objects(self):
         """Test setting tags with Tag objects."""
@@ -518,38 +519,45 @@ class TestDocumentSetters(DocumentUnitTest):
         tag2 = Tag(id=2, name="Tag 2", is_insensitive=False) # type: ignore
         self.model.tags = [tag1, tag2]
         self.assertEqual(self.model.tag_ids, [1, 2])
+        self.assertIsInstance(self.model.tags, TagQuerySet)
 
     def test_tags_setter_with_mixed_types(self):
         """Test setting tags with a mix of integers and Tag objects."""
         tag = Tag(id=2, name="Tag 2", is_insensitive=False) # type: ignore
         self.model.tags = [1, tag, 3]
         self.assertEqual(self.model.tag_ids, [1, 2, 3])
+        self.assertIsInstance(self.model.tags, TagQuerySet)
 
     def test_tags_setter_with_invalid_type(self):
         """Test setting tags with an invalid type raises TypeError."""
         with self.assertRaises(TypeError):
             self.model.tags = "not an iterable" # type: ignore
+        self.assertIsInstance(self.model.tags, TagQuerySet)
 
     def test_tags_setter_with_invalid_item_type(self):
         """Test setting tags with invalid item types raises TypeError."""
         with self.assertRaises(TypeError):
             self.model.tags = [1, "not an int or Tag", 3] # type: ignore
+        self.assertIsInstance(self.model.tags, TagQuerySet)
 
     def test_correspondent_setter_with_none(self):
         """Test setting correspondent to None."""
         self.model.correspondent = None
         self.assertIsNone(self.model.correspondent_id)
+        self.assertIsNone(self.model.correspondent)
 
     def test_correspondent_setter_with_integer(self):
         """Test setting correspondent with an integer ID."""
         self.model.correspondent = 1
         self.assertEqual(self.model.correspondent_id, 1)
+        self.assertIsInstance(self.model.correspondent, Correspondent)
 
     def test_correspondent_setter_with_correspondent_object(self):
         """Test setting correspondent with a Correspondent object."""
         correspondent = Correspondent(id=1, name="Test Correspondent", is_insensitive = True) # type: ignore
         self.model.correspondent = correspondent
         self.assertEqual(self.model.correspondent_id, 1)
+        self.assertIsInstance(self.model.correspondent, Correspondent)
         # Test that the cache is populated
         self.assertEqual(self.model._correspondent, (1, correspondent)) # type: ignore
 
@@ -557,22 +565,26 @@ class TestDocumentSetters(DocumentUnitTest):
         """Test setting correspondent with an invalid type raises TypeError."""
         with self.assertRaises(TypeError):
             self.model.correspondent = "not an int or Correspondent" # type: ignore
-
+        self.assertIsNone(self.model.correspondent)
+        
     def test_document_type_setter_with_none(self):
         """Test setting document_type to None."""
         self.model.document_type = None
         self.assertIsNone(self.model.document_type_id)
+        self.assertIsNone(self.model.document_type)
 
     def test_document_type_setter_with_integer(self):
         """Test setting document_type with an integer ID."""
         self.model.document_type = 1
         self.assertEqual(self.model.document_type_id, 1)
+        self.assertIsInstance(self.model.document_type, DocumentType)
 
     def test_document_type_setter_with_document_type_object(self):
         """Test setting document_type with a DocumentType object."""
         doc_type = DocumentType(id=1, name="Test Document Type", is_insensitive = False) # type: ignore
         self.model.document_type = doc_type
         self.assertEqual(self.model.document_type_id, 1)
+        self.assertIsInstance(self.model.document_type, DocumentType)
         # Test that the cache is populated
         self.assertEqual(self.model._document_type, (1, doc_type)) # type: ignore
 
@@ -580,22 +592,30 @@ class TestDocumentSetters(DocumentUnitTest):
         """Test setting document_type with an invalid type raises TypeError."""
         with self.assertRaises(TypeError):
             self.model.document_type = "not an int or DocumentType" # type: ignore
-
+        self.assertIsNone(self.model.document_type)
+        
     def test_storage_path_setter_with_none(self):
         """Test setting storage_path to None."""
         self.model.storage_path = None
         self.assertIsNone(self.model.storage_path_id)
+        self.assertIsNone(self.model.storage_path)
 
     def test_storage_path_setter_with_integer(self):
         """Test setting storage_path with an integer ID."""
         self.model.storage_path = 1
         self.assertEqual(self.model.storage_path_id, 1)
+        with self.patch_request_factory(factories.StoragePathFactory, id=1):
+            self.assertIsInstance(self.model.storage_path, StoragePath)
 
     def test_storage_path_setter_with_storage_path_object(self):
         """Test setting storage_path with a StoragePath object."""
-        storage_path = StoragePath(id=1, name="Test Storage Path", is_insensitive=False) # type: ignore
+        data = {"id": 1, "name": "Test Storage Path", "is_insensitive": False}
+        storage_path = StoragePath(**data) # type: ignore
         self.model.storage_path = storage_path
         self.assertEqual(self.model.storage_path_id, 1)
+        with self.patch_request_factory(factories.StoragePathFactory, **data):
+            self.assertIsInstance(self.model.storage_path, StoragePath)
+            
         # Test that the cache is populated
         self.assertEqual(self.model._storage_path, (1, storage_path)) # type: ignore
 
@@ -603,8 +623,7 @@ class TestDocumentSetters(DocumentUnitTest):
         """Test setting storage_path with an invalid type raises TypeError."""
         with self.assertRaises(TypeError):
             self.model.storage_path = "not an int or StoragePath" # type: ignore
-
-
+        self.assertIsNone(self.model.storage_path)
 
 class TestDocumentInitialization(DocumentUnitTest):
     @override
