@@ -6,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.7
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -91,7 +91,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         _last_response: Optional[dict[str, Any]] = None,
         _iter: Optional[Iterator[_BaseModel]] = None,
         _urls_fetched: Optional[list[str]] = None,
-    ):
+    ) -> None:
         self.resource = resource
         self.filters = filters or {}
         self._result_cache = _cache or []
@@ -490,6 +490,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         iterator = self._request_iter(params=self.filters)
 
         # Collect results from initial page
+        # TODO: Consider itertools chain for performance reasons (?)
         self._result_cache.extend(list(iterator))
 
         # Fetch additional pages if available
@@ -527,7 +528,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
 
         self._last_response = response
 
-        yield from self.resource.handle_response(response)
+        yield from self.resource.handle_response(**response)
 
     def _get_next(self, response: dict[str, Any] | None = None) -> str | None:
         """
@@ -545,7 +546,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         # For safety, check both instance attributes, even though the first check isn't strictly necessary
         # this hopefully future proofs any changes to the implementation
         if next_url == self._next_url or next_url in self._urls_fetched:
-            logger.warning(
+            logger.debug(
                 "Next URL was previously fetched. Stopping iteration. URL: %s, Already Fetched: %s",
                 next_url,
                 self._urls_fetched,
@@ -597,6 +598,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         # If we have a fully populated cache, use it
         if self._fetch_all:
             yield from self._result_cache
+            return
 
         if not self._iter:
             # Start a new iteration
@@ -610,9 +612,10 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
             self._get_next()
 
         # If there are more pages, keep going
-        next_url = self._next_url
-        while next_url:
-            self._iter = self._request_iter(url=next_url)
+        count = 0
+        while self._next_url:
+            count += 1
+            self._iter = self._request_iter(url=self._next_url)
 
             # Yield objects from the current page
             for obj in self._iter:
@@ -807,7 +810,7 @@ class StandardQuerySet(BaseQuerySet[_StandardModel], Generic[_StandardModel]):
         return self.filter(id=value)
 
     @override
-    def __contains__(self, item: "StandardModel | int") -> bool:
+    def __contains__(self, item: Any) -> bool:
         """
         Return True if the QuerySet contains the given object.
 
@@ -821,6 +824,16 @@ class StandardQuerySet(BaseQuerySet[_StandardModel], Generic[_StandardModel]):
             True if the object is in the QuerySet
 
         """
-        # ID means a match, even if the data is outdated
-        pk = item if isinstance(item, int) else item.id
-        return any(obj.id == pk for obj in self)
+        # Handle integers directly
+        if isinstance(item, int):
+            return any(obj.id == item for obj in self)
+
+        # Handle model objects that have an id attribute
+        try:
+            if hasattr(item, "id"):
+                return any(obj.id == item.id for obj in self)
+        except (AttributeError, TypeError):
+            pass
+
+        # For any other type, it's not in the queryset
+        return False

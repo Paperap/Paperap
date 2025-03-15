@@ -2,7 +2,6 @@
 
 
 
-
  ----------------------------------------------------------------------------
 
     METADATA:
@@ -10,7 +9,7 @@
         File:    test_tags.py
         Project: paperap
         Created: 2025-03-05
-        Version: 0.0.4
+        Version: 0.0.7
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -31,12 +30,12 @@ from datetime import datetime
 from paperap.models import *
 from paperap.resources.tags import TagResource
 from paperap.models.document import DocumentQuerySet
-from paperap.tests import TestCase, load_sample_data, TagTest
+from paperap.tests import UnitTestCase, load_sample_data, TagUnitTest
 
 sample_tag_list = load_sample_data('tags_list.json')
 sample_tag = load_sample_data('tags_item.json')
 
-class TestTagsInit(TagTest):
+class TestTagsInit(TagUnitTest):
 
     @override
     def setup_model_data(self):
@@ -74,11 +73,11 @@ class TestTagsInit(TagTest):
             self.assertIsInstance(value, field_type, f"Expected {field} to be a {field_type}, got {type(value)}")
             self.assertEqual(value, self.model_data_parsed[field], f"Expected {field} to match sample data")
 
-class TestTag(TagTest):
+class TestTag(TagUnitTest):
 
     @override
     def setup_model_data(self):
-        self.model_data_parsed = {
+        self.model_data_unparsed = {
             "id": 1,
             "name": "Test Tag",
             "slug": "test-tag",
@@ -130,13 +129,13 @@ class TestTag(TagTest):
         for field, field_type in fields.items():
             value = model_dict[field]
             self.assertIsInstance(value, field_type, f"Expected {field} to be a {field_type}, got {type(value)}")
-            self.assertEqual(value, self.model_data_parsed[field], f"Expected {field} to match sample data")
+            self.assertEqual(value, self.model_data_unparsed[field], f"Expected {field} to match sample data")
 
-class TestRelationships(TagTest):
+class TestRelationships(TagUnitTest):
 
     @override
     def setup_model_data(self):
-        self.model_data_parsed = {
+        self.model_data_unparsed = {
             "id": 1337,
             "name": "Test Tag",
             "slug": "test-tag",

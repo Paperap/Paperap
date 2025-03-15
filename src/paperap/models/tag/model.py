@@ -6,7 +6,7 @@
        File:    tag.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.4
+        Version: 0.0.7
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -18,6 +18,8 @@
        2025-03-04     By Jess Mann
 
 """
+
+from __future__ import annotations
 
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Optional
@@ -39,7 +41,7 @@ class Tag(StandardModel, MatcherMixin):
 
     name: str | None = None
     slug: str | None = None
-    colour: str | None = Field(alias="color", default=None)
+    colour: str | int | None = Field(alias="color", default=None)
     is_inbox_tag: bool | None = None
     document_count: int = 0
     owner: int | None = None
@@ -49,13 +51,6 @@ class Tag(StandardModel, MatcherMixin):
         # Fields that should not be modified
         read_only_fields = {"slug", "document_count"}
         queryset = TagQuerySet
-
-    @field_validator("colour", mode="before")
-    @classmethod
-    def validate_colour(cls, value: str | int | None) -> str | None:
-        if value is None:
-            return None
-        return str(value)
 
     @property
     def documents(self) -> "DocumentQuerySet":

@@ -2,7 +2,6 @@
 
 
 
-
  ----------------------------------------------------------------------------
 
     METADATA:
@@ -10,7 +9,7 @@
         File:    test_document.py
         Project: paperap
         Created: 2025-03-08
-        Version: 0.0.4
+        Version: 0.0.7
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -29,21 +28,20 @@ from typing import Iterable, override
 import unittest
 from unittest.mock import patch, MagicMock
 import logging
-from icecream import ic
 from datetime import datetime, timezone
 from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models import *
 from paperap.client import PaperlessClient
 from paperap.resources.documents import DocumentResource
 from paperap.models.tag import Tag, TagQuerySet
-from paperap.tests import load_sample_data, DocumentTest
+from paperap.tests import load_sample_data, DocumentUnitTest
 
 logger = logging.getLogger(__name__)
 
 sample_document_list = load_sample_data('documents_list.json')
 sample_document = load_sample_data('documents_item.json')
 
-class IntegrationTest(DocumentTest):
+class IntegrationTest(DocumentUnitTest):
     mock_env = False
 
     @override

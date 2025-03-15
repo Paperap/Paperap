@@ -2,7 +2,6 @@
 
 
 
-
 ----------------------------------------------------------------------------
 
 METADATA:
@@ -10,7 +9,7 @@ METADATA:
 File:    model.py
         Project: paperap
 Created: 2025-03-09
-        Version: 0.0.4
+        Version: 0.0.7
 Author:  Jess Mann
 Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -26,14 +25,15 @@ LAST MODIFIED:
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Iterable, Iterator, Optional, TypedDict, cast, override
+from typing import TYPE_CHECKING, Annotated, Any, Iterable, Iterator, Optional, TypedDict, cast, override
 
+import pydantic
 from pydantic import Field, field_serializer, field_validator, model_serializer
 from typing_extensions import TypeVar
 from yarl import URL
 
+from paperap.const import CustomFieldTypedDict, CustomFieldValues
 from paperap.models.abstract import FilteringStrategies, StandardModel
-from paperap.models.document.parser import CustomFieldDict
 from paperap.models.document.queryset import DocumentQuerySet
 
 if TYPE_CHECKING:
@@ -136,27 +136,29 @@ class Document(StandardModel):
     archived_file_name: str | None = None
     content: str = ""
     is_shared_by_requester: bool = False
-    notes: "list[DocumentNote]" = Field(default_factory=list)  # TODO unknown subtype
+    notes: "list[DocumentNote]" = Field(default_factory=list)
     original_file_name: str | None = None
     owner: int | None = None
     page_count: int | None = None
     title: str = ""
     user_can_change: bool | None = None
 
-    created: datetime | None = Field(description="Creation timestamp", default=None, alias="created_on")
+    created: datetime | None = Field(description="Creation timestamp", default=None)
     created_date: str | None = None
-    updated: datetime | None = Field(description="Last update timestamp", default=None, alias="updated_on")
+    # where did this come from? It's not in sample data?
+    updated: datetime | None = Field(description="Last update timestamp", default=None)
     deleted_at: datetime | None = None
 
-    custom_field_dicts: list[CustomFieldDict] = Field(default_factory=list)
+    custom_field_dicts: Annotated[list[CustomFieldValues], Field(default_factory=list)]
     correspondent_id: int | None = None
     document_type_id: int | None = None
     storage_path_id: int | None = None
-    tag_ids: list[int] = Field(default_factory=list)
+    tag_ids: Annotated[list[int], Field(default_factory=list)]
 
     _correspondent: tuple[int, Correspondent] | None = None
     _document_type: tuple[int, DocumentType] | None = None
     _storage_path: tuple[int, StoragePath] | None = None
+    __search_hit__: Optional[dict[str, Any]] = None
 
     class Meta(StandardModel.Meta):
         # NOTE: Filtering appears to be disabled by paperless on page_count
@@ -298,7 +300,7 @@ class Document(StandardModel):
 
     @field_validator("tag_ids", mode="before")
     @classmethod
-    def validate_tags(cls, value: list[int] | None) -> list[int]:
+    def validate_tags(cls, value: Any) -> list[int]:
         """
         Validate and convert tag IDs to a list of integers.
 
@@ -311,11 +313,18 @@ class Document(StandardModel):
         """
         if value is None:
             return []
-        return [int(tag) for tag in value]
+
+        if isinstance(value, list):
+            return [int(tag) for tag in value]
+
+        if isinstance(value, int):
+            return [value]
+
+        raise TypeError(f"Invalid type for tags: {type(value)}")
 
     @field_validator("custom_field_dicts", mode="before")
     @classmethod
-    def validate_custom_fields(cls, value: list[CustomFieldDict] | None) -> list[CustomFieldDict]:
+    def validate_custom_fields(cls, value: Any) -> list[CustomFieldValues]:
         """
         Validate and return custom field dictionaries.
 
@@ -328,11 +337,15 @@ class Document(StandardModel):
         """
         if value is None:
             return []
-        return value
+
+        if isinstance(value, list):
+            return value
+
+        raise TypeError(f"Invalid type for custom fields: {type(value)}")
 
     @field_validator("content", "title", mode="before")
     @classmethod
-    def validate_text(cls, value: str | None) -> str:
+    def validate_text(cls, value: Any) -> str:
         """
         Validate and return a text field.
 
@@ -343,11 +356,17 @@ class Document(StandardModel):
             The validated text value.
 
         """
-        return value or ""
+        if value is None:
+            return ""
+
+        if isinstance(value, (str, int)):
+            return str(value)
+
+        raise TypeError(f"Invalid type for text: {type(value)}")
 
     @field_validator("notes", mode="before")
     @classmethod
-    def validate_notes(cls, value: list[Any] | None) -> list[Any]:
+    def validate_notes(cls, value: Any) -> list[Any]:
         """
         Validate and return the list of notes.
 
@@ -358,11 +377,20 @@ class Document(StandardModel):
             The validated list of notes.
 
         """
-        return value or []
+        if value is None:
+            return []
+
+        if isinstance(value, list):
+            return value
+
+        if isinstance(value, DocumentNote):
+            return [value]
+
+        raise TypeError(f"Invalid type for notes: {type(value)}")
 
     @field_validator("is_shared_by_requester", mode="before")
     @classmethod
-    def validate_is_shared_by_requester(cls, value: bool | None) -> bool:
+    def validate_is_shared_by_requester(cls, value: Any) -> bool:
         """
         Validate and return the is_shared_by_requester flag.
 
@@ -373,21 +401,27 @@ class Document(StandardModel):
             The validated flag.
 
         """
-        return value or False
+        if value is None:
+            return False
+
+        if isinstance(value, bool):
+            return value
+
+        raise TypeError(f"Invalid type for is_shared_by_requester: {type(value)}")
 
     @property
     def custom_field_ids(self) -> list[int]:
         """
         Get the IDs of the custom fields for this document.
         """
-        return [field["field"] for field in self.custom_field_dicts]
+        return [element.field for element in self.custom_field_dicts]
 
     @property
     def custom_field_values(self) -> list[Any]:
         """
         Get the values of the custom fields for this document.
         """
-        return [field["value"] for field in self.custom_field_dicts]
+        return [element.value for element in self.custom_field_dicts]
 
     @property
     def tag_names(self) -> list[str]:
@@ -432,7 +466,7 @@ class Document(StandardModel):
         return self._client.tags().id(self.tag_ids)
 
     @tags.setter
-    def tags(self, value: "Iterable[Tag | int] | None"):
+    def tags(self, value: "Iterable[Tag | int] | None") -> None:
         """
         Set the tags for this document.
 
@@ -445,6 +479,8 @@ class Document(StandardModel):
             return
 
         if isinstance(value, Iterable):
+            # Reset tag_ids to ensure we only have the new values
+            self.tag_ids = []
             for tag in value:
                 if isinstance(tag, int):
                     self.tag_ids.append(tag)
@@ -491,7 +527,7 @@ class Document(StandardModel):
         return correspondent
 
     @correspondent.setter
-    def correspondent(self, value: "Correspondent | int | None"):
+    def correspondent(self, value: "Correspondent | int | None") -> None:
         """
         Set the correspondent for this document.
 
@@ -549,7 +585,7 @@ class Document(StandardModel):
         return document_type
 
     @document_type.setter
-    def document_type(self, value: "DocumentType | int | None"):
+    def document_type(self, value: "DocumentType | int | None") -> None:
         """
         Set the document type for this document.
 
@@ -607,7 +643,7 @@ class Document(StandardModel):
         return storage_path
 
     @storage_path.setter
-    def storage_path(self, value: "StoragePath | int | None"):
+    def storage_path(self, value: "StoragePath | int | None") -> None:
         """
         Set the storage path for this document.
 
@@ -652,7 +688,7 @@ class Document(StandardModel):
         return self._client.custom_fields().id(self.custom_field_ids)
 
     @custom_fields.setter
-    def custom_fields(self, value: "Iterable[CustomField | CustomFieldDict] | None"):
+    def custom_fields(self, value: "Iterable[CustomField | CustomFieldValues | CustomFieldTypedDict] | None") -> None:
         """
         Set the custom fields for this document.
 
@@ -665,16 +701,21 @@ class Document(StandardModel):
             return
 
         if isinstance(value, Iterable):
-            new_list: list[CustomFieldDict] = []
+            new_list: list[CustomFieldValues] = []
             for field in value:
-                # Check against StandardModel to avoid circular imports
-                # If it is another type of standard model, pydantic validators will complain
+                if isinstance(field, CustomFieldValues):
+                    new_list.append(field)
+                    continue
+
+                # isinstance(field, CustomField)
+                # Check against StandardModel (instead of CustomField) to avoid circular imports
+                # If it is the wrong type of standard model (e.g. a User), pydantic validators will complain
                 if isinstance(field, StandardModel):
-                    new_list.append({"field": field.id, "value": None})
+                    new_list.append(CustomFieldValues(field=field.id, value=getattr(field, "value")))
                     continue
 
                 if isinstance(field, dict):
-                    new_list.append(field)
+                    new_list.append(CustomFieldValues(**field))
                     continue
 
                 raise TypeError(f"Invalid type for custom fields: {type(field)}")
@@ -683,6 +724,14 @@ class Document(StandardModel):
             return
 
         raise TypeError(f"Invalid type for custom fields: {type(value)}")
+
+    @property
+    def has_search_hit(self) -> bool:
+        return self.__search_hit__ is not None
+
+    @property
+    def search_hit(self) -> Optional[dict[str, Any]]:
+        return self.__search_hit__
 
     def custom_field_value(self, field_id: int, default: Any = None, *, raise_errors: bool = False) -> Any:
         """
@@ -698,8 +747,8 @@ class Document(StandardModel):
 
         """
         for field in self.custom_field_dicts:
-            if field["field"] == field_id:
-                return field["value"]
+            if field.field == field_id:
+                return field.value
 
         if raise_errors:
             raise ValueError(f"Custom field {field_id} not found")

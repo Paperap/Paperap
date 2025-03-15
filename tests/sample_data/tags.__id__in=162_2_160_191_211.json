@@ -1,0 +1,84 @@
+{
+    "all": [
+        162,
+        2,
+        160,
+        191,
+        211
+    ],
+    "count": 5,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "color": "#b3cee6",
+            "document_count": 6023,
+            "id": 162,
+            "is_inbox_tag": false,
+            "is_insensitive": true,
+            "match": "",
+            "matching_algorithm": 0,
+            "name": "described",
+            "owner": 3,
+            "slug": "described",
+            "text_color": "#000000",
+            "user_can_change": true
+        },
+        {
+            "color": "#cb77dd",
+            "document_count": 2692,
+            "id": 2,
+            "is_inbox_tag": false,
+            "is_insensitive": true,
+            "match": "",
+            "matching_algorithm": 0,
+            "name": "HRSH",
+            "owner": 3,
+            "slug": "hrsh",
+            "text_color": "#000000",
+            "user_can_change": true
+        },
+        {
+            "color": "#b3cee6",
+            "document_count": 2287,
+            "id": 160,
+            "is_inbox_tag": false,
+            "is_insensitive": true,
+            "match": "",
+            "matching_algorithm": 6,
+            "name": "interior",
+            "owner": 3,
+            "slug": "interior",
+            "text_color": "#000000",
+            "user_can_change": true
+        },
+        {
+            "color": "#b3cee6",
+            "document_count": 4666,
+            "id": 191,
+            "is_inbox_tag": false,
+            "is_insensitive": true,
+            "match": "",
+            "matching_algorithm": 0,
+            "name": "needs-date",
+            "owner": 3,
+            "slug": "needs-date",
+            "text_color": "#000000",
+            "user_can_change": true
+        },
+        {
+            "color": "#b3e6d9",
+            "document_count": 92,
+            "id": 211,
+            "is_inbox_tag": false,
+            "is_insensitive": true,
+            "match": "",
+            "matching_algorithm": 6,
+            "name": "side-by-side",
+            "owner": 3,
+            "slug": "side-by-side",
+            "text_color": "#000000",
+            "user_can_change": true
+        }
+    ]
+}

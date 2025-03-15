@@ -6,7 +6,7 @@
        File:    base.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.7
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -27,7 +27,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from decimal import Decimal
 from enum import StrEnum
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, Literal, Self, cast, override
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, Literal, Self, TypedDict, cast, override
 
 import pydantic
 from pydantic import Field, PrivateAttr
@@ -38,7 +38,7 @@ from paperap.const import FilteringStrategies, ModelStatus
 from paperap.exceptions import ConfigurationError
 from paperap.models.abstract.meta import StatusContext
 from paperap.models.abstract.queryset import BaseQuerySet
-from paperap.signals import SignalRegistry
+from paperap.signals import registry
 
 if TYPE_CHECKING:
     from paperap.client import PaperlessClient
@@ -47,6 +47,23 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 _Self = TypeVar("_Self", bound="BaseModel")
+
+
+class ModelConfigType(TypedDict):
+    populate_by_name: bool
+    validate_assignment: bool
+    validate_default: bool
+    use_enum_values: bool
+    extra: Literal["ignore"]
+
+
+BASE_MODEL_CONFIG: ModelConfigType = {
+    "populate_by_name": True,
+    "validate_assignment": True,
+    "validate_default": True,
+    "use_enum_values": True,
+    "extra": "ignore",
+}
 
 
 class BaseModel(pydantic.BaseModel, ABC):
@@ -265,11 +282,30 @@ class BaseModel(pydantic.BaseModel, ABC):
             cls._meta.name = cls.__name__.lower()
 
     # Configure Pydantic behavior
-    model_config = pydantic.ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        extra="ignore",
-    )
+    # type ignore because mypy complains about non-required keys
+    model_config = pydantic.ConfigDict(**BASE_MODEL_CONFIG)  # type: ignore
+
+    def __init__(self, resource: "BaseResource[Self] | None" = None, **data: Any) -> None:
+        """
+        Initialize the model with resource and data.
+
+        Args:
+            resource: The BaseResource instance.
+            **data: Additional data to initialize the model.
+
+        Raises:
+            ValueError: If resource is not provided.
+
+        """
+        super().__init__(**data)
+
+        if resource:
+            self._meta.resource = resource
+
+        if not getattr(self._meta, "resource", None):
+            raise ValueError(
+                f"Resource required. Initialize resource for {self.__class__.__name__} before instantiating models."
+            )
 
     @property
     def _resource(self) -> "BaseResource[Self]":
@@ -293,30 +329,8 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         return self._meta.resource.client
 
-    def __init__(self, resource: "BaseResource[Self] | None" = None, **data: Any):
-        """
-        Initialize the model with resource and data.
-
-        Args:
-            resource: The BaseResource instance.
-            **data: Additional data to initialize the model.
-
-        Raises:
-            ValueError: If resource is not provided.
-
-        """
-        super().__init__(**data)
-
-        if resource:
-            self._meta.resource = resource
-
-        if not getattr(self._meta, "resource", None):
-            raise ValueError(
-                f"Resource required. Initialize resource for {self.__class__.__name__} before instantiating models."
-            )
-
     @override
-    def model_post_init(self, __context):
+    def model_post_init(self, __context) -> None:
         super().model_post_init(__context)
 
         # Save original_data to support dirty fields
@@ -582,7 +596,7 @@ class StandardModel(BaseModel, ABC):
                 return
 
             current_data = self.to_dict(include_read_only=False, exclude_none=False, exclude_unset=True)
-            SignalRegistry.emit(
+            registry.emit(
                 "model.save:before",
                 "Fired before the model data is sent to paperless ngx to be saved.",
                 kwargs={
@@ -595,7 +609,7 @@ class StandardModel(BaseModel, ABC):
             new_data = new_model.to_dict()
             self.update_locally(from_db=True, **new_data)
 
-            SignalRegistry.emit(
+            registry.emit(
                 "model.save:after",
                 "Fired after the model data is saved in paperless ngx.",
                 kwargs={
@@ -621,7 +635,7 @@ class StandardModel(BaseModel, ABC):
         return self.id == 0
 
     @override
-    def __setattr__(self, name: str, value: Any):
+    def __setattr__(self, name: str, value: Any) -> None:
         """
         Override attribute setting to automatically call save when attributes change.
 

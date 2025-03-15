@@ -6,7 +6,7 @@ METADATA:
 File:    settings.py
         Project: paperap
 Created: 2025-03-09
-        Version: 0.0.4
+        Version: 0.0.5
 Author:  Jess Mann
 Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann

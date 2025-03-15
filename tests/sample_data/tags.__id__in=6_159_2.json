@@ -1,0 +1,54 @@
+{
+    "all": [
+        6,
+        159,
+        2
+    ],
+    "count": 3,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "color": "#b5b3e6",
+            "document_count": 1810,
+            "id": 6,
+            "is_inbox_tag": false,
+            "is_insensitive": true,
+            "match": "",
+            "matching_algorithm": 6,
+            "name": "buildings",
+            "owner": 3,
+            "slug": "buildings",
+            "text_color": "#000000",
+            "user_can_change": true
+        },
+        {
+            "color": "#b5b3e6",
+            "document_count": 1283,
+            "id": 159,
+            "is_inbox_tag": false,
+            "is_insensitive": true,
+            "match": "",
+            "matching_algorithm": 6,
+            "name": "exterior",
+            "owner": 3,
+            "slug": "exterior",
+            "text_color": "#000000",
+            "user_can_change": true
+        },
+        {
+            "color": "#cb77dd",
+            "document_count": 2692,
+            "id": 2,
+            "is_inbox_tag": false,
+            "is_insensitive": true,
+            "match": "",
+            "matching_algorithm": 0,
+            "name": "HRSH",
+            "owner": 3,
+            "slug": "hrsh",
+            "text_color": "#000000",
+            "user_can_change": true
+        }
+    ]
+}

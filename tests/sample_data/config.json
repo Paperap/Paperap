@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "user_args": null,
+        "output_type": null,
+        "pages": null,
+        "language": null,
+        "mode": null,
+        "skip_archive_file": null,
+        "image_dpi": null,
+        "unpaper_clean": null,
+        "deskew": true,
+        "rotate_pages": false,
+        "rotate_pages_threshold": null,
+        "max_image_pixels": null,
+        "color_conversion_strategy": null,
+        "app_title": "Example Title",
+        "app_logo": "http://example.com/logo/manly_secretary.png"
+    }
+]

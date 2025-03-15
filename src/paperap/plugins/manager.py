@@ -3,10 +3,10 @@
 
    METADATA:
 
-       File:    plugin_manager.py
+       File:    manager.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.4
+        Version: 0.0.7
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -26,8 +26,11 @@ import inspect
 import logging
 import pkgutil
 from pathlib import Path
-from typing import Any, Optional, Set, TypedDict
+from typing import TYPE_CHECKING, Any, ClassVar, Optional, Self, Set, TypedDict
 
+import pydantic
+
+from paperap.client import PaperlessClient
 from paperap.plugins.base import Plugin
 
 logger = logging.getLogger(__name__)
@@ -42,23 +45,22 @@ class PluginConfig(TypedDict):
     settings: dict[str, Any]
 
 
-class PluginManager:
+class PluginManager(pydantic.BaseModel):
     """Manages the discovery, configuration and initialization of plugins."""
 
-    plugins: dict[str, type[Plugin]]
-    instances: dict[str, Plugin]
-    config: PluginConfig
-    dependencies: dict[str, Set[str]]
+    plugins: dict[str, type[Plugin]] = {}
+    instances: dict[str, Plugin] = {}
+    config: PluginConfig = {
+        "enabled_plugins": [],
+        "settings": {},
+    }
+    client: PaperlessClient
 
-    def __init__(self):
-        self.plugins = {}
-        self.instances = {}
-        self.config = {
-            "enabled_plugins": [],
-            "settings": {},
-        }
-        self.dependencies = {}
-        super().__init__()
+    model_config = pydantic.ConfigDict(
+        arbitrary_types_allowed=True,
+        validate_default=True,
+        validate_assignment=True,
+    )
 
     @property
     def enabled_plugins(self) -> list[str]:
@@ -108,7 +110,7 @@ class PluginManager:
             except Exception as e:
                 logger.error("Error loading plugin module %s: %s", module_name, e)
 
-    def configure(self, config: PluginConfig) -> None:
+    def configure(self, config: PluginConfig | None = None, **kwargs) -> None:
         """
         Configure the plugin manager with plugin-specific configurations.
 
@@ -116,19 +118,27 @@ class PluginManager:
             config: dictionary mapping plugin names to their configurations.
 
         """
-        self.config = config
+        if config:
+            self.config = config
+
+        if kwargs:
+            if enabled_plugins := kwargs.pop("enabled_plugins", None):
+                self.config["enabled_plugins"] = enabled_plugins
+            if settings := kwargs.pop("settings", None):
+                self.config["settings"] = settings
+            if kwargs:
+                logger.warning("Unexpected configuration keys: %s", kwargs.keys())
 
     def get_plugin_config(self, plugin_name: str) -> dict[str, Any]:
         """Get the configuration for a specific plugin."""
         return self.config["settings"].get(plugin_name, {})
 
-    def initialize_plugin(self, plugin_name: str, client: Any) -> Plugin | None:
+    def initialize_plugin(self, plugin_name: str) -> Plugin | None:
         """
         Initialize a specific plugin.
 
         Args:
             plugin_name: Name of the plugin to initialize.
-            client: The PaperlessClient instance.
 
         Returns:
             The initialized plugin instance or None if initialization failed.
@@ -145,21 +155,19 @@ class PluginManager:
         plugin_config = self.get_plugin_config(plugin_name)
 
         try:
-            # Initialize the plugin with client and any plugin-specific config
-            plugin_instance = plugin_class(client, **plugin_config)
+            # Initialize the plugin with plugin-specific config
+            plugin_instance = plugin_class(manager=self, **plugin_config)
             self.instances[plugin_name] = plugin_instance
             logger.info("Initialized plugin: %s", plugin_name)
             return plugin_instance
         except Exception as e:
+            # Do not allow plugins to interrupt the normal program flow.
             logger.error("Failed to initialize plugin %s: %s", plugin_name, e)
             return None
 
-    def initialize_all_plugins(self, client: Any) -> dict[str, Plugin]:
+    def initialize_all_plugins(self) -> dict[str, Plugin]:
         """
         Initialize all discovered plugins.
-
-        Args:
-            client: The PaperlessClient instance.
 
         Returns:
             Dictionary mapping plugin names to their initialized instances.
@@ -168,10 +176,10 @@ class PluginManager:
         # Get enabled plugins from config
         enabled_plugins = self.enabled_plugins
 
-        # Initialize plugins in dependency order (if we had dependencies)
+        # Initialize plugins
         initialized = {}
         for plugin_name in enabled_plugins:
-            instance = self.initialize_plugin(plugin_name, client)
+            instance = self.initialize_plugin(plugin_name)
             if instance:
                 initialized[plugin_name] = instance
 

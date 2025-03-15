@@ -6,7 +6,7 @@
        File:    base.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.7
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,14 +25,21 @@ import copy
 import logging
 from abc import ABC, ABCMeta
 from string import Template
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, Iterator, Optional, override
+from typing import TYPE_CHECKING, Any, ClassVar, Final, Generic, Iterator, Optional, cast, overload, override
 
+from pydantic import field_validator
 from typing_extensions import TypeVar
 from yarl import URL
 
 from paperap.const import URLS, Endpoints
-from paperap.exceptions import ConfigurationError, ObjectNotFoundError, ResourceNotFoundError, ResponseParsingError
-from paperap.signals import SignalRegistry
+from paperap.exceptions import (
+    ConfigurationError,
+    ModelValidationError,
+    ObjectNotFoundError,
+    ResourceNotFoundError,
+    ResponseParsingError,
+)
+from paperap.signals import registry
 
 if TYPE_CHECKING:
     from paperap.client import PaperlessClient
@@ -72,14 +79,15 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
     # this will usually not need to be overridden
     endpoints: ClassVar[Endpoints]
 
-    def __init__(self, client: "PaperlessClient"):
+    def __init__(self, client: "PaperlessClient") -> None:
         self.client = client
         if not hasattr(self, "name"):
             self.name = f"{self._meta.name.lower()}s"
 
         # Allow templating
         for key, value in self.endpoints.items():
-            self.endpoints[key] = Template(value.safe_substitute(resource=self.name))  # type: ignore # endpoints is always dict[str, Template]
+            # endpoints is always dict[str, Template]
+            self.endpoints[key] = Template(value.safe_substitute(resource=self.name))  # type: ignore
 
         # Ensure the model has a link back to this resource
         self._meta.resource = self
@@ -87,7 +95,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         super().__init__()
 
     @classmethod
-    def __init_subclass__(cls, **kwargs: Any):
+    def __init_subclass__(cls, **kwargs: Any) -> None:
         """
         Initialize the subclass.
 
@@ -106,8 +114,8 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             raise ConfigurationError(f"model_class must be defined in {cls.__name__}")
 
         # API Endpoint must be defined
-        if not hasattr(cls, "endpoints"):
-            cls.endpoints = {
+        if not (endpoints := getattr(cls, "endpoints", {})):
+            endpoints = {
                 "list": URLS.list,
                 "detail": URLS.detail,
                 "create": URLS.create,
@@ -115,9 +123,40 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
                 "delete": URLS.delete,
             }
 
+        cls.endpoints = cls._validate_endpoints(endpoints)  # type: ignore # Allow assigning in subclass
+
     @property
     def _meta(self) -> "BaseModel.Meta[_BaseModel]":
         return self.model_class._meta  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
+
+    @classmethod
+    def _validate_endpoints(cls, value: Any) -> Endpoints:
+        if not isinstance(value, dict):
+            raise ModelValidationError("endpoints must be a dictionary")
+
+        converted: dict[str, Template] = {}
+        for k, v in value.items():
+            if k not in ["list", "detail", "create", "update", "delete"]:
+                raise ModelValidationError("endpoint keys must be list, detail, create, update, or delete")
+
+            if isinstance(v, Template):
+                converted[k] = v
+                continue
+
+            if not isinstance(v, str):
+                raise ModelValidationError(f"endpoints[{k}] must be a string or template")
+
+            try:
+                converted[k] = Template(v)
+            except ValueError as e:
+                raise ModelValidationError(f"endpoints[{k}] is not a valid template: {e}") from e
+
+        # list is required
+        if "list" not in converted:
+            raise ModelValidationError("list endpoint is required")
+
+        # We validated that converted matches endpoints above
+        return cast(Endpoints, converted)
 
     def all(self) -> _BaseQuerySet:
         """
@@ -170,7 +209,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         """
         # Signal before creating resource
         signal_params = {"resource": self.name, "data": data}
-        SignalRegistry.emit("resource.create:before", "Emitted before creating a resource", kwargs=signal_params)
+        registry.emit("resource.create:before", "Emitted before creating a resource", kwargs=signal_params)
 
         if not (template := self.endpoints.get("create")):
             raise ConfigurationError(f"Create endpoint not defined for resource {self.name}")
@@ -182,7 +221,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         model = self.parse_to_model(response)
 
         # Signal after creating resource
-        SignalRegistry.emit(
+        registry.emit(
             "resource.create:after",
             "Emitted after creating a resource",
             args=[self],
@@ -221,7 +260,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         """
         # Signal before updating resource
         signal_params = {"resource": self.name, "model_id": model_id, "data": data}
-        SignalRegistry.emit("resource.update:before", "Emitted before updating a resource", kwargs=signal_params)
+        registry.emit("resource.update:before", "Emitted before updating a resource", kwargs=signal_params)
 
         if not (template := self.endpoints.get("update")):
             raise ConfigurationError(f"Update endpoint not defined for resource {self.name}")
@@ -233,7 +272,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         model = self.parse_to_model(response)
 
         # Signal after updating resource
-        SignalRegistry.emit(
+        registry.emit(
             "resource.update:after",
             "Emitted after updating a resource",
             args=[self],
@@ -252,9 +291,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         """
         # Signal before deleting resource
         signal_params = {"resource": self.name, "model_id": model_id}
-        SignalRegistry.emit(
-            "resource.delete:before", "Emitted before deleting a resource", args=[self], kwargs=signal_params
-        )
+        registry.emit("resource.delete:before", "Emitted before deleting a resource", args=[self], kwargs=signal_params)
 
         if not (template := self.endpoints.get("delete")):
             raise ConfigurationError(f"Delete endpoint not defined for resource {self.name}")
@@ -263,9 +300,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         self.client.request("DELETE", url)
 
         # Signal after deleting resource
-        SignalRegistry.emit(
-            "resource.delete:after", "Emitted after deleting a resource", args=[self], kwargs=signal_params
-        )
+        registry.emit("resource.delete:after", "Emitted after deleting a resource", args=[self], kwargs=signal_params)
 
     def parse_to_model(self, item: dict[str, Any]) -> _BaseModel:
         """
@@ -278,9 +313,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             The parsed model instance.
 
         """
-        # print(f'Parsing to model: {item}')
         data = self.transform_data_input(**item)
-        # print(f'Transformed: {data}')
         return self.model_class.model_validate(data)
 
     def transform_data_input(self, **data: Any) -> dict[str, Any]:
@@ -299,17 +332,33 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
                 data[value] = data.pop(key)
         return data
 
-    def transform_data_output(self, **data: Any) -> dict[str, Any]:
+    @overload
+    def transform_data_output(self, model: _BaseModel, exclude_unset: bool = True) -> dict[str, Any]: ...
+
+    @overload
+    def transform_data_output(self, **data: Any) -> dict[str, Any]: ...
+
+    def transform_data_output(
+        self, model: _BaseModel | None = None, exclude_unset: bool = True, **data: Any
+    ) -> dict[str, Any]:
         """
         Transform data before sending it to the API.
 
         Args:
+            model: The model to transform.
+            exclude_unset: If model is provided, exclude unset fields when calling to_dict()
             data: The data to transform.
 
         Returns:
             The transformed data.
 
         """
+        if model:
+            if data:
+                # Combining model.to_dict() and data is ambiguous, so not allowed.
+                raise ValueError("Only one of model or data should be provided")
+            data = model.to_dict(exclude_unset=exclude_unset)
+
         for key, value in self._meta.field_map.items():
             if value in data:
                 data[key] = data.pop(value)
@@ -361,13 +410,13 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         response = self.client.request(method, url, params=params, data=data)
         return response
 
-    def handle_response(self, response: dict[str, Any]) -> Iterator[_BaseModel]:
+    def handle_response(self, **response: Any) -> Iterator[_BaseModel]:
         """
         Handle a response from the API and yield results.
 
         Override in subclasses to implement custom response logic.
         """
-        SignalRegistry.emit(
+        registry.emit(
             "resource._handle_response:before",
             "Emitted before listing resources",
             return_type=dict[str, Any],
@@ -378,7 +427,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             return
 
         # Signal after receiving response
-        SignalRegistry.emit(
+        registry.emit(
             "resource._handle_response:after",
             "Emitted after list response, before processing",
             args=[self],
@@ -393,11 +442,14 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
 
         Override in subclasses to implement custom result handling.
         """
+        if not isinstance(results, list):
+            raise ResponseParsingError(f"Expected results to be a list, got {type(results)}")
+
         for item in results:
             if not isinstance(item, dict):
                 raise ResponseParsingError(f"Expected type of elements in results is dict, got {type(item)}")
 
-            SignalRegistry.emit(
+            registry.emit(
                 "resource._handle_results:before",
                 "Emitted for each item in a list response",
                 args=[self],
@@ -450,9 +502,7 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet], Generic[
         """
         # Signal before getting resource
         signal_params = {"resource": self.name, "model_id": model_id}
-        SignalRegistry.emit(
-            "resource.get:before", "Emitted before getting a resource", args=[self], kwargs=signal_params
-        )
+        registry.emit("resource.get:before", "Emitted before getting a resource", args=[self], kwargs=signal_params)
 
         if not (template := self.endpoints.get("detail")):
             raise ConfigurationError(f"Get detail endpoint not defined for resource {self.name}")
@@ -471,7 +521,7 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet], Generic[
         model = self.parse_to_model(response)
 
         # Signal after getting resource
-        SignalRegistry.emit(
+        registry.emit(
             "resource.get:after",
             "Emitted after getting a single resource by id",
             args=[self],

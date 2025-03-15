@@ -1,8 +1,4 @@
 """
-Usage example:
-       test_dir = Path(__file__).parent.parent.parent.parent / "tests/sample_data"
-       collector = TestDataCollector(test_dir)
-
 
 ----------------------------------------------------------------------------
 
@@ -11,7 +7,7 @@ Usage example:
        File:    collect_test_data.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.4
+        Version: 0.0.7
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -35,18 +31,16 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, override
 
 from faker import Faker
+from pydantic import field_validator
 
-from paperap.models import BaseModel
+from paperap.exceptions import ModelValidationError
+from paperap.models import StandardModel
 from paperap.plugins.base import Plugin
-from paperap.signals import SignalPriority, SignalRegistry
-
-if TYPE_CHECKING:
-    from paperap.client import PaperlessClient
+from paperap.signals import SignalPriority, registry
 
 logger = logging.getLogger(__name__)
 
-sanitize_pattern = re.compile(r"[^a-zA-Z0-9_-]")
-
+sanitize_pattern = re.compile(r"[^a-zA-Z0-9|.=_-]")
 
 SANITIZE_KEYS = [
     "email",
@@ -66,39 +60,47 @@ SANITIZE_KEYS = [
 ]
 
 
-class TestDataCollector(Plugin):
+class SampleDataCollector(Plugin):
     """
     Plugin to collect test data from API responses.
     """
 
     name = "test_data_collector"
     description = "Collects sample data from API responses for testing purposes"
-    version = "0.0.2"
-    fake = Faker()
-    test_dir: Path
+    version = "0.0.3"
+    fake: Faker = Faker()
+    test_dir: Path = Path("tests/sample_data")
 
-    def __init__(self, client: "PaperlessClient", test_dir: Path | None = None, **kwargs: Any):
+    @field_validator("test_dir", mode="before")
+    @classmethod
+    def validate_test_dir(cls, value: Any) -> Path | None:
+        """Validate the test directory path."""
         # Convert string path to Path object if needed
-        if test_dir and isinstance(test_dir, str):
-            test_dir = Path(test_dir)
+        if not value:
+            value = Path("tests/sample_data")
 
-        self.test_dir = test_dir or Path(self.config.get("test_dir", "tests/sample_data"))
-        self.test_dir.mkdir(parents=True, exist_ok=True)
-        super().__init__(client, **kwargs)
+        if isinstance(value, str):
+            value = Path(value)
+
+        if not isinstance(value, Path):
+            raise ModelValidationError("Test directory must be a string or Path object")
+
+        value.mkdir(parents=True, exist_ok=True)
+        return value
 
     @override
-    def setup(self):
+    def setup(self) -> None:
         """Register signal handlers."""
-        SignalRegistry.connect("resource._handle_response:after", self.save_list_response, SignalPriority.LOW)
-        SignalRegistry.connect("resource._handle_results:before", self.save_first_item, SignalPriority.LOW)
-        SignalRegistry.connect("client.request:after", self.save_parsed_response, SignalPriority.LOW)
+        registry.connect("resource._handle_response:after", self.save_list_response, SignalPriority.LOW)
+        registry.connect("resource._handle_results:before", self.save_first_item, SignalPriority.LOW)
+        registry.connect("client.request:after", self.save_parsed_response, SignalPriority.LOW)
 
     @override
-    def teardown(self):
+    def teardown(self) -> None:
         """Unregister signal handlers."""
-        SignalRegistry.disconnect("resource._handle_response:after", self.save_list_response)
-        SignalRegistry.disconnect("resource._handle_results:before", self.save_first_item)
-        SignalRegistry.disconnect("client.request:after", self.save_parsed_response)
+        registry.disconnect("resource._handle_response:after", self.save_list_response)
+        registry.disconnect("resource._handle_results:before", self.save_first_item)
+        registry.disconnect("client.request:after", self.save_parsed_response)
 
     @staticmethod
     def _json_serializer(obj: Any) -> Any:
@@ -109,9 +111,9 @@ class TestDataCollector(Plugin):
             return str(obj)
         if isinstance(obj, Decimal):
             return float(obj)
-        if isinstance(obj, BaseModel):
+        if isinstance(obj, StandardModel):
             return obj.to_dict()
-        if isinstance(obj, BaseModel):
+        if isinstance(obj, StandardModel):
             return obj.model_dump()
         if isinstance(obj, set):
             return list(obj)
@@ -157,13 +159,14 @@ class TestDataCollector(Plugin):
 
         try:
             response = self._sanitize_response(**response)
+            filepath.parent.mkdir(parents=True, exist_ok=True)
             with filepath.open("w") as f:
                 json.dump(response, f, indent=4, sort_keys=True, ensure_ascii=False, default=self._json_serializer)
         except (TypeError, OverflowError, OSError) as e:
             # Don't allow the plugin to interfere with normal operations in the event of failure
-            logger.error("Error saving response to file: %s", e)
+            logger.error("Error saving response to file (%s): %s", filepath.absolute(), e)
 
-    def save_list_response(self, sender: Any, response: dict[str, Any], **kwargs: Any) -> dict[str, Any]:
+    def save_list_response(self, sender: Any, response: dict[str, Any] | None, **kwargs: Any) -> dict[str, Any]:
         """Save the list response to a JSON file."""
         if not response or not (resource_name := kwargs.get("resource")):
             return response
@@ -183,7 +186,7 @@ class TestDataCollector(Plugin):
         self.save_response(filepath, item)
 
         # Disable this handler after saving the first item
-        SignalRegistry.disable("resource._handle_results:before", self.save_first_item)
+        registry.disable("resource._handle_results:before", self.save_first_item)
 
         return item
 
@@ -201,20 +204,23 @@ class TestDataCollector(Plugin):
 
         Connects to client.request:after signal.
         """
+        # If endpoint contains "example.com", we're testing, so skip it
+        if "example.com" in str(endpoint):
+            return parsed_response
+
         if not json_response or not params:
             return parsed_response
 
         # Strip url to final path segment
         resource_name = ".".join(endpoint.split("/")[-2:])
-        resource_name = sanitize_pattern.sub("_", resource_name)
 
-        combined_params = list(params.keys())
+        combined_params = list(f"{k}={v}" for k, v in params.items())
         params_str = "|".join(combined_params)
-        params_str = sanitize_pattern.sub("_", params_str)
         filename_prefix = ""
         if method.lower() != "get":
             filename_prefix = f"{method.lower()}__"
         filename = f"{filename_prefix}{resource_name}__{params_str}.json"
+        filename = sanitize_pattern.sub("_", filename)
 
         filepath = self.test_dir / filename
         self.save_response(filepath, parsed_response)
@@ -227,7 +233,7 @@ class TestDataCollector(Plugin):
         """Define the configuration schema for this plugin."""
         return {
             "test_dir": {
-                "type": "string",
+                "type": str,
                 "description": "Directory to save test data files",
                 "required": False,
             }

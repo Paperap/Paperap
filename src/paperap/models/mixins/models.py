@@ -2,18 +2,17 @@
 
 
 
-
 ----------------------------------------------------------------------------
 
 METADATA:
 
 File:    models.py
-Project: paperap
+        Project: paperap
 Created: 2025-03-09
-Version: 0.0.4
+        Version: 0.0.7
 Author:  Jess Mann
 Email:   jess@jmann.me
-Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -23,8 +22,10 @@ LAST MODIFIED:
 
 """
 
+from __future__ import annotations
+
 
 class MatcherMixin:
     match: str | None = None
     matching_algorithm: int | None = None
-    is_insensitive: bool
+    is_insensitive: bool | None = None

@@ -6,7 +6,7 @@
        File:    client.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.4
+        Version: 0.0.7
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -24,7 +24,7 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 from string import Template
-from typing import Any, Iterator, Literal, Union, Unpack, overload
+from typing import TYPE_CHECKING, Any, Iterator, Literal, Union, Unpack, overload
 
 import requests
 from yarl import URL
@@ -41,8 +41,6 @@ from paperap.exceptions import (
     ResourceNotFoundError,
     ResponseParsingError,
 )
-from paperap.plugin_manager import PluginConfig
-from paperap.plugins.base import Plugin
 from paperap.resources import (
     CorrespondentResource,
     CustomFieldResource,
@@ -63,7 +61,11 @@ from paperap.resources import (
     WorkflowTriggerResource,
 )
 from paperap.settings import Settings, SettingsArgs
-from paperap.signals import SignalRegistry
+from paperap.signals import registry
+
+if TYPE_CHECKING:
+    from paperap.plugins.base import Plugin
+    from paperap.plugins.manager import PluginConfig
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +83,7 @@ class PaperlessClient:
         client = PaperlessClient(
             Settings(
                 base_url="https://paperless.example.com",
-                token="your-token"
+                token="40characterslong40characterslong40charac"
             )
         )
 
@@ -107,7 +109,7 @@ class PaperlessClient:
     settings: Settings
     auth: AuthBase
     session: requests.Session
-    plugins: dict[str, Plugin]
+    plugins: dict[str, "Plugin"]
 
     # Resources
     correspondents: CorrespondentResource
@@ -128,16 +130,17 @@ class PaperlessClient:
     workflow_triggers: WorkflowTriggerResource
     workflows: WorkflowResource
 
-    def __init__(self, settings: Settings | None = None, **kwargs: Unpack[SettingsArgs]):
+    def __init__(self, settings: Settings | None = None, **kwargs: Unpack[SettingsArgs]) -> None:
         if not settings:
             # Any params not provided in kwargs will be loaded from env vars
             settings = Settings(**kwargs)  # type: ignore # base_url is a URL, but accepts str | URL
 
         self.settings = settings
-        if self.settings.token:
-            self.auth = TokenAuth(token=self.settings.token)
-        elif self.settings.username and self.settings.password:
+        # Prioritize username/password over token if both are provided
+        if self.settings.username and self.settings.password:
             self.auth = BasicAuth(username=self.settings.username, password=self.settings.password)
+        elif self.settings.token:
+            self.auth = TokenAuth(token=self.settings.token)
         else:
             raise ValueError("Provide a token, or a username and password")
 
@@ -161,10 +164,10 @@ class PaperlessClient:
         """Get the base URL."""
         return self.settings.base_url
 
-    def __enter__(self):
+    def __enter__(self) -> PaperlessClient:
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.close()
 
     def _init_resources(self) -> None:
@@ -188,7 +191,7 @@ class PaperlessClient:
         self.workflow_triggers = WorkflowTriggerResource(self)
         self.workflows = WorkflowResource(self)
 
-    def _initialize_plugins(self, plugin_config: PluginConfig | None = None) -> None:
+    def _initialize_plugins(self, plugin_config: "PluginConfig | None" = None) -> None:
         """
         Initialize plugins based on configuration.
 
@@ -196,28 +199,29 @@ class PaperlessClient:
             plugin_config: Optional configuration dictionary for plugins.
 
         """
-        from paperap.plugin_manager import PluginManager  # type: ignore # pylint: disable=import-outside-toplevel
+        from paperap.plugins.manager import PluginManager  # type: ignore # pylint: disable=import-outside-toplevel
+
+        PluginManager.model_rebuild()
 
         # Create and configure the plugin manager
-        self.plugin_manager = PluginManager()
+        self.manager = PluginManager(client=self)
 
         # Discover available plugins
-        self.plugin_manager.discover_plugins()
+        self.manager.discover_plugins()
 
         # Configure plugins
-        default_config: PluginConfig = {
-            "enabled_plugins": ["TestDataCollector"],
+        plugin_config = plugin_config or {
+            "enabled_plugins": ["SampleDataCollector"],
             "settings": {
-                "TestDataCollector": {
+                "SampleDataCollector": {
                     "test_dir": str(Path(__file__).parent.parent.parent / "tests/sample_data"),
                 },
             },
         }
-        config = plugin_config or default_config
-        self.plugin_manager.configure(config)
+        self.manager.configure(plugin_config)
 
         # Initialize all enabled plugins
-        self.plugins = self.plugin_manager.initialize_all_plugins(self)
+        self.plugins = self.manager.initialize_all_plugins()
 
     def _get_auth_params(self) -> dict[str, Any]:
         """Get authentication parameters for requests."""
@@ -267,12 +271,23 @@ class PaperlessClient:
             PaperlessError: For other errors.
 
         """
-        endpoint = str(endpoint)
-
-        if endpoint.startswith("http"):
-            url = endpoint
+        # Handle different endpoint types
+        if isinstance(endpoint, Template):
+            # Convert Template to string representation
+            url = f"{self.base_url}/{endpoint.template.lstrip('/')}"
+        elif isinstance(endpoint, URL):
+            # Use URL object directly
+            if endpoint.is_absolute():
+                url = str(endpoint)
+            else:
+                url = f"{self.base_url}/{str(endpoint).lstrip('/')}"
+        elif isinstance(endpoint, str):
+            if endpoint.startswith("http"):
+                url = endpoint
+            else:
+                url = f"{self.base_url}/{endpoint.lstrip('/')}"
         else:
-            url = f"{self.base_url}/{endpoint.lstrip('/')}"
+            url = f"{self.base_url}/{str(endpoint).lstrip('/')}"
 
         logger.debug("Requesting %s %s", method, url)
 
@@ -331,7 +346,7 @@ class PaperlessClient:
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
         files: dict[str, Any] | None = None,
-    ):
+    ) -> None:
         error_message = self._extract_error_message(response)
 
         if response.status_code == 400:
@@ -379,10 +394,9 @@ class PaperlessClient:
             try:
                 return response.json()
             except ValueError as e:
-                logger.error(
-                    "Failed to parse JSON response: %s -> url %s -> content: %s", e, response.url, response.content
-                )
-                raise ResponseParsingError(f"Failed to parse JSON response: {str(e)} -> url {response.url}") from e
+                url = getattr(response, "url", "unknown URL")
+                logger.error("Failed to parse JSON response: %s -> url %s -> content: %s", e, url, response.content)
+                raise ResponseParsingError(f"Failed to parse JSON response: {str(e)} -> url {url}") from e
 
         return response.content
 
@@ -458,14 +472,14 @@ class PaperlessClient:
             "json_response": json_response,
         }
 
-        SignalRegistry.emit(
+        registry.emit(
             "client.request:before", "Before a request is sent to the Paperless server", args=[self], kwargs=kwargs
         )
 
         if not (response := self._request(method, endpoint, params=params, data=data, files=files)):
             return None
 
-        SignalRegistry.emit(
+        registry.emit(
             "client.request__response",
             "After a response is received, before it is parsed",
             args=[response],
@@ -473,7 +487,7 @@ class PaperlessClient:
         )
 
         parsed_response = self._handle_response(response, json_response=json_response)
-        parsed_response = SignalRegistry.emit(
+        parsed_response = registry.emit(
             "client.request:after",
             "After a request is parsed.",
             args=parsed_response,
@@ -540,7 +554,7 @@ class PaperlessClient:
 
         url = f"{base_url.rstrip('/')}/api/token/"
 
-        SignalRegistry.emit(
+        registry.emit(
             "client.generate_token__before",
             "Before a new token is generated",
             kwargs={"url": url, "username": username},
@@ -557,7 +571,7 @@ class PaperlessClient:
             response.raise_for_status()
             data = response.json()
 
-            SignalRegistry.emit(
+            registry.emit(
                 "client.generate_token__after",
                 "After a new token is generated",
                 kwargs={"url": url, "username": username, "response": data},
