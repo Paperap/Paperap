@@ -6,7 +6,7 @@
        File:    base.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.7
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -22,20 +22,22 @@
 from __future__ import annotations
 
 import logging
+import time
 import types
 from abc import ABC, abstractmethod
 from datetime import datetime
 from decimal import Decimal
 from enum import StrEnum
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, Literal, Self, TypedDict, cast, override
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, Literal, Optional, Self, TypedDict, cast, override
 
 import pydantic
 from pydantic import Field, PrivateAttr
 from typing_extensions import TypeVar
 from yarl import URL
-
+import threading
+import concurrent.futures
 from paperap.const import FilteringStrategies, ModelStatus
-from paperap.exceptions import ConfigurationError
+from paperap.exceptions import APIError, ConfigurationError, RequestError, ResourceNotFoundError
 from paperap.models.abstract.meta import StatusContext
 from paperap.models.abstract.queryset import BaseQuerySet
 from paperap.signals import registry
@@ -516,26 +518,23 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         return f"{self._meta.name.capitalize()}"
 
-
 class StandardModel(BaseModel, ABC):
     """
     Standard model for Paperless-ngx API objects with an ID field.
-
+    
     Attributes:
         id: Unique identifier for the model.
-
-    Returns:
-        A new instance of StandardModel.
-
-    Examples:
-        from paperap.models.abstract.model import StandardModel
-        class Document(StandardModel):
-            filename: str
-            contents : bytes
-
     """
-
     id: int = Field(description="Unique identifier from Paperless NGX", default=0)
+    
+    # Private attributes for async save management
+    _executor: ClassVar[concurrent.futures.ThreadPoolExecutor] = concurrent.futures.ThreadPoolExecutor(
+        max_workers=5, thread_name_prefix="model_save_worker"
+    )
+    _lock: threading.RLock = PrivateAttr(default_factory=threading.RLock)
+    _pending_save: concurrent.futures.Future | None = PrivateAttr(default=None)
+    _dirty_after_save_started: bool = PrivateAttr(default=False)
+    _save_timeout: int = PrivateAttr(default=60)  # seconds
 
     class Meta(BaseModel.Meta):
         """
@@ -549,10 +548,7 @@ class StandardModel(BaseModel, ABC):
 
         # Fields that should not be modified
         read_only_fields: ClassVar[set[str]] = {"id"}
-        supported_filtering_params = {
-            "id__in",
-            "id",
-        }
+        supported_filtering_params = {"id__in", "id"}
 
     @override
     def update(self, **kwargs: Any) -> None:
@@ -564,7 +560,6 @@ class StandardModel(BaseModel, ABC):
 
         Args:
             **kwargs: New field values.
-
         """
         # Hold off on saving until all updates are complete
         self.update_locally(**kwargs)
@@ -573,57 +568,134 @@ class StandardModel(BaseModel, ABC):
 
     def save(self) -> None:
         """
-        Save this model instance within paperless ngx.
-
-        Raises:
-            ResourceNotFoundError: If the resource with the given id is not found
-
-        Examples:
-            # Save a Document instance
-            doc = client.documents().get(1)
-            doc.title = "New Title"
-            doc.save()
-
+        Save this model instance asynchronously.
+        
+        Changes are sent to the server in a background thread, and the model
+        is updated when the server responds.
         """
-        # Safety measure to ensure we don't fall into an infinite loop of saving and updating
-        # this check shouldn't strictly be necessary, but it future proofs this feature
-        if self._meta.status == ModelStatus.SAVING:
-            return
-
-        with StatusContext(self, ModelStatus.SAVING):
-            # Nothing has changed, so we can save ourselves a request
+        with self._lock:
+            # If there's a pending save, mark the model as dirty for after that save
+            if self._pending_save is not None and not self._pending_save.done():
+                self._dirty_after_save_started = True
+                return
+            
+            # Only start a save if there are changes
             if not self.is_dirty():
                 return
+                
+            # Start a new save operation
+            self._dirty_after_save_started = False
+            future = self._executor.submit(self._perform_save)
+            self._pending_save = future
+            future.add_done_callback(self._handle_save_result)
 
+    def _perform_save(self) -> Optional["StandardModel"]:
+        """
+        Perform the actual save operation.
+        
+        Returns:
+            The updated model from the server or None if no save was needed.
+            
+        Raises:
+            ResourceNotFoundError: If the resource doesn't exist on the server
+            RequestError: If there's a communication error with the server
+            PermissionError: If the user doesn't have permission to update the resource
+        """
+        # Use ModelStatus as a guard against recursive save calls
+        if self._meta.status == ModelStatus.SAVING:
+            return None
+            
+        with StatusContext(self, ModelStatus.SAVING):
+            # Check again if there are changes (could have been reset)
+            if not self.is_dirty():
+                return None
+                
+            # Prepare and send the update to the server
             current_data = self.to_dict(include_read_only=False, exclude_none=False, exclude_unset=True)
+            
             registry.emit(
                 "model.save:before",
                 "Fired before the model data is sent to paperless ngx to be saved.",
-                kwargs={
-                    "model": self,
-                    "current_data": current_data,
-                },
+                kwargs={"model": self, "current_data": current_data},
             )
+            
+            return self._meta.resource.update(self)
 
-            new_model = self._meta.resource.update(self)
-            new_data = new_model.to_dict()
-            self.update_locally(from_db=True, **new_data)
-
+    def _handle_save_result(self, future: concurrent.futures.Future) -> None:
+        """
+        Handle the result of an asynchronous save operation.
+        
+        Args:
+            future: The completed Future object containing the save result.
+        """
+        try:
+            # Get the result with a timeout
+            new_model = future.result(timeout=self._save_timeout)
+            
+            if new_model:
+                new_data = new_model.to_dict()
+                # Update the model with the server response
+                with StatusContext(self, ModelStatus.UPDATING):
+                    self.update_locally(from_db=True, **new_data)
+                
+                registry.emit(
+                    "model.save:after",
+                    "Fired after the model data is saved in paperless ngx.",
+                    kwargs={"model": self, "updated_data": new_data},
+                )
+                
+        except concurrent.futures.TimeoutError:
+            logger.error(f"Save operation timed out for {self}")
             registry.emit(
-                "model.save:after",
-                "Fired after the model data is saved in paperless ngx.",
-                kwargs={
-                    "model": self,
-                    "previous_data": current_data,
-                    "updated_data": new_data,
-                },
+                "model.save:error",
+                "Save operation timed out.",
+                kwargs={"model": self, "error": "Timeout"},
             )
+            
+        except APIError as e:
+            logger.error(f"API error during save of {self}: {e}")
+            registry.emit(
+                "model.save:error",
+                "Network error during save operation.",
+                kwargs={"model": self, "error": e},
+            )
+            
+        except Exception as e:
+            # Log unexpected errors but don't swallow them
+            logger.exception(f"Unexpected error during save of {self}")
+            registry.emit(
+                "model.save:error",
+                "Unexpected error during save operation.",
+                kwargs={"model": self, "error": e},
+            )
+            # Re-raise so the executor can handle it properly
+            raise
+            
+        finally:
+            with self._lock:
+                self._pending_save = None
+                # If the model was changed while the save was in progress,
+                # we need to save again
+                if self._dirty_after_save_started and self.is_dirty():
+                    # Small delay to avoid hammering the server
+                    time.sleep(0.1)
+                    self.save()
+
+    @classmethod
+    def cleanup(cls) -> None:
+        """
+        Clean up resources used by the model class.
+        
+        Should be called when the application is shutting down.
+        """
+        if hasattr(cls, '_executor') and cls._executor:
+            cls._executor.shutdown(wait=True)
 
     @override
     def is_new(self) -> bool:
         """
         Check if this model represents a new (unsaved) object.
-
+        
         Returns:
             True if the model is new, False otherwise.
 
@@ -637,42 +709,37 @@ class StandardModel(BaseModel, ABC):
     @override
     def __setattr__(self, name: str, value: Any) -> None:
         """
-        Override attribute setting to automatically call save when attributes change.
-
+        Override attribute setting to automatically trigger async save.
+        
         Args:
             name: Attribute name
             value: New attribute value
-
         """
-        # Call parent's setattr
+        # Store the old value for comparison
+        old_value = getattr(self, name, None) if hasattr(self, name) else None
+        
+        # Set the new value
         super().__setattr__(name, value)
-
-        # Skip for private attributes (those starting with underscore)
-        if name.startswith("_"):
+        
+        # Skip autosave for:
+        # - New models (not yet saved)
+        # - When auto-save is disabled
+        if self.is_new() or self._meta.save_on_write is False or not self.is_dirty():
             return
-
-        # Check if the model is initialized or is new
-        if not hasattr(self, "_meta") or self.is_new():
-            return
-
-        # Settings may override this behavior
-        if self._meta.save_on_write is False or self._meta.resource.client.settings.save_on_write is False:
-            return
-
-        # Only trigger a save if the model is in a ready status
-        if self._meta.status != ModelStatus.READY:
-            return
-
-        # All attribute changes trigger a save automatically
-        self.save()
+            
+        # Mark the model as dirty and trigger an async save
+        with self._lock:
+            if self._pending_save is not None and not self._pending_save.done():
+                self._dirty_after_save_started = True
+            else:
+                self.save()
 
     @override
     def __str__(self) -> str:
         """
         Human-readable string representation.
-
+        
         Returns:
             A string representation of the model.
-
         """
         return f"{self._meta.name.capitalize()} #{self.id}"

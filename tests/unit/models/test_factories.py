@@ -10,7 +10,7 @@
         File:    test_factories.py
         Project: paperap
         Created: 2025-03-12
-        Version: 0.0.7
+        Version: 0.0.8
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -34,8 +34,8 @@ from paperap.models.document import Document
 from paperap.client import PaperlessClient
 from paperap.resources.documents import DocumentResource
 from paperap.models.tag import Tag
-from paperap.tests import UnitTestCase, load_sample_data, DocumentUnitTest
-from paperap.tests.factories import DocumentFactory
+from tests.lib import UnitTestCase, load_sample_data, DocumentUnitTest
+from tests.lib.factories import DocumentFactory
 
 sample_document_list = load_sample_data('documents_list.json')
 sample_document = load_sample_data('documents_item.json')

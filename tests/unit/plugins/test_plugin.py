@@ -10,7 +10,7 @@
         File:    test_base.py
         Project: paperap
         Created: 2025-03-13
-        Version: 0.0.7
+        Version: 0.0.8
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -29,7 +29,7 @@ from pydantic import ValidationError
 from paperap.exceptions import ModelValidationError
 from paperap.plugins.base import Plugin, ConfigType
 from paperap.plugins.manager import PluginManager
-from paperap.tests import UnitTestCase
+from tests.lib import UnitTestCase
 
 class MockPlugin(Plugin):
     """Mock implementation of the Plugin class for testing."""

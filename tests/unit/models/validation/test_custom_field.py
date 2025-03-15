@@ -10,7 +10,7 @@
         File:    test_custom_field.py
         Project: paperap
         Created: 2025-03-11
-        Version: 0.0.5
+        Version: 0.0.8
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -33,7 +33,7 @@ from pydantic import ValidationError
 from paperap.models.tag import Tag
 from paperap.client import PaperlessClient
 from paperap.resources.tags import TagResource
-from paperap.tests import UnitTestCase, load_sample_data, CustomFieldUnitTest
+from tests.lib import UnitTestCase, load_sample_data, CustomFieldUnitTest
 
 
 # TODO: Use conversion table in pydantic to expand these tests

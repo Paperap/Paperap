@@ -10,7 +10,7 @@
         File:    test_document.py
         Project: paperap
         Created: 2025-03-12
-        Version: 0.0.7
+        Version: 0.0.8
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -24,12 +24,13 @@
 """
 from typing import Union
 import datetime
+from faker import Faker
 from hypothesis import example, given, strategies as st
 from pydantic import ValidationError
 from paperap.models import CustomFieldValues, Document, DocumentNote, DocumentQuerySet
-from paperap.tests import random_json, create_resource, defaults as d
+from tests.lib import create_resource, defaults as d
 from paperap.resources.documents import DocumentResource
-from paperap.tests.factories import DocumentFactory, DocumentNoteFactory
+from tests.lib.factories import DocumentFactory, DocumentNoteFactory
 import json
 
 resource = create_resource(DocumentResource)
@@ -120,13 +121,14 @@ def test_fuzz_Document(**kwargs) -> None:
     #assert document.added == kwargs.get("added", None)
     #assert document.custom_field_dicts == kwargs.get("custom_field_dicts", [])
 
+faker = Faker()
 
 @given(value=st.one_of(st.lists(custom_field_strategy), st.none()))
 @example(value=None)
 @example(value=[])
 @example(value=[{"id":1, "value": None}])  # None value
 @example(value=[{"id":10**9, "value": "x" * 100}])  # Large id, long text
-@example(value=[{"id":123, "value": json.loads(random_json())}])  # Random JSON
+@example(value=[{"id":123, "value": json.loads(faker.json())}])  # Random JSON
 #@example(value=[None]).xfail(raises=ValueError)
 #@example(value=[{"id":None, "value": None}]).xfail(raises=ValueError)
 #@example(value=[{"value": "something"}]).xfail(raises=ValueError)

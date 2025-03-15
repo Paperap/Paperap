@@ -10,7 +10,7 @@
         File:    test_custom_field.py
         Project: paperap
         Created: 2025-03-11
-        Version: 0.0.5
+        Version: 0.0.8
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -30,7 +30,7 @@ from unittest.mock import MagicMock, patch
 from datetime import datetime, timezone
 
 from pydantic import ValidationError
-from paperap.tests import UnitTestCase, load_sample_data, CorrespondentUnitTest
+from tests.lib import UnitTestCase, load_sample_data, CorrespondentUnitTest
 
 
 # TODO: Use conversion table in pydantic to expand these tests

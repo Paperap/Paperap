@@ -1,6 +1,6 @@
 [project]
 name = "paperap"
-version = "0.0.7"
+version = "0.0.8"
 description = "Python library for interacting with the Paperless NGX REST API"
 readme = "README.md"
 authors = [

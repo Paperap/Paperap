@@ -9,7 +9,7 @@
         File:    testcase.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.7
+        Version: 0.0.8
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -56,8 +56,8 @@ from paperap.resources import (BaseResource, CorrespondentResource,
                                TagResource, TaskResource, UISettingsResource,
                                UserResource, WorkflowActionResource,
                                WorkflowResource, WorkflowTriggerResource)
-from paperap.tests.utils import load_sample_data
-from paperap.tests.factories import (CorrespondentFactory, DocumentFactory,
+from tests.lib.utils import load_sample_data
+from tests.lib.factories import (CorrespondentFactory, DocumentFactory,
                                      DocumentTypeFactory, GroupFactory,
                                      ProfileFactory, PydanticFactory,
                                      SavedViewFactory, ShareLinksFactory,

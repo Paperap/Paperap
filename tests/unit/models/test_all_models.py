@@ -11,7 +11,7 @@ least a base level of testing for all models.
         File:    test_from_dict.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.7
+        Version: 0.0.8
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -48,9 +48,9 @@ from paperap.models.task import Task
 from paperap.models.ui_settings import UISettings
 from paperap.models.user import Group, User
 from paperap.models.workflow import Workflow, WorkflowAction, WorkflowTrigger
-from paperap.tests.factories import *
+from tests.lib.factories import *
 
-from paperap.tests import UnitTestCase
+from tests.lib import UnitTestCase
 
 logger = logging.getLogger(__name__)
 

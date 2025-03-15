@@ -10,7 +10,7 @@
         File:    text_write.py
         Project: paperap
         Created: 2025-03-12
-        Version: 0.0.6
+        Version: 0.0.8
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -32,9 +32,9 @@ import paperap.models.document.model
 from typing import Any, Iterator, Union, Optional
 from hypothesis import example, given, strategies as st
 from paperap.models import Correspondent
-from paperap.tests import random_json, create_resource, defaults as d
+from tests.lib import create_resource, defaults as d
 from paperap.resources.correspondents import CorrespondentResource
-from paperap.tests.factories import CorrespondentFactory
+from tests.lib.factories import CorrespondentFactory
 
 resource = create_resource(CorrespondentResource)
 correspondent_data = CorrespondentFactory.to_dict()

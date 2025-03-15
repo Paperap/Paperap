@@ -9,7 +9,7 @@
         File:    test_document.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.7
+        Version: 0.0.8
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -37,7 +37,7 @@ from paperap.models import *
 from paperap.resources.documents import DocumentResource
 from paperap.models.tag import Tag, TagQuerySet
 from paperap.models.document.model import CustomFieldValues, CustomFieldTypedDict, DocumentNote
-from paperap.tests import load_sample_data, DocumentUnitTest
+from tests.lib import load_sample_data, DocumentUnitTest
 
 logger = logging.getLogger(__name__)
 
@@ -424,7 +424,7 @@ class TestDocumentNotes(DocumentUnitTest):
     def test_get_document_method(self, mock_request):
         """Test the get_document method on DocumentNote."""
         mock_request.return_value = {"id": 1, "title": "Test Document"}
-        note = DocumentNote(**self.note_data, _client=self.client)
+        note = DocumentNote(**self.note_data) # type: ignore
         document = note.get_document()
         self.assertIsInstance(document, Document)
         self.assertEqual(document.id, 1)
@@ -433,7 +433,7 @@ class TestDocumentNotes(DocumentUnitTest):
     def test_get_user_method(self, mock_request):
         """Test the get_user method on DocumentNote."""
         mock_request.return_value = {"id": 1, "username": "testuser"}
-        note = DocumentNote(**self.note_data, _client=self.client)
+        note = DocumentNote(**self.note_data) # type: ignore
         user = note.get_user()
         self.assertEqual(user.id, 1)
 
@@ -514,26 +514,26 @@ class TestDocumentSetters(DocumentUnitTest):
 
     def test_tags_setter_with_tag_objects(self):
         """Test setting tags with Tag objects."""
-        tag1 = Tag(id=1, name="Tag 1", is_insensitive=False)
-        tag2 = Tag(id=2, name="Tag 2", is_insensitive=False)
+        tag1 = Tag(id=1, name="Tag 1", is_insensitive=False) # type: ignore
+        tag2 = Tag(id=2, name="Tag 2", is_insensitive=False) # type: ignore
         self.model.tags = [tag1, tag2]
         self.assertEqual(self.model.tag_ids, [1, 2])
 
     def test_tags_setter_with_mixed_types(self):
         """Test setting tags with a mix of integers and Tag objects."""
-        tag = Tag(id=2, name="Tag 2", is_insensitive=False)
+        tag = Tag(id=2, name="Tag 2", is_insensitive=False) # type: ignore
         self.model.tags = [1, tag, 3]
         self.assertEqual(self.model.tag_ids, [1, 2, 3])
 
     def test_tags_setter_with_invalid_type(self):
         """Test setting tags with an invalid type raises TypeError."""
         with self.assertRaises(TypeError):
-            self.model.tags = "not an iterable"
+            self.model.tags = "not an iterable" # type: ignore
 
     def test_tags_setter_with_invalid_item_type(self):
         """Test setting tags with invalid item types raises TypeError."""
         with self.assertRaises(TypeError):
-            self.model.tags = [1, "not an int or Tag", 3]
+            self.model.tags = [1, "not an int or Tag", 3] # type: ignore
 
     def test_correspondent_setter_with_none(self):
         """Test setting correspondent to None."""
@@ -547,16 +547,16 @@ class TestDocumentSetters(DocumentUnitTest):
 
     def test_correspondent_setter_with_correspondent_object(self):
         """Test setting correspondent with a Correspondent object."""
-        correspondent = Correspondent(id=1, name="Test Correspondent", is_insensitive = True)
+        correspondent = Correspondent(id=1, name="Test Correspondent", is_insensitive = True) # type: ignore
         self.model.correspondent = correspondent
         self.assertEqual(self.model.correspondent_id, 1)
         # Test that the cache is populated
-        self.assertEqual(self.model._correspondent, (1, correspondent))
+        self.assertEqual(self.model._correspondent, (1, correspondent)) # type: ignore
 
     def test_correspondent_setter_with_invalid_type(self):
         """Test setting correspondent with an invalid type raises TypeError."""
         with self.assertRaises(TypeError):
-            self.model.correspondent = "not an int or Correspondent"
+            self.model.correspondent = "not an int or Correspondent" # type: ignore
 
     def test_document_type_setter_with_none(self):
         """Test setting document_type to None."""
@@ -570,16 +570,16 @@ class TestDocumentSetters(DocumentUnitTest):
 
     def test_document_type_setter_with_document_type_object(self):
         """Test setting document_type with a DocumentType object."""
-        doc_type = DocumentType(id=1, name="Test Document Type", is_insensitive = False)
+        doc_type = DocumentType(id=1, name="Test Document Type", is_insensitive = False) # type: ignore
         self.model.document_type = doc_type
         self.assertEqual(self.model.document_type_id, 1)
         # Test that the cache is populated
-        self.assertEqual(self.model._document_type, (1, doc_type))
+        self.assertEqual(self.model._document_type, (1, doc_type)) # type: ignore
 
     def test_document_type_setter_with_invalid_type(self):
         """Test setting document_type with an invalid type raises TypeError."""
         with self.assertRaises(TypeError):
-            self.model.document_type = "not an int or DocumentType"
+            self.model.document_type = "not an int or DocumentType" # type: ignore
 
     def test_storage_path_setter_with_none(self):
         """Test setting storage_path to None."""
@@ -593,7 +593,7 @@ class TestDocumentSetters(DocumentUnitTest):
 
     def test_storage_path_setter_with_storage_path_object(self):
         """Test setting storage_path with a StoragePath object."""
-        storage_path = StoragePath(id=1, name="Test Storage Path", is_insensitive=False)
+        storage_path = StoragePath(id=1, name="Test Storage Path", is_insensitive=False) # type: ignore
         self.model.storage_path = storage_path
         self.assertEqual(self.model.storage_path_id, 1)
         # Test that the cache is populated

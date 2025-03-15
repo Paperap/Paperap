@@ -9,7 +9,7 @@
         File:    test_settings.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.7
+        Version: 0.0.8
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -29,7 +29,7 @@ from unittest.mock import patch
 from yarl import URL
 from paperap.settings import Settings
 from paperap.exceptions import ConfigurationError
-from paperap.tests import UnitTestCase
+from tests.lib import UnitTestCase
 
 TOKEN_DATA = {
     'token': '40characterslong40characterslong40charac',

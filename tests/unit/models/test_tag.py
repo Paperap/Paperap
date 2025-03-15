@@ -10,7 +10,7 @@
         File:    test_tag.py
         Project: paperap
         Created: 2025-03-14
-        Version: 0.0.7
+        Version: 0.0.8
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -33,7 +33,7 @@ from pydantic import ValidationError
 from paperap.models.tag import Tag
 from paperap.client import PaperlessClient
 from paperap.resources.tags import TagResource
-from paperap.tests import UnitTestCase, load_sample_data, TagUnitTest
+from tests.lib import UnitTestCase, load_sample_data, TagUnitTest
 
 # Load sample response from tests/sample_data/tags_list.json
 sample_data = load_sample_data('tags_list.json')

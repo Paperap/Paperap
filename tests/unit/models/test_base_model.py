@@ -9,7 +9,7 @@
         File:    test_base.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.7
+        Version: 0.0.8
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -30,9 +30,9 @@ from unittest.mock import patch
 from pydantic import field_serializer
 from paperap.exceptions import FilterDisabledError
 from paperap.models.abstract.queryset import StandardQuerySet
-from paperap.tests import UnitTestCase
+from tests.lib import UnitTestCase
 from unittest.mock import patch
-from paperap.tests import UnitTestCase
+from tests.lib import UnitTestCase
 from paperap.models import StandardModel
 from paperap.resources.base import StandardResource
 

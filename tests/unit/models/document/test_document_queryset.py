@@ -9,7 +9,7 @@
         File:    test_document_queryset.py
         Project: paperap
         Created: 2025-03-05
-        Version: 0.0.7
+        Version: 0.0.8
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -39,7 +39,7 @@ from paperap.models import (
 )
 from paperap.resources.documents import DocumentResource
 from paperap.models.tag import Tag, TagQuerySet
-from paperap.tests import UnitTestCase, load_sample_data, DocumentUnitTest
+from tests.lib import UnitTestCase, load_sample_data, DocumentUnitTest
 from paperap.exceptions import FilterDisabledError
 
 sample_document_list = load_sample_data('documents_list.json')

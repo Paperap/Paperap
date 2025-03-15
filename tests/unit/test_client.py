@@ -9,7 +9,7 @@
         File:    test_client.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.7
+        Version: 0.0.8
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -52,7 +52,7 @@ from paperap.resources.storage_paths import StoragePathResource
 from paperap.resources.tags import TagResource
 from paperap.resources.tasks import TaskResource
 from paperap.settings import Settings
-from paperap.tests import UnitTestCase, load_sample_data
+from tests.lib import UnitTestCase, load_sample_data
 from paperap.models.abstract import BaseQuerySet
 from paperap.models.document import Document
 from paperap.models.tag import Tag

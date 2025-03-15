@@ -2,15 +2,14 @@
 
 
 
-
  ----------------------------------------------------------------------------
 
     METADATA:
 
-        File:    pytest.py
+        File:    testcase.py
         Project: paperap
-        Created: 2025-03-12
-        Version: 0.0.5
+        Created: 2025-03-04
+        Version: 0.0.8
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -19,7 +18,7 @@
 
     LAST MODIFIED:
 
-        2025-03-12     By Jess Mann
+        2025-03-04     By Jess Mann
 
 """
 from __future__ import annotations
@@ -27,9 +26,10 @@ from __future__ import annotations
 import json
 import logging
 import os
+import unittest
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Generic, Iterator, override
-import pytest
+from unittest.mock import MagicMock, patch
 
 from pydantic import ValidationError
 from typing_extensions import TypeAlias, TypeVar
@@ -56,7 +56,7 @@ from paperap.resources import (BaseResource, CorrespondentResource,
                                TagResource, TaskResource, UISettingsResource,
                                UserResource, WorkflowActionResource,
                                WorkflowResource, WorkflowTriggerResource)
-from paperap.tests.factories import (CorrespondentFactory, DocumentFactory,
+from tests.lib.factories import (CorrespondentFactory, DocumentFactory,
                                      DocumentTypeFactory, GroupFactory,
                                      ProfileFactory, PydanticFactory,
                                      SavedViewFactory, ShareLinksFactory,
@@ -65,7 +65,7 @@ from paperap.tests.factories import (CorrespondentFactory, DocumentFactory,
                                      UserFactory, WorkflowActionFactory,
                                      WorkflowFactory, WorkflowTriggerFactory)
 
-from paperap.tests.testcase import TestMixin
+from tests.lib.testcase import TestMixin
 
 logger = logging.getLogger(__name__)
 
@@ -73,46 +73,144 @@ _StandardModel = TypeVar("_StandardModel", bound="StandardModel", default="Stand
 _StandardResource = TypeVar("_StandardResource", bound="StandardResource", default="StandardResource")
 _StandardQuerySet = TypeVar("_StandardQuerySet", bound="StandardQuerySet", default="StandardQuerySet")
 
-class PyTestCase(
+class UnitTestCase(
+    unittest.TestCase,
     TestMixin[_StandardModel, _StandardResource, _StandardQuerySet],
     Generic[_StandardModel, _StandardResource, _StandardQuerySet]
 ):
-    @pytest.fixture(autouse=True)
-    def setUp(self, mocker) -> None:
+
+    @override
+    def setUp(self) -> None:
         """
         Set up the test case by initializing the client, resource, and model data.
         """
-        self.setup_references()
-        self.setup_client(mocker)
-        self.setup_resource()
-        self.setup_model_data()
-        self.setup_model()
+        self._reset_attributes()
 
     @override
-    def setup_client(self, mocker : Any = None, **kwargs):
-        """Set up the PaperlessClient instance, optionally mocking environment variables."""
+    def setup_client(self, **kwargs) -> None:
+        """
+        Set up the PaperlessClient instance, optionally mocking environment variables.
+        """
         if not hasattr(self, "client") or not self.client:
             if self.mock_env:
-                # Patch os.environ with pytest
-                mocker.patch.dict(os.environ, self.env_data, clear=True)
-                self.client = PaperlessClient()
+                with patch.dict(os.environ, self.env_data, clear=True):
+                    self.client = PaperlessClient()
             else:
                 self.client = PaperlessClient()
 
     @override
-    def validate_field(self, field_name: str, test_cases: list[tuple[Any, Any]]):
-        """Validate that a model field processes data correctly."""
-        for input_value, expected in test_cases:
-            if isinstance(expected, type) and issubclass(expected, Exception):
-                with pytest.raises(expected, match=f"Setting {self.model.__class__.__name__}.{field_name} failed"):
-                    setattr(self.model, field_name, input_value)
-            else:
-                setattr(self.model, field_name, input_value)
-                real_value = getattr(self.model, field_name)
-                assert isinstance(real_value, type(expected)), f"Expected type {type(expected)}, got {type(real_value)}"
-                assert real_value == expected, f"Expected {expected}, got {real_value}"
+    def validate_field(self, field_name : str, test_cases : list[tuple[Any, Any]]):
+        """
+        Validate that a field is parsed correctly with various types of data.
 
-class CustomFieldPyTest(PyTestCase["CustomField", "CustomFieldResource", "CustomFieldQuerySet"]):
+        Args:
+            field_name: The name of the field to test.
+            test_cases: A list of tuples with input values and expected results.
+
+        Examples:
+            test_cases = [
+                (42,              42),
+                ("42",            42),
+                (None,            None),
+                (0,               ValidationError),
+                (Decimal('42.5'), ValidationError),
+            ]
+            self.validate_field("age", test_cases)
+        """
+        self._meta.save_on_write = False
+        for (input_value, expected) in test_cases:
+            with self.subTest(field=field_name, input_value=input_value):
+                if type(expected) is type and issubclass(expected, Exception):
+                    with self.assertRaises(expected, msg=f"Setting {self.model.__class__.__name__} field {field_name} failed with input {input_value}"):
+                        setattr(self.model, field_name, input_value)
+                else:
+                    setattr(self.model, field_name, input_value)
+                    real_value = getattr(self.model, field_name)
+                    self.assertIsInstance(real_value, type(expected), f"Setting {self.model.__class__.__name__} field {field_name} failed with input {input_value}, expected {expected}")
+                    self.assertEqual(
+                        real_value,
+                        expected,
+                        f"Setting {self.model.__class__.__name__} field {field_name} failed with input {input_value}"
+                    )
+
+    def assert_queryset_callback(
+        self,
+        *,
+        queryset : StandardQuerySet[_StandardModel],
+        callback : Callable[[_StandardModel], bool] | None = None,
+        expected_count : int | None = None
+    ) -> None:
+        """
+        Generic method to test queryset filtering.
+
+        Args:
+            queryset: The queryset to test
+            callback: A callback function to test each model instance.
+            expected_count: The expected result count of the queryset.
+        """
+        if expected_count is not None:
+            self.assertEqual(queryset.count(), expected_count)
+
+        count = 0
+        for model in queryset:
+            count += 1
+            if self.model_type:
+                self.assertIsInstance(model, self.model_type)
+            else:
+                self.assertIsInstance(model, StandardModel)
+
+            if callback:
+                self.assertTrue(callback(model), f"Condition failed for {model}")
+
+            # Check multiple results, but avoid paging
+            if count > 5:
+                break
+
+        if expected_count is not None:
+            expected_iterations = min(expected_count, 6)
+            self.assertEqual(count, expected_iterations, f"Documents iteration unexpected. Count: {expected_count} -> Expected {expected_iterations} iterations, got {count}.")
+
+    def assert_queryset_callback_patched(
+        self,
+        *,
+        queryset : StandardQuerySet[_StandardModel] | Callable[..., StandardQuerySet[_StandardModel]],
+        sample_data : dict[str, Any],
+        callback : Callable[[_StandardModel], bool] | None = None,
+        expected_count : int | None = None,
+    ) -> None:
+        """
+        Generic method to test queryset filtering.
+
+        Args:
+            queryset: The queryset to test, or a method which retrieves a queryset.
+            sample_data: The sample data to use for the queryset.
+            callback: A callback function to test each model instance.
+            expected_count: The expected result count of the queryset.
+        """
+        # Setup defaults
+        if expected_count is None:
+            expected_count = int(sample_data['count'])
+
+        with patch('paperap.client.PaperlessClient.request') as mock_request:
+            mock_request.return_value = sample_data
+            if not isinstance(queryset, Callable):
+                qs = queryset
+            else:
+                qs = queryset()
+                if self.queryset_type:
+                    self.assertIsInstance(qs, self.queryset_type)
+                else:
+                    self.assertIsInstance(qs, BaseQuerySet)
+
+            self.assertEqual(qs.count(), expected_count)
+
+            self.assert_queryset_callback(
+                queryset = qs,
+                expected_count = expected_count,
+                callback = callback
+            )
+
+class CustomFieldUnitTest(UnitTestCase["CustomField", "CustomFieldResource", "CustomFieldQuerySet"]):
     """
     A test case for the CustomField model and resource.
     """
@@ -121,7 +219,7 @@ class CustomFieldPyTest(PyTestCase["CustomField", "CustomFieldResource", "Custom
     queryset_type = CustomFieldQuerySet
     #factory = PydanticFactory
 
-class DocumentPyTest(PyTestCase["Document", "DocumentResource", "DocumentQuerySet"]):
+class DocumentUnitTest(UnitTestCase["Document", "DocumentResource", "DocumentQuerySet"]):
     """
     A test case for the Document model and resource.
     """
@@ -130,7 +228,7 @@ class DocumentPyTest(PyTestCase["Document", "DocumentResource", "DocumentQuerySe
     queryset_type = DocumentQuerySet
     factory = DocumentFactory
 
-class DocumentTypePyTest(PyTestCase["DocumentType", "DocumentTypeResource", "DocumentTypeQuerySet"]):
+class DocumentTypeUnitTest(UnitTestCase["DocumentType", "DocumentTypeResource", "DocumentTypeQuerySet"]):
     """
     A test case for the DocumentType model and resource.
     """
@@ -139,7 +237,7 @@ class DocumentTypePyTest(PyTestCase["DocumentType", "DocumentTypeResource", "Doc
     queryset_type = DocumentTypeQuerySet
     factory = DocumentTypeFactory
 
-class CorrespondentPyTest(PyTestCase["Correspondent", "CorrespondentResource", "CorrespondentQuerySet"]):
+class CorrespondentUnitTest(UnitTestCase["Correspondent", "CorrespondentResource", "CorrespondentQuerySet"]):
     """
     A test case for the Correspondent model and resource.
     """
@@ -148,7 +246,7 @@ class CorrespondentPyTest(PyTestCase["Correspondent", "CorrespondentResource", "
     queryset_type = CorrespondentQuerySet
     factory = CorrespondentFactory
 
-class TagPyTest(PyTestCase["Tag", "TagResource", "TagQuerySet"]):
+class TagUnitTest(UnitTestCase["Tag", "TagResource", "TagQuerySet"]):
     """
     A test case for the Tag model and resource.
     """
@@ -157,7 +255,7 @@ class TagPyTest(PyTestCase["Tag", "TagResource", "TagQuerySet"]):
     queryset_type = TagQuerySet
     factory = TagFactory
 
-class UserPyTest(PyTestCase["User", "UserResource", "UserQuerySet"]):
+class UserUnitTest(UnitTestCase["User", "UserResource", "UserQuerySet"]):
     """
     A test case for the User model and resource.
     """
@@ -166,7 +264,7 @@ class UserPyTest(PyTestCase["User", "UserResource", "UserQuerySet"]):
     queryset_type = UserQuerySet
     factory = UserFactory
 
-class GroupPyTest(PyTestCase["Group", "GroupResource", "GroupQuerySet"]):
+class GroupUnitTest(UnitTestCase["Group", "GroupResource", "GroupQuerySet"]):
     """
     A test case for the Group model and resource.
     """
@@ -175,7 +273,7 @@ class GroupPyTest(PyTestCase["Group", "GroupResource", "GroupQuerySet"]):
     queryset_type = GroupQuerySet
     factory = GroupFactory
 
-class ProfilePyTest(PyTestCase["Profile", "ProfileResource", "ProfileQuerySet"]):
+class ProfileUnitTest(UnitTestCase["Profile", "ProfileResource", "ProfileQuerySet"]):
     """
     A test case for the Profile model and resource.
     """
@@ -184,7 +282,7 @@ class ProfilePyTest(PyTestCase["Profile", "ProfileResource", "ProfileQuerySet"])
     queryset_type = ProfileQuerySet
     factory = ProfileFactory
 
-class TaskPyTest(PyTestCase["Task", "TaskResource", "TaskQuerySet"]):
+class TaskUnitTest(UnitTestCase["Task", "TaskResource", "TaskQuerySet"]):
     """
     A test case for the Task model and resource.
     """
@@ -193,7 +291,7 @@ class TaskPyTest(PyTestCase["Task", "TaskResource", "TaskQuerySet"]):
     queryset_type = TaskQuerySet
     factory = TaskFactory
 
-class WorkflowPyTest(PyTestCase["Workflow", "WorkflowResource", "WorkflowQuerySet"]):
+class WorkflowUnitTest(UnitTestCase["Workflow", "WorkflowResource", "WorkflowQuerySet"]):
     """
     A test case for the Workflow model and resource.
     """
@@ -202,7 +300,7 @@ class WorkflowPyTest(PyTestCase["Workflow", "WorkflowResource", "WorkflowQuerySe
     queryset_type = WorkflowQuerySet
     factory = WorkflowFactory
 
-class SavedViewPyTest(PyTestCase["SavedView", "SavedViewResource", "SavedViewQuerySet"]):
+class SavedViewUnitTest(UnitTestCase["SavedView", "SavedViewResource", "SavedViewQuerySet"]):
     """
     A test case for the SavedView model and resource.
     """
@@ -211,7 +309,7 @@ class SavedViewPyTest(PyTestCase["SavedView", "SavedViewResource", "SavedViewQue
     queryset_type = SavedViewQuerySet
     factory = SavedViewFactory
 
-class ShareLinksPyTest(PyTestCase["ShareLinks", "ShareLinksResource", "ShareLinksQuerySet"]):
+class ShareLinksUnitTest(UnitTestCase["ShareLinks", "ShareLinksResource", "ShareLinksQuerySet"]):
     """
     A test case for ShareLinks
     """
@@ -220,7 +318,7 @@ class ShareLinksPyTest(PyTestCase["ShareLinks", "ShareLinksResource", "ShareLink
     queryset_type = ShareLinksQuerySet
     factory = ShareLinksFactory
 
-class UISettingsPyTest(PyTestCase["UISettings", "UISettingsResource", "UISettingsQuerySet"]):
+class UISettingsUnitTest(UnitTestCase["UISettings", "UISettingsResource", "UISettingsQuerySet"]):
     """
     A test case for the UISettings model and resource.
     """
@@ -229,7 +327,7 @@ class UISettingsPyTest(PyTestCase["UISettings", "UISettingsResource", "UISetting
     queryset_type = UISettingsQuerySet
     factory = UISettingsFactory
 
-class StoragePathPyTest(PyTestCase["StoragePath", "StoragePathResource", "StoragePathQuerySet"]):
+class StoragePathUnitTest(UnitTestCase["StoragePath", "StoragePathResource", "StoragePathQuerySet"]):
     """
     A test case for the StoragePath model and resource.
     """
@@ -238,7 +336,7 @@ class StoragePathPyTest(PyTestCase["StoragePath", "StoragePathResource", "Storag
     queryset_type = StoragePathQuerySet
     factory = StoragePathFactory
 
-class WorkflowActionPyTest(PyTestCase["WorkflowAction", "WorkflowActionResource", "WorkflowActionQuerySet"]):
+class WorkflowActionUnitTest(UnitTestCase["WorkflowAction", "WorkflowActionResource", "WorkflowActionQuerySet"]):
     """
     A test case for the WorkflowAction model and resource.
     """
@@ -247,7 +345,7 @@ class WorkflowActionPyTest(PyTestCase["WorkflowAction", "WorkflowActionResource"
     queryset_type = WorkflowActionQuerySet
     factory = WorkflowActionFactory
 
-class WorkflowTriggerPyTest(PyTestCase["WorkflowTrigger", "WorkflowTriggerResource", "WorkflowTriggerQuerySet"]):
+class WorkflowTriggerUnitTest(UnitTestCase["WorkflowTrigger", "WorkflowTriggerResource", "WorkflowTriggerQuerySet"]):
     """
     A test case for the WorkflowTrigger model and resource.
     """

@@ -9,7 +9,7 @@
         File:    test_tags.py
         Project: paperap
         Created: 2025-03-05
-        Version: 0.0.7
+        Version: 0.0.8
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -30,7 +30,7 @@ from datetime import datetime
 from paperap.models import *
 from paperap.resources.tags import TagResource
 from paperap.models.document import DocumentQuerySet
-from paperap.tests import UnitTestCase, load_sample_data, TagUnitTest
+from tests.lib import UnitTestCase, load_sample_data, TagUnitTest
 
 sample_tag_list = load_sample_data('tags_list.json')
 sample_tag = load_sample_data('tags_item.json')

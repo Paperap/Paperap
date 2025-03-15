@@ -9,7 +9,7 @@
         File:    test_queryset.py
         Project: paperap
         Created: 2025-03-13
-        Version: 0.0.7
+        Version: 0.0.8
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -32,7 +32,7 @@ from paperap.models.abstract.queryset import StandardQuerySet
 from paperap.models.task.model import Task
 from paperap.models.task.queryset import TaskQuerySet
 from paperap.resources.tasks import TaskResource
-from paperap.tests import UnitTestCase
+from tests.lib import UnitTestCase
 
 
 class TaskQuerySetTestCase(UnitTestCase):

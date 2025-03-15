@@ -10,7 +10,7 @@
        File:    test_collect_test_data.py
         Project: paperap
        Created: 2025-03-13
-        Version: 0.0.7
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -40,7 +40,7 @@ from paperap.models import StandardModel
 from paperap.plugins.manager import PluginManager
 from paperap.plugins.collect_test_data import SampleDataCollector, SANITIZE_KEYS
 from paperap.signals import SignalRegistry
-from paperap.tests import UnitTestCase
+from tests.lib import UnitTestCase
 
 class TestDataCollectorUnitTest(UnitTestCase):
     """Base test case for SampleDataCollector tests."""

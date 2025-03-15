@@ -10,7 +10,7 @@
         File:    utils.py
         Project: paperap
         Created: 2025-03-12
-        Version: 0.0.7
+        Version: 0.0.8
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -32,6 +32,7 @@ from typing import Any, TYPE_CHECKING
 from typing_extensions import TypeVar
 from unittest.mock import patch
 from paperap.client import PaperlessClient
+from faker import Faker
 
 if TYPE_CHECKING:
     from paperap.resources import BaseResource
@@ -47,7 +48,7 @@ def defaults(defaults : dict[str, Any], **kwargs : Any) -> dict[str, Any]:
 	- @example(**{**v, "field1": "value1", "field2": "value2"})
 
 	Examples:
-		>>> from paperap.tests.utils import default as d
+		>>> from tests.lib.utils import default as d
 		>>> note = { "title": "Sample Title", "created": datetime.datetime.now() }
 		>>> @example(**d(note, title="Note Title", content="Note Content"))
 		>>> def test_create_note(note: dict[str, Any]): ...
@@ -65,23 +66,11 @@ def load_sample_data(filename : str) -> dict[str, Any]:
         A dictionary containing the sample data.
     """
     # Load sample response from tests/sample_data/{model}_{endpoint}.json
-    sample_data_filepath = Path(__file__).parent.parent.parent.parent / "tests" / "sample_data" / filename
+    sample_data_filepath = Path(__file__).parent.parent / "sample_data" / filename
     with open(sample_data_filepath, "r", encoding="utf-8") as f:
         text = f.read()
         sample_data = json.loads(text)
     return sample_data
-
-
-def random_string(length=10):
-    """Generate a random string with mixed characters."""
-    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
-
-def random_json():
-    """Generate random JSON-like data."""
-    return json.dumps({
-        "id": random.randint(1, 10**9),
-        "value": random.choice([None, random_string(15), 123, 3.14, True, {}, []])
-    })
 
 def create_client() -> PaperlessClient:
     # patch env

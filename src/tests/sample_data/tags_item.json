@@ -1,0 +1,13 @@
+{
+    "colour": 1,
+    "document_count": 169,
+    "id": 38,
+    "is_inbox_tag": false,
+    "is_insensitive": true,
+    "match": "",
+    "matching_algorithm": 0,
+    "name": "issue",
+    "owner": 3,
+    "slug": "last",
+    "user_can_change": true
+}

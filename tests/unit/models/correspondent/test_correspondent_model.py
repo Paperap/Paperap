@@ -9,7 +9,7 @@
         File:    test_correspondent.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.7
+        Version: 0.0.8
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -33,7 +33,7 @@ from paperap.models.correspondent import Correspondent
 from paperap.client import PaperlessClient
 from paperap.resources.correspondents import CorrespondentResource
 from paperap.models import Tag, DocumentQuerySet
-from paperap.tests import UnitTestCase, load_sample_data, CorrespondentUnitTest
+from tests.lib import UnitTestCase, load_sample_data, CorrespondentUnitTest
 
 sample_correspondent_list = load_sample_data('correspondents_list.json')
 sample_correspondent = load_sample_data('correspondents_item.json')

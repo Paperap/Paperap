@@ -6,7 +6,7 @@
        File:    client.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.7
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -214,7 +214,7 @@ class PaperlessClient:
             "enabled_plugins": ["SampleDataCollector"],
             "settings": {
                 "SampleDataCollector": {
-                    "test_dir": str(Path(__file__).parent.parent.parent / "tests/sample_data"),
+                    "test_dir": str(Path(__file__).parent.parent / "tests/sample_data"),
                 },
             },
         }
