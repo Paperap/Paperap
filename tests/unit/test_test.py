@@ -41,49 +41,6 @@ from tests.lib import load_sample_data, DocumentUnitTest, factories, TestConfigu
 
 logger = logging.getLogger(__name__)
 
-class TestUnitTestCase(DocumentUnitTest):
-    @override
-    def setUp(self):
-        super().setUp()
-        self.model = self.bake_model(**{
-            "id": 1,
-            "title": "Test Document",
-            "storage_path": 1,
-        })
-        self.client.settings.save_on_write = False
-
-    def test_default_patch(self):
-        """Test that client.request is patched by default"""
-        with self.assertRaises(TestConfigurationError):
-            self.client.request("GET", "documents/1")
-        
-    def test_patch_request(self):
-        """Test that the patch request method works as expected"""
-        api_data = {'abc': 123}
-        with self.assertRaises(TestConfigurationError):
-            self.client.request("GET", "documents/1")
-            
-        with self.patch_request(**api_data):
-            response = self.client.request("GET", "documents/1")
-            self.assertEqual(response, api_data)
-
-        with self.assertRaises(TestConfigurationError):
-            self.client.request("GET", "documents/1")
-
-    def test_patch_request_factory(self):
-        """Test that the patch request method works as expected"""
-        api_data = {'id': 1337}
-        with self.assertRaises(TestConfigurationError):
-            self.client.request("GET", "documents/1337")
-            
-        with self.patch_request_factory(**api_data):
-            response = self.client.request("GET", "documents/1337")
-            self.assertIn('title', response)
-            self.assertEqual(response['id'], api_data['id'])
-
-        with self.assertRaises(TestConfigurationError):
-            self.client.request("GET", "documents/1337")
-
 class TestFactories(UnitTestCase):
     def test_storagepath_api_data_noparams(self):
         api_data = factories.StoragePathFactory.create_api_data()

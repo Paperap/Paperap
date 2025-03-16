@@ -78,29 +78,6 @@ class TestConfigurationError(PaperlessError):
     """Raised when there is a configuration error in the testing setup."""
     pass
 
-class ClientPatcher:
-    previous_patcher = None
-    patcher = None
-    test_case : "UnitTestCase"
-    expected_response : dict[str, Any]
-    
-    def __init__(self, test_case : "UnitTestCase", **kwargs):
-        self.test_case = test_case
-        self.expected_response = kwargs
-        
-    def __enter__(self):
-        if self.test_case._base_patch:
-            self.previous_patcher = self.test_case._base_patch
-            self.test_case._base_patch.stop()
-        self.patcher = patch("paperap.client.PaperlessClient.request", return_value=self.expected_response)
-        self.mock = self.patcher.start()
-        return self.mock
-
-    def __exit__(self, *args):
-        self.patcher.stop()
-        if self.previous_patcher:
-            self.test_case._base_patch = self.previous_patcher.start()
-
 class UnitTestCase(
     unittest.TestCase,
     TestMixin[_StandardModel, _StandardResource, _StandardQuerySet],
@@ -111,46 +88,18 @@ class UnitTestCase(
         """
         Set up the test case by initializing the client, resource, and model data.
         """
-        self.patch_client()
         self._reset_attributes()
-
-    def patch_client(self):
-        # Base patch: Raise an exception for client.request if not overridden
-        patch_target = "paperap.client.PaperlessClient.request"
-        patcher = patch(patch_target, side_effect=TestConfigurationError("cannot call request from within tests. Patch it for your test"))
-        
-        # Store reference to the patcher so that individual tests can stop it if needed
-        self._base_patcher = patcher
-        self._base_patch = patcher.start()
-        
-        self.addCleanup(self._base_patcher.stop)
-        
-    def patch_request(self, **expected_response : dict[str, Any]):
-        """
-        Stops the base patch so individual tests can override `PaperlessClient.request`.
-        """
-        return ClientPatcher(self, **expected_response)
-
-    def patch_request_factory(self, factory : type[PydanticFactory] | None = None, **factory_data : dict[str, Any]):
-        """
-        Patch the request method to return api data from the class factory.
-        """
-        if not factory:
-            factory = self.factory
-        api_data = factory.create_api_data(**factory_data)
-        return ClientPatcher(self, **api_data)
 
     @override
     def setup_client(self, **kwargs) -> None:
         """
         Set up the PaperlessClient instance, optionally mocking environment variables.
         """
-        if not hasattr(self, "client") or not self.client:
-            if self.mock_env:
-                with patch.dict(os.environ, self.env_data, clear=True):
-                    self.client = PaperlessClient()
-            else:
+        if self.mock_env:
+            with patch.dict(os.environ, self.env_data, clear=True):
                 self.client = PaperlessClient()
+        else:
+            self.client = PaperlessClient()
 
     @override
     def validate_field(self, field_name : str, test_cases : list[tuple[Any, Any]]):

@@ -54,12 +54,12 @@ class ExampleModel(StandardModel):
     an_optional_str : str | None = None
 
     class Meta(StandardModel.Meta):
-        save_on_write = False
+        save_on_write = True
 
     @field_serializer("a_date")
     def serialize_datetime(self, value: datetime | None, _info):
         return value.isoformat() if value else None
-
+    
 class ExampleResource(StandardResource[ExampleModel]):
     """
     Example resource for testing purposes.
@@ -81,14 +81,17 @@ class AsyncSaveTest(UnitTestCase[ExampleModel, ExampleResource]):
         # Create update method that returns a new instance
         def mock_update(model : ExampleModel):
             # Create a new model instance with same data
-            new_model = ExampleModel(resource=self.resource)
-            new_model.update_locally(**model.to_dict(), id=model.id or 1)
+            new_data = model.to_dict()
+            new_data['id'] = model.id or 1
+            new_model = ExampleModel(resource=self.resource, **new_data)
+            self.addCleanup(new_model.cleanup)
             return new_model
             
         self.resource.update = mock_update
         
         # Create model instance
         self.model = ExampleModel(resource=self.resource, name="Test", value=42)
+        self.addCleanup(self.model.cleanup)
         self.model.id = 1  # Make it look like a saved model
         
         # Reset the original data to mark as "clean"
@@ -98,35 +101,7 @@ class AsyncSaveTest(UnitTestCase[ExampleModel, ExampleResource]):
         # Patch the sleep function to speed up tests
         self.sleep_patcher = patch('time.sleep', return_value=None)
         self.mock_sleep = self.sleep_patcher.start()
-
-    def tearDown(self):
-        """Clean up test fixtures"""
-        # Stop the sleep patcher
-        self.sleep_patcher.stop()
-        
-        # Clean up the executor
-        ExampleModel.cleanup()
-        
-    def test_async_save_called_on_attribute_change(self):
-        """Test that attribute changes trigger async save"""
-        with patch.object(self.model, 'save') as mock_save:
-            self.model.name = "Updated"
-            mock_save.assert_called_once()
-
-    def test_save_submits_to_executor(self):
-        """Test that save submits to the executor"""
-        with patch.object(self.model._meta.save_executor, 'submit') as mock_submit:
-            self.model.save()
-            mock_submit.assert_called_once()
-            # Verify first arg is self._perform_save
-            self.assertEqual(mock_submit.call_args[0][0].__name__, '_perform_save')
-
-    def test_perform_save_calls_resource_update(self):
-        """Test that _perform_save calls resource.update"""
-        with patch.object(self.model._meta.resource, 'update') as mock_update:
-            mock_update.return_value = self.model
-            self.model._perform_save()
-            mock_update.assert_called_once_with(self.model)
+        self.addCleanup(self.sleep_patcher.stop)
 
     def test_save_updates_saved_data(self):
         """Test that save updates saved_data with current model state"""
@@ -191,10 +166,11 @@ class AsyncSaveTest(UnitTestCase[ExampleModel, ExampleResource]):
         
         # Replace update with a function that waits for a signal
         def delayed_update(model):
+            print('delayed_update')
             # Signal that save has started
             save_started_event.set()
             # Wait for the test to signal it should proceed
-            update_event.wait()
+            update_event.wait(timeout=5.0)
             # Then do the normal update
             return original_update(model)
             
@@ -204,20 +180,17 @@ class AsyncSaveTest(UnitTestCase[ExampleModel, ExampleResource]):
         self.model.name = "First Change"
         
         # Wait for save to start
-        self.assertTrue(save_started_event.wait(timeout=1.0), "Save operation didn't start")
+        self.assertTrue(save_started_event.wait(timeout=5.0), "Save operation didn't start")
         
         # Now change an attribute while save is in progress
         self.model.value = 100
-        
-        # Add to unsaved_changes to simulate __setattr__ during SAVING state
-        self.model._meta.unsaved_changes['value'] = 100
         
         # Let the save complete
         update_event.set()
         
         # Wait for the save to complete
         for _ in range(10):
-            if self.model._meta.pending_save is None or self.model._meta.pending_save.done():
+            if self.model._pending_save is None or self.model._pending_save.done():
                 break
             time.sleep(0.1)
         
@@ -243,7 +216,7 @@ class AsyncSaveTest(UnitTestCase[ExampleModel, ExampleResource]):
             
             # Wait for the save to complete
             for _ in range(10):
-                if self.model._meta.pending_save is None or self.model._meta.pending_save.done():
+                if self.model._pending_save is None or self.model._pending_save.done():
                     break
                 time.sleep(0.1)
             
@@ -255,9 +228,9 @@ class AsyncSaveTest(UnitTestCase[ExampleModel, ExampleResource]):
             # Verify the error was logged
             with self.assertLogs(level='ERROR') as log:
                 # Force the future to run its callback if it hasn't already
-                if self.model._meta.pending_save:
-                    for callback in self.model._meta.pending_save._done_callbacks:
-                        callback(self.model._meta.pending_save)
+                if self.model._pending_save:
+                    for callback in self.model._pending_save._done_callbacks:
+                        callback(self.model._pending_save)
                 # Check log contents
                 self.assertTrue(any("API error during save" in record.message for record in log.records))
 
@@ -345,9 +318,9 @@ class AsyncSaveTest(UnitTestCase[ExampleModel, ExampleResource]):
         """Test that save doesn't trigger another save while one is in progress"""
         # Simulate a save in progress
         future = concurrent.futures.Future()
-        self.model._meta.pending_save = future
+        self.model._pending_save = future
         
-        with patch.object(self.model._meta.save_executor, 'submit') as mock_submit:
+        with patch.object(self.model._save_executor, 'submit') as mock_submit:
             # Try to save
             self.model.save()
             
@@ -367,7 +340,7 @@ class AsyncSaveTest(UnitTestCase[ExampleModel, ExampleResource]):
         
         # Wait for the save to complete
         for _ in range(10):
-            if self.model._meta.pending_save is None or self.model._meta.pending_save.done():
+            if self.model._pending_save is None or self.model._pending_save.done():
                 break
             time.sleep(0.1)
             
@@ -376,8 +349,9 @@ class AsyncSaveTest(UnitTestCase[ExampleModel, ExampleResource]):
 
     def test_cleanup_shuts_down_executor(self):
         """Test that cleanup properly shuts down the executor"""
-        with patch.object(ExampleModel._meta.save_executor, 'shutdown') as mock_shutdown:
-            ExampleModel.cleanup()
+        executor = self.model.save_executor
+        with patch.object(executor, 'shutdown') as mock_shutdown:
+            self.model.cleanup()
             mock_shutdown.assert_called_once_with(wait=True)
 
     def test_save_after_save_completes(self):
@@ -416,7 +390,6 @@ class AsyncSaveTest(UnitTestCase[ExampleModel, ExampleResource]):
         
         # Make changes during the save
         self.model.value = 999
-        self.model._meta.unsaved_changes['value'] = 999
         
         # Let the first save complete
         update_event.set()

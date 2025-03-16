@@ -181,12 +181,17 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
         Load model data if the resource is set.
         """
         if getattr(self, "resource", None):
-            if unparsed := getattr(self, 'model_data_unparsed', None):
-                self.model_data_parsed = self.model_data_parsed or self.resource.transform_data_output(**unparsed)
+            unparsed = getattr(self, "model_data_unparsed", None)
+            parsed = getattr(self, "model_data_parsed", None)
+            
+            if unparsed:
+                self.model_data_parsed = parsed or self.resource.transform_data_output(**unparsed)
             else:
                 self.load_model_data()
 
-            if not self.model_data_unparsed and (parsed := getattr(self, "model_data_parsed")):
+            # Reload it in case it changed
+            parsed = getattr(self, "model_data_parsed", None)
+            if not unparsed and parsed:
                 self.model_data_unparsed = self.resource.transform_data_input(**parsed)
 
     def setup_model(self) -> None:
@@ -343,14 +348,20 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
             A dictionary containing the model data.
         """
         if not getattr(self, "model_data_parsed", None):
-            if self.sample_data_filename:
-                self.model_data_unparsed = load_sample_data(self.sample_data_filename)
-            else:
-                resource_name = resource_name or self.resource.name
-                filename = f"{resource_name}_item.json"
-                self.model_data_unparsed  = load_sample_data(filename)
+            try:
+                if self.sample_data_filename:
+                    self.model_data_unparsed = load_sample_data(self.sample_data_filename)
+                else:
+                    resource_name = resource_name or self.resource.name
+                    filename = f"{resource_name}_item.json"
+                    self.model_data_unparsed  = load_sample_data(filename)
+            except FileNotFoundError:
+                logger.debug('Skipping loading model data from file')
+                return {}
 
-            self.model_data_parsed = self.resource.transform_data_output(**self.model_data_unparsed)
+            if unparsed := getattr(self, 'model_data_unparsed', None):
+                self.model_data_parsed = self.resource.transform_data_output(**self.model_data_unparsed)
+                
         return self.model_data_parsed
 
     def load_list_data(self, resource_name : str | None = None) -> dict[str, Any]:
