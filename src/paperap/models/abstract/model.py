@@ -57,6 +57,7 @@ class ModelConfigType(TypedDict):
     validate_default: bool
     use_enum_values: bool
     extra: Literal["ignore"]
+    arbitrary_types_allowed: bool
 
 
 BASE_MODEL_CONFIG: ModelConfigType = {
@@ -65,6 +66,7 @@ BASE_MODEL_CONFIG: ModelConfigType = {
     "validate_default": True,
     "use_enum_values": True,
     "extra": "ignore",
+    "arbitrary_types_allowed": True,
 }
 
 
@@ -337,7 +339,7 @@ class BaseModel(pydantic.BaseModel, ABC):
     def save_executor(self) -> concurrent.futures.ThreadPoolExecutor:
         if not self._save_executor:
             self._save_executor = concurrent.futures.ThreadPoolExecutor(
-                max_workers=3, thread_name_prefix="model_save_worker"
+                max_workers=5, thread_name_prefix="model_save_worker"
             )
         return self._save_executor
     
@@ -487,9 +489,9 @@ class BaseModel(pydantic.BaseModel, ABC):
 
         # Avoid infinite saving loops
         with StatusContext(self, ModelStatus.UPDATING):
-            # If the field is in unsaved changes, skip updating it
+            # If the field contains unsaved changes, skip updating it
             # Determine unsaved changes based on the dirty fields before we last called save
-            if not skip_changed_fields:
+            if skip_changed_fields:
                 unsaved_changes = self.dirty_fields(comparison='saved')
                 kwargs = {k: v for k, v in kwargs.items() if k not in unsaved_changes}
 
@@ -626,22 +628,28 @@ class StandardModel(BaseModel, ABC):
         Changes are sent to the server in a background thread, and the model
         is updated when the server responds.
         """
+        print('1')
         if self._meta.status == ModelStatus.SAVING:
             return
+
+        self._meta.status = ModelStatus.SAVING
+        self._save_lock.acquire()
+
+        print('STATUS SHOULD BE SAVING')
+        # If there's a pending save, skip saving until it finishes
+        if self._pending_save is not None and not self._pending_save.done():
+            return
         
-        with StatusContext(self, ModelStatus.SAVING):
-            # If there's a pending save, skip saving until it finishes
-            if self._pending_save is not None and not self._pending_save.done():
-                return
+        # Only start a save if there are changes
+        if not self.is_dirty():
+            return
             
-            # Only start a save if there are changes
-            if not self.is_dirty():
-                return
-                
-            # Start a new save operation
-            future = self.save_executor.submit(self._perform_save)
-            self._pending_save = future
-            future.add_done_callback(self._handle_save_result)
+        # Start a new save operation
+        print('About to submit to executor')
+        future = self.save_executor.submit(self._perform_save)
+        self._pending_save = future
+        future.add_done_callback(self._handle_save_result)
+        print('Finishing save method')
     
     def _perform_save(self) -> Optional["StandardModel"]:
         """
@@ -655,6 +663,7 @@ class StandardModel(BaseModel, ABC):
             RequestError: If there's a communication error with the server
             PermissionError: If the user doesn't have permission to update the resource
         """
+        print('PERFORM SAVE')
         with StatusContext(self, ModelStatus.SAVING):
             # Prepare and send the update to the server
             current_data = self.to_dict(include_read_only=False, exclude_none=False, exclude_unset=True)
@@ -675,66 +684,75 @@ class StandardModel(BaseModel, ABC):
         Args:
             future: The completed Future object containing the save result.
         """
-        with StatusContext(self, ModelStatus.SAVING):
-            try:
-                # Get the result with a timeout
-                new_model = future.result(timeout=self._meta.save_timeout)
-                
-                if not new_model:
-                    logger.warning(f'Result of save was none for model id {self.id}')
-                    return
+        print('HANDLE SAVE RESULT')
+        try:
+            # Get the result with a timeout
+            new_model = future.result(timeout=self._meta.save_timeout)
+            
+            if not new_model:
+                logger.warning(f'Result of save was none for model id {self.id}')
+                return
 
-                if not isinstance(new_model, StandardModel):
-                    # This should never happen
-                    logger.error('Result of save was not a StandardModel instance')
-                    return
-                
-                # Update the model with the server response
-                new_data = new_model.to_dict()
-                self.update_locally(from_db=True, skip_changed_fields=True, **new_data)
-                
-                registry.emit(
-                    "model.save:after",
-                    "Fired after the model data is saved in paperless ngx.",
-                    kwargs={"model": self, "updated_data": new_data},
-                )
-                
-            except concurrent.futures.TimeoutError:
-                logger.error(f"Save operation timed out for {self}")
-                registry.emit(
-                    "model.save:error",
-                    "Save operation timed out.",
-                    kwargs={"model": self, "error": "Timeout"},
-                )
-                
-            except APIError as e:
-                logger.error(f"API error during save of {self}: {e}")
-                registry.emit(
-                    "model.save:error",
-                    "Network error during save operation.",
-                    kwargs={"model": self, "error": e},
-                )
-                
-            except Exception as e:
-                # Log unexpected errors but don't swallow them
-                logger.exception(f"Unexpected error during save of {self}")
-                registry.emit(
-                    "model.save:error",
-                    "Unexpected error during save operation.",
-                    kwargs={"model": self, "error": e},
-                )
-                # Re-raise so the executor can handle it properly
-                raise
-                
-            finally:
-                self._pending_save = None
-                # If the model was changed while the save was in progress,
-                # we need to save again
-                if self.is_dirty("saved"):
-                    # Small delay to avoid hammering the server
-                    time.sleep(0.1)
-                    # Save, and reset unsaved data
-                    self.save()
+            if not isinstance(new_model, StandardModel):
+                # This should never happen
+                logger.error('Result of save was not a StandardModel instance')
+                return
+            
+            # Update the model with the server response
+            new_data = new_model.to_dict()
+            self.update_locally(from_db=True, skip_changed_fields=True, **new_data)
+            
+            registry.emit(
+                "model.save:after",
+                "Fired after the model data is saved in paperless ngx.",
+                kwargs={"model": self, "updated_data": new_data},
+            )
+            
+        except concurrent.futures.TimeoutError:
+            logger.error(f"Save operation timed out for {self}")
+            registry.emit(
+                "model.save:error",
+                "Save operation timed out.",
+                kwargs={"model": self, "error": "Timeout"},
+            )
+            
+        except APIError as e:
+            logger.error(f"API error during save of {self}: {e}")
+            registry.emit(
+                "model.save:error",
+                "Network error during save operation.",
+                kwargs={"model": self, "error": e},
+            )
+            
+        except Exception as e:
+            # Log unexpected errors but don't swallow them
+            logger.exception(f"Unexpected error during save of {self}")
+            registry.emit(
+                "model.save:error",
+                "Unexpected error during save operation.",
+                kwargs={"model": self, "error": e},
+            )
+            # Re-raise so the executor can handle it properly
+            raise
+            
+        finally:
+            print('releasing lock')
+            self._pending_save = None
+            try:
+                self._save_lock.release()
+            except RuntimeError:
+                logger.debug('Save lock already released')
+            self._meta.status = ModelStatus.READY
+            print(f'!!!status was reset. self._meta.status = {self._meta.status}')
+            return
+            
+            # If the model was changed while the save was in progress,
+            # we need to save again
+            if self.is_dirty("saved"):
+                # Small delay to avoid hammering the server
+                time.sleep(0.1)
+                # Save, and reset unsaved data
+                self.save()
 
     @override
     def is_new(self) -> bool:
@@ -778,7 +796,6 @@ class StandardModel(BaseModel, ABC):
 
         # Skip autosave for private fields
         if not name.startswith('_'):
-            print(f'Calling autosave for {name} = {value}')
             self._autosave() 
 
     @override

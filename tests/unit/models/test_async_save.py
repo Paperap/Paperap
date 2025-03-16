@@ -27,9 +27,10 @@ import unittest
 import time
 import threading
 import concurrent.futures
-from unittest.mock import Mock, patch, MagicMock, call
+from unittest.mock import Mock, patch, MagicMock, call, PropertyMock
 from datetime import datetime
 
+from pydantic.type_adapter import P
 from pydantic.v1 import NoneBytes
 
 from paperap.const import ModelStatus
@@ -67,10 +68,42 @@ class ExampleResource(StandardResource[ExampleModel]):
     name = "example"
     model_class = ExampleModel
 
-class AsyncSaveTest(UnitTestCase[ExampleModel, ExampleResource]):
+    
+class BaseTest(UnitTestCase[ExampleModel, ExampleResource]):
     """Test the asynchronous save functionality of StandardModel"""
     resource_class = ExampleResource
     model_type = ExampleModel
+    
+    @override
+    def setUp(self):
+        """Set up test fixtures"""
+        super().setUp()
+        ExampleModel._meta.save_on_write = True
+
+        # Create update method that returns a new instance
+        def mock_update(model : ExampleModel):
+            return model
+            
+        self.resource.update = mock_update
+                
+        # Create model instance
+        self.model_data_unparsed = {
+            'id': 1,
+            'name': 'Original Name',
+            'value': 42,
+            'a_date': None,
+            'a_float': 3.14,
+            'a_bool': True,
+            'an_optional_str': None
+        }
+        
+        # Patch the sleep function to speed up tests
+        self.sleep_patcher = patch('time.sleep', return_value=None)
+        self.mock_sleep = self.sleep_patcher.start()
+        self.addCleanup(self.sleep_patcher.stop)
+
+class AsyncSaveTest(BaseTest):
+    """Test the asynchronous save functionality of StandardModel"""
 
     @override
     def setUp(self):
@@ -78,30 +111,16 @@ class AsyncSaveTest(UnitTestCase[ExampleModel, ExampleResource]):
         super().setUp()
         self.client.settings.save_on_write = True
         
-        # Create update method that returns a new instance
-        def mock_update(model : ExampleModel):
-            # Create a new model instance with same data
-            new_data = model.to_dict()
-            new_data['id'] = model.id or 1
-            new_model = ExampleModel(resource=self.resource, **new_data)
-            self.addCleanup(new_model.cleanup)
-            return new_model
-            
-        self.resource.update = mock_update
-        
-        # Create model instance
-        self.model = ExampleModel(resource=self.resource, name="Test", value=42)
+        self.model = ExampleModel(resource=self.resource, **self.model_data_unparsed)
         self.addCleanup(self.model.cleanup)
-        self.model.id = 1  # Make it look like a saved model
-        
-        # Reset the original data to mark as "clean"
-        self.model._meta.original_data = self.model.model_dump()
-        self.model._meta.saved_data = self.model.model_dump()
-        
-        # Patch the sleep function to speed up tests
-        self.sleep_patcher = patch('time.sleep', return_value=None)
-        self.mock_sleep = self.sleep_patcher.start()
-        self.addCleanup(self.sleep_patcher.stop)
+
+    def test_original_data(self):
+        """Test that original_data is set correctly"""
+        self.assertEqual(self.model._meta.original_data, self.model_data_unparsed)
+
+    def test_saved_data(self):
+        """Test that saved_data is set correctly"""
+        self.assertEqual(self.model._meta.saved_data, {})
 
     def test_save_updates_saved_data(self):
         """Test that save updates saved_data with current model state"""
@@ -251,12 +270,27 @@ class AsyncSaveTest(UnitTestCase[ExampleModel, ExampleResource]):
                                call[0][2]['kwargs']['error'] == "Timeout"]
             self.assertTrue(timeout_calls, "Timeout error signal wasn't emitted")
 
-    def test_dirty_fields_comparison_modes(self):
-        """Test the different comparison modes of dirty_fields"""
-        # Setup different values for original_data and saved_data
-        self.model._meta.original_data = {'id': 1, 'name': 'Original', 'value': 42}
-        self.model._meta.saved_data = {'id': 1, 'name': 'Saved', 'value': 42}
-        
+    def test_dirty_fields_doesnt_modify(self):
+        """Test the different comparison modes of dirty_fields"""  
+        # Calling dirty_fields doesn't modify data
+        db_dirty = self.model.dirty_fields(comparison='db')
+        self.assertEqual(db_dirty, {})
+        db_dirty = self.model.dirty_fields(comparison='db')
+        self.assertEqual(db_dirty, {})
+        db_dirty = self.model.dirty_fields(comparison='saved')
+        self.assertEqual(db_dirty, {})
+        db_dirty = self.model.dirty_fields(comparison='saved')
+        self.assertEqual(db_dirty, {})
+        db_dirty = self.model.dirty_fields(comparison='both')
+        self.assertEqual(db_dirty, {})
+        db_dirty = self.model.dirty_fields(comparison='both')
+        self.assertEqual(db_dirty, {})
+        db_dirty = self.model.dirty_fields()
+        self.assertEqual(db_dirty, {})
+        db_dirty = self.model.dirty_fields()
+        self.assertEqual(db_dirty, {})
+              
+    def test_dirty_fields_db(self):
         # Update the model
         self.model.update_locally(name='Current', value=100)
         
@@ -264,68 +298,263 @@ class AsyncSaveTest(UnitTestCase[ExampleModel, ExampleResource]):
         db_dirty = self.model.dirty_fields(comparison='db')
         self.assertIn('name', db_dirty)
         self.assertIn('value', db_dirty)
-        self.assertEqual(db_dirty['name'], ('Original', 'Current'))
-        
-        # Test 'saved' comparison mode
-        saved_dirty = self.model.dirty_fields(comparison='saved')
-        self.assertIn('name', saved_dirty)
-        self.assertIn('value', saved_dirty)
-        self.assertEqual(saved_dirty['name'], ('Saved', 'Current'))
-        
-        # Test 'both' comparison mode (should use original_data for conflict)
-        both_dirty = self.model.dirty_fields(comparison='both')
-        self.assertIn('name', both_dirty)
-        self.assertIn('value', both_dirty)
-        self.assertEqual(both_dirty['name'], ('Original', 'Current'))
+        self.assertEqual(db_dirty['name'], (self.model_data_unparsed['name'], 'Current'))
+        self.assertEqual(db_dirty['value'], (self.model_data_unparsed['value'], 100))
 
-    def test_skip_changed_fields(self):
+    def test_dirty_fields_saved(self):
+        # Update the model
+        self.model.update_locally(name='Current', value=100)
+        
+        dirty = self.model.dirty_fields(comparison='saved')
+        self.assertEqual(dirty, {})
+        self.model._meta.saved_data = {**self.model_data_unparsed}
+        self.model._meta.saved_data.update(name='BeforeSave', value=100)
+
+        dirty = self.model.dirty_fields(comparison='saved')
+        self.assertIn('name', dirty)
+        self.assertNotIn('value', dirty)
+        self.assertEqual(dirty['name'], ('BeforeSave', 'Current'))
+        
+        self.model._meta.saved_data.update(name='UpdatedName', value=200)
+        
+        dirty = self.model.dirty_fields(comparison='saved')
+        self.assertIn('name', dirty)
+        self.assertIn('value', dirty)
+        self.assertEqual(dirty['name'], ('UpdatedName', 'Current'))
+        self.assertEqual(dirty['value'], (200, 100))
+
+    def test_dirty_fields_both(self):
+        # Update the model
+        self.model.update_locally(name='Current', value=100)
+        
+        dirty = self.model.dirty_fields(comparison='both')
+        self.assertIn('name', dirty)
+        self.assertIn('value', dirty)
+        self.assertEqual(dirty['name'], (self.model_data_unparsed['name'], 'Current'))
+        self.assertEqual(dirty['value'], (self.model_data_unparsed['value'], 100))
+
+        self.model._meta.saved_data = {**self.model_data_unparsed}
+        self.model._meta.saved_data.update(name='BeforeSave', value=100)
+        
+        dirty = self.model.dirty_fields(comparison='both')
+        self.assertIn('name', dirty)
+        self.assertIn('value', dirty)
+        self.assertEqual(dirty['name'], ('Original Name', 'Current'))
+        self.assertEqual(dirty['value'], (self.model_data_unparsed['value'], 100))
+
+        self.model.update_locally(name='New Original Data')
+        
+        dirty = self.model.dirty_fields(comparison='both')
+        self.assertIn('name', dirty)
+        self.assertIn('value', dirty)
+        self.assertEqual(dirty['name'], ('Original Name', 'Current'))
+        self.assertEqual(dirty['value'], (self.model_data_unparsed['value'], 100))
+
+    def test_dirty_fields_noparam(self):
+        # Update the model
+        self.model.update_locally(name='Current', value=100)
+        
+        dirty = self.model.dirty_fields()
+        self.assertIn('name', dirty)
+        self.assertIn('value', dirty)
+        self.assertEqual(dirty['name'], (self.model_data_unparsed['name'], 'Current'))
+        self.assertEqual(dirty['value'], (self.model_data_unparsed['value'], 100))
+
+        self.model._meta.saved_data = {**self.model_data_unparsed}
+        self.model._meta.saved_data.update(name='BeforeSave', value=100)
+        
+        dirty = self.model.dirty_fields()
+        self.assertIn('name', dirty)
+        self.assertIn('value', dirty)
+        self.assertEqual(dirty['name'], ('Original Name', 'Current'))
+        self.assertEqual(dirty['value'], (self.model_data_unparsed['value'], 100))
+
+        self.model.update_locally(name='New Original Data')
+        
+        dirty = self.model.dirty_fields()
+        self.assertIn('name', dirty)
+        self.assertIn('value', dirty)
+        self.assertEqual(dirty['name'], ('Original Name', 'Current'))
+        self.assertEqual(dirty['value'], (self.model_data_unparsed['value'], 100))
+
+
+class AsyncPatchTest(BaseTest):
+    """Test the asynchronous save functionality of StandardModel that require patching"""
+
+    @override
+    def setUp(self):
+        """Set up test fixtures"""
+        super().setUp()
+        self.client.settings.save_on_write = True
+
+    @patch('paperap.models.abstract.model.BaseModel.dirty_fields')
+    def test_can_patch_model(self, mock_dirty_fields):
+        """
+        Patching pydantic models through patch.object is not working.
+        """
+        mock_dirty_fields.return_value = {'name': ('Original Name', 'BeforeSave')}
+        model = ExampleModel(resource=self.resource, **self.model_data_unparsed)
+        dirty_fields = model.dirty_fields()
+        self.assertEqual(dirty_fields, {'name': ('Original Name', 'BeforeSave')})
+        dirty_fields = model.dirty_fields(comparison='db')
+        self.assertEqual(dirty_fields, {'name': ('Original Name', 'BeforeSave')})
+        dirty_fields = model.dirty_fields(comparison='saved')
+        self.assertEqual(dirty_fields, {'name': ('Original Name', 'BeforeSave')})
+        dirty_fields = model.dirty_fields(comparison='both')
+        self.assertEqual(dirty_fields, {'name': ('Original Name', 'BeforeSave')})
+
+    @patch('paperap.models.abstract.model.BaseModel.dirty_fields')
+    def test_skip_changed_fields(self, mock_dirty_fields):
         """Test that update_locally respects skip_changed_fields"""
         # Setup with some unsaved changes
-        self.model._meta.unsaved_changes = {'name': 'Unsaved'}
-        
+        mock_dirty_fields.return_value = {'name': ('Original Name', 'BeforeSave')}
+        model = ExampleModel(resource=self.resource, **self.model_data_unparsed)
+    
         # Update including the changed field
-        self.model.update_locally(name='Server Value', value=200, skip_changed_fields=True)
+        model.update_locally(name='Value We Should Skip', value=200, skip_changed_fields=True)
         
         # The name should not have been updated, but value should be
-        self.assertNotEqual(self.model.name, 'Server Value')
-        self.assertEqual(self.model.value, 200)
+        self.assertEqual(model.name, self.model_data_unparsed['name'])
+        self.assertEqual(model.value, 200)
 
-    def test_no_save_for_new_models(self):
+    @patch('paperap.models.abstract.model.StandardModel.save')
+    @patch('paperap.models.abstract.model.StandardModel.is_new')
+    def test_no_save_for_new_models(self, mock_is_new, mock_save):
         """Test that new models don't trigger auto-save"""
-        # Create a new model (id=0)
-        new_model = ExampleModel(resource=self.resource, name="New")
+        mock_save.return_value = None
+        mock_is_new.return_value = True
+        new_model = ExampleModel(resource=self.resource, **self.model_data_unparsed)
         
-        with patch.object(new_model, 'save') as mock_save:
-            # Change an attribute
-            new_model.name = "Changed"
-            
-            # Verify save wasn't called
-            mock_save.assert_not_called()
-
-    def test_no_save_when_disabled(self):
-        """Test that save_on_write=False disables auto-save"""
-        # Set save_on_write to False
-        self.model._meta.save_on_write = False
+        # Change an attribute
+        new_model.name = "Changed"
         
-        with patch.object(self.model, 'save') as mock_save:
-            # Change an attribute
-            self.model.name = "No Auto Save"
-            
-            # Verify save wasn't called
-            mock_save.assert_not_called()
+        # Verify save wasn't called
+        mock_save.assert_not_called()
 
-    def test_no_duplicate_saves_while_saving(self):
-        """Test that save doesn't trigger another save while one is in progress"""
-        # Simulate a save in progress
+    @patch('paperap.models.abstract.model.StandardModel.save')
+    @patch('paperap.models.abstract.model.StandardModel.is_new')
+    def test_no_save_on_update(self, mock_is_new, mock_save):
+        """Test that new models don't trigger auto-save"""
+        mock_save.return_value = None
+        mock_is_new.return_value = False
+        new_model = ExampleModel(resource=self.resource, **self.model_data_unparsed)
+        new_model._meta.save_on_write = False
+        
+        # Change an attribute
+        new_model.name = "Changed"
+        
+        # Verify save wasn't called
+        mock_save.assert_not_called()
+
+    @patch('paperap.models.abstract.model.StandardModel.save')
+    @patch('paperap.models.abstract.model.StandardModel.is_new')
+    def test_save_for_old_models(self, mock_is_new, mock_save):
+        mock_save.return_value = None
+        mock_is_new.return_value = False
+        new_model = ExampleModel(resource=self.resource, **self.model_data_unparsed)
+        
+        # Change an attribute
+        new_model.name = "Changed"
+        
+        # Verify save was called
+        mock_save.assert_called_once()
+
+    @patch('paperap.models.abstract.model.StandardModel.is_dirty')
+    @patch('paperap.models.abstract.model.StandardModel.is_new')
+    @patch('paperap.models.abstract.model.BaseModel.save_executor', new_callable=PropertyMock)
+    def test_save_calls_executor(self, mock_save_executor, mock_is_new, mock_is_dirty):
+        mock_is_dirty.return_value = True
+        mock_is_new.return_value = False
+        # Mock ThreadPoolExecutor behavior
+        mock_executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+        mock_save_executor.return_value = mock_executor
+        new_model = ExampleModel(resource=self.resource, **self.model_data_unparsed)
+        
+        # Try to save
+        new_model.save()
+        
+        # Verify executor.submit was called once
+        mock_save_executor.assert_called_once()
+
+    @patch('paperap.models.abstract.model.StandardModel.is_dirty')
+    @patch('paperap.models.abstract.model.StandardModel.is_new')
+    @patch('paperap.models.abstract.model.BaseModel.save_executor', new_callable=PropertyMock)
+    def test_no_duplicate_saves_while_saving(self, mock_save_executor, mock_is_new, mock_is_dirty):
+        mock_is_dirty.return_value = True
+        mock_is_new.return_value = False
+        # Mock ThreadPoolExecutor behavior
+        mock_executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+        mock_save_executor.return_value = mock_executor
         future = concurrent.futures.Future()
-        self.model._pending_save = future
+        new_model = ExampleModel(resource=self.resource, **self.model_data_unparsed)
+        new_model._pending_save = future
         
-        with patch.object(self.model._save_executor, 'submit') as mock_submit:
-            # Try to save
-            self.model.save()
-            
-            # Verify executor.submit wasn't called
-            mock_submit.assert_not_called()
+        # Try to save
+        new_model.save()
+        
+        # Verify executor.submit wasn't called
+        mock_save_executor.assert_not_called()
+
+    @patch('paperap.models.abstract.model.StandardModel.is_dirty')
+    @patch('paperap.models.abstract.model.StandardModel.is_new')
+    @patch('paperap.models.abstract.model.StandardModel._perform_save')
+    def test_status_during_save(self, mock_perform_save, mock_is_new, mock_is_dirty):
+        mock_is_dirty.return_value = True
+        mock_is_new.return_value = False
+        new_model = ExampleModel(resource=self.resource, **self.model_data_unparsed)
+        original_status = new_model._meta.status
+        self.assertNotEqual(original_status, ModelStatus.SAVING, "Test precondition failed")
+
+        # Replace perform_save with a function that waits for a signal
+        save_started_event = threading.Event()
+        response_event = threading.Event()
+        save_finished_event = threading.Event()
+        def delayed_perform_save():
+            print('delayed save')
+            time.sleep(2)
+            print('save started event')
+            save_started_event.set()
+            # Wait for the test to signal it should proceed
+            print('waiting for response')
+            response_event.wait(timeout=5.0)
+            print('done waiting for response')
+            time.sleep(5)
+            save_finished_event.set()
+            return None
+        mock_perform_save.side_effect = delayed_perform_save
+        
+        # Try to save
+        print('call save')
+        new_model.save()
+
+        # Wait for save to start
+        print('waiting for save to start')
+        self.assertTrue(save_started_event.wait(timeout=5.0), "Save operation didn't start")
+        
+        # Status should be SAVING
+        print('CHECKING STATUS')
+        self.assertEqual(new_model._meta.status, ModelStatus.SAVING)
+        print('response event setting...')
+        response_event.set()
+        
+        print('waiting for save to finish...')
+        self.assertTrue(save_finished_event.wait(timeout=10), "Save operation didn't finish")  # ✅ Wait for completion
+
+        # Status should reset
+        print('comparing final')
+        self.assertEqual(new_model._meta.status, ModelStatus.READY, "Status didn't change after save")
+
+class AsyncTests(BaseTest):
+    """Test the asynchronous save functionality of StandardModel"""
+
+    @override
+    def setUp(self):
+        """Set up test fixtures"""
+        super().setUp()
+        self.client.settings.save_on_write = True
+        
+        self.model = ExampleModel(resource=self.resource, **self.model_data_unparsed)
+        self.addCleanup(self.model.cleanup)
 
     def test_status_during_save(self):
         """Test that model status is correctly set during save"""
