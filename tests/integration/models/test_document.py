@@ -29,6 +29,9 @@ import unittest
 from unittest.mock import patch, MagicMock
 import logging
 from datetime import datetime, timezone
+
+from dateparser.data.date_translation_data import ar
+from paperap.exceptions import ReadOnlyFieldError
 from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models import *
 from paperap.client import PaperlessClient
@@ -53,7 +56,9 @@ class IntegrationTest(DocumentUnitTest):
     @override
     def tearDown(self):
         # Request that paperless ngx reverts to the previous data
-        self.model.update(from_db=True, **self._initial_data)
+        self.model.update_locally(from_db=True, **self._initial_data)
+        # Must be called manually in case subclasses turn off autosave and mocks self.is_new()
+        self.model.save(force=True)
 
         # TODO: confirm without another query
         return super().tearDown()
@@ -79,13 +84,16 @@ class TestIntegrationTest(IntegrationTest):
 
         # Retrieve the document again
         document = self.client.documents().get(7411)
-        for field, value in self._initial_data.items():
+        for field, initial_value in self._initial_data.items():
+            # Skip read-only fields
+            if field in self.model._meta.read_only_fields:
+                continue
             # Test notes individually
             # Temporarily skip dates (TODO)
             if field in ['added', 'created', 'updated', 'notes']:
                 continue
-            retrieved_value = getattr(document, field)
-            self.assertEqual(retrieved_value, value, f"Field {field} did not revert to initial value on teardown. Integration tests will fail")
+            paperless_value = getattr(document, field)
+            self.assertEqual(paperless_value, initial_value, f"Field {field} did not revert to initial value on teardown. Integration tests will fail")
 
         self.assertEqual(len(document.notes), len(self._initial_data['notes']), "Note count did not revert to initial value on teardown. Integration tests will fail")
         for note in self._initial_data['notes']:
@@ -108,7 +116,7 @@ class TestFeatures(IntegrationTest):
         document = self.client.documents().get(7411)
         original_title = document.title
         original_content = document.content
-        
+
         new_title = "Test Document " + str(datetime.now().timestamp())
         new_content = "Test Content" + str(datetime.now().timestamp())
         document.title = new_title
@@ -122,14 +130,14 @@ class TestFeatures(IntegrationTest):
         self.assertEqual(document.content, original_content, f"Content not refreshed from db. Update was: {new_content}")
 
     def test_set_archived_file_name(self):
-        original_filename = self.model.archived_file_name
-        new_filename = f"Test Document {datetime.now().timestamp()}.pdf"
-        self.model.archived_file_name = new_filename
-        self.model.save()
+        with self.assertRaises(ReadOnlyFieldError):
+            self.model.update_locally(from_db=False, archived_file_name='example_test_name.pdf')
 
-        # Retrieve it again
-        document = self.client.documents().get(7411)
-        self.assertEqual(new_filename, document.archived_file_name, f"Archived file name not updated in remote instance. Original was: {original_filename}")
+    def test_set_archived_filename_same_value(self):
+        # Test that an error isn't thrown when "setting" a read only field to the same value
+        original_filename = self.model.archived_file_name
+        self.model.update_locally(from_db=False, archived_file_name=original_filename)
+        self.assertEqual(original_filename, self.model.archived_file_name, "Archived file name changed after setting to the same value")
 
     def test_set_title_changes_archived_file_name(self):
         # This isn't a feature of ours, but it's functionality of paperless that is unexpected
@@ -268,13 +276,13 @@ class TestSaveNone(IntegrationTest):
     def test_update_tags_to_none(self):
         # Test that tags can't be emptied (because paperless doesn't support this)
         with self.assertRaises(NotImplementedError):
-            self.model.update(tags=None)
+            self.model.update_locally(tags=None)
 
     def test_update_tag_ids_to_empty(self):
         # Test that tags can't be emptied (because paperless doesn't support this)
         with self.assertRaises(NotImplementedError):
             self.model.update(tag_ids=[])
-            
+
     def test_set_fields(self):
         # Ensure fields can be set and reset without consequences
         self.model.update(**self.expected_data)

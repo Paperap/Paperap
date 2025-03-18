@@ -502,7 +502,7 @@ class BaseModel(pydantic.BaseModel, ABC):
                 for field in self._meta.read_only_fields:
                     if field in kwargs and kwargs[field] != self._original_data.get(field, None):
                         raise ReadOnlyFieldError(f"Cannot change read-only field {field}")
-            
+
             # If the field contains unsaved changes, skip updating it
             # Determine unsaved changes based on the dirty fields before we last called save
             if skip_changed_fields:
@@ -662,10 +662,10 @@ class StandardModel(BaseModel, ABC):
         self.update_locally(from_db=True, **new_model.to_dict())
         return True
 
-    def save(self):
-        return self.save_sync()
+    def save(self, *, force: bool = False):
+        return self.save_sync(force=force)
 
-    def save_sync(self) -> None:
+    def save_sync(self, *, force: bool = False) -> None:
         """
         Save this model instance synchronously.
 
@@ -678,12 +678,13 @@ class StandardModel(BaseModel, ABC):
             PermissionError: If the user doesn't have permission to update the resource
 
         """
-        if self._status == ModelStatus.SAVING:
-            return
+        if not force:
+            if self._status == ModelStatus.SAVING:
+                return
 
-        # Only start a save if there are changes
-        if not self.is_dirty():
-            return
+            # Only start a save if there are changes
+            if not self.is_dirty():
+                return
 
         with StatusContext(self, ModelStatus.SAVING):
             # Prepare and send the update to the server
@@ -737,28 +738,29 @@ class StandardModel(BaseModel, ABC):
                 # Re-raise so the executor can handle it properly
                 raise
 
-    def save_async(self) -> None:
+    def save_async(self, *, force: bool = False) -> None:
         """
         Save this model instance asynchronously.
 
         Changes are sent to the server in a background thread, and the model
         is updated when the server responds.
         """
-        if self._status == ModelStatus.SAVING:
-            return
+        if not force:
+            if self._status == ModelStatus.SAVING:
+                return
 
-        # Only start a save if there are changes
-        if not self.is_dirty():
-            if hasattr(self, "_save_lock") and self._save_lock._is_owned(): # type: ignore # temporary TODO
-                self._save_lock.release()
-            return
+            # Only start a save if there are changes
+            if not self.is_dirty():
+                if hasattr(self, "_save_lock") and self._save_lock._is_owned():  # type: ignore # temporary TODO
+                    self._save_lock.release()
+                return
+
+            # If there's a pending save, skip saving until it finishes
+            if self._pending_save is not None and not self._pending_save.done():
+                return
 
         self._status = ModelStatus.SAVING
         self._save_lock.acquire(timeout=30)
-
-        # If there's a pending save, skip saving until it finishes
-        if self._pending_save is not None and not self._pending_save.done():
-            return
 
         # Start a new save operation
         executor = self.save_executor

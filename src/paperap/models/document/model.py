@@ -59,7 +59,7 @@ class DocumentNote(StandardModel):
     user: int
 
     class Meta(StandardModel.Meta):
-        read_only_fields = {"deleted_at", "restored_at", "transaction_id", "created", "archived_file_name"}
+        read_only_fields = {"deleted_at", "restored_at", "transaction_id", "created"}
 
     @field_serializer("deleted_at", "restored_at", "created")
     def serialize_datetime(self, value: datetime | None):
@@ -163,7 +163,7 @@ class Document(StandardModel):
     class Meta(StandardModel.Meta):
         # NOTE: Filtering appears to be disabled by paperless on page_count
         queryset = DocumentQuerySet
-        read_only_fields = {"page_count", "deleted_at", "updated", "is_shared_by_requester"}
+        read_only_fields = {"page_count", "deleted_at", "updated", "is_shared_by_requester", "archived_file_name"}
         filtering_disabled = {"page_count", "deleted_at", "updated", "is_shared_by_requester"}
         filtering_strategies = {FilteringStrategies.WHITELIST}
         field_map = {
@@ -777,17 +777,16 @@ class Document(StandardModel):
             NotImplementedError: If attempting to set notes or tags to None when they are not already None.
 
         """
-        # Paperless does not support setting notes or tags to None if not already None
-        if self._original_data["notes"]:
-            if "notes" in kwargs and not kwargs.get("notes"):
-                # TODO: Gracefully delete the notes instead of raising an error.
-                raise NotImplementedError(f"Cannot set notes to None. Notes currently: {self._original_data['notes']}")
+        if not from_db:
+            # Paperless does not support setting notes or tags to None if not already None
+            fields = ["notes", "tag_ids"]
+            for field in fields:
+                original = self._original_data[field]
+                if original and field in kwargs and not kwargs.get(field):
+                    raise NotImplementedError(f"Cannot set {field} to None. {field} currently: {original}")
 
-        if self._original_data["tag_ids"]:
-            if "tag_ids" in kwargs and not kwargs.get("tag_ids") and not from_db:
-                # TODO: Gracefully delete the tags instead of raising an error.
-                raise NotImplementedError(
-                    f"Cannot set tag_ids to None. Tags currently: {self._original_data['tag_ids']}"
-                )
+            # Handle aliases
+            if self._original_data["tag_ids"] and "tags" in kwargs and not kwargs.get("tags"):
+                raise NotImplementedError(f"Cannot set tags to None. Tags currently: {self._original_data['tag_ids']}")
 
         return super().update_locally(from_db=from_db, **kwargs)

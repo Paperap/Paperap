@@ -38,8 +38,10 @@ class ModelValidationError(PaperlessError, ValueError):
             message = f"Model failed validation for {model.__class__.__name__}."
         super().__init__(message)
 
+
 class ReadOnlyFieldError(ModelValidationError):
     """Raised when a read-only field is set."""
+
 
 class ConfigurationError(PaperlessError):
     """Raised when the configuration is invalid."""
