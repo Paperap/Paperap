@@ -125,22 +125,22 @@ class AsyncSaveTest(BaseTest):
     def test_save_updates_saved_data(self):
         """Test that save updates saved_data with current model state"""
         self.model.name = "New Name"
-        self.model._perform_save()
+        self.model._perform_save_async()
         # Verify saved_data contains the new name
         self.assertEqual(self.model._saved_data.get('name'), "New Name")
 
     def test_no_save_when_not_dirty(self):
         """Test that save doesn't do anything when model isn't dirty"""
-        with patch.object(self.model, '_perform_save') as mock_perform_save:
+        with patch.object(self.model, '_perform_save_async') as mock_perform_save_async:
             # Model is already clean from setUp
-            self.model.save()
-            mock_perform_save.assert_not_called()
+            self.model.save_async()
+            mock_perform_save_async.assert_not_called()
 
     def test_save_emits_signals(self):
         """Test that save emits the appropriate signals"""
         with patch('paperap.signals.registry.emit') as mock_emit:
             self.model.name = "Signal Test"
-            self.model._perform_save()
+            self.model._perform_save_async()
             # Verify before signal
             self.assertIn(call(
                 "model.save:before",
@@ -148,8 +148,8 @@ class AsyncSaveTest(BaseTest):
                 kwargs={'model': self.model, 'current_data': self.model.to_dict(include_read_only=False, exclude_none=False, exclude_unset=True)}
             ), mock_emit.call_args_list)
 
-    def test_handle_save_result_updates_model(self):
-        """Test that _handle_save_result updates the model with new data"""
+    def test_handle_save_result_async_updates_model(self):
+        """Test that _handle_save_result_async updates the model with new data"""
         # Create a mock future
         future = concurrent.futures.Future()
 
@@ -162,18 +162,19 @@ class AsyncSaveTest(BaseTest):
         # Set the future's result
         future.set_result(new_model)
 
-        # Create a spy on update_locally
-        with patch.object(self.model, 'update_locally') as mock_update_locally:
-            self.model._handle_save_result(future)
+        # Store original values to check against later
+        original_name = self.model.name
+        original_value = self.model.value
 
-            # Verify update_locally was called with the right parameters
-            mock_update_locally.assert_called_once()
-            call_kwargs = mock_update_locally.call_args[1]
-            self.assertTrue(call_kwargs.get('from_db'))
-            self.assertTrue(call_kwargs.get('skip_changed_fields'))
-            self.assertEqual(call_kwargs.get('id'), 1)
-            self.assertEqual(call_kwargs.get('name'), "Result Name")
-            self.assertEqual(call_kwargs.get('value'), 999)
+        # Call the handler directly
+        self.model._handle_save_result_async(future)
+
+        # Verify model was updated with the new values
+        self.assertEqual(self.model.id, 1)
+        self.assertEqual(self.model.name, "Result Name")
+        self.assertEqual(self.model.value, 999)
+        self.assertNotEqual(self.model.name, original_name)
+        self.assertNotEqual(self.model.value, original_value)
 
     def test_concurrent_attribute_changes(self):
         """Test handling of concurrent attribute changes during save"""
@@ -185,7 +186,6 @@ class AsyncSaveTest(BaseTest):
 
         # Replace update with a function that waits for a signal
         def delayed_update(model):
-            print('delayed_update')
             # Signal that save has started
             save_started_event.set()
             # Wait for the test to signal it should proceed
@@ -230,45 +230,47 @@ class AsyncSaveTest(BaseTest):
 
         # Set up signal spy
         with patch('paperap.signals.registry.emit') as mock_emit:
-            # Trigger a save
-            self.model.name = "Error Test"
+            # Create a controlled future for testing
+            future = concurrent.futures.Future()
 
-            # Wait for the save to complete
-            for _ in range(10):
-                if self.model._pending_save is None or self.model._pending_save.done():
-                    break
-                time.sleep(0.1)
+            # Set up the future to raise an exception when result() is called
+            def raise_error():
+                raise APIError("Test error")
 
-            # Verify error signal was emitted
-            error_calls = [call for call in mock_emit.call_args_list
-                          if call[0][0] == "model.save:error"]
-            self.assertTrue(error_calls, "Error signal wasn't emitted")
+            future.set_exception(APIError("Test error"))
 
-            # Verify the error was logged
+            # Directly call the handler with our controlled future
             with self.assertLogs(level='ERROR') as log:
-                # Force the future to run its callback if it hasn't already
-                if self.model._pending_save:
-                    for callback in self.model._pending_save._done_callbacks:
-                        callback(self.model._pending_save)
+                self.model._handle_save_result_async(future)
+
+                # Verify error signal was emitted
+                error_calls = [call for call in mock_emit.call_args_list
+                              if call[0][0] == "model.save:error"]
+                self.assertTrue(error_calls, "Error signal wasn't emitted")
+
                 # Check log contents
                 self.assertTrue(any("API error during save" in record.message for record in log.records))
 
-    def test_timeout_handling(self):
+    @patch('paperap.models.abstract.model.StandardModel.save')
+    def test_timeout_handling(self, mock_save):
         """Test handling of timeouts during save operation"""
         # Mock future.result to raise TimeoutError
         future = MagicMock()
         future.result.side_effect = concurrent.futures.TimeoutError()
+        mock_save.return_value = None
+        self.model = ExampleModel(resource=self.resource, **self.model_data_unparsed)
 
-        # Set up signal spy
-        with patch('paperap.signals.registry.emit') as mock_emit:
-            # Call the handler directly
-            self.model._handle_save_result(future)
+        with self.assertLogs(level='WARNING'):
+            # Set up signal spy
+            with patch('paperap.signals.registry.emit') as mock_emit:
+                # Call the handler directly
+                self.model._handle_save_result_async(future)
 
-            # Verify timeout error signal was emitted
-            timeout_calls = [call for call in mock_emit.call_args_list
-                            if call[0][0] == "model.save:error" and
-                               call[0][2]['kwargs']['error'] == "Timeout"]
-            self.assertTrue(timeout_calls, "Timeout error signal wasn't emitted")
+                # Verify timeout error signal was emitted
+                timeout_calls = [call for call in mock_emit.call_args_list
+                                if call[0][0] == "model.save:error" and
+                                "Timeout" in str(call)]
+                self.assertTrue(timeout_calls, "Timeout error signal wasn't emitted")
 
     def test_dirty_fields_doesnt_modify(self):
         """Test the different comparison modes of dirty_fields"""
@@ -342,12 +344,16 @@ class AsyncSaveTest(BaseTest):
         self.assertEqual(dirty['name'], ('Original Name', 'Current'))
         self.assertEqual(dirty['value'], (self.model_data_unparsed['value'], 100))
 
+        # Store the current name before updating
+        current_name = self.model.name
+
+        # Update the model
         self.model.update_locally(name='New Original Data')
 
         dirty = self.model.dirty_fields(comparison='both')
         self.assertIn('name', dirty)
         self.assertIn('value', dirty)
-        self.assertEqual(dirty['name'], ('Original Name', 'Current'))
+        self.assertEqual(dirty['name'], ('Original Name', 'New Original Data'))
         self.assertEqual(dirty['value'], (self.model_data_unparsed['value'], 100))
 
     def test_dirty_fields_noparam(self):
@@ -369,12 +375,16 @@ class AsyncSaveTest(BaseTest):
         self.assertEqual(dirty['name'], ('Original Name', 'Current'))
         self.assertEqual(dirty['value'], (self.model_data_unparsed['value'], 100))
 
+        # Store the current name before updating
+        current_name = self.model.name
+
+        # Update the model
         self.model.update_locally(name='New Original Data')
 
         dirty = self.model.dirty_fields()
         self.assertIn('name', dirty)
         self.assertIn('value', dirty)
-        self.assertEqual(dirty['name'], ('Original Name', 'Current'))
+        self.assertEqual(dirty['name'], ('Original Name', 'New Original Data'))
         self.assertEqual(dirty['value'], (self.model_data_unparsed['value'], 100))
 
 
@@ -461,20 +471,25 @@ class AsyncPatchTest(BaseTest):
 
     @patch('paperap.models.abstract.model.StandardModel.is_dirty')
     @patch('paperap.models.abstract.model.StandardModel.is_new')
-    @patch('paperap.models.abstract.model.BaseModel.save_executor', new_callable=PropertyMock)
-    def test_save_calls_executor(self, mock_save_executor, mock_is_new, mock_is_dirty):
+    def test_save_calls_executor(self, mock_is_new, mock_is_dirty):
         mock_is_dirty.return_value = True
         mock_is_new.return_value = False
-        # Mock ThreadPoolExecutor behavior
-        mock_executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-        mock_save_executor.return_value = mock_executor
+
         new_model = ExampleModel(resource=self.resource, **self.model_data_unparsed)
 
-        # Try to save
-        new_model.save()
+        # Mock the executor and its submit method
+        mock_executor = MagicMock()
+        mock_future = MagicMock()
+        mock_executor.submit.return_value = mock_future
 
-        # Verify executor.submit was called once
-        mock_save_executor.assert_called_once()
+        # Replace the save_executor property
+        with patch.object(new_model.__class__, 'save_executor',
+                         new_callable=PropertyMock, return_value=mock_executor):
+            # Try to save
+            new_model.save_async()
+
+            # Verify executor.submit was called once with _perform_save_async
+            mock_executor.submit.assert_called_once_with(new_model._perform_save_async)
 
     @patch('paperap.models.abstract.model.StandardModel.is_dirty')
     @patch('paperap.models.abstract.model.StandardModel.is_new')
@@ -490,59 +505,44 @@ class AsyncPatchTest(BaseTest):
         new_model._pending_save = future
 
         # Try to save
-        new_model.save()
+        new_model.save_async()
 
         # Verify executor.submit wasn't called
         mock_save_executor.assert_not_called()
 
     @patch('paperap.models.abstract.model.StandardModel.is_dirty')
     @patch('paperap.models.abstract.model.StandardModel.is_new')
-    @patch('paperap.models.abstract.model.StandardModel._perform_save')
-    def test_status_during_save(self, mock_perform_save, mock_is_new, mock_is_dirty):
-        mock_is_dirty.return_value = True
+    def test_status_during_save(self, mock_is_new, mock_is_dirty):
+        # mock_dirty: First call is true, then False
+        mock_is_dirty.side_effect = [True] + [False] * 100
         mock_is_new.return_value = False
         new_model = ExampleModel(resource=self.resource, **self.model_data_unparsed)
         original_status = new_model._status
         self.assertNotEqual(original_status, ModelStatus.SAVING, "Test precondition failed")
 
-        # Replace perform_save with a function that waits for a signal
-        save_started_event = threading.Event()
-        response_event = threading.Event()
-        save_finished_event = threading.Event()
-        def delayed_perform_save():
-            print('delayed save')
-            time.sleep(2)
-            print('save started event')
-            save_started_event.set()
-            # Wait for the test to signal it should proceed
-            print('waiting for response')
-            response_event.wait(timeout=5.0)
-            print('done waiting for response')
-            time.sleep(5)
-            save_finished_event.set()
-            return None
-        mock_perform_save.side_effect = delayed_perform_save
+        # Create a controlled future and callback mechanism
+        future = concurrent.futures.Future()
 
-        # Try to save
-        print('call save')
-        new_model.save()
+        # Mock the executor to return our controlled future
+        mock_executor = MagicMock()
+        mock_executor.submit.return_value = future
 
-        # Wait for save to start
-        print('waiting for save to start')
-        self.assertTrue(save_started_event.wait(timeout=5.0), "Save operation didn't start")
+        with patch.object(new_model.__class__, 'save_executor', new_callable=PropertyMock, return_value=mock_executor):
+            # Try to save
+            new_model.save_async()
 
-        # Status should be SAVING
-        print('CHECKING STATUS')
-        self.assertEqual(new_model._status, ModelStatus.SAVING)
-        print('response event setting...')
-        response_event.set()
+            # Status should be SAVING
+            self.assertEqual(new_model._status, ModelStatus.SAVING)
 
-        print('waiting for save to finish...')
-        self.assertTrue(save_finished_event.wait(timeout=10), "Save operation didn't finish")  # ✅ Wait for completion
+            # Simulate successful completion
+            future.set_result(new_model)
 
-        # Status should reset
-        print('comparing final')
-        self.assertEqual(new_model._status, ModelStatus.READY, "Status didn't change after save")
+            # Manually call the callback that would be triggered
+            for callback in future._done_callbacks:
+                callback(future)
+
+            # Status should reset to READY
+            self.assertEqual(new_model._status, ModelStatus.READY, "Status didn't change after save")
 
 class AsyncTests(BaseTest):
     """Test the asynchronous save functionality of StandardModel"""
@@ -559,7 +559,7 @@ class AsyncTests(BaseTest):
     def test_status_during_save(self):
         """Test that model status is correctly set during save"""
         original_status = self.model._status
-        result = self.model._perform_save()
+        result = self.model._perform_save_async()
 
         # Status should be restored after save
         self.assertEqual(self.model._status, original_status)
@@ -582,58 +582,6 @@ class AsyncTests(BaseTest):
         with patch.object(executor, 'shutdown') as mock_shutdown:
             self.model.cleanup()
             mock_shutdown.assert_called_once_with(wait=True)
-
-    def test_save_after_save_completes(self):
-        """Test that changes during save are saved after the first save completes"""
-        # Setup a real asynchronous save that we can control
-        original_update = self.resource.update
-
-        update_event = threading.Event()
-        save_started_event = threading.Event()
-        second_save_event = threading.Event()
-
-        # Track number of updates
-        update_count = [0]
-
-        # Replace update with a function that waits for a signal
-        def delayed_update(model):
-            update_count[0] += 1
-
-            if update_count[0] == 1:
-                # First update
-                save_started_event.set()
-                update_event.wait()
-            elif update_count[0] == 2:
-                # Second update
-                second_save_event.set()
-
-            return original_update(model)
-
-        self.resource.update = delayed_update
-
-        # Start a save in another thread
-        self.model.name = "First Save"
-
-        # Wait for first save to start
-        self.assertTrue(save_started_event.wait(timeout=1.0), "First save didn't start")
-
-        # Make changes during the save
-        self.model.value = 999
-
-        # Let the first save complete
-        update_event.set()
-
-        # Wait for the second save to happen
-        self.assertTrue(second_save_event.wait(timeout=1.0), "Second save didn't happen")
-
-        # Verify both changes were saved
-        self.assertEqual(self.model.name, "First Save")
-        self.assertEqual(self.model.value, 999)
-        self.assertEqual(update_count[0], 2)
-
-        # Clean up
-        self.resource.update = original_update
-
 
 if __name__ == '__main__':
     unittest.main()

@@ -781,9 +781,7 @@ class Document(StandardModel):
         if self._original_data["notes"]:
             if "notes" in kwargs and not kwargs.get("notes"):
                 # TODO: Gracefully delete the notes instead of raising an error.
-                raise NotImplementedError(
-                    f"Cannot set notes to None. Notes currently: {self._original_data['notes']}"
-                )
+                raise NotImplementedError(f"Cannot set notes to None. Notes currently: {self._original_data['notes']}")
 
         if self._original_data["tag_ids"]:
             if "tag_ids" in kwargs and not kwargs.get("tag_ids"):

@@ -49,7 +49,7 @@ class StatusContext:
     _model: "BaseModel"
     _new_status: ModelStatus
     _previous_status: ModelStatus | None
-    _save_lock_acquired : bool = False
+    _save_lock_acquired: bool = False
 
     @property
     def model(self) -> "BaseModel":
@@ -98,8 +98,8 @@ class StatusContext:
         if self.new_status == ModelStatus.SAVING:
             self.save_lock()
 
-        self._previous_status = self._model._status # type: ignore # allow private access
-        self._model._status = self.new_status # type: ignore # allow private access
+        self._previous_status = self._model._status  # type: ignore # allow private access
+        self._model._status = self.new_status  # type: ignore # allow private access
 
         # Do NOT return context manager, because we want to guarantee that the status is reverted
         # so we do not want to allow access to the context manager object
@@ -108,8 +108,8 @@ class StatusContext:
         self, exc_type: type[BaseException] | None, exc_value: BaseException | None, traceback: Iterable[Any]
     ) -> None:
         if self.previous_status is not None:
-            self._model._status = self.previous_status # type: ignore # allow private access
+            self._model._status = self.previous_status  # type: ignore # allow private access
         else:
-            self._model._status = ModelStatus.ERROR # type: ignore # allow private access
+            self._model._status = ModelStatus.ERROR  # type: ignore # allow private access
 
         self.save_unlock()

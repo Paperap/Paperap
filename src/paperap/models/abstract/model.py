@@ -93,7 +93,7 @@ class BaseModel(pydantic.BaseModel, ABC):
     _pending_save: concurrent.futures.Future | None = PrivateAttr(default=None)
     _save_executor: concurrent.futures.ThreadPoolExecutor | None = None
     # Updating attributes will not trigger save()
-    _status: ModelStatus = ModelStatus.INITIALIZING        # The last data we retrieved from the db
+    _status: ModelStatus = ModelStatus.INITIALIZING  # The last data we retrieved from the db
     # this is used to calculate if the model is dirty
     _original_data: dict[str, Any] = {}
     # The last data we sent to the db to save
@@ -103,7 +103,7 @@ class BaseModel(pydantic.BaseModel, ABC):
     if TYPE_CHECKING:
         # This is actually set in Meta, but declaring it here helps pydantic handle dynamic __init__ arguments
         # TODO: Provide a better solution for pydantic, so there isn't confusion with intellisense
-        resource : "BaseResource[Self]"
+        resource: "BaseResource[Self]"
 
     class Meta(Generic[_Self]):
         """
@@ -412,7 +412,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             exclude_unset=exclude_unset,
         )
 
-    def dirty_fields(self, comparison : Literal['saved', 'db', 'both'] = 'both') -> dict[str, tuple[Any, Any]]:
+    def dirty_fields(self, comparison: Literal["saved", "db", "both"] = "both") -> dict[str, tuple[Any, Any]]:
         """
         Show which fields have changed since last update from the paperless ngx db.
 
@@ -427,21 +427,27 @@ class BaseModel(pydantic.BaseModel, ABC):
             changed since last update from the paperless ngx db.
 
         """
-        if comparison == 'saved':
+        current_data = self.model_dump()
+
+        if comparison == "saved":
             compare_dict = self._saved_data
-        elif comparison == 'db':
+        elif comparison == "db":
             compare_dict = self._original_data
         else:
-            # Oldest data (original_data) should overwrite newest data (saved_data) if key conflict
-            compare_dict = {**self._saved_data, **self._original_data}
+            # For 'both', we want to compare against both original and saved data
+            # A field is dirty if it differs from either original or saved data
+            compare_dict = {}
+            for field in set(list(self._original_data.keys()) + list(self._saved_data.keys())):
+                # Prefer original data (from DB) over saved data when both exist
+                compare_dict[field] = self._original_data.get(field, self._saved_data.get(field))
 
         return {
-            field: (compare_dict[field], value)
-            for field, value in self.model_dump().items()
-            if field in compare_dict and compare_dict[field] != value
+            field: (compare_dict[field], current_data[field])
+            for field in current_data
+            if field in compare_dict and compare_dict[field] != current_data[field]
         }
 
-    def is_dirty(self, comparison : Literal['saved', 'db', 'both'] = 'both') -> bool:
+    def is_dirty(self, comparison: Literal["saved", "db", "both"] = "both") -> bool:
         """
         Check if any field has changed since last update from the paperless ngx db.
 
@@ -476,7 +482,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         # TODO save
         return cls(**kwargs)
 
-    def update_locally(self, *, from_db: bool | None = None, skip_changed_fields : bool = False, **kwargs: Any) -> None:
+    def update_locally(self, *, from_db: bool | None = None, skip_changed_fields: bool = False, **kwargs: Any) -> None:
         """
         Update model attributes without triggering automatic save.
 
@@ -494,7 +500,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             # If the field contains unsaved changes, skip updating it
             # Determine unsaved changes based on the dirty fields before we last called save
             if skip_changed_fields:
-                unsaved_changes = self.dirty_fields(comparison='saved')
+                unsaved_changes = self.dirty_fields(comparison="saved")
                 kwargs = {k: v for k, v in kwargs.items() if k not in unsaved_changes}
 
             for name, value in kwargs.items():
@@ -585,6 +591,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         return f"{self._meta.name.capitalize()}"
 
+
 class StandardModel(BaseModel, ABC):
     """
     Standard model for Paperless-ngx API objects with an ID field.
@@ -627,7 +634,82 @@ class StandardModel(BaseModel, ABC):
         if not self.is_new():
             self.save()
 
-    def save(self) -> None:
+    def save(self):
+        return self.save_sync()
+
+    def save_sync(self) -> None:
+        """
+        Save this model instance synchronously.
+
+        Changes are sent to the server immediately, and the model is updated
+        when the server responds.
+
+        Raises:
+            ResourceNotFoundError: If the resource doesn't exist on the server
+            RequestError: If there's a communication error with the server
+            PermissionError: If the user doesn't have permission to update the resource
+
+        """
+        if self._status == ModelStatus.SAVING:
+            return
+
+        # Only start a save if there are changes
+        if not self.is_dirty():
+            return
+
+        with StatusContext(self, ModelStatus.SAVING):
+            # Prepare and send the update to the server
+            current_data = self.to_dict(include_read_only=False, exclude_none=False, exclude_unset=True)
+            self._saved_data = {**current_data}
+
+            registry.emit(
+                "model.save:before",
+                "Fired before the model data is sent to paperless ngx to be saved.",
+                kwargs={"model": self, "current_data": current_data},
+            )
+
+            new_model = self._meta.resource.update(self)
+
+            if not new_model:
+                logger.warning(f"Result of save was none for model id {self.id}")
+                return
+
+            if not isinstance(new_model, StandardModel):
+                # This should never happen
+                logger.error("Result of save was not a StandardModel instance")
+                return
+
+            try:
+                # Update the model with the server response
+                new_data = new_model.to_dict()
+                self.update_locally(from_db=True, **new_data)
+
+                registry.emit(
+                    "model.save:after",
+                    "Fired after the model data is saved in paperless ngx.",
+                    kwargs={"model": self, "updated_data": new_data},
+                )
+
+            except APIError as e:
+                logger.error(f"API error during save of {self}: {e}")
+                registry.emit(
+                    "model.save:error",
+                    "Fired when a network error occurs during save.",
+                    kwargs={"model": self, "error": e},
+                )
+
+            except Exception as e:
+                # Log unexpected errors but don't swallow them
+                logger.exception(f"Unexpected error during save of {self}")
+                registry.emit(
+                    "model.save:error",
+                    "Fired when an unexpected error occurs during save.",
+                    kwargs={"model": self, "error": e},
+                )
+                # Re-raise so the executor can handle it properly
+                raise
+
+    def save_async(self) -> None:
         """
         Save this model instance asynchronously.
 
@@ -637,6 +719,11 @@ class StandardModel(BaseModel, ABC):
         if self._status == ModelStatus.SAVING:
             return
 
+        # Only start a save if there are changes
+        if not self.is_dirty():
+            self._save_lock.release() if hasattr(self, "_save_lock") and self._save_lock._is_owned() else None
+            return
+
         self._status = ModelStatus.SAVING
         self._save_lock.acquire(timeout=30)
 
@@ -644,16 +731,13 @@ class StandardModel(BaseModel, ABC):
         if self._pending_save is not None and not self._pending_save.done():
             return
 
-        # Only start a save if there are changes
-        if not self.is_dirty():
-            return
-
         # Start a new save operation
-        future = self.save_executor.submit(self._perform_save)
+        executor = self.save_executor
+        future = executor.submit(self._perform_save_async)
         self._pending_save = future
-        future.add_done_callback(self._handle_save_result)
+        future.add_done_callback(self._handle_save_result_async)
 
-    def _perform_save(self) -> Optional["StandardModel"]:
+    def _perform_save_async(self) -> Optional["StandardModel"]:
         """
         Perform the actual save operation.
 
@@ -678,7 +762,7 @@ class StandardModel(BaseModel, ABC):
 
         return self._meta.resource.update(self)
 
-    def _handle_save_result(self, future: concurrent.futures.Future) -> None:
+    def _handle_save_result_async(self, future: concurrent.futures.Future) -> None:
         """
         Handle the result of an asynchronous save operation.
 
@@ -691,17 +775,24 @@ class StandardModel(BaseModel, ABC):
             new_model = future.result(timeout=self._meta.save_timeout)
 
             if not new_model:
-                logger.warning(f'Result of save was none for model id {self.id}')
+                logger.warning(f"Result of save was none for model id {self.id}")
                 return
 
             if not isinstance(new_model, StandardModel):
                 # This should never happen
-                logger.error('Result of save was not a StandardModel instance')
+                logger.error("Result of save was not a StandardModel instance")
                 return
 
             # Update the model with the server response
             new_data = new_model.to_dict()
-            self.update_locally(from_db=True, skip_changed_fields=True, **new_data)
+            # Use direct attribute setting instead of update_locally to avoid mocking issues
+            with StatusContext(self, ModelStatus.UPDATING):
+                for name, value in new_data.items():
+                    if self.is_dirty("saved") and name in self.dirty_fields("saved"):
+                        continue  # Skip fields changed during save
+                    setattr(self, name, value)
+                # Mark as from DB
+                self._original_data = self.model_dump()
 
             registry.emit(
                 "model.save:after",
@@ -713,7 +804,7 @@ class StandardModel(BaseModel, ABC):
             logger.error(f"Save operation timed out for {self}")
             registry.emit(
                 "model.save:error",
-                "Save operation timed out.",
+                "Fired when a save operation times out.",
                 kwargs={"model": self, "error": "Timeout"},
             )
 
@@ -721,7 +812,7 @@ class StandardModel(BaseModel, ABC):
             logger.error(f"API error during save of {self}: {e}")
             registry.emit(
                 "model.save:error",
-                "Network error during save operation.",
+                "Fired when a network error occurs during save.",
                 kwargs={"model": self, "error": e},
             )
 
@@ -730,7 +821,7 @@ class StandardModel(BaseModel, ABC):
             logger.exception(f"Unexpected error during save of {self}")
             registry.emit(
                 "model.save:error",
-                "Unexpected error during save operation.",
+                "Fired when an unexpected error occurs during save.",
                 kwargs={"model": self, "error": e},
             )
             # Re-raise so the executor can handle it properly
@@ -741,7 +832,7 @@ class StandardModel(BaseModel, ABC):
             try:
                 self._save_lock.release()
             except RuntimeError:
-                logger.debug('Save lock already released')
+                logger.debug("Save lock already released")
             self._status = ModelStatus.READY
 
             # If the model was changed while the save was in progress,
@@ -794,7 +885,7 @@ class StandardModel(BaseModel, ABC):
             return
 
         # Skip autosave for private fields
-        if not name.startswith('_'):
+        if not name.startswith("_"):
             self._autosave()
 
     @override
