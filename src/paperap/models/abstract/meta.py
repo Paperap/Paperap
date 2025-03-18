@@ -97,10 +97,10 @@ class StatusContext:
         # Acquire a save lock
         if self.new_status == ModelStatus.SAVING:
             self.save_lock()
-            
-        self._previous_status = self._model_meta.status
-        self._model_meta.status = self.new_status
-        
+
+        self._previous_status = self._model._status # type: ignore # allow private access
+        self._model._status = self.new_status # type: ignore # allow private access
+
         # Do NOT return context manager, because we want to guarantee that the status is reverted
         # so we do not want to allow access to the context manager object
 
@@ -108,8 +108,8 @@ class StatusContext:
         self, exc_type: type[BaseException] | None, exc_value: BaseException | None, traceback: Iterable[Any]
     ) -> None:
         if self.previous_status is not None:
-            self._model_meta.status = self.previous_status
+            self._model._status = self.previous_status # type: ignore # allow private access
         else:
-            self._model_meta.status = ModelStatus.ERROR
+            self._model._status = ModelStatus.ERROR # type: ignore # allow private access
 
         self.save_unlock()

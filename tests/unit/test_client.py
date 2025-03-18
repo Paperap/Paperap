@@ -269,7 +269,7 @@ class TestClientErrorHandling(UnitTestCase):
         super().setUp()
         self.session_patcher = patch('requests.Session.request')
         self.mock_session_request = self.session_patcher.start()
-                                  
+
         # Setup a mock error response
         self.mock_response = Mock(spec=requests.Response)
         self.mock_response.url = "https://example.com/api/documents/"

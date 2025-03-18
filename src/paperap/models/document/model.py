@@ -778,18 +778,18 @@ class Document(StandardModel):
 
         """
         # Paperless does not support setting notes or tags to None if not already None
-        if self._meta.original_data["notes"]:
+        if self._original_data["notes"]:
             if "notes" in kwargs and not kwargs.get("notes"):
                 # TODO: Gracefully delete the notes instead of raising an error.
                 raise NotImplementedError(
-                    f"Cannot set notes to None. Notes currently: {self._meta.original_data['notes']}"
+                    f"Cannot set notes to None. Notes currently: {self._original_data['notes']}"
                 )
 
-        if self._meta.original_data["tag_ids"]:
+        if self._original_data["tag_ids"]:
             if "tag_ids" in kwargs and not kwargs.get("tag_ids"):
                 # TODO: Gracefully delete the tags instead of raising an error.
                 raise NotImplementedError(
-                    f"Cannot set tag_ids to None. Tags currently: {self._meta.original_data['tag_ids']}"
+                    f"Cannot set tag_ids to None. Tags currently: {self._original_data['tag_ids']}"
                 )
 
         return super().update_locally(from_db=from_db, **kwargs)

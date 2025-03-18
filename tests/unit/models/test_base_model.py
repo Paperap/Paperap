@@ -359,11 +359,11 @@ class TestDirtyFields(TestBase):
     def setUp(self):
         super().setUp()
         self.model = ExampleModel.from_dict(self.model_data_parsed)
-        
+
     def test_dirty_fields_str(self):
         self.assertFalse(self.model.is_dirty(), "Test preconditions failed")
         original_str = self.model.a_str
-        
+
         # Test if the dirty fields are correctly tracked
         self.model.a_str = "Updated String"
         self.assertTrue(self.model.is_dirty())
@@ -380,7 +380,7 @@ class TestDirtyFields(TestBase):
         self.model.an_int = original_int
         self.assertFalse(self.model.is_dirty())
         self.assertEqual(self.model.dirty_fields(), {})
-                         
+
     def test_dirty_fields_bool(self):
         self.model.a_bool = False
         self.assertTrue(self.model.is_dirty())
@@ -421,7 +421,7 @@ class TestDirtyFields(TestBase):
         self.assertTrue(model2.is_dirty())
         self.assertEqual(model1.dirty_fields(), {"a_str": (self.model_data_parsed["a_str"], "Updated String")})
         self.assertEqual(model2.dirty_fields(), {"a_str": (self.model_data_parsed["a_str"], "Something Else")})
-        
-        
+
+
 if __name__ == "__main__":
     unittest.main()

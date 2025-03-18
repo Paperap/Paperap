@@ -183,7 +183,7 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
         if getattr(self, "resource", None):
             unparsed = getattr(self, "model_data_unparsed", None)
             parsed = getattr(self, "model_data_parsed", None)
-            
+
             if unparsed:
                 self.model_data_parsed = parsed or self.resource.transform_data_output(**unparsed)
             else:
@@ -361,7 +361,7 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
 
             if unparsed := getattr(self, 'model_data_unparsed', None):
                 self.model_data_parsed = self.resource.transform_data_output(**self.model_data_unparsed)
-                
+
         return self.model_data_parsed
 
     def load_list_data(self, resource_name : str | None = None) -> dict[str, Any]:

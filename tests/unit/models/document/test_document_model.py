@@ -550,14 +550,21 @@ class TestDocumentSetters(DocumentUnitTest):
         """Test setting correspondent with an integer ID."""
         self.model.correspondent = 1
         self.assertEqual(self.model.correspondent_id, 1)
-        self.assertIsInstance(self.model.correspondent, Correspondent)
+        sample_correspondent = load_sample_data('correspondents_item.json')
+        with patch("paperap.client.PaperlessClient.request") as mock_request:
+            mock_request.return_value = sample_correspondent
+            self.assertIsInstance(self.model.correspondent, Correspondent)
 
     def test_correspondent_setter_with_correspondent_object(self):
         """Test setting correspondent with a Correspondent object."""
         correspondent = Correspondent(id=1, name="Test Correspondent", is_insensitive = True) # type: ignore
         self.model.correspondent = correspondent
         self.assertEqual(self.model.correspondent_id, 1)
-        self.assertIsInstance(self.model.correspondent, Correspondent)
+        sample_correspondent = load_sample_data('correspondents_item.json')
+        with patch("paperap.client.PaperlessClient.request") as mock_request:
+            mock_request.return_value = sample_correspondent
+            self.assertIsInstance(self.model.correspondent, Correspondent)
+
         # Test that the cache is populated
         self.assertEqual(self.model._correspondent, (1, correspondent)) # type: ignore
 
@@ -566,7 +573,7 @@ class TestDocumentSetters(DocumentUnitTest):
         with self.assertRaises(TypeError):
             self.model.correspondent = "not an int or Correspondent" # type: ignore
         self.assertIsNone(self.model.correspondent)
-        
+
     def test_document_type_setter_with_none(self):
         """Test setting document_type to None."""
         self.model.document_type = None
@@ -577,14 +584,21 @@ class TestDocumentSetters(DocumentUnitTest):
         """Test setting document_type with an integer ID."""
         self.model.document_type = 1
         self.assertEqual(self.model.document_type_id, 1)
-        self.assertIsInstance(self.model.document_type, DocumentType)
+        sample_document_type = load_sample_data('document_types_item.json')
+        with patch("paperap.client.PaperlessClient.request") as mock_request:
+            mock_request.return_value = sample_document_type
+            self.assertIsInstance(self.model.document_type, DocumentType)
 
     def test_document_type_setter_with_document_type_object(self):
         """Test setting document_type with a DocumentType object."""
         doc_type = DocumentType(id=1, name="Test Document Type", is_insensitive = False) # type: ignore
         self.model.document_type = doc_type
         self.assertEqual(self.model.document_type_id, 1)
-        self.assertIsInstance(self.model.document_type, DocumentType)
+        sample_document_type = load_sample_data('document_types_item.json')
+        with patch("paperap.client.PaperlessClient.request") as mock_request:
+            mock_request.return_value = sample_document_type
+            self.assertIsInstance(self.model.document_type, DocumentType)
+
         # Test that the cache is populated
         self.assertEqual(self.model._document_type, (1, doc_type)) # type: ignore
 
@@ -593,7 +607,7 @@ class TestDocumentSetters(DocumentUnitTest):
         with self.assertRaises(TypeError):
             self.model.document_type = "not an int or DocumentType" # type: ignore
         self.assertIsNone(self.model.document_type)
-        
+
     def test_storage_path_setter_with_none(self):
         """Test setting storage_path to None."""
         self.model.storage_path = None
@@ -604,7 +618,9 @@ class TestDocumentSetters(DocumentUnitTest):
         """Test setting storage_path with an integer ID."""
         self.model.storage_path = 1
         self.assertEqual(self.model.storage_path_id, 1)
-        with self.patch_request_factory(factories.StoragePathFactory, id=1):
+        sample_storage_path = load_sample_data('storage_paths_item.json')
+        with patch("paperap.client.PaperlessClient.request") as mock_request:
+            mock_request.return_value = sample_storage_path
             self.assertIsInstance(self.model.storage_path, StoragePath)
 
     def test_storage_path_setter_with_storage_path_object(self):
@@ -613,9 +629,11 @@ class TestDocumentSetters(DocumentUnitTest):
         storage_path = StoragePath(**data) # type: ignore
         self.model.storage_path = storage_path
         self.assertEqual(self.model.storage_path_id, 1)
-        with self.patch_request_factory(factories.StoragePathFactory, **data):
+        sample_storage_path = load_sample_data('storage_paths_item.json')
+        with patch("paperap.client.PaperlessClient.request") as mock_request:
+            mock_request.return_value = sample_storage_path
             self.assertIsInstance(self.model.storage_path, StoragePath)
-            
+
         # Test that the cache is populated
         self.assertEqual(self.model._storage_path, (1, storage_path)) # type: ignore
 
