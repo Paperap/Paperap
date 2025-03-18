@@ -7,7 +7,7 @@
        File:    collect_test_data.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.7
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -84,6 +84,11 @@ class SampleDataCollector(Plugin):
 
         if not isinstance(value, Path):
             raise ModelValidationError("Test directory must be a string or Path object")
+
+        if not value.is_absolute():
+            # Make it relative to project root
+            project_root = Path(__file__).parents[4]
+            value = project_root / value
 
         value.mkdir(parents=True, exist_ok=True)
         return value
