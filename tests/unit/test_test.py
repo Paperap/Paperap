@@ -37,7 +37,7 @@ from paperap.models import *
 from paperap.resources.documents import DocumentResource
 from paperap.models.tag import Tag, TagQuerySet
 from paperap.models.document.model import CustomFieldValues, CustomFieldTypedDict, DocumentNote
-from tests.lib import load_sample_data, DocumentUnitTest, factories, TestConfigurationError, UnitTestCase
+from tests.lib import load_sample_data, DocumentUnitTest, factories, UnitTestConfigurationError, UnitTestCase
 
 logger = logging.getLogger(__name__)
 

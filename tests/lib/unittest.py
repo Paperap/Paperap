@@ -74,7 +74,7 @@ _StandardModel = TypeVar("_StandardModel", bound="StandardModel", default="Stand
 _StandardResource = TypeVar("_StandardResource", bound="StandardResource", default="StandardResource")
 _StandardQuerySet = TypeVar("_StandardQuerySet", bound="StandardQuerySet", default="StandardQuerySet")
 
-class TestConfigurationError(PaperlessError):
+class UnitTestConfigurationError(PaperlessError):
     """Raised when there is a configuration error in the testing setup."""
     pass
 

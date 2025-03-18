@@ -721,7 +721,8 @@ class StandardModel(BaseModel, ABC):
 
         # Only start a save if there are changes
         if not self.is_dirty():
-            self._save_lock.release() if hasattr(self, "_save_lock") and self._save_lock._is_owned() else None
+            if hasattr(self, "_save_lock") and self._save_lock._is_owned(): # type: ignore # temporary TODO
+                self._save_lock.release()
             return
 
         self._status = ModelStatus.SAVING
