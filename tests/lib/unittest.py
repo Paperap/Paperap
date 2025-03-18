@@ -34,7 +34,7 @@ from unittest.mock import MagicMock, patch
 from pydantic import ValidationError
 from typing_extensions import TypeAlias, TypeVar
 
-from paperap.exceptions import PaperlessError
+from paperap.exceptions import PaperapError
 from paperap.client import PaperlessClient
 from paperap.models import (BaseQuerySet, Correspondent, CorrespondentQuerySet,
                             CustomField, CustomFieldQuerySet,
@@ -74,7 +74,7 @@ _StandardModel = TypeVar("_StandardModel", bound="StandardModel", default="Stand
 _StandardResource = TypeVar("_StandardResource", bound="StandardResource", default="StandardResource")
 _StandardQuerySet = TypeVar("_StandardQuerySet", bound="StandardQuerySet", default="StandardQuerySet")
 
-class UnitTestConfigurationError(PaperlessError):
+class UnitTestConfigurationError(PaperapError):
     """Raised when there is a configuration error in the testing setup."""
     pass
 

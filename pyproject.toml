@@ -8,9 +8,14 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "alive-progress>=3.2.0",
+    "colorlog>=6.9.0",
     "dateparser>=1.2.1",
+    "openai>=1.66.5",
+    "pillow>=11.1.0",
     "pydantic>=2.10.6",
     "pydantic-settings>=2.8.1",
+    "pymupdf>=1.25.4",
     "requests>=2.32.3",
     "typing-extensions>=4.12.2",
     "yarl>=1.18.3",

@@ -36,7 +36,7 @@ from paperap.exceptions import (
     BadResponseError,
     ConfigurationError,
     InsufficientPermissionError,
-    PaperlessError,
+    PaperapError,
     RequestError,
     ResourceNotFoundError,
     ResponseParsingError,
@@ -268,7 +268,7 @@ class PaperlessClient:
             AuthenticationError: If authentication fails.
             ResourceNotFoundError: If the requested resource doesn't exist.
             APIError: If the API returns an error.
-            PaperlessError: For other errors.
+            PaperapError: For other errors.
 
         """
         # Handle different endpoint types
@@ -543,7 +543,7 @@ class PaperlessClient:
 
         Raises:
             AuthenticationError: If authentication fails.
-            PaperlessError: For other errors.
+            PaperapError: For other errors.
 
         """
         if timeout is None:

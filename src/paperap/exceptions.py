@@ -22,15 +22,12 @@
 from __future__ import annotations
 
 from string import Template
-
 import pydantic
 
-
-class PaperlessError(Exception):
+class PaperapError(Exception):
     """Base exception for all paperless client errors."""
 
-
-class ModelValidationError(PaperlessError, ValueError):
+class ModelValidationError(PaperapError, ValueError):
     """Raised when a model fails validation."""
 
     def __init__(self, message: str | None = None, model: pydantic.BaseModel | None = None) -> None:
@@ -38,15 +35,15 @@ class ModelValidationError(PaperlessError, ValueError):
             message = f"Model failed validation for {model.__class__.__name__}."
         super().__init__(message)
 
-
 class ReadOnlyFieldError(ModelValidationError):
     """Raised when a read-only field is set."""
 
-
-class ConfigurationError(PaperlessError):
+class ConfigurationError(PaperapError):
     """Raised when the configuration is invalid."""
 
-
+class PaperlessError(PaperapError):
+    """Raised due to a feature or error of paperless ngx"""
+    
 class APIError(PaperlessError):
     """Raised when the API returns an error."""
 
@@ -119,3 +116,12 @@ class ObjectNotFoundError(ResourceNotFoundError):
 
 class MultipleObjectsFoundError(APIError):
     """Raised when multiple objects are found when only one was expected."""
+
+class DocumentError(PaperapError):
+    """Raised when an error occurs with a local document."""
+
+class NoImagesException(DocumentError):
+    """Raised when no images are found in a pdf."""
+
+class DocumentParsingError(DocumentError):
+    """Raised when a document cannot be parsed."""
