@@ -59,7 +59,7 @@ class DocumentNote(StandardModel):
     user: int
 
     class Meta(StandardModel.Meta):
-        read_only_fields = {"deleted_at", "restored_at", "transaction_id", "created"}
+        read_only_fields = {"deleted_at", "restored_at", "transaction_id", "created", "archived_file_name"}
 
     @field_serializer("deleted_at", "restored_at", "created")
     def serialize_datetime(self, value: datetime | None):
@@ -784,7 +784,7 @@ class Document(StandardModel):
                 raise NotImplementedError(f"Cannot set notes to None. Notes currently: {self._original_data['notes']}")
 
         if self._original_data["tag_ids"]:
-            if "tag_ids" in kwargs and not kwargs.get("tag_ids"):
+            if "tag_ids" in kwargs and not kwargs.get("tag_ids") and not from_db:
                 # TODO: Gracefully delete the tags instead of raising an error.
                 raise NotImplementedError(
                     f"Cannot set tag_ids to None. Tags currently: {self._original_data['tag_ids']}"

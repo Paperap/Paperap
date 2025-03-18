@@ -53,7 +53,7 @@ class IntegrationTest(DocumentUnitTest):
     @override
     def tearDown(self):
         # Request that paperless ngx reverts to the previous data
-        self.model.update(**self._initial_data)
+        self.model.update(from_db=True, **self._initial_data)
 
         # TODO: confirm without another query
         return super().tearDown()
@@ -65,9 +65,14 @@ class TestIntegrationTest(IntegrationTest):
         self.assertEqual(self.model.id, 7411, "Document ID does not match expected value. Cannot run test")
 
         # Test if the document can be updated
-        self.model.title = "Updated Test Document"
+        random_str = str(datetime.now().timestamp())
+        self.model.title = f"Update Document {random_str}"
+        self.model.content = f"Updated Test Document {random_str}"
+        self.model.archive_serial_number = 123456
         self.model.save()
-        self.assertEqual(self.model.title, "Updated Test Document", "Document title did not update as expected. Cannot test IntegrationTest class")
+        self.assertEqual(self.model.title, f"Update Document {random_str}", "Document title did not update as expected. Cannot test IntegrationTest class")
+        self.assertEqual(self.model.content, f"Updated Test Document {random_str}", "Document content did not update as expected. Cannot test IntegrationTest class")
+        self.assertEqual(self.model.archive_serial_number, 123456, "Document archive_serial_number did not update as expected. Cannot test IntegrationTest class")
 
         # Manually call tearDown
         self.tearDown()
@@ -91,6 +96,50 @@ class TestIntegrationTest(IntegrationTest):
             if doc_note.matches_dict(note):
                 return True
         return False
+
+class TestFeatures(IntegrationTest):
+    @override
+    def setup_model(self):
+        super().setup_model()
+        self._meta.save_on_write = False
+
+    def test_refresh(self):
+        # Test that the document is updated locally when refresh is called
+        document = self.client.documents().get(7411)
+        original_title = document.title
+        original_content = document.content
+        
+        new_title = "Test Document " + str(datetime.now().timestamp())
+        new_content = "Test Content" + str(datetime.now().timestamp())
+        document.title = new_title
+        document.content = new_content
+        self.assertEqual(document.title, new_title, "Test assumptions are not true")
+        self.assertEqual(document.content, new_content, "Test assumptions are not true")
+
+        changed = document.refresh()
+        self.assertTrue(changed, "Document did not refresh")
+        self.assertEqual(document.title, original_title, f"Title not refreshed from db. Update was: {new_title}")
+        self.assertEqual(document.content, original_content, f"Content not refreshed from db. Update was: {new_content}")
+
+    def test_set_archived_file_name(self):
+        original_filename = self.model.archived_file_name
+        new_filename = f"Test Document {datetime.now().timestamp()}.pdf"
+        self.model.archived_file_name = new_filename
+        self.model.save()
+
+        # Retrieve it again
+        document = self.client.documents().get(7411)
+        self.assertEqual(new_filename, document.archived_file_name, f"Archived file name not updated in remote instance. Original was: {original_filename}")
+
+    def test_set_title_changes_archived_file_name(self):
+        # This isn't a feature of ours, but it's functionality of paperless that is unexpected
+        # This test ensures that if that feature changes, our test failures will notify us of the change.
+        document = self.client.documents().get(7411)
+        original_filename = document.archived_file_name
+        new_title = f"Test Document {datetime.now().timestamp()}"
+        document.title = new_title
+        document.save()
+        self.assertNotEqual(original_filename, document.archived_file_name, "Archived file name did not change after title update")
 
 class TestSaveManual(IntegrationTest):
     @override
@@ -217,30 +266,15 @@ class TestSaveNone(IntegrationTest):
         }
 
     def test_update_tags_to_none(self):
-        # Test that the document is saved when a field is written to
-        self.model.update(tags=None)
-        document = self.client.documents().get(7411)
-        self.assertEqual([], document.tag_ids, "Tags not cleared in remote instance when updated to None")
-
-    """
-    def test_update_tags_to_empty(self):
+        # Test that tags can't be emptied (because paperless doesn't support this)
         with self.assertRaises(NotImplementedError):
-            self.model.update(tags=[])
-    """
+            self.model.update(tags=None)
 
     def test_update_tag_ids_to_empty(self):
-        # Test that the document is saved when a field is written to
+        # Test that tags can't be emptied (because paperless doesn't support this)
         with self.assertRaises(NotImplementedError):
             self.model.update(tag_ids=[])
-
-    """
-    def test_set_tags_to_none(self):
-        # Test that the document is saved when a field is written to
-        with self.assertRaises(NotImplementedError):
-            self.model.tag_ids = None
-            self.model.save()
-    """
-
+            
     def test_set_fields(self):
         # Ensure fields can be set and reset without consequences
         self.model.update(**self.expected_data)

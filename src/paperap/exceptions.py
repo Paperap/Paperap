@@ -6,7 +6,7 @@
        File:    exceptions.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.7
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -38,6 +38,8 @@ class ModelValidationError(PaperlessError, ValueError):
             message = f"Model failed validation for {model.__class__.__name__}."
         super().__init__(message)
 
+class ReadOnlyFieldError(ModelValidationError):
+    """Raised when a read-only field is set."""
 
 class ConfigurationError(PaperlessError):
     """Raised when the configuration is invalid."""

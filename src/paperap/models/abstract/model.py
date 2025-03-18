@@ -38,7 +38,7 @@ from typing_extensions import TypeVar
 from yarl import URL
 
 from paperap.const import FilteringStrategies, ModelStatus
-from paperap.exceptions import APIError, ConfigurationError, RequestError, ResourceNotFoundError
+from paperap.exceptions import APIError, ConfigurationError, ReadOnlyFieldError, RequestError, ResourceNotFoundError
 from paperap.models.abstract.meta import StatusContext
 from paperap.models.abstract.queryset import BaseQuerySet
 from paperap.signals import registry
@@ -497,6 +497,12 @@ class BaseModel(pydantic.BaseModel, ABC):
 
         # Avoid infinite saving loops
         with StatusContext(self, ModelStatus.UPDATING):
+            # Ensure read-only fields were not changed
+            if not from_db:
+                for field in self._meta.read_only_fields:
+                    if field in kwargs and kwargs[field] != self._original_data.get(field, None):
+                        raise ReadOnlyFieldError(f"Cannot change read-only field {field}")
+            
             # If the field contains unsaved changes, skip updating it
             # Determine unsaved changes based on the dirty fields before we last called save
             if skip_changed_fields:
@@ -633,6 +639,28 @@ class StandardModel(BaseModel, ABC):
         self.update_locally(**kwargs)
         if not self.is_new():
             self.save()
+
+    def refresh(self) -> bool:
+        """
+        Refresh the model with the latest data from the server.
+
+        Returns:
+            True if the model data changes, False on failure or if the data does not change.
+
+        Raises:
+            ResourceNotFoundError: If the model is not found on Paperless. (e.g. it was deleted remotely)
+
+        """
+        if self.is_new():
+            raise ResourceNotFoundError("Model does not have an id, so cannot be refreshed. Save first.")
+
+        new_model = self._meta.resource.get(self.id)
+
+        if self == new_model:
+            return False
+
+        self.update_locally(from_db=True, **new_model.to_dict())
+        return True
 
     def save(self):
         return self.save_sync()
