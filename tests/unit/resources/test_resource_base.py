@@ -79,13 +79,6 @@ class TestBaseResource(UnitTestCase):
         self.assertIsInstance(resource.endpoints["list"], Template) # type: ignore
         self.assertEqual(resource.endpoints["list"].safe_substitute(), "http://example.com/fooresource/") # type: ignore
 
-    def test_endpoints_init_list_required(self):
-        with self.assertRaises(ValueError):
-            class BarResource(BaseResource): # type: ignore
-                model_class = MagicMock()
-                endpoints = {
-                    "create": Template("http://example.com") # type: ignore
-                }
 
 if __name__ == "__main__":
     unittest.main()

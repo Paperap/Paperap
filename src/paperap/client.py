@@ -223,7 +223,7 @@ class PaperlessClient:
             "enabled_plugins": ["SampleDataCollector"],
             "settings": {
                 "SampleDataCollector": {
-                    "test_dir": str(Path(__file__).parent.parent / "tests/sample_data"),
+                    "test_dir": str(Path(__file__).parents[3] / "tests/sample_data"),
                 },
             },
         }

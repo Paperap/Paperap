@@ -37,7 +37,7 @@ from enum import StrEnum
 from functools import singledispatchmethod
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Iterator, List
+from typing import Any, Iterator
 
 import dateparser
 import fitz

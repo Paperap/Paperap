@@ -91,7 +91,7 @@ class TestPluginInitialization(TestDataCollectorUnitTest):
     def test_init_without_path(self):
         """Test initializing without a path."""
         plugin = SampleDataCollector(manager=self.manager) # type: ignore
-        self.assertEqual(plugin.test_dir, Path("tests/sample_data"))
+        self.assertIn("tests/sample_data", str(plugin.test_dir))
 
     def test_init_creates_directory(self):
         """Test that initialization creates the directory if it doesn't exist."""

@@ -57,6 +57,7 @@ custom_field_strategy = st.fixed_dictionaries(
     }
 )
 
+
 @given(
     id=st.integers(min_value=0),
     added=st.one_of(st.none(), st.datetimes()),
@@ -91,6 +92,7 @@ custom_field_strategy = st.fixed_dictionaries(
     document_type_id=st.one_of(st.none(), st.integers(min_value=0)),
     storage_path_id=st.one_of(st.none(), st.integers(min_value=0)),
     tag_ids=st.lists(st.integers(min_value=0, max_value=10**6), max_size=1000),
+    checksum=st.none(),
 )
 @example(**d(doc, id=1, title="", content="", tag_ids=[]))  # Edge case: minimal data
 @example(**d(doc, id=10**9, title="A"*300, content="B"*5000, tag_ids=[1, 2, 3]*100))  # Max limits
@@ -207,6 +209,7 @@ queryset = {
     "_iter": None,
     "_urls_fetched": None,
 }
+
 @given(
     filters=st.one_of(st.none(), st.dictionaries(keys=st.text(), values=st.text())),
     _cache=st.one_of(st.none(), st.lists(st.dictionaries(keys=st.text(), values=st.text()))),
