@@ -734,6 +734,43 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
             return False
 
         return any(obj == item for obj in self)
+        
+    def bulk_action(self, action: str, **kwargs: Any) -> dict[str, Any]:
+        """
+        Perform a bulk action on all objects in the queryset.
+        
+        This method fetches all IDs in the queryset and passes them to the resource's bulk_action method.
+        
+        Args:
+            action: The action to perform
+            **kwargs: Additional parameters for the action
+            
+        Returns:
+            The API response
+            
+        Raises:
+            NotImplementedError: If the resource doesn't support bulk actions
+        """
+        if not hasattr(self.resource, "bulk_action"):
+            raise NotImplementedError(f"Resource {self.resource.name} does not support bulk actions")
+            
+        # Fetch all IDs in the queryset
+        # We only need IDs, so optimize by requesting just the ID field if possible
+        ids = [obj.id for obj in self]
+        
+        if not ids:
+            return {"success": True, "count": 0}
+            
+        return self.resource.bulk_action(action, ids, **kwargs)
+        
+    def bulk_delete(self) -> dict[str, Any]:
+        """
+        Delete all objects in the queryset.
+        
+        Returns:
+            The API response
+        """
+        return self.bulk_action("delete")
 
 
 class StandardQuerySet(BaseQuerySet[_StandardModel], Generic[_StandardModel]):
@@ -837,3 +874,130 @@ class StandardQuerySet(BaseQuerySet[_StandardModel], Generic[_StandardModel]):
 
         # For any other type, it's not in the queryset
         return False
+        
+    def bulk_update(self, **kwargs: Any) -> dict[str, Any]:
+        """
+        Update all objects in the queryset with the given values.
+        
+        Args:
+            **kwargs: Fields to update
+            
+        Returns:
+            The API response
+        """
+        if not hasattr(self.resource, "bulk_update"):
+            raise NotImplementedError(f"Resource {self.resource.name} does not support bulk updates")
+            
+        # Fetch all IDs in the queryset
+        ids = [obj.id for obj in self]
+        
+        if not ids:
+            return {"success": True, "count": 0}
+            
+        return self.resource.bulk_update(ids, **kwargs)
+        
+    def bulk_assign_tags(self, tag_ids: list[int], remove_existing: bool = False) -> dict[str, Any]:
+        """
+        Assign tags to all objects in the queryset.
+        
+        Args:
+            tag_ids: List of tag IDs to assign
+            remove_existing: If True, remove existing tags before assigning new ones
+            
+        Returns:
+            The API response
+        """
+        if not hasattr(self.resource, "bulk_assign_tags"):
+            raise NotImplementedError(f"Resource {self.resource.name} does not support bulk tag assignment")
+            
+        # Fetch all IDs in the queryset
+        ids = [obj.id for obj in self]
+        
+        if not ids:
+            return {"success": True, "count": 0}
+            
+        return self.resource.bulk_assign_tags(ids, tag_ids, remove_existing)
+        
+    def bulk_assign_correspondent(self, correspondent_id: int) -> dict[str, Any]:
+        """
+        Assign a correspondent to all objects in the queryset.
+        
+        Args:
+            correspondent_id: Correspondent ID to assign
+            
+        Returns:
+            The API response
+        """
+        if not hasattr(self.resource, "bulk_assign_correspondent"):
+            raise NotImplementedError(f"Resource {self.resource.name} does not support bulk correspondent assignment")
+            
+        # Fetch all IDs in the queryset
+        ids = [obj.id for obj in self]
+        
+        if not ids:
+            return {"success": True, "count": 0}
+            
+        return self.resource.bulk_assign_correspondent(ids, correspondent_id)
+        
+    def bulk_assign_document_type(self, document_type_id: int) -> dict[str, Any]:
+        """
+        Assign a document type to all objects in the queryset.
+        
+        Args:
+            document_type_id: Document type ID to assign
+            
+        Returns:
+            The API response
+        """
+        if not hasattr(self.resource, "bulk_assign_document_type"):
+            raise NotImplementedError(f"Resource {self.resource.name} does not support bulk document type assignment")
+            
+        # Fetch all IDs in the queryset
+        ids = [obj.id for obj in self]
+        
+        if not ids:
+            return {"success": True, "count": 0}
+            
+        return self.resource.bulk_assign_document_type(ids, document_type_id)
+        
+    def bulk_assign_storage_path(self, storage_path_id: int) -> dict[str, Any]:
+        """
+        Assign a storage path to all objects in the queryset.
+        
+        Args:
+            storage_path_id: Storage path ID to assign
+            
+        Returns:
+            The API response
+        """
+        if not hasattr(self.resource, "bulk_assign_storage_path"):
+            raise NotImplementedError(f"Resource {self.resource.name} does not support bulk storage path assignment")
+            
+        # Fetch all IDs in the queryset
+        ids = [obj.id for obj in self]
+        
+        if not ids:
+            return {"success": True, "count": 0}
+            
+        return self.resource.bulk_assign_storage_path(ids, storage_path_id)
+        
+    def bulk_assign_owner(self, owner_id: int) -> dict[str, Any]:
+        """
+        Assign an owner to all objects in the queryset.
+        
+        Args:
+            owner_id: Owner ID to assign
+            
+        Returns:
+            The API response
+        """
+        if not hasattr(self.resource, "bulk_assign_owner"):
+            raise NotImplementedError(f"Resource {self.resource.name} does not support bulk owner assignment")
+            
+        # Fetch all IDs in the queryset
+        ids = [obj.id for obj in self]
+        
+        if not ids:
+            return {"success": True, "count": 0}
+            
+        return self.resource.bulk_assign_owner(ids, owner_id)

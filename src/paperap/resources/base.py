@@ -294,6 +294,62 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
 
         # Signal after deleting resource
         registry.emit("resource.delete:after", "Emitted after deleting a resource", args=[self], kwargs=signal_params)
+    
+    def bulk_action(self, action: str, ids: list[int], **kwargs: Any) -> dict[str, Any]:
+        """
+        Perform a bulk action on multiple resources.
+
+        Args:
+            action: The action to perform (e.g., "delete", "update", etc.)
+            ids: List of resource IDs to perform the action on
+            **kwargs: Additional parameters for the action
+
+        Returns:
+            The API response
+
+        Raises:
+            ConfigurationError: If the bulk endpoint is not defined
+        """
+        # Signal before bulk action
+        signal_params = {"resource": self.name, "action": action, "ids": ids, "kwargs": kwargs}
+        registry.emit("resource.bulk_action:before", "Emitted before bulk action", args=[self], kwargs=signal_params)
+
+        # Use the bulk endpoint or fall back to the list endpoint
+        if not (template := self.endpoints.get("bulk", self.endpoints.get("list"))):
+            raise ConfigurationError(f"Bulk endpoint not defined for resource {self.name}")
+
+        url = template.safe_substitute(resource=self.name)
+        
+        # Prepare the data for the bulk action
+        data = {
+            "action": action,
+            "documents": ids,
+            **kwargs
+        }
+        
+        response = self.client.request("POST", f"{url}bulk_edit/", data=data)
+        
+        # Signal after bulk action
+        registry.emit(
+            "resource.bulk_action:after", 
+            "Emitted after bulk action", 
+            args=[self], 
+            kwargs={**signal_params, "response": response}
+        )
+        
+        return response
+    
+    def bulk_delete(self, ids: list[int]) -> dict[str, Any]:
+        """
+        Delete multiple resources at once.
+
+        Args:
+            ids: List of resource IDs to delete
+
+        Returns:
+            The API response
+        """
+        return self.bulk_action("delete", ids)
 
     def parse_to_model(self, item: dict[str, Any]) -> _BaseModel:
         """
@@ -542,3 +598,85 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet], Generic[
         data = model.to_dict()
         data = self.transform_data_output(**data)
         return self.update_dict(model.id, **data)
+        
+    def bulk_update(self, ids: list[int], **kwargs: Any) -> dict[str, Any]:
+        """
+        Update multiple resources at once.
+
+        Args:
+            ids: List of resource IDs to update
+            **kwargs: Fields to update on all resources
+
+        Returns:
+            The API response
+        """
+        # Transform the data before sending
+        data = self.transform_data_output(**kwargs)
+        return self.bulk_action("update", ids, **data)
+    
+    def bulk_assign_tags(self, ids: list[int], tag_ids: list[int], remove_existing: bool = False) -> dict[str, Any]:
+        """
+        Assign tags to multiple resources.
+
+        Args:
+            ids: List of resource IDs to update
+            tag_ids: List of tag IDs to assign
+            remove_existing: If True, remove existing tags before assigning new ones
+
+        Returns:
+            The API response
+        """
+        action = "remove_tags" if remove_existing else "add_tags"
+        return self.bulk_action(action, ids, tags=tag_ids)
+    
+    def bulk_assign_correspondent(self, ids: list[int], correspondent_id: int) -> dict[str, Any]:
+        """
+        Assign a correspondent to multiple resources.
+
+        Args:
+            ids: List of resource IDs to update
+            correspondent_id: Correspondent ID to assign
+
+        Returns:
+            The API response
+        """
+        return self.bulk_action("set_correspondent", ids, correspondent=correspondent_id)
+    
+    def bulk_assign_document_type(self, ids: list[int], document_type_id: int) -> dict[str, Any]:
+        """
+        Assign a document type to multiple resources.
+
+        Args:
+            ids: List of resource IDs to update
+            document_type_id: Document type ID to assign
+
+        Returns:
+            The API response
+        """
+        return self.bulk_action("set_document_type", ids, document_type=document_type_id)
+    
+    def bulk_assign_storage_path(self, ids: list[int], storage_path_id: int) -> dict[str, Any]:
+        """
+        Assign a storage path to multiple resources.
+
+        Args:
+            ids: List of resource IDs to update
+            storage_path_id: Storage path ID to assign
+
+        Returns:
+            The API response
+        """
+        return self.bulk_action("set_storage_path", ids, storage_path=storage_path_id)
+    
+    def bulk_assign_owner(self, ids: list[int], owner_id: int) -> dict[str, Any]:
+        """
+        Assign an owner to multiple resources.
+
+        Args:
+            ids: List of resource IDs to update
+            owner_id: Owner ID to assign
+
+        Returns:
+            The API response
+        """
+        return self.bulk_action("set_owner", ids, owner=owner_id)
