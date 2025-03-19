@@ -31,7 +31,7 @@ from paperap.models.mixins.queryset import HasOwner
 
 if TYPE_CHECKING:
     from paperap.models.correspondent import Correspondent
-    from paperap.models.document.model import Document
+    from paperap.models.document.model import Document, DocumentNote
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +44,8 @@ class CustomFieldQuery(NamedTuple):
     operation: _OperationType
     value: Any
 
+class DocumentNoteQuerySet(StandardQuerySet["DocumentNote"]):
+    pass
 
 class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
     """

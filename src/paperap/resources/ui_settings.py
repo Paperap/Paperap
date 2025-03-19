@@ -31,6 +31,7 @@ class UISettingsResource(StandardResource[UISettings, UISettingsQuerySet]):
     """Resource for managing UI settings."""
 
     model_class = UISettings
+    queryset_class = UISettingsQuerySet
     name = "ui_settings"
 
     def get_current(self) -> UISettings | None:

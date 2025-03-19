@@ -21,7 +21,6 @@ LAST MODIFIED:
 
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
 from typing import Annotated, Any, Optional, Self, TypedDict, override
 
 from pydantic import Field, HttpUrl, field_validator

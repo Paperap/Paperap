@@ -6,7 +6,7 @@
        File:    custom_fields.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -29,4 +29,5 @@ class CustomFieldResource(StandardResource[CustomField, CustomFieldQuerySet]):
     """Resource for managing custom fields."""
 
     model_class = CustomField
+    queryset_class = CustomFieldQuerySet
     name = "custom_fields"

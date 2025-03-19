@@ -35,6 +35,7 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
     """Resource for managing downloaded document content."""
 
     model_class = DownloadedDocument
+    queryset_class = DownloadedDocumentQuerySet
     name = "document"
     endpoints = {
         RetrieveFileMode.PREVIEW: URLS.preview,

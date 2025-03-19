@@ -44,10 +44,14 @@ if TYPE_CHECKING:
     from paperap.client import PaperlessClient
     from paperap.models.abstract import BaseModel, BaseQuerySet, StandardModel, StandardQuerySet
 
+_BaseModel = TypeVar("_BaseModel", bound="BaseModel", default="BaseModel")
+_BaseQuerySet = TypeVar("_BaseQuerySet", bound="BaseQuerySet", default="BaseQuerySet")
+_StandardModel = TypeVar("_StandardModel", bound="StandardModel", default="StandardModel")
+_StandardQuerySet = TypeVar("_StandardQuerySet", bound="StandardQuerySet", default="StandardQuerySet")
+
 logger = logging.getLogger(__name__)
 
-
-class BaseResource[_BaseModel: BaseModel, _BaseQuerySet: BaseQuerySet](ABC):
+class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
     """
     Base class for API resources.
 
@@ -60,6 +64,8 @@ class BaseResource[_BaseModel: BaseModel, _BaseQuerySet: BaseQuerySet](ABC):
 
     # The model class for this resource.
     model_class: type[_BaseModel]
+    queryset_class: type[_BaseQuerySet]
+    
     # The PaperlessClient instance.
     client: "PaperlessClient"
     # The name of the model. This must line up with the API endpoint
@@ -82,7 +88,7 @@ class BaseResource[_BaseModel: BaseModel, _BaseQuerySet: BaseQuerySet](ABC):
             self.endpoints[key] = Template(value.safe_substitute(resource=self.name))
 
         # Ensure the model has a link back to this resource
-        self._meta.resource = self
+        self.model_class._resource = self # type: ignore # allow private access
 
         super().__init__()
 
@@ -423,7 +429,7 @@ class BaseResource[_BaseModel: BaseModel, _BaseQuerySet: BaseQuerySet](ABC):
         return self.filter(**keywords)
 
 
-class StandardResource[_StandardModel: StandardModel, _StandardQuerySet: StandardQuerySet](BaseResource[_StandardModel, _StandardQuerySet]):
+class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
     """
     Base class for API resources.
 
@@ -433,9 +439,6 @@ class StandardResource[_StandardModel: StandardModel, _StandardQuerySet: Standar
         model_class: The model class for this resource.
 
     """
-
-    # The model class for this resource.
-    model_class: type[_StandardModel]
 
     @override
     def get(self, model_id: int, *args, **kwargs: Any) -> _StandardModel:

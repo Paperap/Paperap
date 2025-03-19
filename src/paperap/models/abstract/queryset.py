@@ -25,7 +25,7 @@ import copy
 import logging
 from datetime import datetime
 from string import Template
-from typing import TYPE_CHECKING, Any, Generic, Iterable, Iterator, Optional, Self, Union, override
+from typing import TYPE_CHECKING, Any, Final, Generic, Iterable, Iterator, Optional, Self, TypeAlias, Union, override
 
 from pydantic import HttpUrl
 from typing_extensions import TypeVar
@@ -37,6 +37,8 @@ if TYPE_CHECKING:
     from paperap.resources.base import BaseResource, StandardResource
 
 logger = logging.getLogger(__name__)
+
+#_BaseResource = TypeVar("_BaseResource", bound="BaseResource", default="BaseResource")
 
 class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
     """
@@ -67,6 +69,7 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         3
 
     """
+
     resource: "BaseResource[_Model, Self]"
     filters: dict[str, Any]
     _last_response: dict[str, Any] | None = None
@@ -566,7 +569,7 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
 
         """
         # Create a new BaseQuerySet with copied attributes
-        clone = self.__class__(self.resource)
+        clone = self.__class__(self.resource) # type: ignore # pyright not handling Self correctly
 
         # Copy attributes from self
         clone.filters = copy.deepcopy(self.filters)
@@ -759,6 +762,7 @@ class StandardQuerySet[_Model : StandardModel](BaseQuerySet[_Model]):
         docs = StandardQuerySet(resource=client.documents)
 
     """
+
     resource: "StandardResource[_Model, Self]" # type: ignore # pyright is getting inheritance wrong
 
     @override

@@ -68,7 +68,7 @@ from tests.lib.factories import (CorrespondentFactory, DocumentFactory,
 
 logger = logging.getLogger(__name__)
 
-class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySet]):
+class TestMixin[_StandardModel : StandardModel, _StandardResource : StandardResource, _StandardQuerySet : StandardQuerySet](ABC):
     """
     A base test case class for testing Paperless NGX resources.
 

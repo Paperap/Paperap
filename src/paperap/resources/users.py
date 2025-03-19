@@ -6,7 +6,7 @@
        File:    users.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -32,6 +32,7 @@ class UserResource(StandardResource[User, UserQuerySet]):
     """Resource for managing users."""
 
     model_class = User
+    queryset_class = UserQuerySet
 
     def get_current(self) -> User:
         """
@@ -50,3 +51,4 @@ class GroupResource(StandardResource[Group, GroupQuerySet]):
     """Resource for managing groups."""
 
     model_class = Group
+    queryset_class = GroupQuerySet

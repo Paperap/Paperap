@@ -38,4 +38,5 @@ class DocumentMetadataResource(StandardResource[DocumentMetadata, DocumentMetada
     """Resource for managing documents."""
 
     model_class = DocumentMetadata
+    queryset_class = DocumentMetadataQuerySet
     name = "document"

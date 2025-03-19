@@ -68,7 +68,7 @@ BASE_MODEL_CONFIG: ModelConfigType = {
     "arbitrary_types_allowed": True,
 }
 
-class BaseModel[_Resource: BaseResource, _QuerySet: BaseQuerySet](pydantic.BaseModel, ABC):
+class BaseModel(pydantic.BaseModel, ABC):
     """
     Base model for all Paperless-ngx API objects.
 
@@ -96,11 +96,7 @@ class BaseModel[_Resource: BaseResource, _QuerySet: BaseQuerySet](pydantic.BaseM
     # The last data we sent to the db to save
     # This is used to determine if the model has been changed in the time it took to perform a save
     _saved_data: dict[str, Any] = {}
-
-    if TYPE_CHECKING:
-        # This is actually set in Meta, but declaring it here helps pydantic handle dynamic __init__ arguments
-        # TODO: Provide a better solution for pydantic, so there isn't confusion with intellisense
-        resource: _Resource
+    _resource: "BaseResource[Self]"
 
     class Meta[_Self]:
         """
@@ -121,6 +117,7 @@ class BaseModel[_Resource: BaseResource, _QuerySet: BaseQuerySet](pydantic.BaseM
             ValueError: If both ALLOW_ALL and ALLOW_NONE filtering strategies are set.
 
         """
+
         model: type[_Self]
         # The name of the model.
         # It will default to the classname
@@ -141,8 +138,6 @@ class BaseModel[_Resource: BaseResource, _QuerySet: BaseQuerySet](pydantic.BaseM
         # Strategies for filtering.
         # This determines which of the above lists will be used to allow or deny filters to QuerySets.
         filtering_strategies: ClassVar[set[FilteringStrategies]] = {FilteringStrategies.BLACKLIST}
-        resource: _Resource
-        queryset: type[_QuerySet]
         # A map of field names to their attribute names.
         # Parser uses this to transform input and output data.
         # This will be populated from all parent classes.
@@ -290,7 +285,7 @@ class BaseModel[_Resource: BaseResource, _QuerySet: BaseQuerySet](pydantic.BaseM
     # type ignore because mypy complains about non-required keys
     model_config = pydantic.ConfigDict(**BASE_MODEL_CONFIG)  # type: ignore
 
-    def __init__(self, resource: _Resource | None = None, **data: Any) -> None:
+    def __init__(self, **data: Any) -> None:
         """
         Initialize the model with resource and data.
 
@@ -304,24 +299,10 @@ class BaseModel[_Resource: BaseResource, _QuerySet: BaseQuerySet](pydantic.BaseM
         """
         super().__init__(**data)
 
-        if resource:
-            self._meta.resource = resource
-
-        if not getattr(self._meta, "resource", None):
+        if not hasattr(self, "_resource"):
             raise ValueError(
                 f"Resource required. Initialize resource for {self.__class__.__name__} before instantiating models."
             )
-
-    @property
-    def _resource(self) -> _Resource:
-        """
-        Get the resource associated with this model.
-
-        Returns:
-            The BaseResource instance.
-
-        """
-        return self._meta.resource
 
     @property
     def _client(self) -> "PaperlessClient":
@@ -332,7 +313,11 @@ class BaseModel[_Resource: BaseResource, _QuerySet: BaseQuerySet](pydantic.BaseM
             The PaperlessClient instance.
 
         """
-        return self._meta.resource.client
+        return self._resource.client
+
+    @property
+    def resource(self) -> "BaseResource[Self]":
+        return self._resource
 
     @property
     def save_executor(self) -> concurrent.futures.ThreadPoolExecutor:
@@ -376,7 +361,7 @@ class BaseModel[_Resource: BaseResource, _QuerySet: BaseQuerySet](pydantic.BaseM
             doc = Document.from_dict(api_data)
 
         """
-        return cls._meta.resource.parse_to_model(data)
+        return cls._resource.parse_to_model(data)
 
     def to_dict(
         self,
@@ -595,7 +580,7 @@ class BaseModel[_Resource: BaseResource, _QuerySet: BaseQuerySet](pydantic.BaseM
         return f"{self._meta.name.capitalize()}"
 
 
-class StandardModel[_Resource: StandardResource, _QuerySet: StandardQuerySet](BaseModel[_Resource, _QuerySet], ABC):
+class StandardModel(BaseModel, ABC):
     """
     Standard model for Paperless-ngx API objects with an ID field.
 
@@ -605,6 +590,7 @@ class StandardModel[_Resource: StandardResource, _QuerySet: StandardQuerySet](Ba
     """
 
     id: int = Field(description="Unique identifier from Paperless NGX", default=0)
+    resource: "StandardResource[Self]" # type: ignore # override
 
     class Meta(BaseModel.Meta):
         """
@@ -651,7 +637,7 @@ class StandardModel[_Resource: StandardResource, _QuerySet: StandardQuerySet](Ba
         if self.is_new():
             raise ResourceNotFoundError("Model does not have an id, so cannot be refreshed. Save first.")
 
-        new_model = self._meta.resource.get(self.id)
+        new_model = self._resource.get(self.id)
 
         if self == new_model:
             return False
@@ -694,7 +680,7 @@ class StandardModel[_Resource: StandardResource, _QuerySet: StandardQuerySet](Ba
                 kwargs={"model": self, "current_data": current_data},
             )
 
-            new_model = self._meta.resource.update(self)
+            new_model = self._resource.update(self) # type: ignore # basedmypy complaining about self
 
             if not new_model:
                 logger.warning(f"Result of save was none for model id {self.id}")
@@ -788,7 +774,7 @@ class StandardModel[_Resource: StandardResource, _QuerySet: StandardQuerySet](Ba
             kwargs={"model": self, "current_data": current_data},
         )
 
-        return self._meta.resource.update(self)
+        return self._resource.update(self)
 
     def _handle_save_result_async(self, future: concurrent.futures.Future) -> None:
         """

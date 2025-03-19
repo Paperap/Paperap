@@ -22,5 +22,5 @@
 from paperap.models.document.download import DownloadedDocument, DownloadedDocumentQuerySet
 from paperap.models.document.metadata import DocumentMetadata, DocumentMetadataQuerySet
 from paperap.models.document.model import CustomFieldValues, Document, DocumentNote
-from paperap.models.document.queryset import DocumentQuerySet
+from paperap.models.document.queryset import DocumentNoteQuerySet, DocumentQuerySet
 from paperap.models.document.suggestions import DocumentSuggestions, DocumentSuggestionsQuerySet

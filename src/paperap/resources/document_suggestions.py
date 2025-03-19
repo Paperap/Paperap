@@ -38,4 +38,5 @@ class DocumentSuggestionsResource(StandardResource[DocumentSuggestions, Document
     """Resource for managing documents."""
 
     model_class = DocumentSuggestions
+    queryset_class = DocumentSuggestionsQuerySet
     name = "document"

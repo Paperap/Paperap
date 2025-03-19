@@ -108,6 +108,7 @@ class PaperlessClient:
         ```
 
     """
+
     settings: Settings
     auth: AuthBase
     session: requests.Session

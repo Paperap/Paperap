@@ -483,7 +483,7 @@ class SignalRegistry:
         """
         for queued_handler in self._queue[action].get(name, set()):
             # Handle "connect" case where queued_handler is a tuple (handler, priority)
-            if action == "connect" and isinstance(queued_handler, tuple):
+            if isinstance(queued_handler, tuple):
                 if queued_handler[0] == handler:
                     return True
             elif queued_handler == handler:
