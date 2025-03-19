@@ -3,8 +3,8 @@ paperap.models.storage\_path package
 
 .. automodule:: paperap.models.storage_path
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 Submodules
 ----------

@@ -3,8 +3,8 @@ paperap.models.share\_links package
 
 .. automodule:: paperap.models.share_links
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 Submodules
 ----------

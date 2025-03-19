@@ -3,8 +3,8 @@ paperap.models.document.metadata package
 
 .. automodule:: paperap.models.document.metadata
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 Submodules
 ----------

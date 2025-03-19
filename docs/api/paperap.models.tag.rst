@@ -3,8 +3,8 @@ paperap.models.tag package
 
 .. automodule:: paperap.models.tag
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 Submodules
 ----------

@@ -3,8 +3,8 @@ paperap.models.correspondent package
 
 .. automodule:: paperap.models.correspondent
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 Submodules
 ----------

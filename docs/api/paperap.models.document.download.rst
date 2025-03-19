@@ -3,8 +3,8 @@ paperap.models.document.download package
 
 .. automodule:: paperap.models.document.download
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 Submodules
 ----------

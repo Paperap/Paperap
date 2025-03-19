@@ -38,31 +38,47 @@ class CustomFieldQuerySet(StandardQuerySet["CustomField"], HasDocumentCount):
     QuerySet for Paperless-ngx custom fields with specialized filtering methods.
     """
 
-    def name(self, name: str, *, exact: bool = True) -> Self:
+    def name(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
         Filter custom fields by name.
 
         Args:
-            name: The custom field name to filter by
+            value: The custom field name to filter by
             exact: If True, match the exact name, otherwise use contains
+            case_insensitive: If True, ignore case when matching
 
         Returns:
             Filtered CustomFieldQuerySet
 
         """
-        if exact:
-            return self.filter(name=name)
-        return self.filter(name__contains=name)
+        return self.filter_field_by_str("name", value, exact=exact, case_insensitive=case_insensitive)
 
-    def data_type(self, data_type: str) -> Self:
+    def data_type(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
         Filter custom fields by data type.
 
         Args:
-            data_type: The data type to filter by (e.g., "string", "integer", "boolean", "date")
+            value: The data type to filter by (e.g., "string", "integer", "boolean", "date")
+            exact: If True, match the exact data type, otherwise use contains
+            case_insensitive: If True, ignore case when matching
 
         Returns:
             Filtered CustomFieldQuerySet
 
         """
-        return self.filter(data_type=data_type)
+        return self.filter_field_by_str("data_type", value, exact=exact, case_insensitive=case_insensitive)
+
+    def extra_data(self, key: str, value: Any) -> Self:
+        """
+        Filter custom fields by a key-value pair in extra_data.
+
+        Args:
+            key: The key in extra_data to filter by
+            value: The value to filter by
+
+        Returns:
+            Filtered CustomFieldQuerySet
+
+        """
+        filter_key = f"extra_data__{key}"
+        return self.filter(**{filter_key: value})

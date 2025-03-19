@@ -3,8 +3,8 @@ paperap.models.task package
 
 .. automodule:: paperap.models.task
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 Submodules
 ----------

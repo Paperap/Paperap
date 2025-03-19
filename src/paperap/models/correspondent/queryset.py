@@ -52,18 +52,18 @@ class CorrespondentQuerySet(StandardQuerySet["Correspondent"], HasOwner, HasDocu
         """
         return self.filter_field_by_str("name", value, exact=exact, case_insensitive=case_insensitive)
 
-    def matching_algorithm(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def matching_algorithm(self, value: int) -> Self:
         """
-        Filter correspondents by their matching rule pattern.
+        Filter correspondents by their matching algorithm.
 
         Args:
-            rule_pattern: The pattern to search for in matching rules
+            value: The matching algorithm ID to filter by
 
         Returns:
             Filtered CorrespondentQuerySet
 
         """
-        return self.filter_field_by_str("matching_algorithm", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter(matching_algorithm=value)
 
     def match(self, match: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
@@ -92,15 +92,30 @@ class CorrespondentQuerySet(StandardQuerySet["Correspondent"], HasOwner, HasDocu
         """
         return self.filter(is_insensitive=insensitive)
 
-    def user_can_change(self, value: bool) -> Self:
+    def user_can_change(self, value: bool = True) -> Self:
         """
-        Filter correspondents by user_can_change.
+        Filter correspondents by user change permission.
 
         Args:
-            value: The value to filter by
+            value: If True, get correspondents that can be changed by user
 
         Returns:
             Filtered CorrespondentQuerySet
 
         """
         return self.filter(user_can_change=value)
+
+    def slug(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+        """
+        Filter correspondents by slug.
+
+        Args:
+            value: The slug to filter by
+            exact: If True, match the exact slug, otherwise use contains
+            case_insensitive: If True, ignore case when matching
+
+        Returns:
+            Filtered CorrespondentQuerySet
+
+        """
+        return self.filter_field_by_str("slug", value, exact=exact, case_insensitive=case_insensitive)
