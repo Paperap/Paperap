@@ -150,7 +150,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
 
         # We validated that converted matches endpoints above
         return converted
-    
+
     def all(self) -> _BaseQuerySet:
         """
         Return a QuerySet representing all objects of this resource type.

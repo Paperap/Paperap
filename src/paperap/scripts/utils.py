@@ -24,9 +24,18 @@ LAST MODIFIED:
 """
 
 import logging
-from typing import override
+from typing import Protocol, override
 
 import colorlog
+
+
+# Define a Protocol for alive_bar()
+class ProgressBar(Protocol):
+    total: int
+
+    def __call__(self, *args, **kwargs) -> None: ...
+
+    def text(self, text: str) -> None: ...
 
 
 def setup_logging() -> logging.Logger:

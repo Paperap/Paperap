@@ -41,8 +41,8 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
         RetrieveFileMode.THUMBNAIL: URLS.thumbnail,
         RetrieveFileMode.DOWNLOAD: URLS.download,
     }
-        
-    def load(self, downloaded_document : "DownloadedDocument") -> None:
+
+    def load(self, downloaded_document: "DownloadedDocument") -> None:
         """
         Load the document file content from the API.
 
@@ -64,7 +64,7 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
         content_disposition = response.headers.get("Content-Disposition")
         disposition_filename = None
         disposition_type = None
-            
+
         # Parse Content-Disposition header
         if content_disposition:
             parts = content_disposition.split(";")
@@ -73,7 +73,7 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
             for part in parts[1:]:
                 if "filename=" in part:
                     filename_part = part.strip()
-                    disposition_filename = filename_part.split("=", 1)[1].strip('"\'')
+                    disposition_filename = filename_part.split("=", 1)[1].strip("\"'")
 
         # Update model
         downloaded_document.update_locally(

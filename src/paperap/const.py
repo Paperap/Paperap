@@ -89,8 +89,10 @@ class URLS:
     thumbnail: Template = Template("/api/${resource}/${pk}/thumb/")
     download: Template = Template("/api/${resource}/${pk}/download/")
 
-CommonEndpoints : TypeAlias = Literal['list', 'detail', 'create', 'update', 'delete']
-Endpoints : TypeAlias = dict[CommonEndpoints | str, Template]
+
+CommonEndpoints: TypeAlias = Literal["list", "detail", "create", "update", "delete"]
+Endpoints: TypeAlias = dict[CommonEndpoints | str, Template]
+
 
 class FilteringStrategies(StrEnum):
     WHITELIST = "whitelist"

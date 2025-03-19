@@ -51,6 +51,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+
 class DocumentNote(StandardModel):
     """
     Represents a note on a Paperless-NgX document.
@@ -833,7 +834,7 @@ class Document(StandardModel):
                 raise ResourceNotFoundError(f"Tag '{tag}' not found")
             self.tag_ids.remove(instance.id)
             return
-            
+
         raise TypeError(f"Invalid type for tag: {type(tag)}")
 
     def get_metadata(self) -> "DocumentMetadata":
@@ -908,7 +909,7 @@ class Document(StandardModel):
         """
         raise NotImplementedError()
 
-    def append_content(self, value : str):
+    def append_content(self, value: str):
         """
         Append content to the document.
 
@@ -916,7 +917,7 @@ class Document(StandardModel):
             value: The content to append.
 
         """
-        self.content = f'{self.content}\n{value}'
+        self.content = f"{self.content}\n{value}"
 
     @override
     def update_locally(self, from_db: bool | None = None, **kwargs: Any):

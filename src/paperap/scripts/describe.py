@@ -56,7 +56,7 @@ from paperap.exceptions import DocumentParsingError, NoImagesError
 from paperap.models.document import Document
 from paperap.models.document.queryset import DocumentQuerySet
 from paperap.models.tag import Tag
-from paperap.scripts.utils import setup_logging
+from paperap.scripts.utils import ProgressBar, setup_logging
 from paperap.settings import Settings
 
 logger = logging.getLogger(__name__)
@@ -93,17 +93,17 @@ class DescribePhotos(BaseModel):
     prompt: str | None = Field(None)
     client: PaperlessClient
     _jinja_env: Environment | None = PrivateAttr(default=None)
-    _progress_bar = PrivateAttr(default=None)
+    _progress_bar: ProgressBar | None = PrivateAttr(default=None)
     _progress_message: str | None = PrivateAttr(default=None)
     _openai: OpenAI | None = PrivateAttr(default=None)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @property
-    def progress_bar(self) -> alive_bar:
+    def progress_bar(self) -> ProgressBar:
         if not self._progress_bar:
             self._progress_bar = alive_bar(title="Running", unknown="waves")
-        return self._progress_bar
+        return self._progress_bar  # type: ignore # pyright not handling the protocol correctly, not sure why
 
     @property
     def openai_url(self) -> str | None:
@@ -412,7 +412,7 @@ class DescribePhotos(BaseModel):
             logger.error(f"Failed to convert image to JPEG: {e}")
             raise
 
-    def describe_document(self, document: Document) -> None:
+    def describe_document(self, document: Document) -> bool:
         """
         Describe a single document using OpenAI's GPT-4o model.
 
@@ -421,6 +421,9 @@ class DescribePhotos(BaseModel):
         Args:
             document: The document to describe.
 
+        Returns:
+            bool: True if the document was successfully described
+
         """
         response = None
         try:
@@ -428,24 +431,24 @@ class DescribePhotos(BaseModel):
 
             if not (content := document.content):
                 logger.error("Document content is empty for document #%s", document.id)
-                return
+                return False
 
             # Ensure accepted format
             original_file_name = (document.original_file_name or "").lower()
             if not any(original_file_name.endswith(ext) for ext in DESCRIBE_ACCEPTED_FORMATS):
                 logger.error(f"Document {document.id} has unsupported extension: {original_file_name}")
-                return
+                return False
 
             try:
                 if not (response := self._send_describe_request(content, document)):
                     logger.error(f"OpenAI returned empty description for document {document.id}.")
-                    return
+                    return False
             except NoImagesError as nie:
                 logger.debug(f"No images found in document {document.id}: {nie}")
-                return
+                return False
             except DocumentParsingError as dpe:
                 logger.error(f"Failed to parse document {document.id}: {dpe}")
-                return
+                return False
             except openai.BadRequestError as e:
                 if "invalid_image_format" not in str(e):
                     logger.error(
@@ -454,16 +457,18 @@ class DescribePhotos(BaseModel):
                         document.original_file_name,
                         e,
                     )
-                    return
+                    return False
 
                 logger.debug("Bad format for document #%s: %s -> %s", document.id, document.original_file_name, e)
-                return
+                return False
 
             # Process the response
             self.process_response(response, document)
         except requests.RequestException as e:
             logger.error(f"Failed to describe document {document.id}. {response=} => {e}")
             raise
+
+        return True
 
     def process_response(self, response: str, document: Document) -> Document:
         """
@@ -576,8 +581,8 @@ class DescribePhotos(BaseModel):
         results = []
         with alive_bar(total=total, title="Describing documents", bar="classic") as self._progress_bar:
             for document in documents:
-                if updated_document := self.describe_document(document):
-                    results.append(updated_document)
+                if self.describe_document(document):
+                    results.append(document)
                 self.progress_bar()
         return results
 
@@ -628,15 +633,15 @@ def main():
 
         # Exclude None, so pydantic settings loads from defaults for an unset param
         config = {
-                k: v
-                for k, v in {
-                    "base_url": args.url,
-                    "token": args.key,
-                    "openai_url": args.openai_url,
-                    "openai_model": args.model,
-                }.items()
-                if v is not None
-            }
+            k: v
+            for k, v in {
+                "base_url": args.url,
+                "token": args.key,
+                "openai_url": args.openai_url,
+                "openai_model": args.model,
+            }.items()
+            if v is not None
+        }
         settings = Settings(**config)
         client = PaperlessClient(settings)
 
