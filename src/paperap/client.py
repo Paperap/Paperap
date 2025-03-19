@@ -27,7 +27,7 @@ from string import Template
 from typing import TYPE_CHECKING, Any, Iterator, Literal, Union, Unpack, overload
 
 import requests
-from yarl import URL
+from pydantic import HttpUrl
 
 from paperap.auth import AuthBase, BasicAuth, TokenAuth
 from paperap.exceptions import (
@@ -166,7 +166,7 @@ class PaperlessClient:
         super().__init__()
 
     @property
-    def base_url(self) -> URL:
+    def base_url(self) -> HttpUrl:
         """Get the base URL."""
         return self.settings.base_url
 
@@ -253,7 +253,7 @@ class PaperlessClient:
     def request_raw(
         self,
         method: str,
-        endpoint: str | URL | Template,
+        endpoint: str | HttpUrl | Template,
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
@@ -284,12 +284,9 @@ class PaperlessClient:
         if isinstance(endpoint, Template):
             # Convert Template to string representation
             url = f"{self.base_url}/{endpoint.template.lstrip('/')}"
-        elif isinstance(endpoint, URL):
+        elif isinstance(endpoint, HttpUrl):
             # Use URL object directly
-            if endpoint.is_absolute():
-                url = str(endpoint)
-            else:
-                url = f"{self.base_url}/{str(endpoint).lstrip('/')}"
+            url = str(endpoint)
         elif isinstance(endpoint, str):
             if endpoint.startswith("http"):
                 url = endpoint
@@ -413,7 +410,7 @@ class PaperlessClient:
     def request(
         self,
         method: str,
-        endpoint: str | URL | Template,
+        endpoint: str | HttpUrl | Template,
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
@@ -424,7 +421,7 @@ class PaperlessClient:
     def request(
         self,
         method: str,
-        endpoint: str | URL | Template,
+        endpoint: str | HttpUrl | Template,
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
@@ -436,7 +433,7 @@ class PaperlessClient:
     def request(
         self,
         method: str,
-        endpoint: str | URL | Template,
+        endpoint: str | HttpUrl | Template,
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
@@ -447,7 +444,7 @@ class PaperlessClient:
     def request(
         self,
         method: str,
-        endpoint: str | URL | Template,
+        endpoint: str | HttpUrl | Template,
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,

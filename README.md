@@ -156,13 +156,13 @@ pre-commit run --all-files
 - [ ] Remove validators that pydantic handles natively
 - [ ] cli tools
 - [ ] batch editing
-- [ ] async model updates
+- [x] async model updates
 - [ ] uploading documents
 - [ ] updating permissions, ownership, sharing, etc
 - [ ] changing settings
 - [ ] local queryset filtering not supported by api
 - [x] raise errors for intuitive features unsupported by api (partially done)
-- [ ] enforce read-only fields
+- [x] enforce read-only fields
 - [ ] unit tests for additional edge cases
 - [x] migrate to pytest
 - [ ] immutability (resources, response dicts, (optionally) for models)

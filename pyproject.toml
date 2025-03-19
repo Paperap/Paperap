@@ -18,7 +18,6 @@ dependencies = [
     "pymupdf>=1.25.4",
     "requests>=2.32.3",
     "typing-extensions>=4.12.2",
-    "yarl>=1.18.3",
 ]
 license = "MIT"
 
@@ -1034,6 +1033,10 @@ dev = [
     "pytest-cov>=6.0.0",
     "pytype>=2024.10.11",
     "ruff>=0.9.9",
+    "sphinx>=7.2.6",
+    "sphinx-rtd-theme>=2.0.0",
+    "sphinx-autodoc-typehints>=2.0.0",
+    "myst-parser>=2.0.0",
     "types-dateparser>=1.2.0.20250208",
     "types-factory-boy>=0.4.1",
     "types-pyyaml>=6.0.12.20241230",

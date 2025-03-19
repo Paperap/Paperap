@@ -37,14 +37,14 @@ from enum import StrEnum
 from functools import singledispatchmethod
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any, Collection, Dict, Iterator, List, Optional, TypeVar, Union, cast
 
 import dateparser
-import fitz
+import fitz  # type: ignore
 import openai
 import openai.types.chat
 import requests
-from alive_progress import alive_bar
+from alive_progress import alive_bar  # type: ignore
 from dotenv import load_dotenv
 from jinja2 import Environment, FileSystemLoader
 from openai import OpenAI
@@ -102,7 +102,7 @@ class DescribePhotos(BaseModel):
     @property
     def progress_bar(self) -> ProgressBar:
         if not self._progress_bar:
-            self._progress_bar = alive_bar(title="Running", unknown="waves")
+            self._progress_bar = alive_bar(title="Running", unknown="waves") # type: ignore
         return self._progress_bar  # type: ignore # pyright not handling the protocol correctly, not sure why
 
     @property
@@ -331,11 +331,11 @@ class DescribePhotos(BaseModel):
             if not images:
                 raise NoImagesError("No images found to describe.")
 
-            message_contents: list[openai.types.chat.ChatCompletionMessageParam] = [
+            message_contents: List[Dict[str, Any]] = [
                 {
                     "type": "text",
                     "text": self.get_prompt(document),
-                }  # type: ignore
+                }
             ]
 
             for image in images:
@@ -344,7 +344,7 @@ class DescribePhotos(BaseModel):
                         "type": "image_url",
                         "image_url": {"url": f"data:image/png;base64,{image}"},
                     }
-                )  # type: ignore
+                )
 
             response = self.openai.chat.completions.create(
                 model=self.openai_model,
@@ -440,7 +440,9 @@ class DescribePhotos(BaseModel):
                 return False
 
             try:
-                if not (response := self._send_describe_request(content, document)):
+                # Convert content to bytes if it's a string
+                content_bytes = content if isinstance(content, bytes) else content.encode('utf-8')
+                if not (response := self._send_describe_request(content_bytes, document)):
                     logger.error(f"OpenAI returned empty description for document {document.id}.")
                     return False
             except NoImagesError as nie:
@@ -642,7 +644,8 @@ def main():
             }.items()
             if v is not None
         }
-        settings = Settings(**config)
+        # Cast to Any to avoid type checking issues with **kwargs
+        settings = Settings(**cast(Any, config))
         client = PaperlessClient(settings)
 
         paperless = DescribePhotos(client=client, prompt=args.prompt)
