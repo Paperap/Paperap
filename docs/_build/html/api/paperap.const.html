@@ -1,0 +1,933 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>paperap.const module &mdash; Paperap 0.0.8 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=53b53b71"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="paperap.exceptions module" href="paperap.exceptions.html" />
+    <link rel="prev" title="paperap.client module" href="paperap.client.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Paperap
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">paperap</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="paperap.html">paperap package</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="paperap.html#subpackages">Subpackages</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="paperap.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="paperap.auth.html">paperap.auth module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="paperap.client.html">paperap.client module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">paperap.const module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="paperap.exceptions.html">paperap.exceptions module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="paperap.settings.html">paperap.settings module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="paperap.signals.html">paperap.signals module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="paperap.utils.html">paperap.utils module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Paperap</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">paperap</a></li>
+          <li class="breadcrumb-item"><a href="paperap.html">paperap package</a></li>
+      <li class="breadcrumb-item active">paperap.const module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/paperap.const.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-paperap.const">
+<span id="paperap-const-module"></span><h1>paperap.const module<a class="headerlink" href="#module-paperap.const" title="Link to this heading"></a></h1>
+<hr class="docutils" />
+<blockquote>
+<div><p>METADATA:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>File:    const.py</dt><dd><p>Project: paperap</p>
+</dd>
+<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.8</p>
+</dd>
+</dl>
+<p>Author:  Jess Mann
+Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
+<blockquote>
+<div><p>Copyright (c) 2025 Jess Mann</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>LAST MODIFIED:</p>
+<blockquote>
+<div><p>2025-03-04     By Jess Mann</p>
+</div></blockquote>
+</div></blockquote>
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.ConstModel">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">ConstModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#ConstModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.ConstModel" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.ConstModel.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'from_attributes':</span> <span class="pre">True,</span> <span class="pre">'use_enum_values':</span> <span class="pre">True,</span> <span class="pre">'validate_assignment':</span> <span class="pre">True,</span> <span class="pre">'validate_default':</span> <span class="pre">True}</span></em><a class="headerlink" href="#paperap.const.ConstModel.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.URLS">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">URLS</span></span><a class="reference internal" href="../_modules/paperap/const.html#URLS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.URLS" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.URLS.index">
+<span class="sig-name descname"><span class="pre">index</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/string.html#string.Template" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;string.Template</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#paperap.const.URLS.index" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.URLS.token">
+<span class="sig-name descname"><span class="pre">token</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/string.html#string.Template" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;string.Template</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#paperap.const.URLS.token" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.URLS.list">
+<span class="sig-name descname"><span class="pre">list</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/string.html#string.Template" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;string.Template</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#paperap.const.URLS.list" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.URLS.detail">
+<span class="sig-name descname"><span class="pre">detail</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/string.html#string.Template" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;string.Template</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#paperap.const.URLS.detail" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.URLS.create">
+<span class="sig-name descname"><span class="pre">create</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/string.html#string.Template" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;string.Template</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#paperap.const.URLS.create" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.URLS.update">
+<span class="sig-name descname"><span class="pre">update</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/string.html#string.Template" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;string.Template</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#paperap.const.URLS.update" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.URLS.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/string.html#string.Template" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;string.Template</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#paperap.const.URLS.delete" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.URLS.meta">
+<span class="sig-name descname"><span class="pre">meta</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/string.html#string.Template" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;string.Template</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#paperap.const.URLS.meta" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.URLS.next_asn">
+<span class="sig-name descname"><span class="pre">next_asn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/string.html#string.Template" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;string.Template</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#paperap.const.URLS.next_asn" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.URLS.notes">
+<span class="sig-name descname"><span class="pre">notes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/string.html#string.Template" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;string.Template</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#paperap.const.URLS.notes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.URLS.post">
+<span class="sig-name descname"><span class="pre">post</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/string.html#string.Template" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;string.Template</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#paperap.const.URLS.post" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.URLS.single">
+<span class="sig-name descname"><span class="pre">single</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/string.html#string.Template" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;string.Template</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#paperap.const.URLS.single" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.URLS.suggestions">
+<span class="sig-name descname"><span class="pre">suggestions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/string.html#string.Template" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;string.Template</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#paperap.const.URLS.suggestions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.URLS.preview">
+<span class="sig-name descname"><span class="pre">preview</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/string.html#string.Template" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;string.Template</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#paperap.const.URLS.preview" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.URLS.thumbnail">
+<span class="sig-name descname"><span class="pre">thumbnail</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/string.html#string.Template" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;string.Template</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#paperap.const.URLS.thumbnail" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.URLS.download">
+<span class="sig-name descname"><span class="pre">download</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/string.html#string.Template" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;string.Template</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#paperap.const.URLS.download" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.FilteringStrategies">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">FilteringStrategies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#FilteringStrategies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.FilteringStrategies" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.StrEnum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrEnum</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.FilteringStrategies.WHITELIST">
+<span class="sig-name descname"><span class="pre">WHITELIST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'whitelist'</span></em><a class="headerlink" href="#paperap.const.FilteringStrategies.WHITELIST" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.FilteringStrategies.BLACKLIST">
+<span class="sig-name descname"><span class="pre">BLACKLIST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'blacklist'</span></em><a class="headerlink" href="#paperap.const.FilteringStrategies.BLACKLIST" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.FilteringStrategies.ALLOW_ALL">
+<span class="sig-name descname"><span class="pre">ALLOW_ALL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'allow_all'</span></em><a class="headerlink" href="#paperap.const.FilteringStrategies.ALLOW_ALL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.FilteringStrategies.ALLOW_NONE">
+<span class="sig-name descname"><span class="pre">ALLOW_NONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'allow_none'</span></em><a class="headerlink" href="#paperap.const.FilteringStrategies.ALLOW_NONE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.ModelStatus">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">ModelStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#ModelStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.ModelStatus" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.StrEnum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrEnum</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.ModelStatus.INITIALIZING">
+<span class="sig-name descname"><span class="pre">INITIALIZING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'initializing'</span></em><a class="headerlink" href="#paperap.const.ModelStatus.INITIALIZING" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.ModelStatus.UPDATING">
+<span class="sig-name descname"><span class="pre">UPDATING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'updating'</span></em><a class="headerlink" href="#paperap.const.ModelStatus.UPDATING" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.ModelStatus.SAVING">
+<span class="sig-name descname"><span class="pre">SAVING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'saving'</span></em><a class="headerlink" href="#paperap.const.ModelStatus.SAVING" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.ModelStatus.READY">
+<span class="sig-name descname"><span class="pre">READY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ready'</span></em><a class="headerlink" href="#paperap.const.ModelStatus.READY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.ModelStatus.ERROR">
+<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'error'</span></em><a class="headerlink" href="#paperap.const.ModelStatus.ERROR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.CustomFieldTypes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">CustomFieldTypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#CustomFieldTypes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.CustomFieldTypes" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.StrEnum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrEnum</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.CustomFieldTypes.STRING">
+<span class="sig-name descname"><span class="pre">STRING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'string'</span></em><a class="headerlink" href="#paperap.const.CustomFieldTypes.STRING" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.CustomFieldTypes.BOOLEAN">
+<span class="sig-name descname"><span class="pre">BOOLEAN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'boolean'</span></em><a class="headerlink" href="#paperap.const.CustomFieldTypes.BOOLEAN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.CustomFieldTypes.INTEGER">
+<span class="sig-name descname"><span class="pre">INTEGER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'integer'</span></em><a class="headerlink" href="#paperap.const.CustomFieldTypes.INTEGER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.CustomFieldTypes.FLOAT">
+<span class="sig-name descname"><span class="pre">FLOAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'float'</span></em><a class="headerlink" href="#paperap.const.CustomFieldTypes.FLOAT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.CustomFieldTypes.MONETARY">
+<span class="sig-name descname"><span class="pre">MONETARY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'monetary'</span></em><a class="headerlink" href="#paperap.const.CustomFieldTypes.MONETARY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.CustomFieldTypes.DATE">
+<span class="sig-name descname"><span class="pre">DATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'date'</span></em><a class="headerlink" href="#paperap.const.CustomFieldTypes.DATE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.CustomFieldTypes.URL">
+<span class="sig-name descname"><span class="pre">URL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'url'</span></em><a class="headerlink" href="#paperap.const.CustomFieldTypes.URL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.CustomFieldTypes.DOCUMENT_LINK">
+<span class="sig-name descname"><span class="pre">DOCUMENT_LINK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'documentlink'</span></em><a class="headerlink" href="#paperap.const.CustomFieldTypes.DOCUMENT_LINK" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.CustomFieldTypes.UNKNOWN">
+<span class="sig-name descname"><span class="pre">UNKNOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'unknown'</span></em><a class="headerlink" href="#paperap.const.CustomFieldTypes.UNKNOWN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.CustomFieldValues">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">CustomFieldValues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#CustomFieldValues"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.CustomFieldValues" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#paperap.const.ConstModel" title="paperap.const.ConstModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConstModel</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.CustomFieldValues.field">
+<span class="sig-name descname"><span class="pre">field</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#paperap.const.CustomFieldValues.field" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.CustomFieldValues.value">
+<span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#paperap.const.CustomFieldValues.value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.CustomFieldValues.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'from_attributes':</span> <span class="pre">True,</span> <span class="pre">'use_enum_values':</span> <span class="pre">True,</span> <span class="pre">'validate_assignment':</span> <span class="pre">True,</span> <span class="pre">'validate_default':</span> <span class="pre">True}</span></em><a class="headerlink" href="#paperap.const.CustomFieldValues.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.CustomFieldTypedDict">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">CustomFieldTypedDict</span></span><a class="reference internal" href="../_modules/paperap/const.html#CustomFieldTypedDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.CustomFieldTypedDict" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.CustomFieldTypedDict.field">
+<span class="sig-name descname"><span class="pre">field</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><a class="headerlink" href="#paperap.const.CustomFieldTypedDict.field" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.CustomFieldTypedDict.value">
+<span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></em><a class="headerlink" href="#paperap.const.CustomFieldTypedDict.value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.DocumentMetadataType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">DocumentMetadataType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#DocumentMetadataType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.DocumentMetadataType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#paperap.const.ConstModel" title="paperap.const.ConstModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConstModel</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.DocumentMetadataType.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.DocumentMetadataType.namespace" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.DocumentMetadataType.prefix">
+<span class="sig-name descname"><span class="pre">prefix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.DocumentMetadataType.prefix" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.DocumentMetadataType.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.DocumentMetadataType.key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.DocumentMetadataType.value">
+<span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.DocumentMetadataType.value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.DocumentMetadataType.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'from_attributes':</span> <span class="pre">True,</span> <span class="pre">'use_enum_values':</span> <span class="pre">True,</span> <span class="pre">'validate_assignment':</span> <span class="pre">True,</span> <span class="pre">'validate_default':</span> <span class="pre">True}</span></em><a class="headerlink" href="#paperap.const.DocumentMetadataType.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.DocumentSearchHitType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">DocumentSearchHitType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#DocumentSearchHitType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.DocumentSearchHitType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#paperap.const.ConstModel" title="paperap.const.ConstModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConstModel</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.DocumentSearchHitType.score">
+<span class="sig-name descname"><span class="pre">score</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.DocumentSearchHitType.score" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.DocumentSearchHitType.highlights">
+<span class="sig-name descname"><span class="pre">highlights</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.DocumentSearchHitType.highlights" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.DocumentSearchHitType.note_highlights">
+<span class="sig-name descname"><span class="pre">note_highlights</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.DocumentSearchHitType.note_highlights" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.DocumentSearchHitType.rank">
+<span class="sig-name descname"><span class="pre">rank</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.DocumentSearchHitType.rank" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.DocumentSearchHitType.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'from_attributes':</span> <span class="pre">True,</span> <span class="pre">'use_enum_values':</span> <span class="pre">True,</span> <span class="pre">'validate_assignment':</span> <span class="pre">True,</span> <span class="pre">'validate_default':</span> <span class="pre">True}</span></em><a class="headerlink" href="#paperap.const.DocumentSearchHitType.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.MatchingAlgorithmType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">MatchingAlgorithmType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#MatchingAlgorithmType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.MatchingAlgorithmType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.IntEnum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.MatchingAlgorithmType.NONE">
+<span class="sig-name descname"><span class="pre">NONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#paperap.const.MatchingAlgorithmType.NONE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.MatchingAlgorithmType.ANY">
+<span class="sig-name descname"><span class="pre">ANY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#paperap.const.MatchingAlgorithmType.ANY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.MatchingAlgorithmType.ALL">
+<span class="sig-name descname"><span class="pre">ALL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#paperap.const.MatchingAlgorithmType.ALL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.MatchingAlgorithmType.LITERAL">
+<span class="sig-name descname"><span class="pre">LITERAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#paperap.const.MatchingAlgorithmType.LITERAL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.MatchingAlgorithmType.REGEX">
+<span class="sig-name descname"><span class="pre">REGEX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#paperap.const.MatchingAlgorithmType.REGEX" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.MatchingAlgorithmType.FUZZY">
+<span class="sig-name descname"><span class="pre">FUZZY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#paperap.const.MatchingAlgorithmType.FUZZY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.MatchingAlgorithmType.AUTO">
+<span class="sig-name descname"><span class="pre">AUTO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#paperap.const.MatchingAlgorithmType.AUTO" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.MatchingAlgorithmType.UNKNOWN">
+<span class="sig-name descname"><span class="pre">UNKNOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#paperap.const.MatchingAlgorithmType.UNKNOWN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.PermissionSetType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">PermissionSetType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#PermissionSetType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.PermissionSetType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#paperap.const.ConstModel" title="paperap.const.ConstModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConstModel</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.PermissionSetType.users">
+<span class="sig-name descname"><span class="pre">users</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#paperap.const.PermissionSetType.users" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.PermissionSetType.groups">
+<span class="sig-name descname"><span class="pre">groups</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#paperap.const.PermissionSetType.groups" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.PermissionSetType.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'from_attributes':</span> <span class="pre">True,</span> <span class="pre">'use_enum_values':</span> <span class="pre">True,</span> <span class="pre">'validate_assignment':</span> <span class="pre">True,</span> <span class="pre">'validate_default':</span> <span class="pre">True}</span></em><a class="headerlink" href="#paperap.const.PermissionSetType.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.PermissionTableType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">PermissionTableType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#PermissionTableType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.PermissionTableType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#paperap.const.ConstModel" title="paperap.const.ConstModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConstModel</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.PermissionTableType.view">
+<span class="sig-name descname"><span class="pre">view</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">PermissionSetType</span></em><a class="headerlink" href="#paperap.const.PermissionTableType.view" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.PermissionTableType.change">
+<span class="sig-name descname"><span class="pre">change</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">PermissionSetType</span></em><a class="headerlink" href="#paperap.const.PermissionTableType.change" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.PermissionTableType.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'from_attributes':</span> <span class="pre">True,</span> <span class="pre">'use_enum_values':</span> <span class="pre">True,</span> <span class="pre">'validate_assignment':</span> <span class="pre">True,</span> <span class="pre">'validate_default':</span> <span class="pre">True}</span></em><a class="headerlink" href="#paperap.const.PermissionTableType.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.RetrieveFileMode">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">RetrieveFileMode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#RetrieveFileMode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.RetrieveFileMode" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.StrEnum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrEnum</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.RetrieveFileMode.DOWNLOAD">
+<span class="sig-name descname"><span class="pre">DOWNLOAD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'download'</span></em><a class="headerlink" href="#paperap.const.RetrieveFileMode.DOWNLOAD" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.RetrieveFileMode.PREVIEW">
+<span class="sig-name descname"><span class="pre">PREVIEW</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'preview'</span></em><a class="headerlink" href="#paperap.const.RetrieveFileMode.PREVIEW" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.RetrieveFileMode.THUMBNAIL">
+<span class="sig-name descname"><span class="pre">THUMBNAIL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'thumb'</span></em><a class="headerlink" href="#paperap.const.RetrieveFileMode.THUMBNAIL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.SavedViewFilterRuleType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">SavedViewFilterRuleType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#SavedViewFilterRuleType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.SavedViewFilterRuleType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#paperap.const.ConstModel" title="paperap.const.ConstModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConstModel</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.SavedViewFilterRuleType.rule_type">
+<span class="sig-name descname"><span class="pre">rule_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.SavedViewFilterRuleType.rule_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.SavedViewFilterRuleType.value">
+<span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.SavedViewFilterRuleType.value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.SavedViewFilterRuleType.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'from_attributes':</span> <span class="pre">True,</span> <span class="pre">'use_enum_values':</span> <span class="pre">True,</span> <span class="pre">'validate_assignment':</span> <span class="pre">True,</span> <span class="pre">'validate_default':</span> <span class="pre">True}</span></em><a class="headerlink" href="#paperap.const.SavedViewFilterRuleType.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.ShareLinkFileVersionType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">ShareLinkFileVersionType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#ShareLinkFileVersionType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.ShareLinkFileVersionType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.StrEnum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrEnum</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.ShareLinkFileVersionType.ARCHIVE">
+<span class="sig-name descname"><span class="pre">ARCHIVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'archive'</span></em><a class="headerlink" href="#paperap.const.ShareLinkFileVersionType.ARCHIVE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.ShareLinkFileVersionType.ORIGINAL">
+<span class="sig-name descname"><span class="pre">ORIGINAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'original'</span></em><a class="headerlink" href="#paperap.const.ShareLinkFileVersionType.ORIGINAL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.ShareLinkFileVersionType.UNKNOWN">
+<span class="sig-name descname"><span class="pre">UNKNOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'unknown'</span></em><a class="headerlink" href="#paperap.const.ShareLinkFileVersionType.UNKNOWN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.StatusType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">StatusType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#StatusType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.StatusType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.StrEnum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrEnum</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusType.OK">
+<span class="sig-name descname"><span class="pre">OK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'OK'</span></em><a class="headerlink" href="#paperap.const.StatusType.OK" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusType.ERROR">
+<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ERROR'</span></em><a class="headerlink" href="#paperap.const.StatusType.ERROR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusType.UNKNOWN">
+<span class="sig-name descname"><span class="pre">UNKNOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'UNKNOWN'</span></em><a class="headerlink" href="#paperap.const.StatusType.UNKNOWN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.StatusDatabaseMigrationStatusType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">StatusDatabaseMigrationStatusType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#StatusDatabaseMigrationStatusType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.StatusDatabaseMigrationStatusType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#paperap.const.ConstModel" title="paperap.const.ConstModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConstModel</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusDatabaseMigrationStatusType.latest_migration">
+<span class="sig-name descname"><span class="pre">latest_migration</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.StatusDatabaseMigrationStatusType.latest_migration" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusDatabaseMigrationStatusType.unapplied_migrations">
+<span class="sig-name descname"><span class="pre">unapplied_migrations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[str]</span></em><a class="headerlink" href="#paperap.const.StatusDatabaseMigrationStatusType.unapplied_migrations" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusDatabaseMigrationStatusType.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'from_attributes':</span> <span class="pre">True,</span> <span class="pre">'use_enum_values':</span> <span class="pre">True,</span> <span class="pre">'validate_assignment':</span> <span class="pre">True,</span> <span class="pre">'validate_default':</span> <span class="pre">True}</span></em><a class="headerlink" href="#paperap.const.StatusDatabaseMigrationStatusType.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.StatusDatabaseType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">StatusDatabaseType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#StatusDatabaseType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.StatusDatabaseType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#paperap.const.ConstModel" title="paperap.const.ConstModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConstModel</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusDatabaseType.type">
+<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.StatusDatabaseType.type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusDatabaseType.url">
+<span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.StatusDatabaseType.url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusDatabaseType.status">
+<span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">StatusType</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.StatusDatabaseType.status" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusDatabaseType.error">
+<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.StatusDatabaseType.error" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusDatabaseType.migration_status">
+<span class="sig-name descname"><span class="pre">migration_status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">StatusDatabaseMigrationStatusType</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.StatusDatabaseType.migration_status" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusDatabaseType.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'from_attributes':</span> <span class="pre">True,</span> <span class="pre">'use_enum_values':</span> <span class="pre">True,</span> <span class="pre">'validate_assignment':</span> <span class="pre">True,</span> <span class="pre">'validate_default':</span> <span class="pre">True}</span></em><a class="headerlink" href="#paperap.const.StatusDatabaseType.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.StatusStorageType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">StatusStorageType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#StatusStorageType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.StatusStorageType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#paperap.const.ConstModel" title="paperap.const.ConstModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConstModel</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusStorageType.total">
+<span class="sig-name descname"><span class="pre">total</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.StatusStorageType.total" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusStorageType.available">
+<span class="sig-name descname"><span class="pre">available</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.StatusStorageType.available" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusStorageType.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'from_attributes':</span> <span class="pre">True,</span> <span class="pre">'use_enum_values':</span> <span class="pre">True,</span> <span class="pre">'validate_assignment':</span> <span class="pre">True,</span> <span class="pre">'validate_default':</span> <span class="pre">True}</span></em><a class="headerlink" href="#paperap.const.StatusStorageType.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.StatusTasksType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">StatusTasksType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#StatusTasksType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.StatusTasksType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#paperap.const.ConstModel" title="paperap.const.ConstModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConstModel</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusTasksType.redis_url">
+<span class="sig-name descname"><span class="pre">redis_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.StatusTasksType.redis_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusTasksType.redis_status">
+<span class="sig-name descname"><span class="pre">redis_status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">StatusType</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.StatusTasksType.redis_status" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusTasksType.redis_error">
+<span class="sig-name descname"><span class="pre">redis_error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.StatusTasksType.redis_error" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusTasksType.celery_status">
+<span class="sig-name descname"><span class="pre">celery_status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">StatusType</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.StatusTasksType.celery_status" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusTasksType.index_status">
+<span class="sig-name descname"><span class="pre">index_status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">StatusType</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.StatusTasksType.index_status" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusTasksType.index_last_modified">
+<span class="sig-name descname"><span class="pre">index_last_modified</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.StatusTasksType.index_last_modified" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusTasksType.index_error">
+<span class="sig-name descname"><span class="pre">index_error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.StatusTasksType.index_error" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusTasksType.classifier_status">
+<span class="sig-name descname"><span class="pre">classifier_status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">StatusType</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.StatusTasksType.classifier_status" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusTasksType.classifier_last_trained">
+<span class="sig-name descname"><span class="pre">classifier_last_trained</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.StatusTasksType.classifier_last_trained" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusTasksType.classifier_error">
+<span class="sig-name descname"><span class="pre">classifier_error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.const.StatusTasksType.classifier_error" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.StatusTasksType.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'from_attributes':</span> <span class="pre">True,</span> <span class="pre">'use_enum_values':</span> <span class="pre">True,</span> <span class="pre">'validate_assignment':</span> <span class="pre">True,</span> <span class="pre">'validate_default':</span> <span class="pre">True}</span></em><a class="headerlink" href="#paperap.const.StatusTasksType.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.TaskStatusType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">TaskStatusType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#TaskStatusType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.TaskStatusType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.StrEnum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrEnum</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.TaskStatusType.PENDING">
+<span class="sig-name descname"><span class="pre">PENDING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'PENDING'</span></em><a class="headerlink" href="#paperap.const.TaskStatusType.PENDING" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.TaskStatusType.STARTED">
+<span class="sig-name descname"><span class="pre">STARTED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'STARTED'</span></em><a class="headerlink" href="#paperap.const.TaskStatusType.STARTED" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.TaskStatusType.SUCCESS">
+<span class="sig-name descname"><span class="pre">SUCCESS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SUCCESS'</span></em><a class="headerlink" href="#paperap.const.TaskStatusType.SUCCESS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.TaskStatusType.FAILURE">
+<span class="sig-name descname"><span class="pre">FAILURE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'FAILURE'</span></em><a class="headerlink" href="#paperap.const.TaskStatusType.FAILURE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.TaskStatusType.UNKNOWN">
+<span class="sig-name descname"><span class="pre">UNKNOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'UNKNOWN'</span></em><a class="headerlink" href="#paperap.const.TaskStatusType.UNKNOWN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.WorkflowActionType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">WorkflowActionType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#WorkflowActionType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.WorkflowActionType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.IntEnum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.WorkflowActionType.ASSIGNMENT">
+<span class="sig-name descname"><span class="pre">ASSIGNMENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#paperap.const.WorkflowActionType.ASSIGNMENT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.WorkflowActionType.UNKNOWN">
+<span class="sig-name descname"><span class="pre">UNKNOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#paperap.const.WorkflowActionType.UNKNOWN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.WorkflowTriggerType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">WorkflowTriggerType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#WorkflowTriggerType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.WorkflowTriggerType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.IntEnum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.WorkflowTriggerType.CONSUMPTION">
+<span class="sig-name descname"><span class="pre">CONSUMPTION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#paperap.const.WorkflowTriggerType.CONSUMPTION" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.WorkflowTriggerType.DOCUMENT_ADDED">
+<span class="sig-name descname"><span class="pre">DOCUMENT_ADDED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#paperap.const.WorkflowTriggerType.DOCUMENT_ADDED" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.WorkflowTriggerType.DOCUMENT_UPDATED">
+<span class="sig-name descname"><span class="pre">DOCUMENT_UPDATED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#paperap.const.WorkflowTriggerType.DOCUMENT_UPDATED" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.WorkflowTriggerType.UNKNOWN">
+<span class="sig-name descname"><span class="pre">UNKNOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#paperap.const.WorkflowTriggerType.UNKNOWN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.const.WorkflowTriggerSourceType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.const.</span></span><span class="sig-name descname"><span class="pre">WorkflowTriggerSourceType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/const.html#WorkflowTriggerSourceType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.const.WorkflowTriggerSourceType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.IntEnum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.WorkflowTriggerSourceType.CONSUME_FOLDER">
+<span class="sig-name descname"><span class="pre">CONSUME_FOLDER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#paperap.const.WorkflowTriggerSourceType.CONSUME_FOLDER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.WorkflowTriggerSourceType.API_UPLOAD">
+<span class="sig-name descname"><span class="pre">API_UPLOAD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#paperap.const.WorkflowTriggerSourceType.API_UPLOAD" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.WorkflowTriggerSourceType.MAIL_FETCH">
+<span class="sig-name descname"><span class="pre">MAIL_FETCH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#paperap.const.WorkflowTriggerSourceType.MAIL_FETCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.const.WorkflowTriggerSourceType.UNKNOWN">
+<span class="sig-name descname"><span class="pre">UNKNOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#paperap.const.WorkflowTriggerSourceType.UNKNOWN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="paperap.client.html" class="btn btn-neutral float-left" title="paperap.client module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="paperap.exceptions.html" class="btn btn-neutral float-right" title="paperap.exceptions module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Jess Mann.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,470 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>paperap.const &mdash; Paperap 0.0.8 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=53b53b71"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Paperap
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Paperap</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">paperap.const</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for paperap.const</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">----------------------------------------------------------------------------</span>
+
+<span class="sd">   METADATA:</span>
+
+<span class="sd">       File:    const.py</span>
+<span class="sd">        Project: paperap</span>
+<span class="sd">       Created: 2025-03-04</span>
+<span class="sd">        Version: 0.0.8</span>
+<span class="sd">       Author:  Jess Mann</span>
+<span class="sd">       Email:   jess@jmann.me</span>
+<span class="sd">        Copyright (c) 2025 Jess Mann</span>
+
+<span class="sd">----------------------------------------------------------------------------</span>
+
+<span class="sd">   LAST MODIFIED:</span>
+
+<span class="sd">       2025-03-04     By Jess Mann</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">IntEnum</span><span class="p">,</span> <span class="n">StrEnum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">string</span><span class="w"> </span><span class="kn">import</span> <span class="n">Template</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Iterator</span><span class="p">,</span>
+    <span class="n">Literal</span><span class="p">,</span>
+    <span class="n">NotRequired</span><span class="p">,</span>
+    <span class="n">Protocol</span><span class="p">,</span>
+    <span class="n">Required</span><span class="p">,</span>
+    <span class="n">Self</span><span class="p">,</span>
+    <span class="n">TypeAlias</span><span class="p">,</span>
+    <span class="n">TypedDict</span><span class="p">,</span>
+    <span class="n">override</span><span class="p">,</span>
+    <span class="n">runtime_checkable</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pydantic</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ConstModel">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.ConstModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConstModel</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span>
+        <span class="n">from_attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">,</span>
+        <span class="n">use_enum_values</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">validate_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">validate_assignment</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="c1"># Ensure the dictionary keys match the model fields</span>
+            <span class="n">expected_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_fields</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">!=</span> <span class="n">expected_keys</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">expected_keys</span><span class="p">)</span>
+
+        <span class="c1"># This check probably isn&#39;t necessary before calling super (TODO?)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
+            <span class="c1"># Compare all fields of the model</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="URLS">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.URLS">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">URLS</span><span class="p">:</span>
+    <span class="n">index</span><span class="p">:</span> <span class="n">Template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;/api/&quot;</span><span class="p">)</span>
+    <span class="n">token</span><span class="p">:</span> <span class="n">Template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;/api/token/&quot;</span><span class="p">)</span>
+    <span class="nb">list</span><span class="p">:</span> <span class="n">Template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;/api/$</span><span class="si">{resource}</span><span class="s2">/&quot;</span><span class="p">)</span>
+    <span class="n">detail</span><span class="p">:</span> <span class="n">Template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;/api/$</span><span class="si">{resource}</span><span class="s2">/$</span><span class="si">{pk}</span><span class="s2">/&quot;</span><span class="p">)</span>
+    <span class="n">create</span><span class="p">:</span> <span class="n">Template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;/api/$</span><span class="si">{resource}</span><span class="s2">/&quot;</span><span class="p">)</span>
+    <span class="n">update</span><span class="p">:</span> <span class="n">Template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;/api/$</span><span class="si">{resource}</span><span class="s2">/$</span><span class="si">{pk}</span><span class="s2">/&quot;</span><span class="p">)</span>
+    <span class="n">delete</span><span class="p">:</span> <span class="n">Template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;/api/$</span><span class="si">{resource}</span><span class="s2">/$</span><span class="si">{pk}</span><span class="s2">/&quot;</span><span class="p">)</span>
+    <span class="n">meta</span><span class="p">:</span> <span class="n">Template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;/api/document/$</span><span class="si">{pk}</span><span class="s2">/metadata/&quot;</span><span class="p">)</span>
+    <span class="n">next_asn</span><span class="p">:</span> <span class="n">Template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;/api/document/next_asn/&quot;</span><span class="p">)</span>
+    <span class="n">notes</span><span class="p">:</span> <span class="n">Template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;/api/document/$</span><span class="si">{pk}</span><span class="s2">/notes/&quot;</span><span class="p">)</span>
+    <span class="n">post</span><span class="p">:</span> <span class="n">Template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;/api/document/post_document/&quot;</span><span class="p">)</span>
+    <span class="n">single</span><span class="p">:</span> <span class="n">Template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;/api/document/$</span><span class="si">{pk}</span><span class="s2">/&quot;</span><span class="p">)</span>
+    <span class="n">suggestions</span><span class="p">:</span> <span class="n">Template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;/api/$</span><span class="si">{resource}</span><span class="s2">/$</span><span class="si">{pk}</span><span class="s2">/suggestions/&quot;</span><span class="p">)</span>
+    <span class="n">preview</span><span class="p">:</span> <span class="n">Template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;/api/$</span><span class="si">{resource}</span><span class="s2">/$</span><span class="si">{pk}</span><span class="s2">/preview/&quot;</span><span class="p">)</span>
+    <span class="n">thumbnail</span><span class="p">:</span> <span class="n">Template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;/api/$</span><span class="si">{resource}</span><span class="s2">/$</span><span class="si">{pk}</span><span class="s2">/thumb/&quot;</span><span class="p">)</span>
+    <span class="n">download</span><span class="p">:</span> <span class="n">Template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;/api/$</span><span class="si">{resource}</span><span class="s2">/$</span><span class="si">{pk}</span><span class="s2">/download/&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="n">CommonEndpoints</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="s2">&quot;detail&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">]</span>
+<span class="n">Endpoints</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">[</span><span class="n">CommonEndpoints</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Template</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="FilteringStrategies">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.FilteringStrategies">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FilteringStrategies</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+    <span class="n">WHITELIST</span> <span class="o">=</span> <span class="s2">&quot;whitelist&quot;</span>
+    <span class="n">BLACKLIST</span> <span class="o">=</span> <span class="s2">&quot;blacklist&quot;</span>
+    <span class="n">ALLOW_ALL</span> <span class="o">=</span> <span class="s2">&quot;allow_all&quot;</span>
+    <span class="n">ALLOW_NONE</span> <span class="o">=</span> <span class="s2">&quot;allow_none&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="ModelStatus">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.ModelStatus">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ModelStatus</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+    <span class="n">INITIALIZING</span> <span class="o">=</span> <span class="s2">&quot;initializing&quot;</span>
+    <span class="n">UPDATING</span> <span class="o">=</span> <span class="s2">&quot;updating&quot;</span>
+    <span class="n">SAVING</span> <span class="o">=</span> <span class="s2">&quot;saving&quot;</span>
+    <span class="n">READY</span> <span class="o">=</span> <span class="s2">&quot;ready&quot;</span>
+    <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="CustomFieldTypes">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.CustomFieldTypes">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomFieldTypes</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+    <span class="n">STRING</span> <span class="o">=</span> <span class="s2">&quot;string&quot;</span>
+    <span class="n">BOOLEAN</span> <span class="o">=</span> <span class="s2">&quot;boolean&quot;</span>
+    <span class="n">INTEGER</span> <span class="o">=</span> <span class="s2">&quot;integer&quot;</span>
+    <span class="n">FLOAT</span> <span class="o">=</span> <span class="s2">&quot;float&quot;</span>
+    <span class="n">MONETARY</span> <span class="o">=</span> <span class="s2">&quot;monetary&quot;</span>
+    <span class="n">DATE</span> <span class="o">=</span> <span class="s2">&quot;date&quot;</span>
+    <span class="n">URL</span> <span class="o">=</span> <span class="s2">&quot;url&quot;</span>
+    <span class="n">DOCUMENT_LINK</span> <span class="o">=</span> <span class="s2">&quot;documentlink&quot;</span>
+    <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="s2">&quot;unknown&quot;</span>
+
+    <span class="nd">@override</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_missing_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Literal[CustomFieldTypes.UNKNOWN]&quot;</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Handling unknown enum value&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;enum_class&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">UNKNOWN</span></div>
+
+
+
+<div class="viewcode-block" id="CustomFieldValues">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.CustomFieldValues">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomFieldValues</span><span class="p">(</span><span class="n">ConstModel</span><span class="p">):</span>
+    <span class="n">field</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">Any</span></div>
+
+
+
+<div class="viewcode-block" id="CustomFieldTypedDict">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.CustomFieldTypedDict">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomFieldTypedDict</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+    <span class="n">field</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">Any</span></div>
+
+
+
+<div class="viewcode-block" id="DocumentMetadataType">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.DocumentMetadataType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DocumentMetadataType</span><span class="p">(</span><span class="n">ConstModel</span><span class="p">):</span>
+    <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="DocumentSearchHitType">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.DocumentSearchHitType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DocumentSearchHitType</span><span class="p">(</span><span class="n">ConstModel</span><span class="p">):</span>
+    <span class="n">score</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">highlights</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">note_highlights</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">rank</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="MatchingAlgorithmType">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.MatchingAlgorithmType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MatchingAlgorithmType</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+    <span class="n">NONE</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">ANY</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">ALL</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">LITERAL</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">REGEX</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">FUZZY</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">AUTO</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="nd">@override</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_missing_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Literal[MatchingAlgorithmType.UNKNOWN]&quot;</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Handling unknown enum value&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;enum_class&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">UNKNOWN</span></div>
+
+
+
+<div class="viewcode-block" id="PermissionSetType">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.PermissionSetType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PermissionSetType</span><span class="p">(</span><span class="n">ConstModel</span><span class="p">):</span>
+    <span class="n">users</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">groups</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="PermissionTableType">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.PermissionTableType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PermissionTableType</span><span class="p">(</span><span class="n">ConstModel</span><span class="p">):</span>
+    <span class="n">view</span><span class="p">:</span> <span class="n">PermissionSetType</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">PermissionSetType</span><span class="p">)</span>
+    <span class="n">change</span><span class="p">:</span> <span class="n">PermissionSetType</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">PermissionSetType</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="RetrieveFileMode">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.RetrieveFileMode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RetrieveFileMode</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+    <span class="n">DOWNLOAD</span> <span class="o">=</span> <span class="s2">&quot;download&quot;</span>
+    <span class="n">PREVIEW</span> <span class="o">=</span> <span class="s2">&quot;preview&quot;</span>
+    <span class="n">THUMBNAIL</span> <span class="o">=</span> <span class="s2">&quot;thumb&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="SavedViewFilterRuleType">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.SavedViewFilterRuleType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SavedViewFilterRuleType</span><span class="p">(</span><span class="n">ConstModel</span><span class="p">):</span>
+    <span class="n">rule_type</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="ShareLinkFileVersionType">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.ShareLinkFileVersionType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ShareLinkFileVersionType</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+    <span class="n">ARCHIVE</span> <span class="o">=</span> <span class="s2">&quot;archive&quot;</span>
+    <span class="n">ORIGINAL</span> <span class="o">=</span> <span class="s2">&quot;original&quot;</span>
+    <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="s2">&quot;unknown&quot;</span>
+
+    <span class="nd">@override</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_missing_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Literal[ShareLinkFileVersionType.UNKNOWN]&quot;</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Handling unknown enum value&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;enum_class&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">UNKNOWN</span></div>
+
+
+
+<div class="viewcode-block" id="StatusType">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.StatusType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">StatusType</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+    <span class="n">OK</span> <span class="o">=</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span>
+    <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="s2">&quot;UNKNOWN&quot;</span>
+
+    <span class="nd">@override</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_missing_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Literal[StatusType.UNKNOWN]&quot;</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Handling unknown enum value&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;enum_class&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">UNKNOWN</span></div>
+
+
+
+<div class="viewcode-block" id="StatusDatabaseMigrationStatusType">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.StatusDatabaseMigrationStatusType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">StatusDatabaseMigrationStatusType</span><span class="p">(</span><span class="n">ConstModel</span><span class="p">):</span>
+    <span class="n">latest_migration</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">unapplied_migrations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="StatusDatabaseType">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.StatusDatabaseType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">StatusDatabaseType</span><span class="p">(</span><span class="n">ConstModel</span><span class="p">):</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">status</span><span class="p">:</span> <span class="n">StatusType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">error</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">migration_status</span><span class="p">:</span> <span class="n">StatusDatabaseMigrationStatusType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="StatusStorageType">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.StatusStorageType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">StatusStorageType</span><span class="p">(</span><span class="n">ConstModel</span><span class="p">):</span>
+    <span class="n">total</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">available</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="StatusTasksType">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.StatusTasksType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">StatusTasksType</span><span class="p">(</span><span class="n">ConstModel</span><span class="p">):</span>
+    <span class="n">redis_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">redis_status</span><span class="p">:</span> <span class="n">StatusType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">redis_error</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">celery_status</span><span class="p">:</span> <span class="n">StatusType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">index_status</span><span class="p">:</span> <span class="n">StatusType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">index_last_modified</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">index_error</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">classifier_status</span><span class="p">:</span> <span class="n">StatusType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">classifier_last_trained</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">classifier_error</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="TaskStatusType">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.TaskStatusType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TaskStatusType</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+    <span class="n">PENDING</span> <span class="o">=</span> <span class="s2">&quot;PENDING&quot;</span>
+    <span class="n">STARTED</span> <span class="o">=</span> <span class="s2">&quot;STARTED&quot;</span>
+    <span class="n">SUCCESS</span> <span class="o">=</span> <span class="s2">&quot;SUCCESS&quot;</span>
+    <span class="n">FAILURE</span> <span class="o">=</span> <span class="s2">&quot;FAILURE&quot;</span>
+    <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="s2">&quot;UNKNOWN&quot;</span>
+
+    <span class="nd">@override</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_missing_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Literal[TaskStatusType.UNKNOWN]&quot;</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Handling unknown enum value&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;enum_class&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">UNKNOWN</span></div>
+
+
+
+<div class="viewcode-block" id="WorkflowActionType">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.WorkflowActionType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">WorkflowActionType</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+    <span class="n">ASSIGNMENT</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="nd">@override</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_missing_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Literal[WorkflowActionType.UNKNOWN]&quot;</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Handling unknown enum value&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;enum_class&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">UNKNOWN</span></div>
+
+
+
+<div class="viewcode-block" id="WorkflowTriggerType">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.WorkflowTriggerType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">WorkflowTriggerType</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+    <span class="n">CONSUMPTION</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">DOCUMENT_ADDED</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">DOCUMENT_UPDATED</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="nd">@override</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_missing_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Literal[WorkflowTriggerType.UNKNOWN]&quot;</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Handling unknown enum value&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;enum_class&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">UNKNOWN</span></div>
+
+
+
+<div class="viewcode-block" id="WorkflowTriggerSourceType">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.WorkflowTriggerSourceType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">WorkflowTriggerSourceType</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+    <span class="n">CONSUME_FOLDER</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">API_UPLOAD</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">MAIL_FETCH</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="nd">@override</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_missing_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Literal[WorkflowTriggerSourceType.UNKNOWN]&quot;</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Handling unknown enum value&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;enum_class&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">UNKNOWN</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Jess Mann.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
