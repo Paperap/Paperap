@@ -9,7 +9,7 @@
         File:    test_signals.py
         Project: paperap
         Created: 2025-03-08
-        Version: 0.0.7
+        Version: 0.0.8
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -35,7 +35,7 @@ class TestSignalSystem(unittest.TestCase):
 
     def test_basic_signal_emit(self):
         # Simple transformation handler
-        def add_field(data: Dict[str, Any], **kwargs : Any) -> dict[str, Any]:
+        def add_field(data: dict[str, Any], **kwargs : Any) -> dict[str, Any]:
             data["added_field"] = "test"
             return data
 
@@ -173,7 +173,7 @@ class TestSignalSystem(unittest.TestCase):
         """Test creating a Signal directly and registering it."""
         # TODO: AI Generated Test. Will remove this note when it is reviewed.
         # Create a signal directly
-        signal = Signal[Dict[str, Any]]("direct.signal", "A directly created signal")
+        signal = Signal[dict[str, Any]]("direct.signal", "A directly created signal")
 
         # Register it with the registry
         self.registry.register(signal)
@@ -337,7 +337,7 @@ class TestSignalSystem(unittest.TestCase):
         """Test emitting a signal with explicit return type."""
         # TODO: AI Generated Test. Will remove this note when it is reviewed.
         # Create a handler that returns a list
-        def list_handler(data: List[str], **kwargs: Any) -> List[str]:
+        def list_handler(data: list[str], **kwargs: Any) -> list[str]:
             data.append("item")
             return data
 
@@ -345,7 +345,7 @@ class TestSignalSystem(unittest.TestCase):
         self.registry.connect("typed.signal", list_handler)
         result = self.registry.emit(
             "typed.signal",
-            return_type=List[str],
+            return_type=list[str],
             args=["initial"]
         )
 

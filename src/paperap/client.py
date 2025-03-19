@@ -47,6 +47,9 @@ from paperap.resources import (
     DocumentNoteResource,
     DocumentResource,
     DocumentTypeResource,
+    DocumentMetadataResource,
+    DocumentSuggestionsResource,
+    DownloadedDocumentResource,
     GroupResource,
     ProfileResource,
     SavedViewResource,
@@ -115,6 +118,9 @@ class PaperlessClient:
     correspondents: CorrespondentResource
     custom_fields: CustomFieldResource
     document_types: DocumentTypeResource
+    document_metadata: DocumentMetadataResource
+    document_suggestions: DocumentSuggestionsResource
+    downloaded_documents: DownloadedDocumentResource
     documents: DocumentResource
     document_notes: DocumentNoteResource
     groups: GroupResource
@@ -176,6 +182,9 @@ class PaperlessClient:
         self.correspondents = CorrespondentResource(self)
         self.custom_fields = CustomFieldResource(self)
         self.document_types = DocumentTypeResource(self)
+        self.document_metadata = DocumentMetadataResource(self)
+        self.document_suggestions = DocumentSuggestionsResource(self)
+        self.downloaded_documents = DownloadedDocumentResource(self)
         self.documents = DocumentResource(self)
         self.document_notes = DocumentNoteResource(self)
         self.groups = GroupResource(self)

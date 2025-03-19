@@ -35,6 +35,7 @@ class SettingsArgs(TypedDict, total=False):
     """
     Arguments for the settings class
     """
+
     base_url: str | URL
     token: str | None
     username: str | None
@@ -48,6 +49,7 @@ class Settings(BaseSettings):
     """
     Settings for the paperap library
     """
+
     token: str | None = None
     username: str | None = None
     password: str | None = None

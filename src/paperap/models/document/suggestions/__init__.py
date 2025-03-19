@@ -22,4 +22,5 @@ LAST MODIFIED:
 2025-03-18     By Jess Mann
 
 """
-from paperap.scripts.utils import setup_logging
+from paperap.models.document.suggestions.model import DocumentSuggestions
+from paperap.models.document.suggestions.queryset import DocumentSuggestionsQuerySet

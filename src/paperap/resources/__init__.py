@@ -6,7 +6,7 @@
        File:    __init__.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -24,6 +24,9 @@ from paperap.resources.correspondents import CorrespondentResource
 from paperap.resources.custom_fields import CustomFieldResource
 from paperap.resources.document_types import DocumentTypeResource
 from paperap.resources.documents import DocumentNoteResource, DocumentResource
+from paperap.resources.document_download import DownloadedDocumentResource
+from paperap.resources.document_metadata import DocumentMetadataResource
+from paperap.resources.document_suggestions import DocumentSuggestionsResource
 from paperap.resources.profile import ProfileResource
 from paperap.resources.saved_views import SavedViewResource
 from paperap.resources.share_links import ShareLinksResource

@@ -3,31 +3,36 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    utils.py
+File:    utils.py
         Project: paperap
-        Created: 2025-03-18
+Created: 2025-03-18
         Version: 0.0.8
-        Author:  Jess Mann
-        Email:   jess@jmann.me
+Author:  Jess Mann
+Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-18     By Jess Mann
+2025-03-18     By Jess Mann
 
 """
 
 import logging
 from typing import override
+
 import colorlog
 
+
 def setup_logging() -> logging.Logger:
+    """
+    Set up logging with colored output.
+    """
     logging.basicConfig(level=logging.ERROR)
 
     # Define a custom formatter class
@@ -58,7 +63,7 @@ def setup_logging() -> logging.Logger:
 
     app_logger = logging.getLogger(__name__)
     app_logger.setLevel(logging.INFO)
-    
+
     # Suppress logs from the 'requests' library below ERROR level
     #logging.getLogger("urllib3").setLevel(logging.ERROR)
     #logging.getLogger("requests").setLevel(logging.ERROR)

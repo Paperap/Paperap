@@ -6,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.7
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -386,7 +386,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
 
         return self._chain(filters={**self.filters, "ordering": ordering_param})
 
-    def first(self) -> Optional[_BaseModel]:
+    def first(self) -> _BaseModel | None:
         """
         Return the first object in the QuerySet, or None if empty.
 
@@ -401,7 +401,7 @@ class BaseQuerySet(Iterable[_BaseModel], Generic[_BaseModel]):
         results = list(self._chain(filters={**self.filters, "limit": 1}))
         return results[0] if results else None
 
-    def last(self) -> Optional[_BaseModel]:
+    def last(self) -> _BaseModel | None:
         """
         Return the last object in the QuerySet, or None if empty.
 

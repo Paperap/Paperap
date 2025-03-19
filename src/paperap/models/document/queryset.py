@@ -6,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -48,6 +48,18 @@ class CustomFieldQuery(NamedTuple):
 class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
     """
     QuerySet for Paperless-ngx documents with specialized filtering methods.
+
+    Examples:
+        >>> # Search for documents
+        >>> docs = client.documents().search("invoice")
+        >>> for doc in docs:
+        ...     print(doc.title)
+
+        >>> # Find documents similar to a specific document
+        >>> similar_docs = client.documents().more_like(42)
+        >>> for doc in similar_docs:
+        ...     print(doc.title)
+
     """
 
     def tag_id(self, tag_id: int | list[int]) -> Self:
@@ -92,6 +104,42 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         """
         return self.filter_field_by_str("title", title, exact=exact, case_insensitive=case_insensitive)
+
+    def search(self, query: str) -> "DocumentQuerySet":
+        """
+        Search for documents using a query string.
+
+        Args:
+            query: The search query.
+
+        Returns:
+            A queryset with the search results.
+
+        Examples:
+            >>> docs = client.documents().search("invoice")
+            >>> for doc in docs:
+            ...     print(doc.title)
+
+        """
+        return self.filter(query=query)
+
+    def more_like(self, document_id: int) -> "DocumentQuerySet":
+        """
+        Find documents similar to the specified document.
+
+        Args:
+            document_id: The ID of the document to find similar documents for.
+
+        Returns:
+            A queryset with similar documents.
+
+        Examples:
+            >>> similar_docs = client.documents().more_like(42)
+            >>> for doc in similar_docs:
+            ...     print(doc.title)
+
+        """
+        return self.filter(more_like_id=document_id)
 
     def correspondent(
         self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs

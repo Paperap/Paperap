@@ -39,6 +39,9 @@ from paperap.models.document.queryset import DocumentQuerySet
 if TYPE_CHECKING:
     from paperap.models.correspondent import Correspondent
     from paperap.models.custom_field import CustomField, CustomFieldQuerySet
+    from paperap.models.document.download import DownloadedDocument
+    from paperap.models.document.metadata import DocumentMetadata
+    from paperap.models.document.suggestions import DocumentSuggestions
     from paperap.models.document_type import DocumentType
     from paperap.models.storage_path import StoragePath
     from paperap.models.tag import Tag, TagQuerySet
@@ -121,6 +124,7 @@ class Document(StandardModel):
         tags: The tags associated with the document.
         title: The title of the document.
         user_can_change: Whether the user can change the document.
+        checksum: The checksum of the document.
 
     Examples:
         >>> document = client.documents().get(pk=1)
@@ -128,6 +132,19 @@ class Document(StandardModel):
         >>> document.save()
         >>> document.title
         'Example Document'
+
+        # Get document metadata
+        >>> metadata = document.get_metadata()
+        >>> print(metadata.original_mime_type)
+
+        # Download document
+        >>> download = document.download()
+        >>> with open(download.disposition_filename, 'wb') as f:
+        ...     f.write(download.content)
+
+        # Get document suggestions
+        >>> suggestions = document.get_suggestions()
+        >>> print(suggestions.tags)
 
     """
 
@@ -142,6 +159,7 @@ class Document(StandardModel):
     page_count: int | None = None
     title: str = ""
     user_can_change: bool | None = None
+    checksum: str | None = None
 
     created: datetime | None = Field(description="Creation timestamp", default=None)
     created_date: str | None = None
@@ -763,6 +781,78 @@ class Document(StandardModel):
 
         raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
     """
+
+    def get_metadata(self) -> "DocumentMetadata":
+        """
+        Get the metadata for this document.
+
+        Returns:
+            The document metadata.
+
+        Examples:
+            >>> metadata = document.get_metadata()
+            >>> print(metadata.original_mime_type)
+
+        """
+        raise NotImplementedError()
+
+    def download(self, original: bool = False) -> "DownloadedDocument":
+        """
+        Download the document file.
+
+        Args:
+            original: Whether to download the original file instead of the archived version.
+
+        Returns:
+            The downloaded document.
+
+        Examples:
+            >>> download = document.download()
+            >>> with open(download.disposition_filename, 'wb') as f:
+            ...     f.write(download.content)
+
+        """
+        raise NotImplementedError()
+
+    def preview(self, original: bool = False) -> "DownloadedDocument":
+        """
+        Get a preview of the document.
+
+        Args:
+            original: Whether to preview the original file instead of the archived version.
+
+        Returns:
+            The document preview.
+
+        """
+        raise NotImplementedError()
+
+    def thumbnail(self, original: bool = False) -> "DownloadedDocument":
+        """
+        Get the document thumbnail.
+
+        Args:
+            original: Whether to get the thumbnail of the original file.
+
+        Returns:
+            The document thumbnail.
+
+        """
+        raise NotImplementedError()
+
+    def get_suggestions(self) -> "DocumentSuggestions":
+        """
+        Get suggestions for this document.
+
+        Returns:
+            The document suggestions.
+
+        Examples:
+            >>> suggestions = document.get_suggestions()
+            >>> print(suggestions.tags)
+
+        """
+        raise NotImplementedError()
 
     @override
     def update_locally(self, from_db: bool | None = None, **kwargs: Any):

@@ -22,7 +22,9 @@
 from __future__ import annotations
 
 from string import Template
+
 import pydantic
+
 
 class PaperapError(Exception):
     """Base exception for all paperless client errors."""
@@ -43,7 +45,7 @@ class ConfigurationError(PaperapError):
 
 class PaperlessError(PaperapError):
     """Raised due to a feature or error of paperless ngx"""
-    
+
 class APIError(PaperlessError):
     """Raised when the API returns an error."""
 
@@ -120,7 +122,7 @@ class MultipleObjectsFoundError(APIError):
 class DocumentError(PaperapError):
     """Raised when an error occurs with a local document."""
 
-class NoImagesException(DocumentError):
+class NoImagesError(DocumentError):
     """Raised when no images are found in a pdf."""
 
 class DocumentParsingError(DocumentError):
