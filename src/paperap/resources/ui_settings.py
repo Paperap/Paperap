@@ -6,7 +6,7 @@
        File:    ui_settings.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -44,7 +44,7 @@ class UISettingsResource(StandardResource[UISettings, UISettingsQuerySet]):
         if not (response := self.client.request("GET", "ui_settings/")):
             return None
 
-        if isinstance(response, list) and len(response) > 0:
+        if response:
             return UISettings.from_dict(response)
         return None
 

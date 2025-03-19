@@ -31,7 +31,6 @@ from typing import TYPE_CHECKING, Annotated, Any, Iterable, Iterator, Optional, 
 import pydantic
 from pydantic import Field, field_serializer, field_validator, model_serializer
 from typing_extensions import TypeVar
-from yarl import URL
 
 from paperap.const import CustomFieldTypedDict, CustomFieldValues
 from paperap.exceptions import ResourceNotFoundError
@@ -69,7 +68,7 @@ class DocumentNote(StandardModel):
         read_only_fields = {"deleted_at", "restored_at", "transaction_id", "created"}
 
     @field_serializer("deleted_at", "restored_at", "created")
-    def serialize_datetime(self, value: datetime | None):
+    def serialize_datetime(self, value: datetime | None) -> str | None:
         """
         Serialize datetime fields to ISO format.
 
@@ -307,7 +306,7 @@ class Document(StandardModel):
         return value.isoformat() if value else None
 
     @field_serializer("notes")
-    def serialize_notes(self, value: list[DocumentNote]):
+    def serialize_notes(self, value: list[DocumentNote]) -> list[dict[str, Any]]:
         """
         Serialize notes to a list of dictionaries.
 

@@ -29,7 +29,7 @@ def main():
     if not sphinx_apidoc_path:
         print("Error: sphinx-apidoc not found in PATH", file=sys.stderr)
         sys.exit(1)
-        
+
     subprocess.run([
         sphinx_apidoc_path,
         "-o",
@@ -45,7 +45,7 @@ def main():
     if not sphinx_build_path:
         print("Error: sphinx-build not found in PATH", file=sys.stderr)
         sys.exit(1)
-        
+
     subprocess.run([
         sphinx_build_path,
         "-b",

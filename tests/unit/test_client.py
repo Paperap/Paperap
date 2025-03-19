@@ -29,7 +29,6 @@ from typing import Any, Dict, Iterator, override
 import unittest
 from unittest.mock import MagicMock, Mock, patch, PropertyMock
 from pathlib import Path
-from yarl import URL
 from string import Template
 
 from paperap.auth import AuthBase, BasicAuth, TokenAuth
@@ -219,8 +218,8 @@ class TestClientRequests(UnitTestCase):
         self.assertEqual(call_args["url"], "http://example.com/api/documents/$id/")
 
     def test_request_with_url_object(self):
-        """Test making a request with a URL object."""
-        url = URL("api/documents/")
+        """Test making a request with a pydantic HttpUrl object."""
+        url = HttpUrl("api/documents/")
         self.client.request("GET", url)
         call_args = self.mock_session_request.call_args[1]
         self.assertEqual(call_args["url"], "http://example.com/api/documents/")

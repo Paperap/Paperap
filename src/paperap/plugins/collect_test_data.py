@@ -135,8 +135,8 @@ class SampleDataCollector(Plugin):
             sanitized[key] = self._sanitize_value_recursive(key, value)
 
         # Replace "next" domain using regex
-        if "next" in response and isinstance(response["next"], str):
-            sanitized["next"] = re.sub(r"https?://.*?/", "https://example.com/", response["next"])
+        if (next_page := response.get("next", None)) and isinstance(next_page, str):
+            sanitized["next"] = re.sub(r"https?://.*?/", "https://example.com/", next_page)
 
         return sanitized
 

@@ -130,7 +130,7 @@ class DescribePhotos(BaseModel):
 
     @field_validator("max_threads", mode="before")
     @classmethod
-    def validate_max_threads(cls, value):
+    def validate_max_threads(cls, value) -> int:
         # Sensible default
         if not value:
             # default is between 1-4 threads. More than 4 presumptively stresses the HDD non-optimally.
@@ -441,7 +441,8 @@ class DescribePhotos(BaseModel):
 
             try:
                 # Convert content to bytes if it's a string
-                content_bytes = content if isinstance(content, bytes) else content.encode("utf-8")
+                #content_bytes = content if isinstance(content, bytes) else content.encode("utf-8")
+                content_bytes = content.encode("utf-8")
                 if not (response := self._send_describe_request(content_bytes, document)):
                     logger.error(f"OpenAI returned empty description for document {document.id}.")
                     return False
@@ -532,7 +533,7 @@ class DescribePhotos(BaseModel):
 
         if title and ScriptDefaults.NEEDS_TITLE in document.tag_names:
             try:
-                document.title = title
+                document.title = str(title)
                 document.remove_tag(ScriptDefaults.NEEDS_TITLE)
             except Exception as e:
                 logger.error(
@@ -544,7 +545,7 @@ class DescribePhotos(BaseModel):
 
         if date and "ScriptDefaults.NEEDS_DATE" in document.tag_names:
             try:
-                document.created = date
+                document.created = date # type: ignore # pydantic will handle casting
                 document.remove_tag("ScriptDefaults.NEEDS_DATE")
             except Exception as e:
                 logger.error(

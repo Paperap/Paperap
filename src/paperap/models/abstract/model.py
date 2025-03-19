@@ -35,12 +35,11 @@ from typing import TYPE_CHECKING, Any, ClassVar, Generic, Literal, Optional, Sel
 import pydantic
 from pydantic import Field, PrivateAttr
 from typing_extensions import TypeVar
-from yarl import URL
 
 from paperap.const import FilteringStrategies, ModelStatus
 from paperap.exceptions import APIError, ConfigurationError, ReadOnlyFieldError, RequestError, ResourceNotFoundError
 from paperap.models.abstract.meta import StatusContext
-from paperap.models.abstract.queryset import BaseQuerySet
+from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.signals import registry
 
 if TYPE_CHECKING:
@@ -50,7 +49,6 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 _Self = TypeVar("_Self", bound="BaseModel")
-
 
 class ModelConfigType(TypedDict):
     populate_by_name: bool
@@ -70,8 +68,7 @@ BASE_MODEL_CONFIG: ModelConfigType = {
     "arbitrary_types_allowed": True,
 }
 
-
-class BaseModel(pydantic.BaseModel, ABC):
+class BaseModel[_Resource: BaseResource, _QuerySet: BaseQuerySet](pydantic.BaseModel, ABC):
     """
     Base model for all Paperless-ngx API objects.
 
@@ -88,7 +85,7 @@ class BaseModel(pydantic.BaseModel, ABC):
 
     """
 
-    _meta: "ClassVar[Meta[Self]]"
+    _meta: "ClassVar[Meta[Self]]" # type: ignore
     _save_lock: threading.RLock = PrivateAttr(default_factory=threading.RLock)
     _pending_save: concurrent.futures.Future | None = PrivateAttr(default=None)
     _save_executor: concurrent.futures.ThreadPoolExecutor | None = None
@@ -103,9 +100,9 @@ class BaseModel(pydantic.BaseModel, ABC):
     if TYPE_CHECKING:
         # This is actually set in Meta, but declaring it here helps pydantic handle dynamic __init__ arguments
         # TODO: Provide a better solution for pydantic, so there isn't confusion with intellisense
-        resource: "BaseResource[Self]"
+        resource: _Resource
 
-    class Meta(Generic[_Self]):
+    class Meta[_Self]:
         """
         Metadata for the Model.
 
@@ -124,7 +121,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             ValueError: If both ALLOW_ALL and ALLOW_NONE filtering strategies are set.
 
         """
-
+        model: type[_Self]
         # The name of the model.
         # It will default to the classname
         name: str
@@ -144,8 +141,8 @@ class BaseModel(pydantic.BaseModel, ABC):
         # Strategies for filtering.
         # This determines which of the above lists will be used to allow or deny filters to QuerySets.
         filtering_strategies: ClassVar[set[FilteringStrategies]] = {FilteringStrategies.BLACKLIST}
-        resource: "BaseResource"
-        queryset: type[BaseQuerySet[_Self]] = BaseQuerySet
+        resource: _Resource
+        queryset: type[_QuerySet]
         # A map of field names to their attribute names.
         # Parser uses this to transform input and output data.
         # This will be populated from all parent classes.
@@ -212,7 +209,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             # Not disabled, so it's allowed
             return True
 
-    @classmethod
+    @override
     def __init_subclass__(cls, **kwargs: Any) -> None:
         """
         Initialize subclass and set up metadata.
@@ -260,7 +257,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         field_map = cls.Meta.field_map
         for base in cls.__bases__:
             _meta: BaseModel.Meta[Self] | None
-            if _meta := getattr(base, "Meta", None):
+            if _meta := getattr(base, "Meta", None): # type: ignore # we are confident this is BaseModel.Meta
                 if hasattr(_meta, "read_only_fields"):
                     read_only_fields.update(_meta.read_only_fields)
                 if hasattr(_meta, "filtering_disabled"):
@@ -293,7 +290,7 @@ class BaseModel(pydantic.BaseModel, ABC):
     # type ignore because mypy complains about non-required keys
     model_config = pydantic.ConfigDict(**BASE_MODEL_CONFIG)  # type: ignore
 
-    def __init__(self, resource: "BaseResource[Self] | None" = None, **data: Any) -> None:
+    def __init__(self, resource: _Resource | None = None, **data: Any) -> None:
         """
         Initialize the model with resource and data.
 
@@ -316,7 +313,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             )
 
     @property
-    def _resource(self) -> "BaseResource[Self]":
+    def _resource(self) -> _Resource:
         """
         Get the resource associated with this model.
 
@@ -598,7 +595,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         return f"{self._meta.name.capitalize()}"
 
 
-class StandardModel(BaseModel, ABC):
+class StandardModel[_Resource: StandardResource, _QuerySet: StandardQuerySet](BaseModel[_Resource, _QuerySet], ABC):
     """
     Standard model for Paperless-ngx API objects with an ID field.
 
@@ -768,7 +765,7 @@ class StandardModel(BaseModel, ABC):
         self._pending_save = future
         future.add_done_callback(self._handle_save_result_async)
 
-    def _perform_save_async(self) -> Optional["StandardModel"]:
+    def _perform_save_async(self) -> Self | None:
         """
         Perform the actual save operation.
 
@@ -803,7 +800,7 @@ class StandardModel(BaseModel, ABC):
         """
         try:
             # Get the result with a timeout
-            new_model = future.result(timeout=self._meta.save_timeout)
+            new_model : Self = future.result(timeout=self._meta.save_timeout)
 
             if not new_model:
                 logger.warning(f"Result of save was none for model id {self.id}")

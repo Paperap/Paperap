@@ -108,7 +108,6 @@ class PaperlessClient:
         ```
 
     """
-
     settings: Settings
     auth: AuthBase
     session: requests.Session
@@ -139,7 +138,7 @@ class PaperlessClient:
     def __init__(self, settings: Settings | None = None, **kwargs: Unpack[SettingsArgs]) -> None:
         if not settings:
             # Any params not provided in kwargs will be loaded from env vars
-            settings = Settings(**kwargs)  # type: ignore # base_url is a URL, but accepts str | URL
+            settings = Settings(**kwargs)
 
         self.settings = settings
         # Prioritize username/password over token if both are provided
@@ -234,20 +233,19 @@ class PaperlessClient:
 
     def _get_auth_params(self) -> dict[str, Any]:
         """Get authentication parameters for requests."""
-        return self.auth.get_auth_params() if self.auth else {}
+        return self.auth.get_auth_params()
 
     def get_headers(self) -> dict[str, str]:
         """Get headers for requests."""
         headers = {}
 
-        if self.auth:
-            headers.update(self.auth.get_auth_headers())
+        headers.update(self.auth.get_auth_headers())
 
         return headers
 
     def close(self) -> None:
         """Close the client and release resources."""
-        if hasattr(self, "session") and self.session:
+        if hasattr(self, "session"):
             self.session.close()
 
     def request_raw(

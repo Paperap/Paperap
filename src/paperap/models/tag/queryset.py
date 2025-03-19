@@ -6,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -37,36 +37,6 @@ class TagQuerySet(StandardQuerySet["Tag"], HasStandard):
     """
     QuerySet for Paperless-ngx tags with specialized filtering methods.
     """
-
-    def name(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
-        """
-        Filter tags by name.
-
-        Args:
-            value: The tag name to filter by
-            exact: If True, match the exact name, otherwise use contains
-            case_insensitive: If True, ignore case when matching
-
-        Returns:
-            Filtered TagQuerySet
-
-        """
-        return self.filter_field_by_str("name", value, exact=exact, case_insensitive=case_insensitive)
-
-    def slug(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
-        """
-        Filter tags by slug.
-
-        Args:
-            value: The slug to filter by
-            exact: If True, match the exact slug, otherwise use contains
-            case_insensitive: If True, ignore case when matching
-
-        Returns:
-            Filtered TagQuerySet
-
-        """
-        return self.filter_field_by_str("slug", value, exact=exact, case_insensitive=case_insensitive)
 
     def colour(self, value: str | int, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """

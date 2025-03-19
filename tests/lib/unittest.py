@@ -70,18 +70,13 @@ from tests.lib.testcase import TestMixin
 
 logger = logging.getLogger(__name__)
 
-_StandardModel = TypeVar("_StandardModel", bound="StandardModel", default="StandardModel")
-_StandardResource = TypeVar("_StandardResource", bound="StandardResource", default="StandardResource")
-_StandardQuerySet = TypeVar("_StandardQuerySet", bound="StandardQuerySet", default="StandardQuerySet")
-
 class UnitTestConfigurationError(PaperapError):
     """Raised when there is a configuration error in the testing setup."""
     pass
 
-class UnitTestCase(
+class UnitTestCase[_StandardModel, _StandardResource, _StandardQuerySet](
     unittest.TestCase,
-    TestMixin[_StandardModel, _StandardResource, _StandardQuerySet],
-    Generic[_StandardModel, _StandardResource, _StandardQuerySet]
+    TestMixin[_StandardModel, _StandardResource, _StandardQuerySet]
 ):
     @override
     def setUp(self) -> None:

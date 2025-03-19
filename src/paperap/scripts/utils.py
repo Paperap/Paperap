@@ -47,7 +47,7 @@ def setup_logging() -> logging.Logger:
     # Define a custom formatter class
     class CustomFormatter(colorlog.ColoredFormatter):
         @override
-        def format(self, record):
+        def format(self, record) -> str:
             self._style._fmt = "(%(log_color)s%(levelname)s%(reset)s) %(message)s"
             return super().format(record)
 

@@ -9,7 +9,7 @@
         File:    models.py
         Project: paperap
         Created: 2025-03-07
-        Version: 0.0.7
+        Version: 0.0.8
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -42,9 +42,7 @@ if TYPE_CHECKING:
 
 fake = Faker()
 
-_StandardModel = TypeVar("_StandardModel", bound="StandardModel", default="StandardModel")
-
-class PydanticFactory(factory.Factory[_StandardModel], Generic[_StandardModel]):
+class PydanticFactory[_StandardModel](factory.Factory[_StandardModel]):
     """Base factory for Pydantic models."""
     class Meta: # type: ignore # pyright handles this wrong
         abstract = True

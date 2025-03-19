@@ -6,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -105,46 +105,3 @@ class StoragePathQuerySet(StandardQuerySet["StoragePath"], HasStandard):
 
         """
         return self.filter(user_can_change=can_change)
-
-    def name(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
-        """
-        Filter storage paths by name.
-
-        Args:
-            value: The name to filter by
-            exact: If True, match the exact name, otherwise use contains
-            case_insensitive: If True, ignore case when matching
-
-        Returns:
-            Filtered StoragePathQuerySet
-
-        """
-        return self.filter_field_by_str("name", value, exact=exact, case_insensitive=case_insensitive)
-
-    def slug(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
-        """
-        Filter storage paths by slug.
-
-        Args:
-            value: The slug to filter by
-            exact: If True, match the exact slug, otherwise use contains
-            case_insensitive: If True, ignore case when matching
-
-        Returns:
-            Filtered StoragePathQuerySet
-
-        """
-        return self.filter_field_by_str("slug", value, exact=exact, case_insensitive=case_insensitive)
-
-    def owner(self, value: int) -> Self:
-        """
-        Filter storage paths by owner.
-
-        Args:
-            value: The owner ID to filter by
-
-        Returns:
-            Filtered StoragePathQuerySet
-
-        """
-        return self.filter(owner=value)

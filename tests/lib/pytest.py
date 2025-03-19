@@ -69,13 +69,8 @@ from tests.lib.testcase import TestMixin
 
 logger = logging.getLogger(__name__)
 
-_StandardModel = TypeVar("_StandardModel", bound="StandardModel", default="StandardModel")
-_StandardResource = TypeVar("_StandardResource", bound="StandardResource", default="StandardResource")
-_StandardQuerySet = TypeVar("_StandardQuerySet", bound="StandardQuerySet", default="StandardQuerySet")
-
-class PyTestCase(
-    TestMixin[_StandardModel, _StandardResource, _StandardQuerySet],
-    Generic[_StandardModel, _StandardResource, _StandardQuerySet]
+class PyTestCase[_StandardModel, _StandardResource, _StandardQuerySet](
+    TestMixin[_StandardModel, _StandardResource, _StandardQuerySet]
 ):
     @pytest.fixture(autouse=True)
     def setUp(self, mocker) -> None:

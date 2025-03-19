@@ -37,8 +37,6 @@ from faker import Faker
 if TYPE_CHECKING:
     from paperap.resources import BaseResource
 
-_BaseResource = TypeVar("_BaseResource", bound="BaseResource")
-
 def defaults(defaults : dict[str, Any], **kwargs : Any) -> dict[str, Any]:
     """
     Merge default fields with overrides for hypothesis @example

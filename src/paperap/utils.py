@@ -6,7 +6,7 @@
        File:    utils.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -27,7 +27,7 @@ from datetime import datetime
 from typing import Any, BinaryIO, Optional
 
 
-def datetime_to_str(dt: datetime) -> str:
+def datetime_to_str(dt: datetime | None) -> str | None:
     """
     Convert a datetime object to an ISO 8601 string for the API.
 

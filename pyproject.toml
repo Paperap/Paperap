@@ -989,12 +989,21 @@ disable_error_code = [
   "no-untyped-call",
   "type-arg",
   "attr-defined",
+  "explicit-any",
+  "decorated-any",
+  "any",
+  "ignore-without-code",
+  "func-returns-value", # due to pydantic PrivateAttr with basedmypy
+  "redundant-expr", # basedmypy complaining about typeguards / future proofing
+  "unreachable", # same as above
+  "no-untyped-usage", # until we have defaults
 ]
 
 # The Factory Boy type stubs don't play well with mypy, and this is used exclusively for tests.
 exclude = [
     'paperap/tests/factories/.*',
-    'tests/',
+    'tests/unit',
+    'tests/integration',
 ]
 
 [tool.pydantic-mypy]
@@ -1023,7 +1032,6 @@ dev = [
     "factory-boy>=3.3.3",
     "hypothesis>=6.129.0",
     "icecream>=2.1.4",
-    "mypy>=1.15.0",
     "pre-commit>=4.1.0",
     "prospector>=1.15.2",
     "pydoctor>=24.11.2",
@@ -1041,4 +1049,6 @@ dev = [
     "types-factory-boy>=0.4.1",
     "types-pyyaml>=6.0.12.20241230",
     "types-requests>=2.32.0.20241016",
+    "basedmypy>=2.10.0",
+    "pydantic-basedtyping>=0.1.0",
 ]
