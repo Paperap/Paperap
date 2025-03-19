@@ -24,6 +24,7 @@ LAST MODIFIED:
 
 from __future__ import annotations
 
+import logging
 from datetime import datetime
 from typing import TYPE_CHECKING, Annotated, Any, Iterable, Iterator, Optional, TypedDict, cast, override
 
@@ -33,6 +34,7 @@ from typing_extensions import TypeVar
 from yarl import URL
 
 from paperap.const import CustomFieldTypedDict, CustomFieldValues
+from paperap.exceptions import ResourceNotFoundError
 from paperap.models.abstract import FilteringStrategies, StandardModel
 from paperap.models.document.queryset import DocumentQuerySet
 
@@ -47,6 +49,7 @@ if TYPE_CHECKING:
     from paperap.models.tag import Tag, TagQuerySet
     from paperap.models.user import User
 
+logger = logging.getLogger(__name__)
 
 class DocumentNote(StandardModel):
     """
@@ -782,6 +785,57 @@ class Document(StandardModel):
         raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
     """
 
+    def add_tag(self, tag: "Tag | int | str") -> None:
+        """
+        Add a tag to the document.
+
+        Args:
+            tag: The tag to add.
+
+        """
+        if isinstance(tag, int):
+            self.tag_ids.append(tag)
+            return
+
+        if isinstance(tag, StandardModel):
+            self.tag_ids.append(tag.id)
+            return
+
+        if isinstance(tag, str):
+            if not (instance := self._client.tags().filter(name=tag).first()):
+                raise ResourceNotFoundError(f"Tag '{tag}' not found")
+            self.tag_ids.append(instance.id)
+            return
+
+        raise TypeError(f"Invalid type for tag: {type(tag)}")
+
+    def remove_tag(self, tag: "Tag | int | str") -> None:
+        """
+        Remove a tag from the document.
+
+        Args:
+            tag: The tag to remove.
+
+        """
+        if isinstance(tag, int):
+            # TODO: Handle removal with consideration of "tags can't be empty" rule in paperless
+            self.tag_ids.remove(tag)
+            return
+
+        if isinstance(tag, StandardModel):
+            # TODO: Handle removal with consideration of "tags can't be empty" rule in paperless
+            self.tag_ids.remove(tag.id)
+            return
+
+        if isinstance(tag, str):
+            # TODO: Handle removal with consideration of "tags can't be empty" rule in paperless
+            if not (instance := self._client.tags().filter(name=tag).first()):
+                raise ResourceNotFoundError(f"Tag '{tag}' not found")
+            self.tag_ids.remove(instance.id)
+            return
+            
+        raise TypeError(f"Invalid type for tag: {type(tag)}")
+
     def get_metadata(self) -> "DocumentMetadata":
         """
         Get the metadata for this document.
@@ -853,6 +907,16 @@ class Document(StandardModel):
 
         """
         raise NotImplementedError()
+
+    def append_content(self, value : str):
+        """
+        Append content to the document.
+
+        Args:
+            value: The content to append.
+
+        """
+        self.content = f'{self.content}\n{value}'
 
     @override
     def update_locally(self, from_db: bool | None = None, **kwargs: Any):

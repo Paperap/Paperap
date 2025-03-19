@@ -21,8 +21,6 @@ LAST MODIFIED:
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
-
 from paperap.models.abstract import StandardModel
 
 
@@ -75,8 +73,16 @@ class DocumentMetadata(StandardModel):
 
     class Meta(StandardModel.Meta):
         read_only_fields = {
-            "original_checksum", "original_size", "original_mime_type",
-            "media_filename", "has_archive_version", "original_metadata",
-            "archive_checksum", "archive_media_filename", "original_filename",
-            "lang", "archive_size", "archive_metadata"
+            "original_checksum",
+            "original_size",
+            "original_mime_type",
+            "media_filename",
+            "has_archive_version",
+            "original_metadata",
+            "archive_checksum",
+            "archive_media_filename",
+            "original_filename",
+            "lang",
+            "archive_size",
+            "archive_metadata",
         }

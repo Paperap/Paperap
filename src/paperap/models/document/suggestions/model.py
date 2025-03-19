@@ -47,6 +47,4 @@ class DocumentSuggestions(StandardModel):
     dates: list[date] = []
 
     class Meta(StandardModel.Meta):
-        read_only_fields = {
-            "correspondents", "tags", "document_types", "storage_paths", "dates"
-        }
+        read_only_fields = {"correspondents", "tags", "document_types", "storage_paths", "dates"}

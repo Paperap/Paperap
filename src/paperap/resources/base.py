@@ -134,11 +134,8 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         if not isinstance(value, dict):
             raise ModelValidationError("endpoints must be a dictionary")
 
-        converted: dict[str, Template] = {}
+        converted: Endpoints = {}
         for k, v in value.items():
-            if k not in ["list", "detail", "create", "update", "delete"]:
-                raise ModelValidationError("endpoint keys must be list, detail, create, update, or delete")
-
             if isinstance(v, Template):
                 converted[k] = v
                 continue
@@ -151,13 +148,9 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             except ValueError as e:
                 raise ModelValidationError(f"endpoints[{k}] is not a valid template: {e}") from e
 
-        # list is required
-        if "list" not in converted:
-            raise ModelValidationError("list endpoint is required")
-
         # We validated that converted matches endpoints above
-        return cast(Endpoints, converted)
-
+        return converted
+    
     def all(self) -> _BaseQuerySet:
         """
         Return a QuerySet representing all objects of this resource type.

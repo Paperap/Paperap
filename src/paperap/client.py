@@ -44,11 +44,11 @@ from paperap.exceptions import (
 from paperap.resources import (
     CorrespondentResource,
     CustomFieldResource,
+    DocumentMetadataResource,
     DocumentNoteResource,
     DocumentResource,
-    DocumentTypeResource,
-    DocumentMetadataResource,
     DocumentSuggestionsResource,
+    DocumentTypeResource,
     DownloadedDocumentResource,
     GroupResource,
     ProfileResource,
@@ -236,7 +236,7 @@ class PaperlessClient:
         """Get authentication parameters for requests."""
         return self.auth.get_auth_params() if self.auth else {}
 
-    def _get_headers(self) -> dict[str, str]:
+    def get_headers(self) -> dict[str, str]:
         """Get headers for requests."""
         headers = {}
 
@@ -250,7 +250,7 @@ class PaperlessClient:
         if hasattr(self, "session") and self.session:
             self.session.close()
 
-    def _request(
+    def request_raw(
         self,
         method: str,
         endpoint: str | URL | Template,
@@ -301,7 +301,7 @@ class PaperlessClient:
         logger.debug("Requesting %s %s", method, url)
 
         # Add headers from authentication and session defaults
-        headers = {**self.session.headers, **self._get_headers()}
+        headers = {**self.session.headers, **self.get_headers()}
 
         # If we're uploading files, don't set Content-Type
         if files:
@@ -485,7 +485,7 @@ class PaperlessClient:
             "client.request:before", "Before a request is sent to the Paperless server", args=[self], kwargs=kwargs
         )
 
-        if not (response := self._request(method, endpoint, params=params, data=data, files=files)):
+        if not (response := self.request_raw(method, endpoint, params=params, data=data, files=files)):
             return None
 
         registry.emit(

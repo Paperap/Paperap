@@ -22,6 +22,7 @@ LAST MODIFIED:
 2025-03-18     By Jess Mann
 
 """
+
 from __future__ import annotations
 
 import logging
@@ -33,6 +34,7 @@ if TYPE_CHECKING:
     from paperap.models.document.metadata.model import DocumentMetadata
 
 logger = logging.getLogger(__name__)
+
 
 class DocumentMetadataQuerySet(StandardQuerySet["DocumentMetadata"]):
     pass

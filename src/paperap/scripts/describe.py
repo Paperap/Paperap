@@ -22,6 +22,7 @@ LAST MODIFIED:
 2025-03-18     By Jess Mann
 
 """
+
 from __future__ import annotations
 
 import argparse
@@ -60,22 +61,27 @@ from paperap.settings import Settings
 
 logger = logging.getLogger(__name__)
 
-DESCRIBE_ACCEPTED_FORMATS = ['png', 'jpg', 'jpeg', 'gif', 'tif', 'tiff', 'bmp', 'webp', 'pdf']
-OPENAI_ACCEPTED_FORMATS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'pdf']
+DESCRIBE_ACCEPTED_FORMATS = ["png", "jpg", "jpeg", "gif", "tif", "tiff", "bmp", "webp", "pdf"]
+OPENAI_ACCEPTED_FORMATS = ["png", "jpg", "jpeg", "gif", "webp", "pdf"]
 MIME_TYPES = {
-    'png': 'image/png',
-    'jpeg': 'image/jpeg',
-    'jpg': 'image/jpeg',
-    'gif': 'image/gif',
-    'webp': 'image/webp',
+    "png": "image/png",
+    "jpeg": "image/jpeg",
+    "jpg": "image/jpeg",
+    "gif": "image/gif",
+    "webp": "image/webp",
 }
+
 
 class ScriptDefaults(StrEnum):
     NEEDS_DESCRIPTION = "needs-description"
     DESCRIBED = "described"
+    NEEDS_TITLE = "needs-title"
+    NEEDS_DATE = "needs-date"
     MODEL = "gpt-4o-mini"
 
+
 SCRIPT_VERSION = "0.2.2"
+
 
 class DescribePhotos(BaseModel):
     """
@@ -96,7 +102,7 @@ class DescribePhotos(BaseModel):
     @property
     def progress_bar(self) -> alive_bar:
         if not self._progress_bar:
-            self._progress_bar = alive_bar(title='Running', unknown='waves')
+            self._progress_bar = alive_bar(title="Running", unknown="waves")
         return self._progress_bar
 
     @property
@@ -115,14 +121,14 @@ class DescribePhotos(BaseModel):
     def openai(self) -> OpenAI:
         if not self._openai:
             if self.openai_url:
-                logger.info('Using custom OpenAI URL: %s', self.openai_url)
+                logger.info("Using custom OpenAI URL: %s", self.openai_url)
                 self._openai = OpenAI(api_key=self.openai_key, base_url=self.openai_url)
             else:
-                logger.info('Using default OpenAI URL')
+                logger.info("Using default OpenAI URL")
                 self._openai = OpenAI()
         return self._openai
 
-    @field_validator('max_threads', mode='before')
+    @field_validator("max_threads", mode="before")
     @classmethod
     def validate_max_threads(cls, value):
         # Sensible default
@@ -133,13 +139,13 @@ class DescribePhotos(BaseModel):
             return max(1, min(4, round(cpu_count / 2)))
 
         if value < 1:
-            raise ValueError('max_threads must be a positive integer.')
+            raise ValueError("max_threads must be a positive integer.")
         return value
 
     @property
     def jinja_env(self) -> Environment:
         if not self._jinja_env:
-            templates_path = Path(__file__).parent / 'templates'
+            templates_path = Path(__file__).parent / "templates"
             self._jinja_env = Environment(loader=FileSystemLoader(str(templates_path)), autoescape=True)
         return self._jinja_env
 
@@ -158,7 +164,7 @@ class DescribePhotos(BaseModel):
 
         template_name = self.choose_template(document)
         template_path = f"templates/{template_name}"
-        logger.debug('Using template: %s', template_path)
+        logger.debug("Using template: %s", template_path)
         template = self.jinja_env.get_template(template_path)
 
         if not (description := template.render(document=document)):
@@ -177,7 +183,7 @@ class DescribePhotos(BaseModel):
             bytes | None: The first {max_images} images as bytes or None if no image is found.
 
         """
-        results : list[bytes] = []
+        results: list[bytes] = []
         image_count = 0
         try:
             # Open the PDF from bytes
@@ -206,8 +212,12 @@ class DescribePhotos(BaseModel):
                         logger.debug(f"Extracted image from page {page_number + 1} of the PDF.")
                     except Exception as e:
                         count = len(results)
-                        logger.error("Failed to extract one image from page %s of PDF. Result count %s: %s",
-                                     page_number + 1, count, e)
+                        logger.error(
+                            "Failed to extract one image from page %s of PDF. Result count %s: %s",
+                            page_number + 1,
+                            count,
+                            e,
+                        )
                         if count < 1:
                             raise
 
@@ -217,8 +227,8 @@ class DescribePhotos(BaseModel):
 
         if not results:
             if image_count < 1:
-                raise NoImagesError('No images found in the PDF')
-            raise DocumentParsingError('Unable to extract images from PDF.')
+                raise NoImagesError("No images found in the PDF")
+            raise DocumentParsingError("Unable to extract images from PDF.")
 
         return results
 
@@ -276,7 +286,7 @@ class DescribePhotos(BaseModel):
             logger.debug(f"Failed to convert contents to png, will try other methods: {e}")
 
         # Interpret it as a pdf
-        if (image_contents_list := self.extract_images_from_pdf(content)):
+        if image_contents_list := self.extract_images_from_pdf(content):
             return [self._convert_to_png(image) for image in image_contents_list]
 
         return []
@@ -329,18 +339,17 @@ class DescribePhotos(BaseModel):
             ]
 
             for image in images:
-                message_contents.append({
-                    "type": "image_url",
-                    "image_url": {"url": f"data:image/png;base64,{image}"},
-                })  # type: ignore
+                message_contents.append(
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/png;base64,{image}"},
+                    }
+                )  # type: ignore
 
             response = self.openai.chat.completions.create(
                 model=self.openai_model,
                 messages=[
-                    {
-                        "role": "user",
-                        "content": message_contents
-                    } # type: ignore
+                    {"role": "user", "content": message_contents}  # type: ignore
                 ],
                 max_tokens=500,
             )
@@ -348,20 +357,36 @@ class DescribePhotos(BaseModel):
             logger.debug(f"Generated description: {description}")
 
         except fitz.FileDataError as fde:
-            logger.error("Failed to generate description due to error reading file #%s: %s -> %s",
-                         document.id, document.original_file_name, fde)
+            logger.error(
+                "Failed to generate description due to error reading file #%s: %s -> %s",
+                document.id,
+                document.original_file_name,
+                fde,
+            )
 
         except ValueError as ve:
-            logger.warning("Failed to generate description for document #%s: %s. Continuing with next image -> %s",
-                document.id, document.original_file_name, ve)
+            logger.warning(
+                "Failed to generate description for document #%s: %s. Continuing with next image -> %s",
+                document.id,
+                document.original_file_name,
+                ve,
+            )
 
         except UnidentifiedImageError as uii:
-            logger.warning('Failed to identify image format for document #%s: %s. Continuing with next image -> %s',
-                document.id, document.original_file_name, uii)
+            logger.warning(
+                "Failed to identify image format for document #%s: %s. Continuing with next image -> %s",
+                document.id,
+                document.original_file_name,
+                uii,
+            )
 
         except openai.APIConnectionError as ace:
-            logger.error("API Connection Error. Is the OpenAI API URL correct? URL: %s, model: %s -> %s",
-                self.openai_url, self.openai_model, ace)
+            logger.error(
+                "API Connection Error. Is the OpenAI API URL correct? URL: %s, model: %s -> %s",
+                self.openai_url,
+                self.openai_model,
+                ace,
+            )
             raise
 
         return description
@@ -394,15 +419,14 @@ class DescribePhotos(BaseModel):
         The document object passed in will be updated with the description.
 
         Args:
-            document (dict): The document to describe.
+            document: The document to describe.
 
         """
         response = None
         try:
             logger.debug(f"Describing document {document.id} using OpenAI...")
 
-            content = document.content
-            if not content:
+            if not (content := document.content):
                 logger.error("Document content is empty for document #%s", document.id)
                 return
 
@@ -424,8 +448,12 @@ class DescribePhotos(BaseModel):
                 return
             except openai.BadRequestError as e:
                 if "invalid_image_format" not in str(e):
-                    logger.error("Failed to generate description for document #%s: %s -> %s",
-                                 document.id, document.original_file_name, e)
+                    logger.error(
+                        "Failed to generate description for document #%s: %s -> %s",
+                        document.id,
+                        document.original_file_name,
+                        e,
+                    )
                     return
 
                 logger.debug("Bad format for document #%s: %s -> %s", document.id, document.original_file_name, e)
@@ -450,17 +478,22 @@ class DescribePhotos(BaseModel):
 
         """
         # Attempt to parse response as json
-        if not (parsed_response := self.parse_json(response, document)):
-            logger.debug('Unable to process response after failed json parsing')
+        try:
+            if not (parsed_response := json.loads(response)):
+                logger.debug("Unable to process response after failed json parsing")
+                return document
+        except json.JSONDecodeError as jde:
+            logger.error("Failed to parse response as JSON: %s", jde)
             return document
 
         # Check if parsed_response is a dictionary
         if not isinstance(parsed_response, dict):
             logger.error(
                 "Parsed response not a dictionary. Saving response raw to document.content. Document #%s: %s",
-                document.id, document.original_file_name
+                document.id,
+                document.original_file_name,
             )
-            self.append_document_content(document, response)
+            document.append_content(response)
             return document
 
         # Attempt to grab "title", "description", "tags", "date" from parsed_response
@@ -490,26 +523,34 @@ class DescribePhotos(BaseModel):
         if not any([description, summary, content]):
             full_description += f"\n\nFull AI Response: {parsed_response}"
 
-        if title and "needs-title" in document.tag_names:
+        if title and ScriptDefaults.NEEDS_TITLE in document.tag_names:
             try:
                 document.title = title
-                self.remove_tag("needs-title", document)
+                document.remove_tag(ScriptDefaults.NEEDS_TITLE)
             except Exception as e:
-                logger.error("Failed to update document title. Document #%s: %s -> %s",
-                    document.id, document.original_file_name, e)
+                logger.error(
+                    "Failed to update document title. Document #%s: %s -> %s",
+                    document.id,
+                    document.original_file_name,
+                    e,
+                )
 
-        if date and "needs-date" in document.tag_names:
+        if date and "ScriptDefaults.NEEDS_DATE" in document.tag_names:
             try:
-                self.update_document_date(document, date)
-                self.remove_tag("needs-date", document)
+                document.created = date
+                document.remove_tag("ScriptDefaults.NEEDS_DATE")
             except Exception as e:
-                logger.error("Failed to update document date. Document #%s: %s -> %s",
-                    document.id, document.original_file_name, e)
+                logger.error(
+                    "Failed to update document date. Document #%s: %s -> %s",
+                    document.id,
+                    document.original_file_name,
+                    e,
+                )
 
         # Append the description to the document
-        self.append_document_content(document, full_description)
-        self.remove_tag("needs-description", document)
-        self.add_tag("described", document)
+        document.content = full_description
+        document.remove_tag("ScriptDefaults.NEEDS_DESCRIPTION")
+        document.add_tag("described")
 
         logger.debug(f"Successfully described document {document.id}")
         return document
@@ -525,20 +566,21 @@ class DescribePhotos(BaseModel):
             list[Document]: The documents with the descriptions added.
 
         """
-        logger.info('Fetching documents to describe...')
+        logger.info("Fetching documents to describe...")
         if documents is None:
             documents = list(self.client.documents().filter(tag_name=self.paperless_tag))
 
         total = len(documents)
-        logger.info(f'Found {total} documents to describe')
+        logger.info(f"Found {total} documents to describe")
 
         results = []
-        with alive_bar(total=total, title='Describing documents', bar='classic') as self._progress_bar:
+        with alive_bar(total=total, title="Describing documents", bar="classic") as self._progress_bar:
             for document in documents:
-                if (updated_document := self.describe_document(document)):
+                if updated_document := self.describe_document(document):
                     results.append(updated_document)
                 self.progress_bar()
         return results
+
 
 class ArgNamespace(argparse.Namespace):
     """
@@ -553,6 +595,7 @@ class ArgNamespace(argparse.Namespace):
     prompt: str | None = None
     verbose: bool = False
 
+
 def main():
     """
     Run the script.
@@ -562,13 +605,13 @@ def main():
         load_dotenv()
 
         parser = argparse.ArgumentParser(description="Describe documents with AI in Paperless-ngx")
-        parser.add_argument('--url', type=str, default=None, help="The base URL of the Paperless NGX instance")
-        parser.add_argument('--key', type=str, default=None, help="The API token for the Paperless NGX instance")
-        parser.add_argument('--model', type=str, default=None, help="The OpenAI model to use")
-        parser.add_argument('--openai-url', type=str, default=None, help="The base URL for the OpenAI API")
-        parser.add_argument('--tag', type=str, default=ScriptDefaults.NEEDS_DESCRIPTION, help="Tag to filter documents")
-        parser.add_argument('--prompt', type=str, default=None, help="Prompt to use for OpenAI")
-        parser.add_argument('--verbose', '-v', action='store_true', help="Verbose output")
+        parser.add_argument("--url", type=str, default=None, help="The base URL of the Paperless NGX instance")
+        parser.add_argument("--key", type=str, default=None, help="The API token for the Paperless NGX instance")
+        parser.add_argument("--model", type=str, default=None, help="The OpenAI model to use")
+        parser.add_argument("--openai-url", type=str, default=None, help="The base URL for the OpenAI API")
+        parser.add_argument("--tag", type=str, default=ScriptDefaults.NEEDS_DESCRIPTION, help="Tag to filter documents")
+        parser.add_argument("--prompt", type=str, default=None, help="Prompt to use for OpenAI")
+        parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
 
         args = parser.parse_args(namespace=ArgNamespace())
 
@@ -584,23 +627,20 @@ def main():
             sys.exit(1)
 
         # Exclude None, so pydantic settings loads from defaults for an unset param
-        settings = Settings(**{
-            k:v
-            for k, v in {
-                "base_url": args.url,
-                "token": args.key,
-                "openai_url": args.openai_url,
-                "openai_model": args.model
-            }.items()
-            if v is not None
-        })
+        config = {
+                k: v
+                for k, v in {
+                    "base_url": args.url,
+                    "token": args.key,
+                    "openai_url": args.openai_url,
+                    "openai_model": args.model,
+                }.items()
+                if v is not None
+            }
+        settings = Settings(**config)
         client = PaperlessClient(settings)
 
-        paperless = DescribePhotos(
-            client=client,
-            prompt=args.prompt,
-            force_openai=args.force_openai
-        )
+        paperless = DescribePhotos(client=client, prompt=args.prompt)
 
         logger.info(f"Starting document description process with model: {paperless.openai_model}")
         results = paperless.describe_documents()
@@ -616,6 +656,7 @@ def main():
     except Exception as e:
         logger.error(f"An error occurred: {e}", exc_info=True)
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

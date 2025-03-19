@@ -32,11 +32,16 @@ from paperap.resources.base import BaseResource, StandardResource
 
 
 class DownloadedDocumentResource(StandardResource[DownloadedDocument, DownloadedDocumentQuerySet]):
-    """Resource for managing documents."""
+    """Resource for managing downloaded document content."""
 
     model_class = DownloadedDocument
-    name = "downloaded_documents"
-
+    name = "document"
+    endpoints = {
+        RetrieveFileMode.PREVIEW: URLS.preview,
+        RetrieveFileMode.THUMBNAIL: URLS.thumbnail,
+        RetrieveFileMode.DOWNLOAD: URLS.download,
+    }
+        
     def load(self, downloaded_document : "DownloadedDocument") -> None:
         """
         Load the document file content from the API.
@@ -44,33 +49,37 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
         This method fetches the binary content of the document file
         and updates the model with the response data.
         """
-        endpoint = URLS.download
-        if downloaded_document.mode == RetrieveFileMode.PREVIEW:
-            endpoint = URLS.preview
-        elif downloaded_document.mode == RetrieveFileMode.THUMBNAIL:
-            endpoint = URLS.thumbnail
+        mode = downloaded_document.mode or RetrieveFileMode.DOWNLOAD
+        endpoint = self.endpoints[mode]
 
         params = {
             "original": "true" if downloaded_document.original else "false",
         }
 
-        response = self.client.request(
-            "GET",
-            endpoint,
-            params=params,
-            json_response=False
-        )
+        if not (response := self.client.request_raw("GET", endpoint, params=params, data=None)):
+            raise ResourceNotFoundError(f"Unable to retrieve downloaded docuyment {downloaded_document.id}")
 
-        self.content = response.content
-        self.content_type = response.headers.get("Content-Type")
-
+        content = response.content
+        content_type = response.headers.get("Content-Type")
         content_disposition = response.headers.get("Content-Disposition")
+        disposition_filename = None
+        disposition_type = None
+            
+        # Parse Content-Disposition header
         if content_disposition:
-            # Parse Content-Disposition header
             parts = content_disposition.split(";")
-            self.disposition_type = parts[0].strip()
+            disposition_type = parts[0].strip()
 
             for part in parts[1:]:
                 if "filename=" in part:
                     filename_part = part.strip()
-                    self.disposition_filename = filename_part.split("=", 1)[1].strip('"\'')
+                    disposition_filename = filename_part.split("=", 1)[1].strip('"\'')
+
+        # Update model
+        downloaded_document.update_locally(
+            from_db=True,
+            content=content,
+            content_type=content_type,
+            disposition_filename=disposition_filename,
+            disposition_type=disposition_type,
+        )

@@ -23,12 +23,12 @@ LAST MODIFIED:
 
 """
 
-
 from __future__ import annotations
 
 from typing import Any
 
 from typing_extensions import TypeVar
+
 from paperap.exceptions import APIError, BadResponseError, ResourceNotFoundError
 from paperap.models.document.metadata import DocumentMetadata, DocumentMetadataQuerySet
 from paperap.resources.base import BaseResource, StandardResource
@@ -38,4 +38,4 @@ class DocumentMetadataResource(StandardResource[DocumentMetadata, DocumentMetada
     """Resource for managing documents."""
 
     model_class = DocumentMetadata
-    name = "downloaded_documents"
+    name = "document"

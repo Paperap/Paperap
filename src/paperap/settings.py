@@ -61,10 +61,7 @@ class Settings(BaseSettings):
     openai_model: str | None = Field(default=None, alias="openai_model_name")
     openai_url: str | None = Field(default=None, alias="openai_base_url")
 
-    model_config = SettingsConfigDict(
-        env_prefix="PAPERLESS_",
-        extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_prefix="PAPERLESS_", extra="ignore")
 
     @field_validator("base_url", mode="before")
     @classmethod

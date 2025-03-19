@@ -39,22 +39,24 @@ def setup_logging() -> logging.Logger:
     class CustomFormatter(colorlog.ColoredFormatter):
         @override
         def format(self, record):
-            self._style._fmt = '(%(log_color)s%(levelname)s%(reset)s) %(message)s'
+            self._style._fmt = "(%(log_color)s%(levelname)s%(reset)s) %(message)s"
             return super().format(record)
 
     # Configure colored logging with the custom formatter
     handler = colorlog.StreamHandler()
-    handler.setFormatter(CustomFormatter(
-        # Initial format string (will be overridden in the formatter)
-        '',
-        log_colors={
-            'DEBUG':    'green',
-            'INFO':     'blue',
-            'WARNING':  'yellow',
-            'ERROR':    'red',
-            'CRITICAL': 'red,bg_white',
-        }
-    ))
+    handler.setFormatter(
+        CustomFormatter(
+            # Initial format string (will be overridden in the formatter)
+            "",
+            log_colors={
+                "DEBUG": "green",
+                "INFO": "blue",
+                "WARNING": "yellow",
+                "ERROR": "red",
+                "CRITICAL": "red,bg_white",
+            },
+        )
+    )
 
     root_logger = logging.getLogger()
     root_logger.handlers = []  # Clear existing handlers
@@ -65,7 +67,7 @@ def setup_logging() -> logging.Logger:
     app_logger.setLevel(logging.INFO)
 
     # Suppress logs from the 'requests' library below ERROR level
-    #logging.getLogger("urllib3").setLevel(logging.ERROR)
-    #logging.getLogger("requests").setLevel(logging.ERROR)
+    # logging.getLogger("urllib3").setLevel(logging.ERROR)
+    # logging.getLogger("requests").setLevel(logging.ERROR)
 
     return app_logger

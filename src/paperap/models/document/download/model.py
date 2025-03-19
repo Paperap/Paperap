@@ -58,6 +58,4 @@ class DownloadedDocument(StandardModel):
     disposition_type: str | None = None
 
     class Meta(StandardModel.Meta):
-        read_only_fields = {
-            "content", "content_type", "disposition_filename", "disposition_type"
-        }
+        read_only_fields = {"content", "content_type", "disposition_filename", "disposition_type"}
