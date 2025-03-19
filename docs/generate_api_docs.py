@@ -14,15 +14,15 @@ def main():
     # Get the docs directory
     docs_dir = Path(__file__).parent.absolute()
     api_dir = docs_dir / "api"
-    
+
     # Create the api directory if it doesn't exist
     if api_dir.exists():
         shutil.rmtree(api_dir)
     api_dir.mkdir(exist_ok=True)
-    
+
     # Change to the docs directory
     os.chdir(docs_dir)
-    
+
     # Run sphinx-apidoc to generate the API documentation
     subprocess.run([
         "sphinx-apidoc",
@@ -33,7 +33,7 @@ def main():
         "--module-first",
         "--force",
     ], check=True)
-    
+
     # Build the documentation
     subprocess.run([
         "sphinx-build",
@@ -42,7 +42,7 @@ def main():
         ".",
         "_build/html",
     ], check=True)
-    
+
     print("Documentation built successfully!")
     print(f"Open {docs_dir / '_build' / 'html' / 'index.html'} to view the documentation.")
 

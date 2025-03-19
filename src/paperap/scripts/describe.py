@@ -102,7 +102,7 @@ class DescribePhotos(BaseModel):
     @property
     def progress_bar(self) -> ProgressBar:
         if not self._progress_bar:
-            self._progress_bar = alive_bar(title="Running", unknown="waves") # type: ignore
+            self._progress_bar = alive_bar(title="Running", unknown="waves")  # type: ignore
         return self._progress_bar  # type: ignore # pyright not handling the protocol correctly, not sure why
 
     @property
@@ -441,7 +441,7 @@ class DescribePhotos(BaseModel):
 
             try:
                 # Convert content to bytes if it's a string
-                content_bytes = content if isinstance(content, bytes) else content.encode('utf-8')
+                content_bytes = content if isinstance(content, bytes) else content.encode("utf-8")
                 if not (response := self._send_describe_request(content_bytes, document)):
                     logger.error(f"OpenAI returned empty description for document {document.id}.")
                     return False
