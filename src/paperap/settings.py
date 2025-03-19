@@ -6,7 +6,7 @@ METADATA:
 File:    settings.py
         Project: paperap
 Created: 2025-03-09
-        Version: 0.0.5
+        Version: 0.0.8
 Author:  Jess Mann
 Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -35,7 +35,6 @@ class SettingsArgs(TypedDict, total=False):
     """
     Arguments for the settings class
     """
-
     base_url: str | URL
     token: str | None
     username: str | None
@@ -49,7 +48,6 @@ class Settings(BaseSettings):
     """
     Settings for the paperap library
     """
-
     token: str | None = None
     username: str | None = None
     password: str | None = None
@@ -57,8 +55,14 @@ class Settings(BaseSettings):
     timeout: int = 60
     require_ssl: bool = False
     save_on_write: bool = True
+    openai_key: str | None = Field(default=None, alias="openai_api_key")
+    openai_model: str | None = Field(default=None, alias="openai_model_name")
+    openai_url: str | None = Field(default=None, alias="openai_base_url")
 
-    model_config = SettingsConfigDict(env_prefix="PAPERLESS_")
+    model_config = SettingsConfigDict(
+        env_prefix="PAPERLESS_",
+        extra="ignore"
+    )
 
     @field_validator("base_url", mode="before")
     @classmethod

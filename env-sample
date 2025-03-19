@@ -1,3 +1,6 @@
 PAPERLESS_BASE_URL="https://example.com"
 PAPERLESS_TOKEN="7sv92k...30fsdk2"
 PAPERLESS_SAVE_ON_WRITE="True"
+OPENAI_API_KEY="sample"
+OPENAI_BASE_URL="Some Url"
+OPENAI_MODEL_NAME="gpt-4o-mini

@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+from enum import StrEnum
 from functools import singledispatchmethod
 from io import BytesIO
 import json
@@ -50,9 +51,10 @@ import dateparser
 
 from paperap.exceptions import NoImagesException, DocumentParsingError
 from paperap.scripts.utils import setup_logging
-from previoius-project.models import Document, Tag
-from previoius-project.models.document import Document
-from previoius-project.client import PaperlessClient
+from paperap.models import Document, Tag
+from paperap.models.document import Document
+from paperap.settings import Settings
+from paperap.client import PaperlessClient
 
 logger = logging.getLogger(__name__)
 
@@ -66,32 +68,23 @@ MIME_TYPES = {
     'webp': 'image/webp',
 }
 
-DEFAULT_OPENAI_MODEL = "gpt-4o-mini"
-TAG_HRSH = 2
-TAG_NYS_OMH = 229
-DOCUMENT_TYPE_PHOTO = 8
-DOCUMENT_TYPE_DETAIL_CLOSEUP = 30
-DOCUMENT_TYPE_ITEMS = 11
-VERSION = "0.2.2"
+class ScriptDefaults(StrEnum):
+    NEEDS_DESCRIPTION = "needs-description"
+    DESCRIBED = "described"
+    MODEL = "gpt-4o-mini"
 
 class DescribePhotos(BaseModel):
     """
     Describes photos in the Paperless NGX instance using an LLM (such as OpenAI's GPT-4o model).
     """
     max_threads: int = 0
-    paperless_url: str = Field(..., env='PAPERLESS_URL')
-    paperless_key: str | None = Field(..., env='PAPERLESS_KEY')
-    paperless_tag: str | None = Field('needs-description', env='PAPERLESS_TAG')
-    openai_key: str | None = Field(default=None, env='PAPERLESS_OPENAI_API_KEY')
-    openai_url: str | None = Field(default=None, env='PAPERLESS_OPENAI_URL')
-    openai_model: str = Field(default=DEFAULT_OPENAI_MODEL, env="PAPERLESS_OPENAI_MODEL")
-    force_openai: bool = Field(default=False)
+    paperless_tag: str | None = Field(default=ScriptDefaults.NEEDS_DESCRIPTION)
     prompt: str | None = Field(None)
+    client: PaperlessClient
     _jinja_env: Environment | None = PrivateAttr(default=None)
     _progress_bar = PrivateAttr(default=None)
     _progress_message: str | None = PrivateAttr(default=None)
     _openai: OpenAI | None = PrivateAttr(default=None)
-    _paperless_client: PaperlessClient | None = PrivateAttr(default=None)
     
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -102,21 +95,20 @@ class DescribePhotos(BaseModel):
         return self._progress_bar
 
     @property
-    def paperless_client(self) -> PaperlessClient:
-        """Return or initialize the Paperless instance."""
-        if not self._paperless_client:
-            self._paperless_client = PaperlessClient(self.paperless_url, self.paperless_key)
-        return self._paperless_client
+    def openai_url(self) -> str | None:
+        return self.client.settings.openai_url
+
+    @property
+    def openai_key(self) -> str | None:
+        return self.client.settings.openai_key
+
+    @property
+    def openai_model(self) -> str:
+        return self.client.settings.openai_model or ScriptDefaults.MODEL
 
     @property
     def openai(self) -> OpenAI:
         if not self._openai:
-            if self.force_openai:
-                if self.openai_url:
-                    # Reset the model for openai
-                    self.openai_model = DEFAULT_OPENAI_MODEL
-                    self.openai_url = None
-                    
             if self.openai_url:
                 logger.info('Using custom OpenAI URL: %s', self.openai_url)
                 self._openai = OpenAI(api_key=self.openai_key, base_url=self.openai_url)
@@ -124,10 +116,6 @@ class DescribePhotos(BaseModel):
                 logger.info('Using default OpenAI URL')
                 self._openai = OpenAI()
         return self._openai
-
-    @property
-    def pc(self) -> PaperlessClient:
-        return self.paperless_client
 
     @field_validator('max_threads', mode='before')
     def validate_max_threads(cls, value):
@@ -140,13 +128,6 @@ class DescribePhotos(BaseModel):
             
         if value < 1:
             raise ValueError('max_threads must be a positive integer.')
-        return value
-
-    @field_validator('openai_key', mode="before")
-    def validate_openai_key(cls, value):
-        if not value and not (value := os.getenv('OPENAI_API_KEY')):
-            logger.warning('OPENAI_API_KEY environment variable is not set.')
-            raise ValueError('OPENAI_API_KEY environment variable is not set.')
         return value
 
     @property
@@ -186,159 +167,12 @@ class DescribePhotos(BaseModel):
         template_path = f"output_json/{template_name}"
         logger.debug('Using template: %s', template_path)
         template = self.jinja_env.get_template(template_path)
-        location = self.get_location(document)
-        tags = self.paperless_client.get_document_tag_names(document, filter_needs=True)
+        tags = self.client.get_document_tag_names(document, filter_needs=True)
 
-        if not (description := template.render(document=document, location=location, tags=tags)):
+        if not (description := template.render(document=document,tags=tags)):
             raise ValueError("Failed to generate prompt.")
 
         return description
-
-    def get_location(self, document: Document) -> str | None:
-        """
-        Get the location of a document.
-        """
-        template = None
-
-        if document.tags:
-            if any(tag == TAG_HRSH for tag in document.tags):
-                template = self.jinja_env.get_template("locations/hrsh.jinja")
-            if any(tag == TAG_NYS_OMH for tag in document.tags):
-                template = self.jinja_env.get_template("locations/nys_omh.jinja")
-
-        if template:
-            return template.render(document=document)
-        return None
-        
-    def filter_documents(self, documents: List[Document]) -> Iterator[Document]:
-        """
-        Yields documents from the Paperless NGX instance that need description.
-
-        Args:
-            documents (List[Document]): The documents to filter
-
-        Yields:
-            Iterator[Document]: The filtered documents.
-        """
-        for document in documents:
-            if self.filter_document(document):
-                yield document
-
-    def filter_document(self, document: Document) -> bool:
-        """
-        """
-        # If content includes "IMAGE DESCRIPTION", skip
-        if document.content and "IMAGE DESCRIPTION" in document.content:
-            logger.debug("Skipping document with existing description")
-            return False
-
-        if document.tags:
-            # If tags include "described", skip
-            if self.pc.document_has_tag("described", document):
-                logger.debug("Skipping document with 'described' tag")
-                return False
-
-            # If tags DO NOT include "needs-description", skip
-            if not self.pc.document_has_tag("needs-description", document):
-                logger.debug("Skipping document without 'needs-description' tag")
-                return False
-
-        # Check it is a supported extension
-        original_filename = document.original_file_name or ""
-        if not any(original_filename.lower().endswith(ext) for ext in DESCRIBE_ACCEPTED_FORMATS):
-            logger.debug("Skipping document with unsupported extension: %s", original_filename)
-            return False
-
-        return True
-
-
-    def fetch_documents_with_tag(self, tag_name: str | None = None, *, filter_results : bool = True) -> Iterator[Document]:
-        """Fetches documents with the specified tag from Paperless NGX."""
-        tag_name = tag_name or self.paperless_tag
-        tag_id = None
-
-        for tag in self.pc.get_tags():
-            if tag.name == tag_name:
-                tag_id = tag.id
-                break
-                                                                  
-        if tag_id is None:
-            logger.error(f"Tag '{tag_name}' not found")
-            return
-
-        for doc in self.pc.get_documents():
-            if self.pc.document_has_tag(tag_id, doc):
-                if not filter_results or self.filter_document(doc):
-                    yield doc
-
-    def update_document(self, document : Document) -> bool:
-        return self.pc.update_document(document)
-
-    @singledispatchmethod
-    def remove_tag(self, tag_id: Any, document : Document) -> None:
-        raise TypeError(f"Unsupported tag type: {type(tag_id)}")
-
-    @remove_tag.register
-    def _remove_tag(self, tag_id: int, document : Document) -> None:  # type: ignore
-        """Removes a tag from a document."""
-        if not document.tags:
-            return
-        
-        document.tags = [tag for tag in document.tags if tag != tag_id]
-        self.update_document(document)
-
-    @remove_tag.register
-    def _remove_tag(self, tag: Tag, document : Document) -> None: # type: ignore
-        """Removes a tag from a document."""
-        self.remove_tag(tag.id, document)
-
-    @remove_tag.register
-    def _remove_tag(self, tag_name: str, document : Document) -> None:
-        """Removes a tag from a document."""
-        tag = self.pc.get_tag(tag_name)
-        if not tag:
-            raise ValueError(f"Tag '{tag_name}' not found.")
-        self.remove_tag(tag.id, document)
-
-    @singledispatchmethod
-    def add_tag(self, tag_id: Any, document: Document) -> None:
-        raise TypeError(f"Unsupported tag type: {type(tag_id)}")
-
-    @add_tag.register
-    def _add_tag(self, tag_id: int, document: Document) -> None:  # type: ignore
-        """Adds a tag to a document."""
-        if not document.tags:
-            document.tags = [tag_id]
-            self.update_document(document)
-            return
-
-        if tag_id not in document.tags:
-            document.tags = document.tags + [tag_id]
-            self.update_document(document)
-
-    @add_tag.register
-    def _add_tag(self, tag: Tag, document: Document) -> None:  # type: ignore
-        """Adds a tag to a document."""
-        self.add_tag(tag.id, document)
-
-    @add_tag.register
-    def _add_tag(self, tag_name: str, document: Document) -> None:
-        """Adds a tag to a document."""
-        tag = self.pc.get_tag(tag_name)
-        if not tag:
-            raise ValueError(f"Tag '{tag_name}' not found.")
-        self.add_tag(tag.id, document)
-
-    def download_document(self, document: Document) -> DownloadedDocument | None:
-        """Downloads a document from Paperless NGX."""
-        try:
-            logger.debug(f"Downloading document {document.id} from Paperless...")
-            content = self.paperless_client.download_document(document)
-            logger.debug(f"Downloaded document {document.id}")
-            return content
-        except Exception as e:
-            logger.error(f"Failed to download document {document.id}: {e}")
-        return None
 
     def extract_images_from_pdf(self, pdf_bytes: bytes, max_images: int = 2) -> list[bytes]:
         """
@@ -394,29 +228,6 @@ class DescribePhotos(BaseModel):
 
         return results
 
-    def append_document_content(self, document: Document, content: str) -> Document:
-        """
-        Appends content to a document.
-
-        Args:
-            document (Document): The document to append content to.
-            content (str): The content to append.
-
-        Returns:
-            Document: The document with the content appended.
-        """
-        if not content:
-            raise ValueError("Content should not be empty.")
-
-        logger.debug(f"Appending content to document {document.id}")
-        
-        current_content = document.content or ""
-        document.content = current_content + "\n\r\n\r" + content
-        self.update_document(document)
-
-        logger.debug(f"Successfully appended content to document {document.id}")
-        return document
-
     def parse_date(self, date_str: str) -> date | None:
         """
         Parses a date string.
@@ -458,34 +269,6 @@ class DescribePhotos(BaseModel):
         if not parsed_date:
             raise ValueError(f"Invalid date format: {date_str=}")
         return parsed_date
-
-    def update_document_date(self, document: Document, new_date: str | date | datetime) -> None:
-        """
-        Updates the date of a document.
-
-        Args:
-            document (Document): The document to update.
-            date (str): The new date in 'YYYY-MM-DD' format.
-
-        Returns:
-            Document: The updated document.
-        """
-        parsed_date : str | date | datetime | None = new_date
-        if isinstance(parsed_date, str):
-            parsed_date = self.parse_datetime(parsed_date)
-        if isinstance(parsed_date, date):
-            parsed_date = datetime.combine(parsed_date, datetime.min.time())
-            
-        if not parsed_date:
-            return
-        
-        logger.debug(f"Updating date of document {document.id} to '{parsed_date}'")
-        
-        # update the document date
-        document.created = parsed_date
-        self.update_document(document)
-        
-        logger.debug(f"Successfully updated date of document {document.id} to '{parsed_date}'")
 
     def standardize_image_contents(self, content: bytes) -> list[str]:
         """
@@ -656,32 +439,6 @@ class DescribePhotos(BaseModel):
             logger.error(f"Failed to describe document {document.id}. {response=} => {e}")
             raise
 
-    def parse_json(self, response: str, document: Document) -> dict | None:
-        # Attempt to parse response as json
-        try:
-            return json.loads(response)
-        except json.JSONDecodeError:
-            logger.debug("Failed to parse response as JSON. Saving response raw in document content. Document #%s: %s", 
-                document.id, document.original_file_name)
-
-        # If "```json" is present, strip everything before it
-        if "```json" in response:
-            response = response[response.index("```json") + 7:]
-            # Strip everything after "```"
-            if "```" in response:
-                response = response[:response.index("```")]
-
-        # try again
-        try:
-            return json.loads(response)
-        except json.JSONDecodeError:
-            logger.debug('Failed again after stripping json block')
-
-        logger.error('Failed to parse response as JSON. Saving response raw in document content. Document #%s: %s', 
-            document.id, document.original_file_name)
-        self.append_document_content(document, response)
-        return None
-
     def process_response(self, response: str, document: Document) -> Document:
         """
         Process the response from OpenAI and update the document.
@@ -732,16 +489,15 @@ class DescribePhotos(BaseModel):
         if not any([description, summary, content]):
             full_description += f"\n\nFull AI Response: {parsed_response}"
         
-        if title and document.tags and any(tag == "needs-title" for tag in document.tags):
+        if title and "needs-title" in document.tag_names:
             try:
                 document.title = title
                 self.remove_tag("needs-title", document)
-                self.update_document(document)
             except Exception as e:
                 logger.error("Failed to update document title. Document #%s: %s -> %s", 
                     document.id, document.original_file_name, e)
 
-        if date and document.tags and any(tag == "needs-date" for tag in document.tags):
+        if date and "needs-date" in document.tag_names:
             try:
                 self.update_document_date(document, date)
                 self.remove_tag("needs-date", document)
@@ -771,8 +527,11 @@ class DescribePhotos(BaseModel):
         if documents is None:
             documents = list(self.fetch_documents_with_tag())
         
+        total = len(documents)
+        logger.info(f'Found {total} documents to describe')
+        
         results = []
-        with alive_bar(title='Running', unknown='waves') as self._progress_bar:
+        with alive_bar(total=total, title='Describing documents', bar='classic') as self._progress_bar:
             for document in documents:
                 if (updated_document := self.describe_document(document)):
                     results.append(updated_document)
@@ -783,33 +542,26 @@ class ArgNamespace(argparse.Namespace):
     """
     A custom namespace class for argparse.
     """
-    verbose: bool = False
-    tag: str
     url: str
     key: str
     model: str | None = None
+    openai_url: str | None = None
+    tag: str
     prompt: str | None = None
-    force_openai: bool = False
+    verbose: bool = False
 
 def main():
     logger = setup_logging()
     try:
         load_dotenv()
 
-        DEFAULT_URL = os.getenv("PAPERLESS_URL")
-        DEFAULT_KEY = os.getenv("PAPERLESS_KEY")
-        DEFAULT_TAG = "needs-description"
-        OPENAI_URL = os.getenv('PAPERLESS_OPENAI_URL')
-        OPENAI_KEY = os.getenv('PAPERLESS_OPENAI_API_KEY')
-        OPENAI_MODEL = os.getenv('PAPERLESS_OPENAI_MODEL', DEFAULT_OPENAI_MODEL)
-
-        parser = argparse.ArgumentParser(description="Fetch documents with a specific tag from Paperless NGX.")
-        parser.add_argument('--url', type=str, default=DEFAULT_URL, help="The base URL of the Paperless NGX instance")
-        parser.add_argument('--key', type=str, default=DEFAULT_KEY, help="The API key for the Paperless NGX instance")
-        parser.add_argument('--model', type=str, default=OPENAI_MODEL, help=f"The OpenAI model to use (default: {DEFAULT_OPENAI_MODEL})")
-        parser.add_argument('--tag', type=str, default=DEFAULT_TAG, help="Tag to filter documents (default: 'needs-description')")
+        parser = argparse.ArgumentParser(description="Describe documents with AI in Paperless-ngx")
+        parser.add_argument('--url', type=str, default=None, help="The base URL of the Paperless NGX instance")
+        parser.add_argument('--key', type=str, default=None, help="The API token for the Paperless NGX instance")
+        parser.add_argument('--model', type=str, default=None, help=f"The OpenAI model to use (default: {ScriptDefaults.MODEL})")
+        parser.add_argument('--openai-url', type=str, default=None, help="The base URL for the OpenAI API")
+        parser.add_argument('--tag', type=str, default=ScriptDefaults.NEEDS_DESCRIPTION, help=f"Tag to filter documents (default: '{ScriptDefaults.NEEDS_DESCRIPTION}')")
         parser.add_argument('--prompt', type=str, default=None, help="Prompt to use for OpenAI")
-        parser.add_argument('--force-openai', action='store_true', help="Force the use of OpenAI, instead of urls or models loaded from env vars or other parameters")
         parser.add_argument('--verbose', '-v', action='store_true', help="Verbose output")
         
         args = parser.parse_args(namespace=ArgNamespace())
@@ -825,25 +577,39 @@ def main():
             logger.error("PAPERLESS_KEY environment variable is not set.")
             sys.exit(1)
 
+        # Exclude None, so pydantic settings loads from defaults for an unset param
+        settings = Settings(**{
+            k:v 
+            for k, v in {
+                "base_url": args.url,
+                "token": args.key,
+                "openai_url": args.openai_url,
+                "openai_model": args.model
+            }.items() 
+            if v is not None
+        })
+        client = PaperlessClient(settings)
+
         paperless = DescribePhotos(
-            paperless_url=args.url, 
-            paperless_key=args.key, 
-            paperless_tag=args.tag, 
-            openai_key=OPENAI_KEY,
-            openai_url=OPENAI_URL,
-            openai_model=OPENAI_MODEL,
+            client=client,
             prompt=args.prompt,
             force_openai=args.force_openai
         )
+        
+        logger.info(f"Starting document description process with model: {paperless.openai_model}")
         results = paperless.describe_documents()
+        
         if results:
-            logger.info(f"Described {len(results)} documents")
+            logger.info(f"Successfully described {len(results)} documents")
         else:
             logger.info("No documents described.")
 
     except KeyboardInterrupt:
         logger.info("Script cancelled by user.")
         sys.exit(0)
+    except Exception as e:
+        logger.error(f"An error occurred: {e}", exc_info=True)
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
