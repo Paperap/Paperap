@@ -6,7 +6,7 @@
        File:    documents.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.7
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -27,7 +27,7 @@ from typing import Any, Iterator, Optional, override
 from typing_extensions import TypeVar
 
 from paperap.exceptions import APIError, BadResponseError, ResourceNotFoundError
-from paperap.models.document import Document, DocumentNote, DocumentQuerySet
+from paperap.models.document import Document, DocumentNote, DocumentNoteQuerySet, DocumentQuerySet
 from paperap.resources.base import BaseResource, StandardResource
 
 
@@ -35,6 +35,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
     """Resource for managing documents."""
 
     model_class = Document
+    queryset_class = DocumentQuerySet
     name = "documents"
 
     def download(self, document_id: int, *, original: bool = False) -> bytes | None:
@@ -54,8 +55,9 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         return self.parse_to_model(response)
 
 
-class DocumentNoteResource(StandardResource[DocumentNote]):
+class DocumentNoteResource(StandardResource[DocumentNote, DocumentNoteQuerySet]):
     """Resource for managing document notes."""
 
     model_class = DocumentNote
+    queryset_class = DocumentNoteQuerySet
     name = "document_notes"

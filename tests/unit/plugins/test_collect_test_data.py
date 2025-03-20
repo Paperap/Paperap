@@ -10,7 +10,7 @@
        File:    test_collect_test_data.py
         Project: paperap
        Created: 2025-03-13
-        Version: 0.0.7
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -24,26 +24,30 @@
 """
 
 from __future__ import annotations
-import tempfile
+
 import datetime
 import json
 import os
 import re
+import tempfile
+import unittest
 from decimal import Decimal
 from pathlib import Path
 from typing import Any, Dict, List, Set, override
-import unittest
-from unittest.mock import MagicMock, Mock, patch, call
+from unittest.mock import MagicMock, Mock, call, patch
 
 from paperap.client import PaperlessClient
 from paperap.models import StandardModel
+from paperap.plugins.collect_test_data import SANITIZE_KEYS, SampleDataCollector
 from paperap.plugins.manager import PluginManager
-from paperap.plugins.collect_test_data import SampleDataCollector, SANITIZE_KEYS
 from paperap.signals import SignalRegistry
-from paperap.tests import UnitTestCase
+from tests.lib import UnitTestCase
+
 
 class TestDataCollectorUnitTest(UnitTestCase):
+
     """Base test case for SampleDataCollector tests."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @override
@@ -75,7 +79,9 @@ class TestDataCollectorUnitTest(UnitTestCase):
 
 
 class TestPluginInitialization(TestDataCollectorUnitTest):
+
     """Test the initialization of the SampleDataCollector plugin."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     def test_init_with_path_object(self):
@@ -91,7 +97,7 @@ class TestPluginInitialization(TestDataCollectorUnitTest):
     def test_init_without_path(self):
         """Test initializing without a path."""
         plugin = SampleDataCollector(manager=self.manager) # type: ignore
-        self.assertEqual(plugin.test_dir, Path("tests/sample_data"))
+        self.assertIn("tests/sample_data", str(plugin.test_dir))
 
     def test_init_creates_directory(self):
         """Test that initialization creates the directory if it doesn't exist."""
@@ -104,7 +110,9 @@ class TestPluginInitialization(TestDataCollectorUnitTest):
             self.assertTrue(test_dir.is_dir())
 
 class TestPluginSetupTeardown(TestDataCollectorUnitTest):
+
     """Test the setup and teardown methods of the SampleDataCollector plugin."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @patch('paperap.signals.registry.connect')
@@ -135,7 +143,9 @@ class TestPluginSetupTeardown(TestDataCollectorUnitTest):
 
 
 class TestJsonSerializer(TestDataCollectorUnitTest):
+
     """Test the JSON serializer method."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     def test_serialize_datetime(self):
@@ -185,7 +195,9 @@ class TestJsonSerializer(TestDataCollectorUnitTest):
 
 
 class TestSanitization(TestDataCollectorUnitTest):
+
     """Test the sanitization methods."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @patch('paperap.plugins.collect_test_data.SampleDataCollector._sanitize_value_recursive')
@@ -245,7 +257,9 @@ class TestSanitization(TestDataCollectorUnitTest):
 
 
 class TestSaveResponse(TestDataCollectorUnitTest):
+
     """Test the save_response method."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @patch('paperap.plugins.collect_test_data.SampleDataCollector._sanitize_response')
@@ -293,7 +307,9 @@ class TestSaveResponse(TestDataCollectorUnitTest):
 
 
 class TestSaveListResponse(TestDataCollectorUnitTest):
+
     """Test the save_list_response method."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @patch('paperap.plugins.collect_test_data.SampleDataCollector.save_response')
@@ -338,7 +354,9 @@ class TestSaveListResponse(TestDataCollectorUnitTest):
 
 
 class TestSaveFirstItem(TestDataCollectorUnitTest):
+
     """Test the save_first_item method."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @patch('paperap.plugins.collect_test_data.SampleDataCollector.save_response')
@@ -379,7 +397,9 @@ class TestSaveFirstItem(TestDataCollectorUnitTest):
 
 
 class TestSaveParsedResponse(TestDataCollectorUnitTest):
+
     """Test the save_parsed_response method."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @patch('paperap.plugins.collect_test_data.SampleDataCollector.save_response')
@@ -488,7 +508,9 @@ class TestSaveParsedResponse(TestDataCollectorUnitTest):
 
 
 class TestConfigSchema(unittest.TestCase):
+
     """Test the configuration schema."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     def test_get_config_schema(self):

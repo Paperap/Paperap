@@ -3,36 +3,41 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_base.py
-        Project: paperap
-        Created: 2025-03-13
-        Version: 0.0.7
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_base.py
+Project: paperap
+Created: 2025-03-13
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-13     By Jess Mann
+2025-03-13     By Jess Mann
 
 """
-from typing import Any, override
 import unittest
+from typing import Any, override
 from unittest.mock import MagicMock
+
 from pydantic import ValidationError
+
 from paperap.exceptions import ModelValidationError
-from paperap.plugins.base import Plugin, ConfigType
+from paperap.plugins.base import ConfigType, Plugin
 from paperap.plugins.manager import PluginManager
-from paperap.tests import UnitTestCase
+from tests.lib import UnitTestCase
+
 
 class MockPlugin(Plugin):
+
     """Mock implementation of the Plugin class for testing."""
+
     name = "MockPlugin"
     description = "A test plugin."
     version = "1.0.0"

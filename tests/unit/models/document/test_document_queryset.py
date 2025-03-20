@@ -2,45 +2,52 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_document_queryset.py
+File:    test_document_queryset.py
         Project: paperap
-        Created: 2025-03-05
-        Version: 0.0.7
-        Author:  Jess Mann
-        Email:   jess@jmann.me
+Created: 2025-03-05
+        Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-05     By Jess Mann
+2025-03-05     By Jess Mann
 
 """
 from __future__ import annotations
 
 import os
-from typing import Any, Callable, Iterable, override
 import unittest
-from unittest.mock import patch, MagicMock
 from datetime import datetime, timezone
+from typing import Any, Callable, Iterable, override
+from unittest.mock import MagicMock, patch
+
+from paperap.exceptions import FilterDisabledError
 from paperap.models import (
-    Document, DocumentQuerySet,
-    Tag, TagQuerySet,
-    Correspondent, CorrespondentQuerySet,
-    DocumentType, DocumentTypeQuerySet,
-    StoragePath, StoragePathQuerySet,
-    Profile, ProfileQuerySet,
-    User, UserQuerySet,
+    Correspondent,
+    CorrespondentQuerySet,
+    Document,
+    DocumentQuerySet,
+    DocumentType,
+    DocumentTypeQuerySet,
+    Profile,
+    ProfileQuerySet,
+    StoragePath,
+    StoragePathQuerySet,
+    Tag,
+    TagQuerySet,
+    User,
+    UserQuerySet,
 )
 from paperap.resources.documents import DocumentResource
-from paperap.models.tag import Tag, TagQuerySet
-from paperap.tests import UnitTestCase, load_sample_data, DocumentUnitTest
-from paperap.exceptions import FilterDisabledError
+from tests.lib import DocumentUnitTest, UnitTestCase, load_sample_data
 
 sample_document_list = load_sample_data('documents_list.json')
 sample_document = load_sample_data('documents_item.json')
@@ -206,7 +213,9 @@ class TestCorrespondent(BaseTest):
             self.queryset.correspondent()
 
 class BaseQuerySetTest(BaseTest):
-    """ Base test class with common queryset test logic. """
+
+    """Base test class with common queryset test logic."""
+
     def assert_queryset_results(
         self,
         method : Callable[..., DocumentQuerySet],
@@ -226,6 +235,7 @@ class BaseQuerySetTest(BaseTest):
             expected_count: Expected count of results.
             key: Attribute to check in documents (optional).
             condition: Callable to apply on key (optional).
+
         """
         if expected_count is None:
             expected_count = int(sample_data['count'])
@@ -261,6 +271,7 @@ class BaseQuerySetTest(BaseTest):
             date_str: Date string in YYYY-MM-DD format.
             key: Document attribute to check.
             comparator: Function comparing document date to reference date.
+
         """
         sample_data = load_sample_data(file)
         date_obj = datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=timezone.utc)

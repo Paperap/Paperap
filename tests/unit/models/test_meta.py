@@ -2,37 +2,38 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_meta.py
-        Project: paperap
-        Created: 2025-03-07
-        Version: 0.0.7
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_meta.py
+Project: paperap
+Created: 2025-03-07
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-07     By Jess Mann
+2025-03-07     By Jess Mann
 
 """
 import unittest
-from unittest.mock import MagicMock
-from typing import Iterable, Literal, Any, ClassVar, override
 from enum import StrEnum
+from typing import Any, ClassVar, Iterable, Literal, override
+from unittest.mock import MagicMock
 
 from paperap.const import ModelStatus
-from paperap.models.abstract.meta import StatusContext
-from paperap.tests import UnitTestCase, load_sample_data, DocumentUnitTest
-from paperap.models.document import Document
-from paperap.resources.documents import DocumentResource
 from paperap.models.abstract import StandardModel
+from paperap.models.abstract.meta import StatusContext
+from paperap.models.document import Document
 from paperap.resources.base import StandardResource
+from paperap.resources.documents import DocumentResource
+from tests.lib import DocumentUnitTest, UnitTestCase, load_sample_data
+
 
 # Unit tests
 class TestStatusContext(DocumentUnitTest):
@@ -41,63 +42,63 @@ class TestStatusContext(DocumentUnitTest):
         for status_initial in ModelStatus:
             for status_context in ModelStatus:
                 with self.subTest(status_initial=status_initial, status_context=status_context):
-                    self._meta.status = status_initial
+                    self.model._status = status_initial
                     with StatusContext(self.model, status_context):
-                        self.assertEqual(self._meta.status, status_context)
-                    self.assertEqual(self._meta.status, status_initial)
+                        self.assertEqual(self.model._status, status_context)
+                    self.assertEqual(self.model._status, status_initial)
 
     def test_default_initial(self):
         """Ensure that status changes and reverts after the context exits."""
-        self.assertEqual(self._meta.status, ModelStatus.READY, "Test assumptions failed. Cannot run test")
+        self.assertEqual(self.model._status, ModelStatus.READY, "Test assumptions failed. Cannot run test")
         with StatusContext(self.model, ModelStatus.UPDATING):
-            self.assertEqual(self._meta.status, ModelStatus.UPDATING)
-        self.assertEqual(self._meta.status, ModelStatus.READY)
+            self.assertEqual(self.model._status, ModelStatus.UPDATING)
+        self.assertEqual(self.model._status, ModelStatus.READY)
 
     def test_status_changes_and_reverts_to_non_default(self):
         """Ensure that status changes and reverts to a non-default status after the context exits."""
-        self.assertEqual(self._meta.status, ModelStatus.READY, "Test assumptions failed. Cannot run test")
-        self._meta.status = ModelStatus.SAVING
+        self.assertEqual(self.model._status, ModelStatus.READY, "Test assumptions failed. Cannot run test")
+        self.model._status = ModelStatus.SAVING
         with StatusContext(self.model, ModelStatus.UPDATING):
-            self.assertEqual(self._meta.status, ModelStatus.UPDATING)
-        self.assertEqual(self._meta.status, ModelStatus.SAVING)
+            self.assertEqual(self.model._status, ModelStatus.UPDATING)
+        self.assertEqual(self.model._status, ModelStatus.SAVING)
 
     def test_status_reverts_on_exception(self):
         """Ensure that the previous status is restored even if an exception occurs."""
-        self.assertEqual(self._meta.status, ModelStatus.READY, "Test assumptions failed. Cannot run test")
+        self.assertEqual(self.model._status, ModelStatus.READY, "Test assumptions failed. Cannot run test")
         try:
             with StatusContext(self.model, ModelStatus.UPDATING):
-                self.assertEqual(self._meta.status, ModelStatus.UPDATING)
+                self.assertEqual(self.model._status, ModelStatus.UPDATING)
                 raise ValueError("Intentional exception")
         except ValueError:
-            self.assertEqual(self._meta.status, ModelStatus.READY, "Status was not reverted within except block.")
-        self.assertEqual(self._meta.status, ModelStatus.READY, "Status change did not persist after catching exception.")
+            self.assertEqual(self.model._status, ModelStatus.READY, "Status was not reverted within except block.")
+        self.assertEqual(self.model._status, ModelStatus.READY, "Status change did not persist after catching exception.")
 
     def test_status_reverts_after_change(self):
         """Ensure that the status reverts after a change is made."""
-        self.assertEqual(self._meta.status, ModelStatus.READY, "Test assumptions failed. Cannot run test")
+        self.assertEqual(self.model._status, ModelStatus.READY, "Test assumptions failed. Cannot run test")
         with StatusContext(self.model, ModelStatus.UPDATING):
-            self.assertEqual(self._meta.status, ModelStatus.UPDATING)
-            self._meta.status = ModelStatus.SAVING
-            self.assertEqual(self._meta.status, ModelStatus.SAVING)
-        self.assertEqual(self._meta.status, ModelStatus.READY, "Status change did not revert after manual change.")
+            self.assertEqual(self.model._status, ModelStatus.UPDATING)
+            self.model._status = ModelStatus.SAVING
+            self.assertEqual(self.model._status, ModelStatus.SAVING)
+        self.assertEqual(self.model._status, ModelStatus.READY, "Status change did not revert after manual change.")
 
     def test_nested(self):
         """Ensure that nested contexts work as expected."""
-        self.assertEqual(self._meta.status, ModelStatus.READY, "Test assumptions failed. Cannot run test")
+        self.assertEqual(self.model._status, ModelStatus.READY, "Test assumptions failed. Cannot run test")
         with StatusContext(self.model, ModelStatus.UPDATING):
-            self.assertEqual(self._meta.status, ModelStatus.UPDATING)
+            self.assertEqual(self.model._status, ModelStatus.UPDATING)
             with StatusContext(self.model, ModelStatus.SAVING):
-                self.assertEqual(self._meta.status, ModelStatus.SAVING)
-            self.assertEqual(self._meta.status, ModelStatus.UPDATING)
-        self.assertEqual(self._meta.status, ModelStatus.READY)
+                self.assertEqual(self.model._status, ModelStatus.SAVING)
+            self.assertEqual(self.model._status, ModelStatus.UPDATING)
+        self.assertEqual(self.model._status, ModelStatus.READY)
 
     def test_status_reverts_with_no_initial_status(self):
         """Ensure that the status properly reverts even when no initial status exists."""
-        self._meta.status = None # type: ignore
+        self.model._status = None # type: ignore
         with StatusContext(self.model, ModelStatus.UPDATING):
-            self.assertEqual(self._meta.status, ModelStatus.UPDATING)
+            self.assertEqual(self.model._status, ModelStatus.UPDATING, "StatusContext did not set status.")
 
-        self.assertEqual(self._meta.status, ModelStatus.ERROR)
+        self.assertEqual(self.model._status, ModelStatus.ERROR, "Status did not revert after context.")
 
     def test_passing_bad_model(self):
         """Ensure that passing a bad model raises an exception."""
@@ -144,9 +145,11 @@ class TestStatusContext(DocumentUnitTest):
             context.previous_status = ModelStatus.READY # type: ignore
 
 class SampleResource(StandardResource):
+
     """
     Sample resource for testing purposes.
     """
+
     name = "sample"
     model_class = StandardModel
 

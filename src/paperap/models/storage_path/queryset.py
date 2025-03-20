@@ -6,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -38,19 +38,20 @@ class StoragePathQuerySet(StandardQuerySet["StoragePath"], HasStandard):
     QuerySet for Paperless-ngx storage paths with specialized filtering methods.
     """
 
-    def path(self, path: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def path(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
         Filter storage paths by their actual path value.
 
         Args:
-            path: The path to filter by
+            value: The path to filter by
             exact: If True, match the exact path, otherwise use contains
+            case_insensitive: If True, ignore case when matching
 
         Returns:
             Filtered StoragePathQuerySet
 
         """
-        return self.filter_field_by_str("path", path, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str("path", value, exact=exact, case_insensitive=case_insensitive)
 
     def match(self, value: str, *, exact: bool = True) -> Self:
         """

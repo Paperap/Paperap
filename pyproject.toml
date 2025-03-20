@@ -1,19 +1,21 @@
 [project]
 name = "paperap"
-version = "0.0.7"
+version = "0.0.8"
 description = "Python library for interacting with the Paperless NGX REST API"
 readme = "README.md"
-authors = [
-  {name = "Jess Mann", email = "jess@jmann.me" },
-]
+authors = [{ name = "Jess Mann", email = "jess@jmann.me" }]
 requires-python = ">=3.12"
 dependencies = [
-    "dateparser>=1.2.1",
-    "pydantic>=2.10.6",
-    "pydantic-settings>=2.8.1",
-    "requests>=2.32.3",
-    "typing-extensions>=4.12.2",
-    "yarl>=1.18.3",
+  "alive-progress>=3.2.0",
+  "colorlog>=6.9.0",
+  "dateparser>=1.2.1",
+  "openai>=1.66.5",
+  "pillow>=11.1.0",
+  "pydantic>=2.10.6",
+  "pydantic-settings>=2.8.1",
+  "pymupdf>=1.25.4",
+  "requests>=2.32.3",
+  "typing-extensions>=4.12.2",
 ]
 license = "MIT"
 
@@ -73,7 +75,16 @@ fail-under = 10
 # from-stdin =
 
 # Files or directories to be skipped. They should be base names, not paths.
-ignore = ["logs","node_modules", ".github", ".git", ".vscode", "config", "docs", "tests"]
+ignore = [
+  "logs",
+  "node_modules",
+  ".github",
+  ".git",
+  ".vscode",
+  "config",
+  "docs",
+  "tests",
+]
 
 # Add files or directories matching the regex patterns to the ignore-list. The
 # regex matches against paths and can be in Posix or Windows format.
@@ -375,7 +386,13 @@ logging-modules = ["logging"]
 [tool.pylint."messages control"]
 # Only show warnings with the listed confidence levels. Leave empty to show all.
 # Valid levels: HIGH, CONTROL_FLOW, INFERENCE, INFERENCE_FAILURE, UNDEFINED.
-confidence = ["HIGH", "CONTROL_FLOW", "INFERENCE", "INFERENCE_FAILURE", "UNDEFINED"]
+confidence = [
+  "HIGH",
+  "CONTROL_FLOW",
+  "INFERENCE",
+  "INFERENCE_FAILURE",
+  "UNDEFINED",
+]
 
 # Disable the message, report, category or checker with the given id(s). You can
 # either give multiple identifiers separated by comma (,) or put this option
@@ -446,10 +463,7 @@ disable = [
 # either give multiple identifier separated by comma (,) or put this option
 # multiple time (only on the command line, not in the configuration file where it
 # should appear only once). See also the "--disable" option for examples.
-enable = [
-  "c-extension-no-member",
-  "logging-format-interpolation"
-]
+enable = ["c-extension-no-member", "logging-format-interpolation"]
 
 [tool.pylint.miscellaneous]
 # List of note tags to take in consideration, separated by a comma.
@@ -563,12 +577,22 @@ ignore-none = true
 ignore-on-opaque-inference = true
 
 # List of symbolic message names to ignore for Mixin members.
-ignored-checks-for-mixins = ["no-member", "not-async-context-manager", "not-context-manager", "attribute-defined-outside-init"]
+ignored-checks-for-mixins = [
+  "no-member",
+  "not-async-context-manager",
+  "not-context-manager",
+  "attribute-defined-outside-init",
+]
 
 # List of class names for which member attributes should not be checked (useful
 # for classes with dynamically set attributes). This supports the use of
 # qualified names.
-ignored-classes = ["optparse.Values", "thread._local", "_thread._local", "argparse.Namespace"]
+ignored-classes = [
+  "optparse.Values",
+  "thread._local",
+  "_thread._local",
+  "argparse.Namespace",
+]
 
 # Show a hint with possible names when a member name was not found. The aspect of
 # finding the hint is based on edit distance.
@@ -616,7 +640,13 @@ init-import = false
 
 # List of qualified module names which can have objects that can redefine
 # builtins.
-redefining-builtins-modules = ["six.moves", "past.builtins", "future.builtins", "builtins", "io"]
+redefining-builtins-modules = [
+  "six.moves",
+  "past.builtins",
+  "future.builtins",
+  "builtins",
+  "io",
+]
 
 [tool.yapf]
 based_on_style = "google"
@@ -634,9 +664,7 @@ spaces_around_default_or_named_assign = true
 split_arguments_when_comma_terminated = true
 
 [tool.yapfignore]
-ignore_patterns = [
-  '**/tests/',
-]
+ignore_patterns = ['**/tests/']
 
 [tool.bandit]
 exclude_dirs = ["tests", ".venv", "node_modules", "logs"]
@@ -662,7 +690,7 @@ no_shell = [
   "os.spawnve",
   "os.spawnvp",
   "os.spawnvpe",
-  "os.startfile"
+  "os.startfile",
 ]
 shell = [
   "os.system",
@@ -676,13 +704,13 @@ shell = [
   "popen2.Popen3",
   "popen2.Popen4",
   "commands.getoutput",
-  "commands.getstatusoutput"
+  "commands.getstatusoutput",
 ]
 subprocess = [
   "subprocess.Popen",
   "subprocess.call",
   "subprocess.check_call",
-  "subprocess.check_output"
+  "subprocess.check_output",
 ]
 
 [tool.ruff]
@@ -693,64 +721,66 @@ target-version = "py312"
 # -- a few of these are already ruff defaults
 # See: https://docs.astral.sh/ruff/configuration/
 extend-exclude = [
-    "node_modules",
-    ".venv/",
-    ".direnv/",
-    ".env",
-    ".vscode",
-    "docs",
-    "logs/",
-    "config/",
-    "__pycache__",
-    "tests"
+  "node_modules",
+  ".venv/",
+  ".direnv/",
+  ".env",
+  ".vscode",
+  "docs",
+  "logs/",
+  "config/",
+  "__pycache__",
+  "tests",
 ]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "C90", "I", "N", "D"]
 ignore = [
-  "D107",  # Missing docstring in __init__
-  "D200",  # One-line docstring should fit on one line with quotes
-  "D205",  # Blank line required between summary line and description
-  "D203",  # No blank line before class
-  "D212",  # Multi-line docstring summary should start at the first line
-  "D400",  # Section name should end with punctuation
-  "D415",  # ^
-  "D418",  # Function decorated with @overload shouldn't contain a docstring
-  "W293",  # Blank line contains whitespace
+  "D107", # Missing docstring in __init__
+  "D200", # One-line docstring should fit on one line with quotes
+  "D203", # Recommended off for ruff format
+  "D205", # Blank line required between summary line and description
+  "D211", # No blank line before docstring
+  "D212", # Multi-line docstring summary should start at the first line
+  "D400", # Section name should end with punctuation
+  "D415", # ^
+  "D418", # Function decorated with @overload shouldn't contain a docstring
+  #"W293", # Blank line contains whitespace
   # Temporarily disabled
-  "D101",  # Missing docstring in public class
-  "D102",  # Missing docstring in public method
-  "D105",  # Missing docstring in magic method
-  "D106",  # Missing docstring in public nested class
+  "D101", # Missing docstring in public class
+  "D102", # Missing docstring in public method
+  "D105", # Missing docstring in magic method
+  "D106", # Missing docstring in public nested class
   "D417",
-  "C901",  # too complex
+  "C901", # too complex
 ]
+fixable = ["ALL"]
+unfixable = []
 
 # 4. Ignore `E402` (import violations) in all `__init__.py` files, and in selected subdirectories.
 [tool.ruff.lint.per-file-ignores]
 # F401 removed because it eliminates TYPE_CHECKING imports used as forward references
 "*.py" = ["F401"]
 "__init__.py" = ["E402", "F401"]
-"**/{tests,docs,tools}/*" = ["E402", "F401"]
+"docs/*" = ["E402", "F401"]
+"tests/**" = ["D", "E402", "F401", "F403", "F405", "E501", "F841", "N802"]
 
 [tool.pytype]
 exclude = [
-    '__*',
-    '.*',
-    '*_cache',
-    '*.pyc',
-    '.venv/',
-    'node_modules/',
-    'tests/',
-    'docs/',
-    'config/',
-    'logs/',
+  '__*',
+  '.*',
+  '*_cache',
+  '*.pyc',
+  '.venv/',
+  'node_modules/',
+  'tests/',
+  'docs/',
+  'config/',
+  'logs/',
 ]
 
 # Space-separated list of files or directories to process.
-inputs = [
-    '.',
-]
+inputs = ['.']
 
 # Keep going past errors to analyze as many files as possible.
 keep_going = false
@@ -819,24 +849,15 @@ strict_primitive_comparisons = false
 strict_undefined_checks = true
 
 # Space-separated list of error names to ignore.
-disable = [
-    'pyi-error',
-    'import-error',
-]
+disable = ['pyi-error', 'import-error']
 
 # Don't report errors.
 report_errors = true
 
 [tool.pyright]
 include = ["."]
-exclude = [
-    "**/.*",
-    "**/_*",
-    "node_modules",
-    "tests/",
-    "logs",
-]
-ignore = ["docs"]
+exclude = ["**/.*", "**/_*", "node_modules", "logs"]
+ignore = ["docs", "tests"]
 defineConstant = { DEBUG = true }
 stubPath = "../.pyright/stubs"
 pythonVersion = "3.12"
@@ -969,9 +990,7 @@ pretty = true
 ignore_missing_imports = false
 implicit_optional = false
 strict = true
-plugins = [
-  "pydantic.mypy"
-]
+plugins = ["pydantic.mypy"]
 
 warn_redundant_casts = true
 disallow_any_generics = true
@@ -986,13 +1005,18 @@ disable_error_code = [
   "no-untyped-call",
   "type-arg",
   "attr-defined",
+  "explicit-any",
+  "decorated-any",
+  "any",
+  "ignore-without-code",
+  "func-returns-value",  # due to pydantic PrivateAttr with basedmypy
+  "redundant-expr",      # basedmypy complaining about typeguards / future proofing
+  "unreachable",         # same as above
+  "no-untyped-usage",    # until we have defaults
 ]
 
 # The Factory Boy type stubs don't play well with mypy, and this is used exclusively for tests.
-exclude = [
-    'paperap/tests/factories/.*',
-    'tests/',
-]
+exclude = ['paperap/tests/factories/.*', 'tests/unit', 'tests/integration']
 
 [tool.pydantic-mypy]
 # Plugin settings
@@ -1001,9 +1025,7 @@ init_typed = true
 warn_required_dynamic_aliases = true
 
 [tool.coverage.report]
-exclude_lines = [
-    "if TYPE_CHECKING:"
-]
+exclude_lines = ["if TYPE_CHECKING:"]
 fail_under = 75
 show_missing = true
 
@@ -1012,26 +1034,31 @@ members = ["tmp"]
 
 [dependency-groups]
 dev = [
-    "bandit>=1.8.3",
-    "black>=25.1.0",
-    "coverage>=7.6.12",
-    "datamodel-code-generator>=0.28.4",
-    "devtools>=0.12.2",
-    "factory-boy>=3.3.3",
-    "hypothesis>=6.129.0",
-    "icecream>=2.1.4",
-    "mypy>=1.15.0",
-    "pre-commit>=4.1.0",
-    "prospector>=1.15.2",
-    "pydoctor>=24.11.2",
-    "pylint>=3.3.4",
-    "pyright>=1.1.396",
-    "pytest>=8.3.5",
-    "pytest-cov>=6.0.0",
-    "pytype>=2024.10.11",
-    "ruff>=0.9.9",
-    "types-dateparser>=1.2.0.20250208",
-    "types-factory-boy>=0.4.1",
-    "types-pyyaml>=6.0.12.20241230",
-    "types-requests>=2.32.0.20241016",
+  "bandit>=1.8.3",
+  "black>=25.1.0",
+  "coverage>=7.6.12",
+  "datamodel-code-generator>=0.28.4",
+  "devtools>=0.12.2",
+  "factory-boy>=3.3.3",
+  "hypothesis>=6.129.0",
+  "icecream>=2.1.4",
+  "pre-commit>=4.1.0",
+  "prospector>=1.15.2",
+  "pydoctor>=24.11.2",
+  "pylint>=3.3.4",
+  "pyright>=1.1.396",
+  "pytest>=8.3.5",
+  "pytest-cov>=6.0.0",
+  "pytype>=2024.10.11",
+  "ruff>=0.9.9",
+  "sphinx>=7.2.6",
+  "sphinx-rtd-theme>=2.0.0",
+  "sphinx-autodoc-typehints>=2.0.0",
+  "myst-parser>=2.0.0",
+  "types-dateparser>=1.2.0.20250208",
+  "types-factory-boy>=0.4.1",
+  "types-pyyaml>=6.0.12.20241230",
+  "types-requests>=2.32.0.20241016",
+  "basedmypy>=2.10.0",
+  "pydantic-basedtyping>=0.1.0",
 ]

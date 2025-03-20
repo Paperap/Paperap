@@ -2,35 +2,36 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_tags.py
-        Project: paperap
-        Created: 2025-03-05
-        Version: 0.0.7
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_tags.py
+Project: paperap
+Created: 2025-03-05
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-05     By Jess Mann
+2025-03-05     By Jess Mann
 
 """
 from __future__ import annotations
 
 import os
-from typing import Iterable, override
-from unittest.mock import patch, MagicMock
 from datetime import datetime
+from typing import Iterable, override
+from unittest.mock import MagicMock, patch
+
 from paperap.models import *
-from paperap.resources.tags import TagResource
 from paperap.models.document import DocumentQuerySet
-from paperap.tests import UnitTestCase, load_sample_data, TagUnitTest
+from paperap.resources.tags import TagResource
+from tests.lib import TagUnitTest, UnitTestCase, load_sample_data
 
 sample_tag_list = load_sample_data('tags_list.json')
 sample_tag = load_sample_data('tags_item.json')
@@ -174,7 +175,7 @@ class TestRelationships(TagUnitTest):
 
                 self.assertIsInstance(document.tag_ids, list)
                 self.assertTrue(self.model.id in document.tag_ids, f"Expected tag.id to be in document.tag_ids. {self.model.id} not in {document.tag_ids}")
-                self.assertCountEqual(document.tag_ids, sample_document['tags'], f"Expected document.tag_ids to match sample data")
+                self.assertCountEqual(document.tag_ids, sample_document['tags'], "Expected document.tag_ids to match sample data")
 
                 if sample_document['storage_path'] is None:
                     self.assertIsNone(document.storage_path_id)

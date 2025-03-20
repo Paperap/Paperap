@@ -2,35 +2,37 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_client.py
-        Project: paperap
-        Created: 2025-03-04
-        Version: 0.0.7
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_client.py
+Project: paperap
+Created: 2025-03-04
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-13     By Jess Mann
+2025-03-13     By Jess Mann
 
 """
 from __future__ import annotations
+
 import json
 import os
-import requests
-from typing import Any, Dict, Iterator, override
 import unittest
-from unittest.mock import MagicMock, Mock, patch, PropertyMock
 from pathlib import Path
-from yarl import URL
 from string import Template
+from typing import Any, Dict, Iterator, override
+from unittest.mock import MagicMock, Mock, PropertyMock, patch
+
+import requests
+from pydantic import HttpUrl
 
 from paperap.auth import AuthBase, BasicAuth, TokenAuth
 from paperap.client import PaperlessClient
@@ -42,20 +44,20 @@ from paperap.exceptions import (
     InsufficientPermissionError,
     RequestError,
     ResourceNotFoundError,
-    ResponseParsingError
+    ResponseParsingError,
 )
+from paperap.models.abstract import BaseQuerySet
+from paperap.models.document import Document
+from paperap.models.tag import Tag
 from paperap.resources.correspondents import CorrespondentResource
 from paperap.resources.custom_fields import CustomFieldResource
-from paperap.resources.documents import DocumentResource
 from paperap.resources.document_types import DocumentTypeResource
+from paperap.resources.documents import DocumentResource
 from paperap.resources.storage_paths import StoragePathResource
 from paperap.resources.tags import TagResource
 from paperap.resources.tasks import TaskResource
 from paperap.settings import Settings
-from paperap.tests import UnitTestCase, load_sample_data
-from paperap.models.abstract import BaseQuerySet
-from paperap.models.document import Document
-from paperap.models.tag import Tag
+from tests.lib import UnitTestCase, load_sample_data
 
 # Load sample response from tests/sample_data/documents_list.json
 sample_data = load_sample_data('documents_list.json')
@@ -102,7 +104,9 @@ class TestClient(UnitTestCase):
 
 
 class TestClientInitialization(unittest.TestCase):
+
     """Test the initialization of the PaperlessClient class."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
     def test_init_with_token(self):
@@ -110,7 +114,7 @@ class TestClientInitialization(unittest.TestCase):
         client = PaperlessClient(Settings(base_url="https://example.com", token="40characterslong40characterslong40charac"))
         self.assertIsInstance(client.auth, TokenAuth)
         self.assertEqual(client.auth.token, "40characterslong40characterslong40charac")
-        self.assertEqual(str(client.base_url), "https://example.com")
+        self.assertEqual(str(client.base_url), "https://example.com/")
 
     def test_init_with_basic_auth(self):
         """Test initializing with username and password."""
@@ -158,7 +162,9 @@ class TestClientInitialization(unittest.TestCase):
 
 
 class TestClientRequests(UnitTestCase):
+
     """Test the request methods of the PaperlessClient class."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
     @override
     def setUp(self):
@@ -176,6 +182,7 @@ class TestClientRequests(UnitTestCase):
     @override
     def tearDown(self):
         self.session_patcher.stop()
+        super().tearDown()
 
     def test_request_with_relative_endpoint(self):
         """Test making a request with a relative endpoint."""
@@ -218,8 +225,8 @@ class TestClientRequests(UnitTestCase):
         self.assertEqual(call_args["url"], "http://example.com/api/documents/$id/")
 
     def test_request_with_url_object(self):
-        """Test making a request with a URL object."""
-        url = URL("api/documents/")
+        """Test making a request with a pydantic HttpUrl object."""
+        url = HttpUrl("http://example.com/api/documents/")
         self.client.request("GET", url)
         call_args = self.mock_session_request.call_args[1]
         self.assertEqual(call_args["url"], "http://example.com/api/documents/")
@@ -259,13 +266,15 @@ class TestClientRequests(UnitTestCase):
             self.client.request("GET", "api/documents/")
 
 
-class TestClientErrorHandling(unittest.TestCase):
+class TestClientErrorHandling(UnitTestCase):
+
     """Test the error handling of the PaperlessClient class."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
     @override
     def setUp(self):
-        self.client = PaperlessClient(Settings(base_url="https://example.com", token="40characterslong40characterslong40charac"))
+        super().setUp()
         self.session_patcher = patch('requests.Session.request')
         self.mock_session_request = self.session_patcher.start()
 
@@ -369,13 +378,11 @@ class TestClientErrorHandling(unittest.TestCase):
         self.assertEqual(message, "Not JSON")
 
 
-class TestClientUtilityMethods(unittest.TestCase):
-    """Test the utility methods of the PaperlessClient class."""
-    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
-    @override
-    def setUp(self):
-        self.client = PaperlessClient(Settings(base_url="https://example.com", token="40characterslong40characterslong40charac"))
+class TestClientUtilityMethods(UnitTestCase):
 
+    """Test the utility methods of the PaperlessClient class."""
+
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
     @patch("paperap.client.PaperlessClient.request")
     def test_get_statistics(self, mock_request):
         """Test getting system statistics."""
@@ -423,13 +430,11 @@ class TestClientUtilityMethods(unittest.TestCase):
             self.client.get_config()
 
 
-class TestTokenGeneration(unittest.TestCase):
-    """Test the token generation functionality."""
-    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
-    @override
-    def setUp(self):
-        self.client = PaperlessClient(Settings(base_url="https://example.com", token="40characterslong40characterslong40charac"))
+class TestTokenGeneration(UnitTestCase):
 
+    """Test the token generation functionality."""
+
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
     @patch("requests.post")
     def test_generate_token_success(self, mock_post):
         """Test successful token generation."""

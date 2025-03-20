@@ -2,34 +2,37 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_settings.py
-        Project: paperap
-        Created: 2025-03-04
-        Version: 0.0.7
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_settings.py
+Project: paperap
+Created: 2025-03-04
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-04     By Jess Mann
+2025-03-04     By Jess Mann
 
 """
 from __future__ import annotations
+
 import os
-from typing import Any, Iterable
 import unittest
+from typing import Any, Iterable
 from unittest.mock import patch
-from yarl import URL
-from paperap.settings import Settings
+
+from pydantic import HttpUrl, ValidationError
+
 from paperap.exceptions import ConfigurationError
-from paperap.tests import UnitTestCase
+from paperap.settings import Settings
+from tests.lib import UnitTestCase
 
 TOKEN_DATA = {
     'token': '40characterslong40characterslong40charac',
@@ -57,6 +60,7 @@ class NoEnvTestCase(UnitTestCase):
         self.patcher.stop()
 
 class TestSettings(NoEnvTestCase):
+
     """Unit tests for the Settings class."""
 
     def test_valid_settings(self):
@@ -65,7 +69,7 @@ class TestSettings(NoEnvTestCase):
         self.assertEqual(settings.token, TOKEN_DATA['token'])
         self.assertEqual(settings.username, TOKEN_DATA['username'])
         self.assertEqual(settings.password, TOKEN_DATA['password'])
-        self.assertEqual(settings.base_url, URL(TOKEN_DATA['base_url']))
+        self.assertEqual(settings.base_url, HttpUrl(TOKEN_DATA['base_url']))
         self.assertEqual(settings.require_ssl, TOKEN_DATA['require_ssl'])
         self.assertEqual(settings.timeout, TOKEN_DATA['timeout'])
         self.assertFalse(settings.require_ssl)
@@ -102,10 +106,10 @@ class TestSettingsTimeout(NoEnvTestCase):
 
 class TestSettingsURL(NoEnvTestCase):
     def test_accept_url(self):
-        """Test that a URL object is accepted."""
+        """Test that a pydantic HttpUrl object is accepted."""
         test_cases = [
-            URL("http://example.com"),
-            URL("https://example.com"),
+            HttpUrl("http://example.com"),
+            HttpUrl("https://example.com"),
         ]
         for url in test_cases:
             params = {**TOKEN_DATA, 'base_url': url}
@@ -113,7 +117,7 @@ class TestSettingsURL(NoEnvTestCase):
             self.assertEqual(settings.base_url, url, f"URL does not match: {settings.base_url} != {url}")
 
     def test_valid_url_conversion(self):
-        """Test that a valid URL string is correctly converted to a URL object."""
+        """Test that a valid URL string is correctly converted to a pydantic HttpUrl object."""
         test_cases = [
             'http://example.com',
             'https://example.com',
@@ -123,8 +127,8 @@ class TestSettingsURL(NoEnvTestCase):
         for url in test_cases:
             params = {**TOKEN_DATA, 'base_url': url}
             settings = Settings(**params)
-            self.assertIsInstance(settings.base_url, URL, f"URL is not a yarl.URL object: {settings.base_url}")
-            self.assertEqual(settings.base_url, URL(url), f"URL does not match: {settings.base_url} != {URL(url)}")
+            self.assertIsInstance(settings.base_url, HttpUrl, f"URL is not a pydantic.HttpUrl object: {settings.base_url}")
+            self.assertEqual(settings.base_url, HttpUrl(url), f"URL does not match: {settings.base_url} != {HttpUrl(url)}")
 
     def test_invalid_urls(self):
         """Test that an invalid URL string raises a validation error."""
@@ -135,29 +139,29 @@ class TestSettingsURL(NoEnvTestCase):
             'https://',
         ]
         for value in test_cases:
-            with self.assertRaises(ConfigurationError, msg=f"URL should be invalid: {value}"):
+            with self.assertRaises(ValidationError, msg=f"URL should be invalid: {value}"):
                 params = {**TOKEN_DATA, 'base_url': value}
                 Settings(**params)
-            with self.assertRaises(ConfigurationError, msg=f"URL object should be invalid: {value}"):
-                params = {**TOKEN_DATA, 'base_url': URL(value)}
+            with self.assertRaises(ValidationError, msg=f"URL object should be invalid: {value}"):
+                params = {**TOKEN_DATA, 'base_url': HttpUrl(value)}
                 Settings(**params)
 
-    def test_url_final_slash_removed(self):
+    def test_url_final_slash_added(self):
         """Test that a URL with a final slash is correctly removed."""
         test_cases = {
-            'http://example.com/': 'http://example.com',
-            'https://example.com/': 'https://example.com',
-            'http://example.com:8080/': 'http://example.com:8080',
-            'https://example.com:8080/': 'https://example.com:8080',
-            'http://example.com/path/': 'http://example.com/path',
-            'https://example.com/path/': 'https://example.com/path',
-            'http://example.com:8080/path/': 'http://example.com:8080/path',
-            'https://example.com:8080/path/': 'https://example.com:8080/path',
+            'http://example.com/': 'http://example.com/',
+            'https://example.com/': 'https://example.com/',
+            'http://example.com:8080/': 'http://example.com:8080/',
+            'https://example.com:8080/': 'https://example.com:8080/',
+            'http://example.com/path/': 'http://example.com/path/',
+            'https://example.com/path/': 'https://example.com/path/',
+            'http://example.com:8080/path/': 'http://example.com:8080/path/',
+            'https://example.com:8080/path/': 'https://example.com:8080/path/',
         }
         for url, expected in test_cases.items():
             params = {**TOKEN_DATA, 'base_url': url}
             settings = Settings(**params)
-            self.assertEqual(str(settings.base_url), expected, f"URL final slash not removed. {settings.base_url} != {URL(expected)}")
+            self.assertEqual(str(settings.base_url), expected, f"URL final slash not added. {settings.base_url} != {HttpUrl(expected)}")
 
 class TestSettingsToken(NoEnvTestCase):
     def test_null_token(self):
@@ -189,7 +193,7 @@ class TestSettingsSSL(NoEnvTestCase):
         """Test that require_ssl is not enforced when disabled."""
         params = {**TOKEN_DATA, 'require_ssl': True, 'base_url': 'https://example.com'}
         settings = Settings(**params)
-        self.assertEqual(settings.base_url, URL('https://example.com'), "URL was changed require_ssl is True")
+        self.assertEqual(settings.base_url, HttpUrl('https://example.com'), "URL was changed require_ssl is True")
 
 class TestSettingsEnvPrefix(UnitTestCase):
     def test_env_prefix_token_defaults(self):
@@ -200,7 +204,7 @@ class TestSettingsEnvPrefix(UnitTestCase):
         self.assertEqual(settings.token, TOKEN_DATA['token'], f"Token was changed when token env vars were set: {settings.token} != {TOKEN_DATA['token']}")
         self.assertEqual(settings.username, TOKEN_DATA['username'], f"Username was changed when token env vars were set: {settings.username} != {TOKEN_DATA['username']}")
         self.assertEqual(settings.password, TOKEN_DATA['password'], f"Password was changed when token env vars were set: {settings.password} != {TOKEN_DATA['password']}")
-        self.assertEqual(settings.base_url, URL(TOKEN_DATA['base_url']), f"URL was changed when token env vars were set: {settings.base_url} != {URL(TOKEN_DATA['base_url'])}")
+        self.assertEqual(settings.base_url, HttpUrl(TOKEN_DATA['base_url']), f"URL was changed when token env vars were set: {settings.base_url} != {HttpUrl(TOKEN_DATA['base_url'])}")
         self.assertEqual(settings.require_ssl, TOKEN_DATA['require_ssl'], f"require_ssl was changed when token env vars were set: {settings.require_ssl} != {TOKEN_DATA['require_ssl']}")
         self.assertEqual(settings.timeout, TOKEN_DATA['timeout'], f"Timeout was changed when token env vars were set: {settings.timeout} != {TOKEN_DATA['timeout']}")
         self.assertFalse(settings.require_ssl, "require_ssl was changed when token env vars were set")
@@ -213,7 +217,7 @@ class TestSettingsEnvPrefix(UnitTestCase):
         self.assertEqual(settings.token, AUTH_DATA['token'], f"Token was changed when auth env vars were set: {settings.token} != {AUTH_DATA['token']}")
         self.assertEqual(settings.username, AUTH_DATA['username'], f"Username was changed when auth env vars were set: {settings.username} != {AUTH_DATA['username']}")
         self.assertEqual(settings.password, AUTH_DATA['password'], f"Password was changed when auth env vars were set: {settings.password} != {AUTH_DATA['password']}")
-        self.assertEqual(settings.base_url, URL(AUTH_DATA['base_url']), f"URL was changed when auth env vars were set: {settings.base_url} != {URL(AUTH_DATA['base_url'])}")
+        self.assertEqual(settings.base_url, HttpUrl(AUTH_DATA['base_url']), f"URL was changed when auth env vars were set: {settings.base_url} != {HttpUrl(AUTH_DATA['base_url'])}")
         self.assertEqual(settings.require_ssl, AUTH_DATA['require_ssl'], f"require_ssl was changed when auth env vars were set: {settings.require_ssl} != {AUTH_DATA['require_ssl']}")
         self.assertEqual(settings.timeout, AUTH_DATA['timeout'], f"Timeout was changed when auth env vars were set: {settings.timeout} != {AUTH_DATA['timeout']}")
         self.assertFalse(settings.require_ssl, "require_ssl was changed when auth env vars were set")
@@ -225,7 +229,7 @@ class TestSettingsEnvPrefix(UnitTestCase):
         self.assertEqual(settings.token, TOKEN_DATA['token'], f"Token was not set during init when random env vars were set: {settings.token} != {TOKEN_DATA['token']}")
         self.assertEqual(settings.username, TOKEN_DATA['username'], f"Username was not set during init when random env vars were set: {settings.username} != {TOKEN_DATA['username']}")
         self.assertEqual(settings.password, TOKEN_DATA['password'], f"Password was not set during init when random env vars were set: {settings.password} != {TOKEN_DATA['password']}")
-        self.assertEqual(settings.base_url, URL(TOKEN_DATA['base_url']), f"URL was not set during init when random env vars were set: {settings.base_url} != {URL(TOKEN_DATA['base_url'])}")
+        self.assertEqual(settings.base_url, HttpUrl(TOKEN_DATA['base_url']), f"URL was not set during init when random env vars were set: {settings.base_url} != {HttpUrl(TOKEN_DATA['base_url'])}")
         self.assertEqual(settings.require_ssl, TOKEN_DATA['require_ssl'], f"require_ssl was not set during init when random env vars were set: {settings.require_ssl} != {TOKEN_DATA['require_ssl']}")
         self.assertEqual(settings.timeout, TOKEN_DATA['timeout'], f"Timeout was not set during init when random env vars were set: {settings.timeout} != {TOKEN_DATA['timeout']}")
         self.assertFalse(settings.require_ssl, "require_ssl was not set during init when random env vars were set")

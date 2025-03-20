@@ -9,7 +9,7 @@ METADATA:
 File:    model.py
         Project: paperap
 Created: 2025-03-09
-        Version: 0.0.7
+        Version: 0.0.8
 Author:  Jess Mann
 Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -24,25 +24,31 @@ LAST MODIFIED:
 
 from __future__ import annotations
 
+import logging
 from datetime import datetime
 from typing import TYPE_CHECKING, Annotated, Any, Iterable, Iterator, Optional, TypedDict, cast, override
 
 import pydantic
 from pydantic import Field, field_serializer, field_validator, model_serializer
 from typing_extensions import TypeVar
-from yarl import URL
 
 from paperap.const import CustomFieldTypedDict, CustomFieldValues
+from paperap.exceptions import ResourceNotFoundError
 from paperap.models.abstract import FilteringStrategies, StandardModel
 from paperap.models.document.queryset import DocumentQuerySet
 
 if TYPE_CHECKING:
     from paperap.models.correspondent import Correspondent
     from paperap.models.custom_field import CustomField, CustomFieldQuerySet
+    from paperap.models.document.download import DownloadedDocument
+    from paperap.models.document.metadata import DocumentMetadata
+    from paperap.models.document.suggestions import DocumentSuggestions
     from paperap.models.document_type import DocumentType
     from paperap.models.storage_path import StoragePath
     from paperap.models.tag import Tag, TagQuerySet
     from paperap.models.user import User
+
+logger = logging.getLogger(__name__)
 
 
 class DocumentNote(StandardModel):
@@ -62,7 +68,7 @@ class DocumentNote(StandardModel):
         read_only_fields = {"deleted_at", "restored_at", "transaction_id", "created"}
 
     @field_serializer("deleted_at", "restored_at", "created")
-    def serialize_datetime(self, value: datetime | None):
+    def serialize_datetime(self, value: datetime | None) -> str | None:
         """
         Serialize datetime fields to ISO format.
 
@@ -121,6 +127,7 @@ class Document(StandardModel):
         tags: The tags associated with the document.
         title: The title of the document.
         user_can_change: Whether the user can change the document.
+        checksum: The checksum of the document.
 
     Examples:
         >>> document = client.documents().get(pk=1)
@@ -128,6 +135,19 @@ class Document(StandardModel):
         >>> document.save()
         >>> document.title
         'Example Document'
+
+        # Get document metadata
+        >>> metadata = document.get_metadata()
+        >>> print(metadata.original_mime_type)
+
+        # Download document
+        >>> download = document.download()
+        >>> with open(download.disposition_filename, 'wb') as f:
+        ...     f.write(download.content)
+
+        # Get document suggestions
+        >>> suggestions = document.get_suggestions()
+        >>> print(suggestions.tags)
 
     """
 
@@ -142,6 +162,7 @@ class Document(StandardModel):
     page_count: int | None = None
     title: str = ""
     user_can_change: bool | None = None
+    checksum: str | None = None
 
     created: datetime | None = Field(description="Creation timestamp", default=None)
     created_date: str | None = None
@@ -162,8 +183,7 @@ class Document(StandardModel):
 
     class Meta(StandardModel.Meta):
         # NOTE: Filtering appears to be disabled by paperless on page_count
-        queryset = DocumentQuerySet
-        read_only_fields = {"page_count", "deleted_at", "updated", "is_shared_by_requester"}
+        read_only_fields = {"page_count", "deleted_at", "updated", "is_shared_by_requester", "archived_file_name"}
         filtering_disabled = {"page_count", "deleted_at", "updated", "is_shared_by_requester"}
         filtering_strategies = {FilteringStrategies.WHITELIST}
         field_map = {
@@ -285,7 +305,7 @@ class Document(StandardModel):
         return value.isoformat() if value else None
 
     @field_serializer("notes")
-    def serialize_notes(self, value: list[DocumentNote]):
+    def serialize_notes(self, value: list[DocumentNote]) -> list[dict[str, Any]]:
         """
         Serialize notes to a list of dictionaries.
 
@@ -764,6 +784,139 @@ class Document(StandardModel):
         raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
     """
 
+    def add_tag(self, tag: "Tag | int | str") -> None:
+        """
+        Add a tag to the document.
+
+        Args:
+            tag: The tag to add.
+
+        """
+        if isinstance(tag, int):
+            self.tag_ids.append(tag)
+            return
+
+        if isinstance(tag, StandardModel):
+            self.tag_ids.append(tag.id)
+            return
+
+        if isinstance(tag, str):
+            if not (instance := self._client.tags().filter(name=tag).first()):
+                raise ResourceNotFoundError(f"Tag '{tag}' not found")
+            self.tag_ids.append(instance.id)
+            return
+
+        raise TypeError(f"Invalid type for tag: {type(tag)}")
+
+    def remove_tag(self, tag: "Tag | int | str") -> None:
+        """
+        Remove a tag from the document.
+
+        Args:
+            tag: The tag to remove.
+
+        """
+        if isinstance(tag, int):
+            # TODO: Handle removal with consideration of "tags can't be empty" rule in paperless
+            self.tag_ids.remove(tag)
+            return
+
+        if isinstance(tag, StandardModel):
+            # TODO: Handle removal with consideration of "tags can't be empty" rule in paperless
+            self.tag_ids.remove(tag.id)
+            return
+
+        if isinstance(tag, str):
+            # TODO: Handle removal with consideration of "tags can't be empty" rule in paperless
+            if not (instance := self._client.tags().filter(name=tag).first()):
+                raise ResourceNotFoundError(f"Tag '{tag}' not found")
+            self.tag_ids.remove(instance.id)
+            return
+
+        raise TypeError(f"Invalid type for tag: {type(tag)}")
+
+    def get_metadata(self) -> "DocumentMetadata":
+        """
+        Get the metadata for this document.
+
+        Returns:
+            The document metadata.
+
+        Examples:
+            >>> metadata = document.get_metadata()
+            >>> print(metadata.original_mime_type)
+
+        """
+        raise NotImplementedError()
+
+    def download(self, original: bool = False) -> "DownloadedDocument":
+        """
+        Download the document file.
+
+        Args:
+            original: Whether to download the original file instead of the archived version.
+
+        Returns:
+            The downloaded document.
+
+        Examples:
+            >>> download = document.download()
+            >>> with open(download.disposition_filename, 'wb') as f:
+            ...     f.write(download.content)
+
+        """
+        raise NotImplementedError()
+
+    def preview(self, original: bool = False) -> "DownloadedDocument":
+        """
+        Get a preview of the document.
+
+        Args:
+            original: Whether to preview the original file instead of the archived version.
+
+        Returns:
+            The document preview.
+
+        """
+        raise NotImplementedError()
+
+    def thumbnail(self, original: bool = False) -> "DownloadedDocument":
+        """
+        Get the document thumbnail.
+
+        Args:
+            original: Whether to get the thumbnail of the original file.
+
+        Returns:
+            The document thumbnail.
+
+        """
+        raise NotImplementedError()
+
+    def get_suggestions(self) -> "DocumentSuggestions":
+        """
+        Get suggestions for this document.
+
+        Returns:
+            The document suggestions.
+
+        Examples:
+            >>> suggestions = document.get_suggestions()
+            >>> print(suggestions.tags)
+
+        """
+        raise NotImplementedError()
+
+    def append_content(self, value: str):
+        """
+        Append content to the document.
+
+        Args:
+            value: The content to append.
+
+        """
+        self.content = f"{self.content}\n{value}"
+
     @override
     def update_locally(self, from_db: bool | None = None, **kwargs: Any):
         """
@@ -777,19 +930,16 @@ class Document(StandardModel):
             NotImplementedError: If attempting to set notes or tags to None when they are not already None.
 
         """
-        # Paperless does not support setting notes or tags to None if not already None
-        if self._meta.original_data["notes"]:
-            if "notes" in kwargs and not kwargs.get("notes"):
-                # TODO: Gracefully delete the notes instead of raising an error.
-                raise NotImplementedError(
-                    f"Cannot set notes to None. Notes currently: {self._meta.original_data['notes']}"
-                )
+        if not from_db:
+            # Paperless does not support setting notes or tags to None if not already None
+            fields = ["notes", "tag_ids"]
+            for field in fields:
+                original = self._original_data[field]
+                if original and field in kwargs and not kwargs.get(field):
+                    raise NotImplementedError(f"Cannot set {field} to None. {field} currently: {original}")
 
-        if self._meta.original_data["tag_ids"]:
-            if "tag_ids" in kwargs and not kwargs.get("tag_ids"):
-                # TODO: Gracefully delete the tags instead of raising an error.
-                raise NotImplementedError(
-                    f"Cannot set tag_ids to None. Tags currently: {self._meta.original_data['tag_ids']}"
-                )
+            # Handle aliases
+            if self._original_data["tag_ids"] and "tags" in kwargs and not kwargs.get("tags"):
+                raise NotImplementedError(f"Cannot set tags to None. Tags currently: {self._original_data['tag_ids']}")
 
-        return super().update_locally(from_db, **kwargs)
+        return super().update_locally(from_db=from_db, **kwargs)

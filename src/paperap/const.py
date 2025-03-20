@@ -6,7 +6,7 @@
        File:    const.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.7
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,7 +25,19 @@ import logging
 from datetime import datetime
 from enum import Enum, IntEnum, StrEnum
 from string import Template
-from typing import Any, Literal, NotRequired, Required, Self, TypedDict, override
+from typing import (
+    Any,
+    Iterator,
+    Literal,
+    NotRequired,
+    Protocol,
+    Required,
+    Self,
+    TypeAlias,
+    TypedDict,
+    override,
+    runtime_checkable,
+)
 
 import pydantic
 from pydantic import ConfigDict, Field
@@ -67,23 +79,19 @@ class URLS:
     create: Template = Template("/api/${resource}/")
     update: Template = Template("/api/${resource}/${pk}/")
     delete: Template = Template("/api/${resource}/${pk}/")
-    download: Template = Template("/api/document/${pk}/download/")
     meta: Template = Template("/api/document/${pk}/metadata/")
     next_asn: Template = Template("/api/document/next_asn/")
     notes: Template = Template("/api/document/${pk}/notes/")
-    preview: Template = Template("/api/document/${pk}/preview/")
-    thumbnail: Template = Template("/api/document/${pk}/thumb/")
     post: Template = Template("/api/document/post_document/")
     single: Template = Template("/api/document/${pk}/")
-    suggestions: Template = Template("/api/document/${pk}/suggestions/")
+    suggestions: Template = Template("/api/${resource}/${pk}/suggestions/")
+    preview: Template = Template("/api/${resource}/${pk}/preview/")
+    thumbnail: Template = Template("/api/${resource}/${pk}/thumb/")
+    download: Template = Template("/api/${resource}/${pk}/download/")
 
 
-class Endpoints(TypedDict, total=False):
-    list: Required[Template]
-    detail: NotRequired[Template]
-    create: NotRequired[Template]
-    update: NotRequired[Template]
-    delete: NotRequired[Template]
+CommonEndpoints: TypeAlias = Literal["list", "detail", "create", "update", "delete"]
+Endpoints: TypeAlias = dict[CommonEndpoints | str, Template]
 
 
 class FilteringStrategies(StrEnum):

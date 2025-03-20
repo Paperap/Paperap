@@ -6,7 +6,7 @@
        File:    base.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.7
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -22,7 +22,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, ClassVar, NotRequired, TypedDict
+from typing import TYPE_CHECKING, Any, ClassVar, NotRequired, TypedDict, override
 
 import pydantic
 from pydantic import ConfigDict, field_validator
@@ -50,6 +50,7 @@ class Plugin(pydantic.BaseModel, ABC):
     version: ClassVar[str] = "0.0.1"
     manager: "PluginManager"
 
+    @override
     def __init_subclass__(cls, **kwargs: ConfigDict):
         # Enforce name is set
         if not getattr(cls, "name", None):

@@ -6,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -38,34 +38,37 @@ class TagQuerySet(StandardQuerySet["Tag"], HasStandard):
     QuerySet for Paperless-ngx tags with specialized filtering methods.
     """
 
-    def colour(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def colour(self, value: str | int, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
         Filter tags by color.
 
         Args:
-            value (str): The color to filter by
-            exact (bool): If True, match the exact color, otherwise use contains
-            case_insensitive (bool): If True, ignore case when matching
+            value: The color to filter by (string or integer)
+            exact: If True, match the exact color, otherwise use contains
+            case_insensitive: If True, ignore case when matching (for string values)
 
         Returns:
             Filtered TagQuerySet
 
         """
+        if isinstance(value, int):
+            return self.filter(colour=value)
         return self.filter_field_by_str("colour", value, exact=exact, case_insensitive=case_insensitive)
 
-    def match(self, value: str, *, exact: bool = True) -> Self:
+    def match(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
         Filter tags by match value.
 
         Args:
-            value (str): The value to filter by
-            exact (bool): If True, match the exact value, otherwise use contains
+            value: The value to filter by
+            exact: If True, match the exact value, otherwise use contains
+            case_insensitive: If True, ignore case when matching
 
         Returns:
             Filtered TagQuerySet
 
         """
-        return self.filter_field_by_str("match", value, exact=exact)
+        return self.filter_field_by_str("match", value, exact=exact, case_insensitive=case_insensitive)
 
     def matching_algorithm(self, value: int) -> Self:
         """

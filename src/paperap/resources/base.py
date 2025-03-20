@@ -6,7 +6,7 @@
        File:    base.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.7
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,11 +25,10 @@ import copy
 import logging
 from abc import ABC, ABCMeta
 from string import Template
-from typing import TYPE_CHECKING, Any, ClassVar, Final, Generic, Iterator, Optional, cast, overload, override
+from typing import TYPE_CHECKING, Any, ClassVar, Final, Generic, Iterator, overload, override
 
-from pydantic import field_validator
+from pydantic import HttpUrl, field_validator
 from typing_extensions import TypeVar
-from yarl import URL
 
 from paperap.const import URLS, Endpoints
 from paperap.exceptions import (
@@ -45,12 +44,10 @@ if TYPE_CHECKING:
     from paperap.client import PaperlessClient
     from paperap.models.abstract import BaseModel, BaseQuerySet, StandardModel, StandardQuerySet
 
-_BaseModel = TypeVar("_BaseModel", bound="BaseModel")
-_StandardModel = TypeVar("_StandardModel", bound="StandardModel")
-_BaseQuerySet = TypeVar("_BaseQuerySet", bound="BaseQuerySet", default="BaseQuerySet[_BaseModel]", covariant=True)
-_StandardQuerySet = TypeVar(
-    "_StandardQuerySet", bound="StandardQuerySet", default="StandardQuerySet[_StandardModel]", covariant=True
-)
+_BaseModel = TypeVar("_BaseModel", bound="BaseModel", default="BaseModel")
+_BaseQuerySet = TypeVar("_BaseQuerySet", bound="BaseQuerySet", default="BaseQuerySet")
+_StandardModel = TypeVar("_StandardModel", bound="StandardModel", default="StandardModel")
+_StandardQuerySet = TypeVar("_StandardQuerySet", bound="StandardQuerySet", default="StandardQuerySet")
 
 logger = logging.getLogger(__name__)
 
@@ -68,6 +65,8 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
 
     # The model class for this resource.
     model_class: type[_BaseModel]
+    queryset_class: type[_BaseQuerySet]
+
     # The PaperlessClient instance.
     client: "PaperlessClient"
     # The name of the model. This must line up with the API endpoint
@@ -87,13 +86,14 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         # Allow templating
         for key, value in self.endpoints.items():
             # endpoints is always dict[str, Template]
-            self.endpoints[key] = Template(value.safe_substitute(resource=self.name))  # type: ignore
+            self.endpoints[key] = Template(value.safe_substitute(resource=self.name))
 
         # Ensure the model has a link back to this resource
-        self._meta.resource = self
+        self.model_class._resource = self  # type: ignore # allow private access
 
         super().__init__()
 
+    @override
     @classmethod
     def __init_subclass__(cls, **kwargs: Any) -> None:
         """
@@ -134,11 +134,8 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         if not isinstance(value, dict):
             raise ModelValidationError("endpoints must be a dictionary")
 
-        converted: dict[str, Template] = {}
+        converted: Endpoints = {}
         for k, v in value.items():
-            if k not in ["list", "detail", "create", "update", "delete"]:
-                raise ModelValidationError("endpoint keys must be list, detail, create, update, or delete")
-
             if isinstance(v, Template):
                 converted[k] = v
                 continue
@@ -151,12 +148,8 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             except ValueError as e:
                 raise ModelValidationError(f"endpoints[{k}] is not a valid template: {e}") from e
 
-        # list is required
-        if "list" not in converted:
-            raise ModelValidationError("list endpoint is required")
-
         # We validated that converted matches endpoints above
-        return cast(Endpoints, converted)
+        return converted
 
     def all(self) -> _BaseQuerySet:
         """
@@ -166,7 +159,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             A QuerySet for this resource
 
         """
-        return self._meta.queryset(self)  # type: ignore # _meta.queryset is always the right queryset type
+        return self.queryset_class(self)  # type: ignore # _meta.queryset is always the right queryset type
 
     def filter(self, **kwargs: Any) -> _BaseQuerySet:
         """
@@ -243,45 +236,15 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         """
         raise NotImplementedError("update method not available for resources without an id")
 
-    def update_dict(self, model_id: int, **data: dict[str, Any]) -> _BaseModel:
+    def update_dict(self, *args, **kwargs) -> _BaseModel:
         """
         Update a resource.
 
-        Args:
-            model_id: ID of the resource.
-            data: Resource data.
-
-        Raises:
-            ResourceNotFoundError: If the resource with the given id is not found
-
-        Returns:
-            The updated resource.
-
+        Subclasses may implement this.
         """
-        # Signal before updating resource
-        signal_params = {"resource": self.name, "model_id": model_id, "data": data}
-        registry.emit("resource.update:before", "Emitted before updating a resource", kwargs=signal_params)
+        raise NotImplementedError("update_dict method not available for resources without an id")
 
-        if not (template := self.endpoints.get("update")):
-            raise ConfigurationError(f"Update endpoint not defined for resource {self.name}")
-
-        url = template.safe_substitute(resource=self.name, pk=model_id)
-        if not (response := self.client.request("PUT", url, data=data)):
-            raise ResourceNotFoundError("Resource ${resource} not found after update.", resource_name=self.name)
-
-        model = self.parse_to_model(response)
-
-        # Signal after updating resource
-        registry.emit(
-            "resource.update:after",
-            "Emitted after updating a resource",
-            args=[self],
-            kwargs={**signal_params, "model": model},
-        )
-
-        return model
-
-    def delete(self, model_id: int) -> None:
+    def delete(self, *args, **kwargs) -> None:
         """
         Delete a resource.
 
@@ -289,18 +252,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             model_id: ID of the resource.
 
         """
-        # Signal before deleting resource
-        signal_params = {"resource": self.name, "model_id": model_id}
-        registry.emit("resource.delete:before", "Emitted before deleting a resource", args=[self], kwargs=signal_params)
-
-        if not (template := self.endpoints.get("delete")):
-            raise ConfigurationError(f"Delete endpoint not defined for resource {self.name}")
-
-        url = template.safe_substitute(resource=self.name, pk=model_id)
-        self.client.request("DELETE", url)
-
-        # Signal after deleting resource
-        registry.emit("resource.delete:after", "Emitted after deleting a resource", args=[self], kwargs=signal_params)
+        raise NotImplementedError("delete method not available for resources without an id")
 
     def parse_to_model(self, item: dict[str, Any]) -> _BaseModel:
         """
@@ -313,8 +265,12 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             The parsed model instance.
 
         """
-        data = self.transform_data_input(**item)
-        return self.model_class.model_validate(data)
+        try:
+            data = self.transform_data_input(**item)
+            return self.model_class.model_validate(data)
+        except ValueError as ve:
+            logger.error('Error parsing model "%s" with data: %s -> %s', self.name, item, ve)
+            raise
 
     def transform_data_input(self, **data: Any) -> dict[str, Any]:
         """
@@ -382,7 +338,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
 
     def request_raw(
         self,
-        url: str | Template | URL | None = None,
+        url: str | Template | HttpUrl | None = None,
         method: str = "GET",
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
@@ -474,7 +430,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         return self.filter(**keywords)
 
 
-class StandardResource(BaseResource[_StandardModel, _StandardQuerySet], Generic[_StandardModel, _StandardQuerySet]):
+class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
     """
     Base class for API resources.
 
@@ -484,9 +440,6 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet], Generic[
         model_class: The model class for this resource.
 
     """
-
-    # The model class for this resource.
-    model_class: type[_StandardModel]
 
     @override
     def get(self, model_id: int, *args, **kwargs: Any) -> _StandardModel:
@@ -545,3 +498,206 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet], Generic[
         data = model.to_dict()
         data = self.transform_data_output(**data)
         return self.update_dict(model.id, **data)
+
+    def bulk_action(self, action: str, ids: list[int], **kwargs: Any) -> dict[str, Any]:
+        """
+        Perform a bulk action on multiple resources.
+
+        Args:
+            action: The action to perform (e.g., "delete", "update", etc.)
+            ids: List of resource IDs to perform the action on
+            **kwargs: Additional parameters for the action
+
+        Returns:
+            The API response
+
+        Raises:
+            ConfigurationError: If the bulk endpoint is not defined
+
+        """
+        # Signal before bulk action
+        signal_params = {"resource": self.name, "action": action, "ids": ids, "kwargs": kwargs}
+        registry.emit("resource.bulk_action:before", "Emitted before bulk action", args=[self], kwargs=signal_params)
+
+        # Use the bulk endpoint or fall back to the list endpoint
+        if not (template := self.endpoints.get("bulk", self.endpoints.get("list"))):
+            raise ConfigurationError(f"Bulk endpoint not defined for resource {self.name}")
+
+        url = template.safe_substitute(resource=self.name)
+
+        # Prepare the data for the bulk action
+        data = {"action": action, "documents": ids, **kwargs}
+
+        response = self.client.request("POST", f"{url}bulk_edit/", data=data)
+
+        # Signal after bulk action
+        registry.emit(
+            "resource.bulk_action:after",
+            "Emitted after bulk action",
+            args=[self],
+            kwargs={**signal_params, "response": response},
+        )
+
+        return response or {}
+
+    def bulk_delete(self, ids: list[int]) -> dict[str, Any]:
+        """
+        Delete multiple resources at once.
+
+        Args:
+            ids: List of resource IDs to delete
+
+        Returns:
+            The API response
+
+        """
+        return self.bulk_action("delete", ids)
+
+    def bulk_update(self, ids: list[int], **kwargs: Any) -> dict[str, Any]:
+        """
+        Update multiple resources at once.
+
+        Args:
+            ids: List of resource IDs to update
+            **kwargs: Fields to update on all resources
+
+        Returns:
+            The API response
+
+        """
+        # Transform the data before sending
+        data = self.transform_data_output(**kwargs)
+        return self.bulk_action("update", ids, **data)
+
+    def bulk_assign_tags(self, ids: list[int], tag_ids: list[int], remove_existing: bool = False) -> dict[str, Any]:
+        """
+        Assign tags to multiple resources.
+
+        Args:
+            ids: List of resource IDs to update
+            tag_ids: List of tag IDs to assign
+            remove_existing: If True, remove existing tags before assigning new ones
+
+        Returns:
+            The API response
+
+        """
+        action = "remove_tags" if remove_existing else "add_tags"
+        return self.bulk_action(action, ids, tags=tag_ids)
+
+    def bulk_assign_correspondent(self, ids: list[int], correspondent_id: int) -> dict[str, Any]:
+        """
+        Assign a correspondent to multiple resources.
+
+        Args:
+            ids: List of resource IDs to update
+            correspondent_id: Correspondent ID to assign
+
+        Returns:
+            The API response
+
+        """
+        return self.bulk_action("set_correspondent", ids, correspondent=correspondent_id)
+
+    def bulk_assign_document_type(self, ids: list[int], document_type_id: int) -> dict[str, Any]:
+        """
+        Assign a document type to multiple resources.
+
+        Args:
+            ids: List of resource IDs to update
+            document_type_id: Document type ID to assign
+
+        Returns:
+            The API response
+
+        """
+        return self.bulk_action("set_document_type", ids, document_type=document_type_id)
+
+    def bulk_assign_storage_path(self, ids: list[int], storage_path_id: int) -> dict[str, Any]:
+        """
+        Assign a storage path to multiple resources.
+
+        Args:
+            ids: List of resource IDs to update
+            storage_path_id: Storage path ID to assign
+
+        Returns:
+            The API response
+
+        """
+        return self.bulk_action("set_storage_path", ids, storage_path=storage_path_id)
+
+    def bulk_assign_owner(self, ids: list[int], owner_id: int) -> dict[str, Any]:
+        """
+        Assign an owner to multiple resources.
+
+        Args:
+            ids: List of resource IDs to update
+            owner_id: Owner ID to assign
+
+        Returns:
+            The API response
+
+        """
+        return self.bulk_action("set_owner", ids, owner=owner_id)
+
+    @override
+    def delete(self, model_id: int) -> None:
+        """
+        Delete a resource.
+
+        Args:
+            model_id: ID of the resource.
+
+        """
+        # Signal before deleting resource
+        signal_params = {"resource": self.name, "model_id": model_id}
+        registry.emit("resource.delete:before", "Emitted before deleting a resource", args=[self], kwargs=signal_params)
+
+        if not (template := self.endpoints.get("delete")):
+            raise ConfigurationError(f"Delete endpoint not defined for resource {self.name}")
+
+        url = template.safe_substitute(resource=self.name, pk=model_id)
+        self.client.request("DELETE", url)
+
+        # Signal after deleting resource
+        registry.emit("resource.delete:after", "Emitted after deleting a resource", args=[self], kwargs=signal_params)
+
+    @override
+    def update_dict(self, model_id: int, **data: dict[str, Any]) -> _StandardModel:
+        """
+        Update a resource.
+
+        Args:
+            model_id: ID of the resource.
+            data: Resource data.
+
+        Raises:
+            ResourceNotFoundError: If the resource with the given id is not found
+
+        Returns:
+            The updated resource.
+
+        """
+        # Signal before updating resource
+        signal_params = {"resource": self.name, "model_id": model_id, "data": data}
+        registry.emit("resource.update:before", "Emitted before updating a resource", kwargs=signal_params)
+
+        if not (template := self.endpoints.get("update")):
+            raise ConfigurationError(f"Update endpoint not defined for resource {self.name}")
+
+        url = template.safe_substitute(resource=self.name, pk=model_id)
+        if not (response := self.client.request("PUT", url, data=data)):
+            raise ResourceNotFoundError("Resource ${resource} not found after update.", resource_name=self.name)
+
+        model = self.parse_to_model(response)
+
+        # Signal after updating resource
+        registry.emit(
+            "resource.update:after",
+            "Emitted after updating a resource",
+            args=[self],
+            kwargs={**signal_params, "model": model},
+        )
+
+        return model

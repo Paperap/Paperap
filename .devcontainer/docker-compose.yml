@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/workspace:cached
+    command: sleep infinity
+    environment:
+      - PYTHONPATH=/workspace
+      - PAPERLESS_URL=http://paperless:8000
+      - PAPERLESS_TOKEN=paperap-dev-token
+    depends_on:
+      - paperless
+    networks:
+      - paperap-network
+
+  paperless:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    ports:
+      - "8010:8000"
+    volumes:
+      - paperless-data:/usr/src/paperless/data
+      - paperless-media:/usr/src/paperless/media
+      - paperless-export:/usr/src/paperless/export
+      - paperless-consume:/usr/src/paperless/consume
+    environment:
+      - PAPERLESS_URL=http://localhost:8000
+      - PAPERLESS_SECRET_KEY=paperap-dev-secret
+      - PAPERLESS_ADMIN_USER=admin
+      - PAPERLESS_ADMIN_PASSWORD=password
+      - PAPERLESS_ADMIN_MAIL=admin@example.com
+      - PAPERLESS_TIME_ZONE=UTC
+      - PAPERLESS_OCR_LANGUAGE=eng
+      - PAPERLESS_TASK_WORKERS=2
+      - PAPERLESS_WEBSERVER_WORKERS=2
+      - PAPERLESS_DISABLE_UPDATE_CHECK=1
+      - PAPERLESS_AUTO_LOGIN_USERNAME=admin
+      - PAPERLESS_REDIS=redis://redis:6379
+      - PAPERLESS_TIKA_ENABLED=1
+      - PAPERLESS_TIKA_GOTENBERG_ENDPOINT=http://gotenberg:3000
+      - PAPERLESS_TIKA_ENDPOINT=http://tika:9998
+      - PAPERLESS_ENABLE_NLTK=1
+    networks:
+      - paperap-network
+    depends_on:
+      - redis
+      - tika
+      - gotenberg
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+    networks:
+      - paperap-network
+
+  tika:
+    image: apache/tika:2.9.0.0
+    restart: unless-stopped
+    networks:
+      - paperap-network
+
+  gotenberg:
+    image: gotenberg/gotenberg:7.10
+    restart: unless-stopped
+    command:
+      - "gotenberg"
+      - "--api-timeout=30s"
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=file:///tmp/.*"
+    networks:
+      - paperap-network
+
+volumes:
+  paperless-data:
+  paperless-media:
+  paperless-export:
+  paperless-consume:
+  redis-data:
+
+networks:
+  paperap-network:
+    driver: bridge

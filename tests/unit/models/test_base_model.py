@@ -2,44 +2,48 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_base.py
-        Project: paperap
-        Created: 2025-03-04
-        Version: 0.0.7
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_base.py
+Project: paperap
+Created: 2025-03-04
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-04     By Jess Mann
+2025-03-04     By Jess Mann
 
 """
 from __future__ import annotations
+
 import os
-from typing import override
 import unittest
 from datetime import datetime, timezone
+from typing import override
 from unittest.mock import patch
+
 from pydantic import field_serializer
+
 from paperap.exceptions import FilterDisabledError
-from paperap.models.abstract.queryset import StandardQuerySet
-from paperap.tests import UnitTestCase
-from unittest.mock import patch
-from paperap.tests import UnitTestCase
 from paperap.models import StandardModel
+from paperap.models.abstract.queryset import StandardQuerySet
 from paperap.resources.base import StandardResource
+from tests.lib import UnitTestCase
+
 
 class ExampleModel(StandardModel):
+
     """
     Example model for testing purposes.
     """
+
     a_str : str
     a_date : datetime
     an_int : int
@@ -47,14 +51,19 @@ class ExampleModel(StandardModel):
     a_bool : bool
     an_optional_str : str | None = None
 
+    class Meta(StandardModel.Meta):
+        save_on_write = False
+
     @field_serializer("a_date")
     def serialize_datetime(self, value: datetime | None, _info):
         return value.isoformat() if value else None
 
 class ExampleResource(StandardResource[ExampleModel]):
+
     """
     Example resource for testing purposes.
     """
+
     name = "example"
     model_class = ExampleModel
 
@@ -222,7 +231,7 @@ class TestModel(TestWithModel):
 
 class TestClassAttributes(UnitTestCase):
     def test_filtering_fields(self):
-        expected_fields = {"id", "a_str", "a_date", "an_int", "a_float", "a_bool", "an_optional_str"}
+        expected_fields = {"id", "a_str", "a_date", "an_int", "a_float", "a_bool", "an_optional_str", "_resource"}
         self.assertEqual(set(ExampleModel._meta.filtering_fields), expected_fields) # type: ignore
 
     def test_new_fields_in_filtering_fields(self):
@@ -350,6 +359,75 @@ class TestFilters(UnitTestCase):
                     kwargs = {key: value}
                     with self.assertRaises(FilterDisabledError, msg=f"Filtering with {suffix} does not raise exception"):
                         self.qs.filter(**kwargs)
+
+class TestDirtyFields(TestBase):
+    @override
+    def setUp(self):
+        super().setUp()
+        self.model = ExampleModel.from_dict(self.model_data_parsed)
+
+    def test_dirty_fields_str(self):
+        self.assertFalse(self.model.is_dirty(), "Test preconditions failed")
+        original_str = self.model.a_str
+
+        # Test if the dirty fields are correctly tracked
+        self.model.a_str = "Updated String"
+        self.assertTrue(self.model.is_dirty())
+        self.assertEqual(self.model.dirty_fields(), {"a_str": (original_str, "Updated String")})
+        self.model.a_str = original_str
+        self.assertFalse(self.model.is_dirty())
+        self.assertEqual(self.model.dirty_fields(), {})
+
+    def test_dirty_fields_int(self):
+        original_int = self.model.an_int
+        self.model.an_int = 100
+        self.assertTrue(self.model.is_dirty())
+        self.assertEqual(self.model.dirty_fields(), {"an_int": (original_int, 100)})
+        self.model.an_int = original_int
+        self.assertFalse(self.model.is_dirty())
+        self.assertEqual(self.model.dirty_fields(), {})
+
+    def test_dirty_fields_bool(self):
+        self.model.a_bool = False
+        self.assertTrue(self.model.is_dirty())
+        self.assertEqual(self.model.dirty_fields(), {"a_bool": (True, False)})
+        self.model.a_bool = True
+        self.assertEqual(self.model.dirty_fields(), {})
+        self.assertFalse(self.model.is_dirty())
+
+    def test_dirty_fields_date(self):
+        original_date = self.model.a_date
+        new_date = datetime(2021, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
+        self.model.a_date = new_date
+        self.assertTrue(self.model.is_dirty())
+        self.assertEqual(self.model.dirty_fields(), {"a_date": ('2020-05-12T12:00:00+00:00', '2021-01-01T00:00:00+00:00')})
+        self.model.a_date = original_date
+        self.assertFalse(self.model.is_dirty())
+        self.assertEqual(self.model.dirty_fields(), {})
+
+    def test_dirty_fields_instancevar(self):
+        model1 = ExampleModel.from_dict(self.model_data_parsed)
+        model2 = ExampleModel.from_dict(self.model_data_parsed)
+        self.assertFalse(model1.is_dirty())
+        self.assertFalse(model2.is_dirty())
+        model1.a_str = "Updated String"
+        self.assertTrue(model1.is_dirty())
+        self.assertFalse(model2.is_dirty())
+        self.assertEqual(model1.dirty_fields(), {"a_str": (self.model_data_parsed["a_str"], "Updated String")})
+        self.assertEqual(model2.dirty_fields(), {})
+        model2.a_str = "Something Else"
+        self.assertTrue(model1.is_dirty())
+        self.assertTrue(model2.is_dirty())
+        self.assertEqual(model1.dirty_fields(), {"a_str": (self.model_data_parsed["a_str"], "Updated String")})
+        self.assertEqual(model2.dirty_fields(), {"a_str": (self.model_data_parsed["a_str"], "Something Else")})
+        model3 = ExampleModel.from_dict(self.model_data_parsed)
+        self.assertFalse(model3.is_dirty())
+        self.assertEqual(model3.dirty_fields(), {})
+        self.assertTrue(model1.is_dirty())
+        self.assertTrue(model2.is_dirty())
+        self.assertEqual(model1.dirty_fields(), {"a_str": (self.model_data_parsed["a_str"], "Updated String")})
+        self.assertEqual(model2.dirty_fields(), {"a_str": (self.model_data_parsed["a_str"], "Something Else")})
+
 
 if __name__ == "__main__":
     unittest.main()

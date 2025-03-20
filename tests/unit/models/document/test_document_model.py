@@ -2,42 +2,43 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_document.py
-        Project: paperap
-        Created: 2025-03-04
-        Version: 0.0.7
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_document.py
+Project: paperap
+Created: 2025-03-04
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-12     By Jess Mann
+2025-03-12     By Jess Mann
 
 """
 from __future__ import annotations
 
 import copy
+import logging
 import os
+import unittest
+from datetime import datetime, timezone
 from random import sample
 from typing import Any, Iterable, List, Optional, override
-import unittest
-from unittest.mock import patch, MagicMock, PropertyMock
-import logging
-from datetime import datetime, timezone
+from unittest.mock import MagicMock, PropertyMock, patch
+
 from paperap.client import PaperlessClient
-from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models import *
-from paperap.resources.documents import DocumentResource
+from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
+from paperap.models.document.model import CustomFieldTypedDict, CustomFieldValues, DocumentNote
 from paperap.models.tag import Tag, TagQuerySet
-from paperap.models.document.model import CustomFieldValues, CustomFieldTypedDict, DocumentNote
-from paperap.tests import load_sample_data, DocumentUnitTest
+from paperap.resources.documents import DocumentResource
+from tests.lib import DocumentUnitTest, factories, load_sample_data
 
 logger = logging.getLogger(__name__)
 
@@ -378,7 +379,9 @@ class TestCustomFieldAccess(DocumentUnitTest):
 
 
 class TestDocumentNotes(DocumentUnitTest):
+
     """Test the DocumentNote model and related functionality."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
     @override
@@ -424,7 +427,7 @@ class TestDocumentNotes(DocumentUnitTest):
     def test_get_document_method(self, mock_request):
         """Test the get_document method on DocumentNote."""
         mock_request.return_value = {"id": 1, "title": "Test Document"}
-        note = DocumentNote(**self.note_data, _client=self.client)
+        note = DocumentNote(**self.note_data) # type: ignore
         document = note.get_document()
         self.assertIsInstance(document, Document)
         self.assertEqual(document.id, 1)
@@ -433,15 +436,16 @@ class TestDocumentNotes(DocumentUnitTest):
     def test_get_user_method(self, mock_request):
         """Test the get_user method on DocumentNote."""
         mock_request.return_value = {"id": 1, "username": "testuser"}
-        note = DocumentNote(**self.note_data, _client=self.client)
+        note = DocumentNote(**self.note_data) # type: ignore
         user = note.get_user()
         self.assertEqual(user.id, 1)
 
 
 class TestCustomFieldValues(unittest.TestCase):
-    """Test the CustomFieldValues model."""
-    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
+    """Test the CustomFieldValues model."""
+
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
     def test_init(self):
         """Test creating a CustomFieldValues instance."""
@@ -490,9 +494,10 @@ class TestCustomFieldValues(unittest.TestCase):
 
 
 class TestDocumentSetters(DocumentUnitTest):
-    """Test the setter methods for Document relationships."""
-    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
+    """Test the setter methods for Document relationships."""
+
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
     @override
     def setUp(self):
@@ -501,6 +506,7 @@ class TestDocumentSetters(DocumentUnitTest):
             "id": 1,
             "title": "Test Document"
         })
+        self.client.settings.save_on_write = False
 
     def test_tags_setter_with_none(self):
         """Test setting tags to None."""
@@ -511,91 +517,129 @@ class TestDocumentSetters(DocumentUnitTest):
         """Test setting tags with integer IDs."""
         self.model.tags = [1, 2, 3]
         self.assertEqual(self.model.tag_ids, [1, 2, 3])
+        self.assertIsInstance(self.model.tags, TagQuerySet)
 
     def test_tags_setter_with_tag_objects(self):
         """Test setting tags with Tag objects."""
-        tag1 = Tag(id=1, name="Tag 1", is_insensitive=False)
-        tag2 = Tag(id=2, name="Tag 2", is_insensitive=False)
+        tag1 = Tag(id=1, name="Tag 1", is_insensitive=False) # type: ignore
+        tag2 = Tag(id=2, name="Tag 2", is_insensitive=False) # type: ignore
         self.model.tags = [tag1, tag2]
         self.assertEqual(self.model.tag_ids, [1, 2])
+        self.assertIsInstance(self.model.tags, TagQuerySet)
 
     def test_tags_setter_with_mixed_types(self):
         """Test setting tags with a mix of integers and Tag objects."""
-        tag = Tag(id=2, name="Tag 2", is_insensitive=False)
+        tag = Tag(id=2, name="Tag 2", is_insensitive=False) # type: ignore
         self.model.tags = [1, tag, 3]
         self.assertEqual(self.model.tag_ids, [1, 2, 3])
+        self.assertIsInstance(self.model.tags, TagQuerySet)
 
     def test_tags_setter_with_invalid_type(self):
         """Test setting tags with an invalid type raises TypeError."""
         with self.assertRaises(TypeError):
-            self.model.tags = "not an iterable"
+            self.model.tags = "not an iterable" # type: ignore
+        self.assertIsInstance(self.model.tags, TagQuerySet)
 
     def test_tags_setter_with_invalid_item_type(self):
         """Test setting tags with invalid item types raises TypeError."""
         with self.assertRaises(TypeError):
-            self.model.tags = [1, "not an int or Tag", 3]
+            self.model.tags = [1, "not an int or Tag", 3] # type: ignore
+        self.assertIsInstance(self.model.tags, TagQuerySet)
 
     def test_correspondent_setter_with_none(self):
         """Test setting correspondent to None."""
         self.model.correspondent = None
         self.assertIsNone(self.model.correspondent_id)
+        self.assertIsNone(self.model.correspondent)
 
     def test_correspondent_setter_with_integer(self):
         """Test setting correspondent with an integer ID."""
         self.model.correspondent = 1
         self.assertEqual(self.model.correspondent_id, 1)
+        sample_correspondent = load_sample_data('correspondents_item.json')
+        with patch("paperap.client.PaperlessClient.request") as mock_request:
+            mock_request.return_value = sample_correspondent
+            self.assertIsInstance(self.model.correspondent, Correspondent)
 
     def test_correspondent_setter_with_correspondent_object(self):
         """Test setting correspondent with a Correspondent object."""
-        correspondent = Correspondent(id=1, name="Test Correspondent", is_insensitive = True)
+        correspondent = Correspondent(id=1, name="Test Correspondent", is_insensitive = True) # type: ignore
         self.model.correspondent = correspondent
         self.assertEqual(self.model.correspondent_id, 1)
+        sample_correspondent = load_sample_data('correspondents_item.json')
+        with patch("paperap.client.PaperlessClient.request") as mock_request:
+            mock_request.return_value = sample_correspondent
+            self.assertIsInstance(self.model.correspondent, Correspondent)
+
         # Test that the cache is populated
-        self.assertEqual(self.model._correspondent, (1, correspondent))
+        self.assertEqual(self.model._correspondent, (1, correspondent)) # type: ignore
 
     def test_correspondent_setter_with_invalid_type(self):
         """Test setting correspondent with an invalid type raises TypeError."""
         with self.assertRaises(TypeError):
-            self.model.correspondent = "not an int or Correspondent"
+            self.model.correspondent = "not an int or Correspondent" # type: ignore
+        self.assertIsNone(self.model.correspondent)
 
     def test_document_type_setter_with_none(self):
         """Test setting document_type to None."""
         self.model.document_type = None
         self.assertIsNone(self.model.document_type_id)
+        self.assertIsNone(self.model.document_type)
 
     def test_document_type_setter_with_integer(self):
         """Test setting document_type with an integer ID."""
         self.model.document_type = 1
         self.assertEqual(self.model.document_type_id, 1)
+        sample_document_type = load_sample_data('document_types_item.json')
+        with patch("paperap.client.PaperlessClient.request") as mock_request:
+            mock_request.return_value = sample_document_type
+            self.assertIsInstance(self.model.document_type, DocumentType)
 
     def test_document_type_setter_with_document_type_object(self):
         """Test setting document_type with a DocumentType object."""
-        doc_type = DocumentType(id=1, name="Test Document Type", is_insensitive = False)
+        doc_type = DocumentType(id=1, name="Test Document Type", is_insensitive = False) # type: ignore
         self.model.document_type = doc_type
         self.assertEqual(self.model.document_type_id, 1)
+        sample_document_type = load_sample_data('document_types_item.json')
+        with patch("paperap.client.PaperlessClient.request") as mock_request:
+            mock_request.return_value = sample_document_type
+            self.assertIsInstance(self.model.document_type, DocumentType)
+
         # Test that the cache is populated
-        self.assertEqual(self.model._document_type, (1, doc_type))
+        self.assertEqual(self.model._document_type, (1, doc_type)) # type: ignore
 
     def test_document_type_setter_with_invalid_type(self):
         """Test setting document_type with an invalid type raises TypeError."""
         with self.assertRaises(TypeError):
-            self.model.document_type = "not an int or DocumentType"
+            self.model.document_type = "not an int or DocumentType" # type: ignore
+        self.assertIsNone(self.model.document_type)
 
     def test_storage_path_setter_with_none(self):
         """Test setting storage_path to None."""
         self.model.storage_path = None
         self.assertIsNone(self.model.storage_path_id)
+        self.assertIsNone(self.model.storage_path)
 
     def test_storage_path_setter_with_integer(self):
         """Test setting storage_path with an integer ID."""
         self.model.storage_path = 1
         self.assertEqual(self.model.storage_path_id, 1)
+        sample_storage_path = load_sample_data('storage_paths_item.json')
+        with patch("paperap.client.PaperlessClient.request") as mock_request:
+            mock_request.return_value = sample_storage_path
+            self.assertIsInstance(self.model.storage_path, StoragePath)
 
     def test_storage_path_setter_with_storage_path_object(self):
         """Test setting storage_path with a StoragePath object."""
-        storage_path = StoragePath(id=1, name="Test Storage Path", is_insensitive=False)
+        data = {"id": 1, "name": "Test Storage Path", "is_insensitive": False}
+        storage_path = StoragePath(**data) # type: ignore
         self.model.storage_path = storage_path
         self.assertEqual(self.model.storage_path_id, 1)
+        sample_storage_path = load_sample_data('storage_paths_item.json')
+        with patch("paperap.client.PaperlessClient.request") as mock_request:
+            mock_request.return_value = sample_storage_path
+            self.assertIsInstance(self.model.storage_path, StoragePath)
+
         # Test that the cache is populated
         self.assertEqual(self.model._storage_path, (1, storage_path)) # type: ignore
 
@@ -603,8 +647,7 @@ class TestDocumentSetters(DocumentUnitTest):
         """Test setting storage_path with an invalid type raises TypeError."""
         with self.assertRaises(TypeError):
             self.model.storage_path = "not an int or StoragePath" # type: ignore
-
-
+        self.assertIsNone(self.model.storage_path)
 
 class TestDocumentInitialization(DocumentUnitTest):
     @override

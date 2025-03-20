@@ -3,34 +3,39 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_document.py
-        Project: paperap
-        Created: 2025-03-12
-        Version: 0.0.7
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_document.py
+Project: paperap
+Created: 2025-03-12
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-12     By Jess Mann
+2025-03-12     By Jess Mann
 
 """
-from typing import Union
 import datetime
-from hypothesis import example, given, strategies as st
-from pydantic import ValidationError
-from paperap.models import CustomFieldValues, Document, DocumentNote, DocumentQuerySet
-from paperap.tests import random_json, create_resource, defaults as d
-from paperap.resources.documents import DocumentResource
-from paperap.tests.factories import DocumentFactory, DocumentNoteFactory
 import json
+from typing import Union
+
+from faker import Faker
+from hypothesis import example, given
+from hypothesis import strategies as st
+from pydantic import ValidationError
+
+from paperap.models import CustomFieldValues, Document, DocumentNote, DocumentQuerySet
+from paperap.resources.documents import DocumentResource
+from tests.lib import create_resource
+from tests.lib import defaults as d
+from tests.lib.factories import DocumentFactory, DocumentNoteFactory
 
 resource = create_resource(DocumentResource)
 doc = DocumentFactory.to_dict()
@@ -55,6 +60,7 @@ custom_field_strategy = st.fixed_dictionaries(
         )
     }
 )
+
 
 @given(
     id=st.integers(min_value=0),
@@ -90,6 +96,7 @@ custom_field_strategy = st.fixed_dictionaries(
     document_type_id=st.one_of(st.none(), st.integers(min_value=0)),
     storage_path_id=st.one_of(st.none(), st.integers(min_value=0)),
     tag_ids=st.lists(st.integers(min_value=0, max_value=10**6), max_size=1000),
+    checksum=st.none(),
 )
 @example(**d(doc, id=1, title="", content="", tag_ids=[]))  # Edge case: minimal data
 @example(**d(doc, id=10**9, title="A"*300, content="B"*5000, tag_ids=[1, 2, 3]*100))  # Max limits
@@ -120,13 +127,14 @@ def test_fuzz_Document(**kwargs) -> None:
     #assert document.added == kwargs.get("added", None)
     #assert document.custom_field_dicts == kwargs.get("custom_field_dicts", [])
 
+faker = Faker()
 
 @given(value=st.one_of(st.lists(custom_field_strategy), st.none()))
 @example(value=None)
 @example(value=[])
 @example(value=[{"id":1, "value": None}])  # None value
 @example(value=[{"id":10**9, "value": "x" * 100}])  # Large id, long text
-@example(value=[{"id":123, "value": json.loads(random_json())}])  # Random JSON
+@example(value=[{"id":123, "value": json.loads(faker.json())}])  # Random JSON
 #@example(value=[None]).xfail(raises=ValueError)
 #@example(value=[{"id":None, "value": None}]).xfail(raises=ValueError)
 #@example(value=[{"value": "something"}]).xfail(raises=ValueError)
@@ -205,6 +213,7 @@ queryset = {
     "_iter": None,
     "_urls_fetched": None,
 }
+
 @given(
     filters=st.one_of(st.none(), st.dictionaries(keys=st.text(), values=st.text())),
     _cache=st.one_of(st.none(), st.lists(st.dictionaries(keys=st.text(), values=st.text()))),

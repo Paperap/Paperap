@@ -3,34 +3,36 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_base.py
-        Project: paperap
-        Created: 2025-03-13
-        Version: 0.0.7
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_base.py
+Project: paperap
+Created: 2025-03-13
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-13     By Jess Mann
+2025-03-13     By Jess Mann
 
 """
+import unittest
 from string import Template
 from typing import override
-import unittest
 from unittest.mock import MagicMock
 
 from pydantic import ValidationError
+
 from paperap.models import StandardModel
-from paperap.tests import UnitTestCase
 from paperap.resources.base import BaseResource
+from tests.lib import UnitTestCase
+
 
 class ExampleModel(StandardModel):
     name : str | None = None
@@ -50,12 +52,12 @@ class TestBaseResource(UnitTestCase):
         self.resource = TestResource(self.client) # type: ignore
 
     def test_all(self):
-        self.resource._meta.queryset = MagicMock(return_value="queryset") # type: ignore
+        self.resource.queryset_class = MagicMock(return_value="queryset") # type: ignore
         self.assertEqual(self.resource.all(), "queryset")
 
     def test_filter(self):
-        self.resource._meta.queryset = MagicMock() # type: ignore
-        self.resource._meta.queryset.return_value.filter.return_value = "filtered_queryset" # type: ignore
+        self.resource.queryset_class = MagicMock() # type: ignore
+        self.resource.queryset_class.return_value.filter.return_value = "filtered_queryset" # type: ignore
         result = self.resource.filter(name="test")
         self.assertEqual(result, "filtered_queryset")
 
@@ -79,13 +81,6 @@ class TestBaseResource(UnitTestCase):
         self.assertIsInstance(resource.endpoints["list"], Template) # type: ignore
         self.assertEqual(resource.endpoints["list"].safe_substitute(), "http://example.com/fooresource/") # type: ignore
 
-    def test_endpoints_init_list_required(self):
-        with self.assertRaises(ValueError):
-            class BarResource(BaseResource): # type: ignore
-                model_class = MagicMock()
-                endpoints = {
-                    "create": Template("http://example.com") # type: ignore
-                }
 
 if __name__ == "__main__":
     unittest.main()

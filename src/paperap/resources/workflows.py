@@ -6,7 +6,7 @@
        File:    workflows.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -36,6 +36,7 @@ class WorkflowResource(StandardResource[Workflow, WorkflowQuerySet]):
     """Resource for managing workflows."""
 
     model_class = Workflow
+    queryset_class = WorkflowQuerySet
     name = "workflows"
 
 
@@ -43,6 +44,7 @@ class WorkflowTriggerResource(StandardResource[WorkflowTrigger, WorkflowTriggerQ
     """Resource for managing workflow triggers."""
 
     model_class = WorkflowTrigger
+    queryset_class = WorkflowTriggerQuerySet
     name = "workflow_triggers"
 
 
@@ -50,4 +52,5 @@ class WorkflowActionResource(StandardResource[WorkflowAction, WorkflowActionQuer
     """Resource for managing workflow actions."""
 
     model_class = WorkflowAction
+    queryset_class = WorkflowActionQuerySet
     name = "workflow_actions"

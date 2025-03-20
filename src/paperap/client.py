@@ -6,7 +6,7 @@
        File:    client.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.7
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -24,10 +24,10 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 from string import Template
-from typing import TYPE_CHECKING, Any, Iterator, Literal, Union, Unpack, overload
+from typing import TYPE_CHECKING, Any, Literal, Unpack, overload
 
 import requests
-from yarl import URL
+from pydantic import HttpUrl
 
 from paperap.auth import AuthBase, BasicAuth, TokenAuth
 from paperap.exceptions import (
@@ -36,7 +36,6 @@ from paperap.exceptions import (
     BadResponseError,
     ConfigurationError,
     InsufficientPermissionError,
-    PaperlessError,
     RequestError,
     ResourceNotFoundError,
     ResponseParsingError,
@@ -44,9 +43,12 @@ from paperap.exceptions import (
 from paperap.resources import (
     CorrespondentResource,
     CustomFieldResource,
+    DocumentMetadataResource,
     DocumentNoteResource,
     DocumentResource,
+    DocumentSuggestionsResource,
     DocumentTypeResource,
+    DownloadedDocumentResource,
     GroupResource,
     ProfileResource,
     SavedViewResource,
@@ -115,6 +117,9 @@ class PaperlessClient:
     correspondents: CorrespondentResource
     custom_fields: CustomFieldResource
     document_types: DocumentTypeResource
+    document_metadata: DocumentMetadataResource
+    document_suggestions: DocumentSuggestionsResource
+    downloaded_documents: DownloadedDocumentResource
     documents: DocumentResource
     document_notes: DocumentNoteResource
     groups: GroupResource
@@ -133,7 +138,7 @@ class PaperlessClient:
     def __init__(self, settings: Settings | None = None, **kwargs: Unpack[SettingsArgs]) -> None:
         if not settings:
             # Any params not provided in kwargs will be loaded from env vars
-            settings = Settings(**kwargs)  # type: ignore # base_url is a URL, but accepts str | URL
+            settings = Settings(**kwargs)
 
         self.settings = settings
         # Prioritize username/password over token if both are provided
@@ -160,7 +165,7 @@ class PaperlessClient:
         super().__init__()
 
     @property
-    def base_url(self) -> URL:
+    def base_url(self) -> HttpUrl:
         """Get the base URL."""
         return self.settings.base_url
 
@@ -176,6 +181,9 @@ class PaperlessClient:
         self.correspondents = CorrespondentResource(self)
         self.custom_fields = CustomFieldResource(self)
         self.document_types = DocumentTypeResource(self)
+        self.document_metadata = DocumentMetadataResource(self)
+        self.document_suggestions = DocumentSuggestionsResource(self)
+        self.downloaded_documents = DownloadedDocumentResource(self)
         self.documents = DocumentResource(self)
         self.document_notes = DocumentNoteResource(self)
         self.groups = GroupResource(self)
@@ -214,7 +222,7 @@ class PaperlessClient:
             "enabled_plugins": ["SampleDataCollector"],
             "settings": {
                 "SampleDataCollector": {
-                    "test_dir": str(Path(__file__).parent.parent.parent / "tests/sample_data"),
+                    "test_dir": str(Path(__file__).parents[3] / "tests/sample_data"),
                 },
             },
         }
@@ -225,26 +233,25 @@ class PaperlessClient:
 
     def _get_auth_params(self) -> dict[str, Any]:
         """Get authentication parameters for requests."""
-        return self.auth.get_auth_params() if self.auth else {}
+        return self.auth.get_auth_params()
 
-    def _get_headers(self) -> dict[str, str]:
+    def get_headers(self) -> dict[str, str]:
         """Get headers for requests."""
         headers = {}
 
-        if self.auth:
-            headers.update(self.auth.get_auth_headers())
+        headers.update(self.auth.get_auth_headers())
 
         return headers
 
     def close(self) -> None:
         """Close the client and release resources."""
-        if hasattr(self, "session") and self.session:
+        if hasattr(self, "session"):
             self.session.close()
 
-    def _request(
+    def request_raw(
         self,
         method: str,
-        endpoint: str | URL | Template,
+        endpoint: str | HttpUrl | Template,
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
@@ -268,31 +275,29 @@ class PaperlessClient:
             AuthenticationError: If authentication fails.
             ResourceNotFoundError: If the requested resource doesn't exist.
             APIError: If the API returns an error.
-            PaperlessError: For other errors.
+            PaperapError: For other errors.
 
         """
         # Handle different endpoint types
         if isinstance(endpoint, Template):
             # Convert Template to string representation
-            url = f"{self.base_url}/{endpoint.template.lstrip('/')}"
-        elif isinstance(endpoint, URL):
+            url = f"{self.base_url}{endpoint.template.lstrip('/')}"
+        elif isinstance(endpoint, HttpUrl):
             # Use URL object directly
-            if endpoint.is_absolute():
-                url = str(endpoint)
-            else:
-                url = f"{self.base_url}/{str(endpoint).lstrip('/')}"
+            url = str(endpoint)
+
         elif isinstance(endpoint, str):
             if endpoint.startswith("http"):
                 url = endpoint
             else:
-                url = f"{self.base_url}/{endpoint.lstrip('/')}"
+                url = f"{self.base_url}{endpoint.lstrip('/')}"
         else:
-            url = f"{self.base_url}/{str(endpoint).lstrip('/')}"
+            url = f"{self.base_url}{str(endpoint).lstrip('/')}"
 
         logger.debug("Requesting %s %s", method, url)
 
         # Add headers from authentication and session defaults
-        headers = {**self.session.headers, **self._get_headers()}
+        headers = {**self.session.headers, **self.get_headers()}
 
         # If we're uploading files, don't set Content-Type
         if files:
@@ -404,7 +409,7 @@ class PaperlessClient:
     def request(
         self,
         method: str,
-        endpoint: str | URL | Template,
+        endpoint: str | HttpUrl | Template,
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
@@ -415,7 +420,7 @@ class PaperlessClient:
     def request(
         self,
         method: str,
-        endpoint: str | URL | Template,
+        endpoint: str | HttpUrl | Template,
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
@@ -427,7 +432,7 @@ class PaperlessClient:
     def request(
         self,
         method: str,
-        endpoint: str | URL | Template,
+        endpoint: str | HttpUrl | Template,
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
@@ -438,7 +443,7 @@ class PaperlessClient:
     def request(
         self,
         method: str,
-        endpoint: str | URL | Template,
+        endpoint: str | HttpUrl | Template,
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
@@ -476,7 +481,7 @@ class PaperlessClient:
             "client.request:before", "Before a request is sent to the Paperless server", args=[self], kwargs=kwargs
         )
 
-        if not (response := self._request(method, endpoint, params=params, data=data, files=files)):
+        if not (response := self.request_raw(method, endpoint, params=params, data=data, files=files)):
             return None
 
         registry.emit(
@@ -543,7 +548,7 @@ class PaperlessClient:
 
         Raises:
             AuthenticationError: If authentication fails.
-            PaperlessError: For other errors.
+            PaperapError: For other errors.
 
         """
         if timeout is None:

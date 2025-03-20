@@ -6,7 +6,7 @@
        File:    exceptions.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.7
+        Version: 0.0.8
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -26,11 +26,11 @@ from string import Template
 import pydantic
 
 
-class PaperlessError(Exception):
+class PaperapError(Exception):
     """Base exception for all paperless client errors."""
 
 
-class ModelValidationError(PaperlessError, ValueError):
+class ModelValidationError(PaperapError, ValueError):
     """Raised when a model fails validation."""
 
     def __init__(self, message: str | None = None, model: pydantic.BaseModel | None = None) -> None:
@@ -39,8 +39,16 @@ class ModelValidationError(PaperlessError, ValueError):
         super().__init__(message)
 
 
-class ConfigurationError(PaperlessError):
+class ReadOnlyFieldError(ModelValidationError):
+    """Raised when a read-only field is set."""
+
+
+class ConfigurationError(PaperapError):
     """Raised when the configuration is invalid."""
+
+
+class PaperlessError(PaperapError):
+    """Raised due to a feature or error of paperless ngx"""
 
 
 class APIError(PaperlessError):
@@ -115,3 +123,15 @@ class ObjectNotFoundError(ResourceNotFoundError):
 
 class MultipleObjectsFoundError(APIError):
     """Raised when multiple objects are found when only one was expected."""
+
+
+class DocumentError(PaperapError):
+    """Raised when an error occurs with a local document."""
+
+
+class NoImagesError(DocumentError):
+    """Raised when no images are found in a pdf."""
+
+
+class DocumentParsingError(DocumentError):
+    """Raised when a document cannot be parsed."""
