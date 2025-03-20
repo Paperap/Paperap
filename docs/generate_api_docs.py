@@ -1,3 +1,27 @@
+"""
+
+
+
+
+ ----------------------------------------------------------------------------
+
+    METADATA:
+
+        File:    generate_api_docs.py
+        Project: paperap
+        Created: 2025-03-20
+        Version: 0.0.8
+        Author:  Jess Mann
+        Email:   jess@jmann.me
+        Copyright (c) 2025 Jess Mann
+
+ ----------------------------------------------------------------------------
+
+    LAST MODIFIED:
+
+        2025-03-20     By Jess Mann
+
+"""
 #!/usr/bin/env python3
 """
 Script to automatically generate API documentation for Paperap.
@@ -5,7 +29,7 @@ Script to automatically generate API documentation for Paperap.
 
 import os
 import shutil
-import subprocess
+import subprocess # nosec B404
 import sys
 import shlex
 from pathlib import Path
@@ -38,7 +62,7 @@ def main():
         "--separate",
         "--module-first",
         "--force",
-    ], check=True, text=True)
+    ], check=True, text=True) # nosec B603 # args are trusted
 
     # Build the documentation
     sphinx_build_path = shutil.which("sphinx-build")
@@ -52,7 +76,7 @@ def main():
         "html",
         ".",
         "_build/html",
-    ], check=True, text=True)
+    ], check=True, text=True) # nosec B603 # args are trusted
 
     print("Documentation built successfully!")
     print(f"Open {docs_dir / '_build' / 'html' / 'index.html'} to view the documentation.")

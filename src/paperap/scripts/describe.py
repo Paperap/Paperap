@@ -84,7 +84,6 @@ SCRIPT_VERSION = "0.2.2"
 
 
 class DescribePhotos(BaseModel):
-
     """
     Describes photos in the Paperless NGX instance using an LLM (such as OpenAI's GPT-4o-mini model).
     """
@@ -591,7 +590,6 @@ class DescribePhotos(BaseModel):
 
 
 class ArgNamespace(argparse.Namespace):
-
     """
     A custom namespace class for argparse.
     """

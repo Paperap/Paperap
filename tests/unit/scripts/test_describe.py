@@ -355,14 +355,14 @@ class TestDescribePhotos(DocumentUnitTest):
     def test_standardize_image_contents_fallback_to_pdf(self, mock_convert, mock_extract, mock_splitext):
         """Test standardize_image_contents falling back to PDF extraction."""
         self.describe = DescribePhotos(client=self.client, max_threads=1)
-        
+
         # Mock PDF extraction success - only return one image to match actual implementation
         mock_extract.return_value = [b"pdf_image1"]
         # Mock _convert_to_png - First call, raise Error. Second call: return str
         mock_convert.side_effect = [UnidentifiedImageError("Image open error"), "png_data1"]
         # Make it look like a PDF file
         mock_splitext.return_value = ("file", ".pdf")
-        
+
         result = self.describe.standardize_image_contents(b"pdf_data")
 
         # Verify the results
@@ -445,7 +445,7 @@ class TestDescribePhotos(DocumentUnitTest):
         mock_completions.create.side_effect = ValueError("API error")
         mock_chat.completions = mock_completions
         mock_openai.chat = mock_chat
-        
+
         # Replace the real OpenAI client with our mock
         self.describe._openai = mock_openai
 
@@ -576,7 +576,7 @@ class TestDescribePhotos(DocumentUnitTest):
         """Test process_response with invalid JSON response."""
         # Create a document for this test
         document = self.bake_model(id=123)
-        
+
         # Invalid JSON response
         response = "Invalid JSON"
 
@@ -591,7 +591,7 @@ class TestDescribePhotos(DocumentUnitTest):
         """Test process_response with non-dict JSON response."""
         # Create a document for this test
         document = self.bake_model(id=123)
-        
+
         # Non-dict JSON response
         response = json.dumps(["item1", "item2"])
 
@@ -607,7 +607,7 @@ class TestDescribePhotos(DocumentUnitTest):
         """Test process_response with empty JSON response."""
         # Create a document for this test
         document = self.bake_model(id=123)
-        
+
         # Empty JSON response
         response = json.dumps({})
 

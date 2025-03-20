@@ -3,23 +3,23 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    conf.py
-        Project: paperap
-        Created: 2025-03-19
-        Version: 0.0.8
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    conf.py
+Project: paperap
+Created: 2025-03-19
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-19     By Jess Mann
+2025-03-19     By Jess Mann
 
 """
 # Configuration file for the Sphinx documentation builder.

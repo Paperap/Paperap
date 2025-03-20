@@ -52,7 +52,6 @@ logger = logging.getLogger(__name__)
 
 
 class DocumentNote(StandardModel):
-
     """
     Represents a note on a Paperless-NgX document.
     """
@@ -104,7 +103,6 @@ class DocumentNote(StandardModel):
 
 
 class Document(StandardModel):
-
     """
     Represents a Paperless-NgX document.
 
