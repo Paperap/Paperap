@@ -22,6 +22,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Iterator, Optional, override
 
 from typing_extensions import TypeVar
@@ -46,7 +47,28 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             raise ResourceNotFoundError(f"Document {document_id} download failed", self.name)
         return response.get("content")
 
-    def upload(self, file_content: bytes, filename: str, **metadata) -> Document:
+    def upload(self, filepath : Path | str) -> Document:
+        """
+        Upload a document from a file.
+
+        Args:
+            filepath: The path to the file to upload.
+
+        Returns:
+            The uploaded document.
+
+        Raises:
+            FileNotFoundError: If the file does not exist.
+            ResourceNotFoundError: If the upload fails.
+
+        """
+        if not isinstance(filepath, Path):
+            filepath = Path(filepath)
+
+        with filepath.open("rb") as f:
+            return self.upload_content(f.read(), filepath.name)
+
+    def upload_content(self, file_content: bytes, filename: str, **metadata) -> Document:
         """Upload a document with optional metadata."""
         data = {"document": (filename, file_content), **metadata}
         response = self.client.request("POST", "documents/post_document/", data=data)

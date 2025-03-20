@@ -151,6 +151,9 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         # We validated that converted matches endpoints above
         return converted
 
+    def get_endpoint(self, name : str, **kwargs : Any) -> str:
+        return self.endpoints[name].safe_substitute(resource=self.name, **kwargs)
+
     def all(self) -> _BaseQuerySet:
         """
         Return a QuerySet representing all objects of this resource type.
@@ -189,7 +192,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         """
         raise NotImplementedError("get method not available for resources without an id")
 
-    def create(self, data: dict[str, Any]) -> _BaseModel:
+    def create(self, **kwargs: Any) -> _BaseModel:
         """
         Create a new resource.
 
@@ -201,14 +204,14 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
 
         """
         # Signal before creating resource
-        signal_params = {"resource": self.name, "data": data}
+        signal_params = {"resource": self.name, "data": kwargs}
         registry.emit("resource.create:before", "Emitted before creating a resource", kwargs=signal_params)
 
         if not (template := self.endpoints.get("create")):
             raise ConfigurationError(f"Create endpoint not defined for resource {self.name}")
 
         url = template.safe_substitute(resource=self.name)
-        if not (response := self.client.request("POST", url, data=data)):
+        if not (response := self.client.request("POST", url, data=kwargs)):
             raise ResourceNotFoundError("Resource {resource} not found after create.", resource_name=self.name)
 
         model = self.parse_to_model(response)
@@ -642,7 +645,7 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         return self.bulk_action("set_owner", ids, owner=owner_id)
 
     @override
-    def delete(self, model_id: int) -> None:
+    def delete(self, model_id: int | _StandardModel) -> None:
         """
         Delete a resource.
 
@@ -650,6 +653,11 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
             model_id: ID of the resource.
 
         """
+        if not model_id:
+            raise ValueError("model_id is required to delete a resource")
+        if not isinstance(model_id, int):
+            model_id = model_id.id
+
         # Signal before deleting resource
         signal_params = {"resource": self.name, "model_id": model_id}
         registry.emit("resource.delete:before", "Emitted before deleting a resource", args=[self], kwargs=signal_params)

@@ -7,12 +7,12 @@
 METADATA:
 
 File:    test_document.py
-Project: paperap
+        Project: paperap
 Created: 2025-03-08
-Version: 0.0.8
+        Version: 0.0.8
 Author:  Jess Mann
 Email:   jess@jmann.me
-Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -29,11 +29,10 @@ import unittest
 from datetime import datetime, timezone
 from typing import Iterable, override
 from unittest.mock import MagicMock, patch
-
-from dateparser.data.date_translation_data import ar
+from pathlib import Path
 
 from paperap.client import PaperlessClient
-from paperap.exceptions import ReadOnlyFieldError
+from paperap.exceptions import ReadOnlyFieldError, ResourceNotFoundError
 from paperap.models import *
 from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models.tag import Tag, TagQuerySet
@@ -42,8 +41,8 @@ from tests.lib import DocumentUnitTest, load_sample_data
 
 logger = logging.getLogger(__name__)
 
-sample_document_list = load_sample_data('documents_list.json')
-sample_document = load_sample_data('documents_item.json')
+#sample_document_list = load_sample_data('documents_list.json')
+#sample_document = load_sample_data('documents_item.json')
 
 class IntegrationTest(DocumentUnitTest):
     mock_env = False
@@ -149,6 +148,32 @@ class TestFeatures(IntegrationTest):
         document.title = new_title
         document.save()
         self.assertNotEqual(original_filename, document.archived_file_name, "Archived file name did not change after title update")
+
+class TestUpload(IntegrationTest):
+    @override
+    def setup_model(self):
+        super().setup_model()
+        self._meta.save_on_write = False
+
+    def test_upload(self):
+        # Test that the document is saved when a file is uploaded
+        filename = "Sample JPG.jpg"
+        filepath = Path(__file__).parents[3] / "sample_data" / filename
+        document = self.resource.upload(filepath)
+
+        self.assertIsInstance(document, Document)
+        self.assertEqual(document.original_file_name, filename, "Original file name does not match expected value")
+        self.assertIsInstance(document.id, int)
+        self.assertGreater(document.id, 0, "Document ID is not set")
+
+        # Retrieve it
+        retrieved_document = self.client.documents().get(document.id)
+        self.assertEqual(document, retrieved_document)
+
+        # Delete it
+        document.delete()
+        with self.assertRaises(ResourceNotFoundError):
+            self.client.documents().get(document.id)
 
 class TestSaveManual(IntegrationTest):
     @override

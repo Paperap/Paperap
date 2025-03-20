@@ -66,4 +66,4 @@ class UISettingsResource(StandardResource[UISettings, UISettingsQuerySet]):
             return self.update(ui_settings)
 
         # Create new settings
-        return self.create({"settings": settings})
+        return self.create(**{"settings": settings})

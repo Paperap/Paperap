@@ -462,8 +462,10 @@ class BaseModel(pydantic.BaseModel, ABC):
             doc = Document.create(filename="example.pdf", contents=b"PDF data")
 
         """
-        # TODO save
-        return cls(**kwargs)
+        return cls._resource.create(**kwargs)
+
+    def delete(self):
+        return self._resource.delete(self)
 
     def update_locally(self, *, from_db: bool | None = None, skip_changed_fields: bool = False, **kwargs: Any) -> None:
         """
@@ -606,6 +608,10 @@ class StandardModel(BaseModel, ABC):
         # Fields that should not be modified
         read_only_fields: ClassVar[set[str]] = {"id"}
         supported_filtering_params = {"id__in", "id"}
+
+    @property
+    def resource(self) -> "StandardResource[Self]": # type: ignore
+        return self._resource
 
     @override
     def update(self, **kwargs: Any) -> None:

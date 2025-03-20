@@ -7,12 +7,12 @@
 METADATA:
 
 File:    models.py
-Project: paperap
+        Project: paperap
 Created: 2025-03-07
-Version: 0.0.8
+        Version: 0.0.8
 Author:  Jess Mann
 Email:   jess@jmann.me
-Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -60,8 +60,8 @@ if TYPE_CHECKING:
 fake = Faker()
 
 class PydanticFactory[_StandardModel](factory.Factory[_StandardModel]):
-
     """Base factory for Pydantic models."""
+    id : int = factory.Faker("random_int", min=1, max=1000)
 
     class Meta: # type: ignore # pyright handles this wrong
         abstract = True

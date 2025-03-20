@@ -105,6 +105,8 @@ class ResourceNotFoundError(APIError):
         message = Template(message).safe_substitute(resource=resource_name)
         super().__init__(message, 404)
 
+class RelationshipNotFoundError(ResourceNotFoundError):
+    """Raised when a requested relationship is not found."""
 
 class ObjectNotFoundError(ResourceNotFoundError):
     """Raised when a requested object is not found."""

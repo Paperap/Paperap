@@ -22,6 +22,7 @@
 from __future__ import annotations
 
 import logging
+import re
 from pathlib import Path
 from string import Template
 from typing import TYPE_CHECKING, Any, Literal, Unpack, overload
@@ -36,6 +37,7 @@ from paperap.exceptions import (
     BadResponseError,
     ConfigurationError,
     InsufficientPermissionError,
+    RelationshipNotFoundError,
     RequestError,
     ResourceNotFoundError,
     ResponseParsingError,
@@ -357,6 +359,8 @@ class PaperlessClient:
         if response.status_code == 400:
             if "This field is required" in error_message:
                 raise ValueError(f"Required field missing: {error_message}")
+            if matches := re.match(r"([a-zA-Z_-]+): Invalid pk", error_message):
+                raise RelationshipNotFoundError(f"Invalid relationship {matches.group(1)}: {error_message}")
         if response.status_code == 401:
             raise AuthenticationError(f"Authentication failed: {error_message}")
         if response.status_code == 403:
