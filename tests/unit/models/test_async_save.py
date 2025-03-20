@@ -3,50 +3,52 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_async_save.py
-        Project: paperap
-        Created: 2025-03-15
-        Version: 0.0.8
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_async_save.py
+Project: paperap
+Created: 2025-03-15
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-15     By Jess Mann
+2025-03-15     By Jess Mann
 
 """
-from typing import override
-import unittest
-import time
-import threading
 import concurrent.futures
-from unittest.mock import Mock, patch, MagicMock, call, PropertyMock
+import threading
+import time
+import unittest
 from datetime import datetime
+from typing import override
+from unittest.mock import MagicMock, Mock, PropertyMock, call, patch
 
+from pydantic import field_serializer
 from pydantic.type_adapter import P
 from pydantic.v1 import NoneBytes
 
 from paperap.const import ModelStatus
-from paperap.models.abstract.model import StandardModel
-from paperap.models.abstract.meta import StatusContext
-from paperap.exceptions import APIError, ResourceNotFoundError, RequestError
-from pydantic import field_serializer
-from unittest.mock import patch
-from tests.lib import UnitTestCase
+from paperap.exceptions import APIError, RequestError, ResourceNotFoundError
 from paperap.models import StandardModel
+from paperap.models.abstract.meta import StatusContext
+from paperap.models.abstract.model import StandardModel
 from paperap.resources.base import StandardResource
+from tests.lib import UnitTestCase
+
 
 class ExampleModel(StandardModel):
+
     """
     Example model for testing purposes.
     """
+
     name : str | None = None
     value : int | None = None
     a_date : datetime | None = None
@@ -62,15 +64,19 @@ class ExampleModel(StandardModel):
         return value.isoformat() if value else None
 
 class ExampleResource(StandardResource[ExampleModel]):
+
     """
     Example resource for testing purposes.
     """
+
     name = "example"
     model_class = ExampleModel
 
 
 class BaseTest(UnitTestCase[ExampleModel, ExampleResource]):
+
     """Test the asynchronous save functionality of StandardModel"""
+
     resource_class = ExampleResource
     model_type = ExampleModel
 
@@ -103,6 +109,7 @@ class BaseTest(UnitTestCase[ExampleModel, ExampleResource]):
         self.addCleanup(self.sleep_patcher.stop)
 
 class AsyncSaveTest(BaseTest):
+
     """Test the asynchronous save functionality of StandardModel"""
 
     @override
@@ -389,6 +396,7 @@ class AsyncSaveTest(BaseTest):
 
 
 class AsyncPatchTest(BaseTest):
+
     """Test the asynchronous save functionality of StandardModel that require patching"""
 
     @override
@@ -545,6 +553,7 @@ class AsyncPatchTest(BaseTest):
             self.assertEqual(new_model._status, ModelStatus.READY, "Status didn't change after save")
 
 class AsyncTests(BaseTest):
+
     """Test the asynchronous save functionality of StandardModel"""
 
     @override

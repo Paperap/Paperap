@@ -2,23 +2,23 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    testcase.py
-        Project: paperap
-        Created: 2025-03-04
-        Version: 0.0.8
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    testcase.py
+Project: paperap
+Created: 2025-03-04
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-04     By Jess Mann
+2025-03-04     By Jess Mann
 
 """
 from __future__ import annotations
@@ -34,38 +34,83 @@ from unittest.mock import MagicMock, patch
 from pydantic import ValidationError
 from typing_extensions import TypeAlias, TypeVar
 
-from paperap.exceptions import PaperapError
 from paperap.client import PaperlessClient
-from paperap.models import (BaseQuerySet, Correspondent, CorrespondentQuerySet,
-                            CustomField, CustomFieldQuerySet,
-                            Document, DocumentQuerySet, DocumentType,
-                            DocumentTypeQuerySet, Group, GroupQuerySet,
-                            Profile, ProfileQuerySet, SavedView,
-                            SavedViewQuerySet, ShareLinks, ShareLinksQuerySet,
-                            StandardModel, StandardQuerySet, StoragePath,
-                            StoragePathQuerySet, Tag, TagQuerySet, Task,
-                            TaskQuerySet, UISettings, UISettingsQuerySet, User,
-                            UserQuerySet, Workflow, WorkflowAction,
-                            WorkflowActionQuerySet, WorkflowQuerySet,
-                            WorkflowTrigger, WorkflowTriggerQuerySet)
-from paperap.resources import (BaseResource, CorrespondentResource,
-                               CustomFieldResource,
-                               DocumentResource, DocumentTypeResource,
-                               GroupResource, ProfileResource,
-                               SavedViewResource, ShareLinksResource,
-                               StandardResource, StoragePathResource,
-                               TagResource, TaskResource, UISettingsResource,
-                               UserResource, WorkflowActionResource,
-                               WorkflowResource, WorkflowTriggerResource)
-from tests.lib.factories import (CorrespondentFactory, DocumentFactory,
-                                     DocumentTypeFactory, GroupFactory,
-                                     ProfileFactory, PydanticFactory,
-                                     SavedViewFactory, ShareLinksFactory,
-                                     StoragePathFactory, TagFactory,
-                                     TaskFactory, UISettingsFactory,
-                                     UserFactory, WorkflowActionFactory,
-                                     WorkflowFactory, WorkflowTriggerFactory)
-
+from paperap.exceptions import PaperapError
+from paperap.models import (
+    BaseQuerySet,
+    Correspondent,
+    CorrespondentQuerySet,
+    CustomField,
+    CustomFieldQuerySet,
+    Document,
+    DocumentQuerySet,
+    DocumentType,
+    DocumentTypeQuerySet,
+    Group,
+    GroupQuerySet,
+    Profile,
+    ProfileQuerySet,
+    SavedView,
+    SavedViewQuerySet,
+    ShareLinks,
+    ShareLinksQuerySet,
+    StandardModel,
+    StandardQuerySet,
+    StoragePath,
+    StoragePathQuerySet,
+    Tag,
+    TagQuerySet,
+    Task,
+    TaskQuerySet,
+    UISettings,
+    UISettingsQuerySet,
+    User,
+    UserQuerySet,
+    Workflow,
+    WorkflowAction,
+    WorkflowActionQuerySet,
+    WorkflowQuerySet,
+    WorkflowTrigger,
+    WorkflowTriggerQuerySet,
+)
+from paperap.resources import (
+    BaseResource,
+    CorrespondentResource,
+    CustomFieldResource,
+    DocumentResource,
+    DocumentTypeResource,
+    GroupResource,
+    ProfileResource,
+    SavedViewResource,
+    ShareLinksResource,
+    StandardResource,
+    StoragePathResource,
+    TagResource,
+    TaskResource,
+    UISettingsResource,
+    UserResource,
+    WorkflowActionResource,
+    WorkflowResource,
+    WorkflowTriggerResource,
+)
+from tests.lib.factories import (
+    CorrespondentFactory,
+    DocumentFactory,
+    DocumentTypeFactory,
+    GroupFactory,
+    ProfileFactory,
+    PydanticFactory,
+    SavedViewFactory,
+    ShareLinksFactory,
+    StoragePathFactory,
+    TagFactory,
+    TaskFactory,
+    UISettingsFactory,
+    UserFactory,
+    WorkflowActionFactory,
+    WorkflowFactory,
+    WorkflowTriggerFactory,
+)
 from tests.lib.testcase import TestMixin
 
 logger = logging.getLogger(__name__)
@@ -75,7 +120,9 @@ _StandardResource = TypeVar("_StandardResource", bound=StandardResource, default
 _StandardQuerySet = TypeVar("_StandardQuerySet", bound=StandardQuerySet, default=StandardQuerySet)
 
 class UnitTestConfigurationError(PaperapError):
+
     """Raised when there is a configuration error in the testing setup."""
+
     pass
 
 class UnitTestCase(
@@ -118,6 +165,7 @@ class UnitTestCase(
                 (Decimal('42.5'), ValidationError),
             ]
             self.validate_field("age", test_cases)
+
         """
         self._meta.save_on_write = False
         for (input_value, expected) in test_cases:
@@ -149,6 +197,7 @@ class UnitTestCase(
             queryset: The queryset to test
             callback: A callback function to test each model instance.
             expected_count: The expected result count of the queryset.
+
         """
         if expected_count is not None:
             self.assertEqual(queryset.count(), expected_count)
@@ -188,6 +237,7 @@ class UnitTestCase(
             sample_data: The sample data to use for the queryset.
             callback: A callback function to test each model instance.
             expected_count: The expected result count of the queryset.
+
         """
         # Setup defaults
         if expected_count is None:
@@ -213,144 +263,176 @@ class UnitTestCase(
             )
 
 class CustomFieldUnitTest(UnitTestCase["CustomField", "CustomFieldResource", "CustomFieldQuerySet"]):
+
     """
     A test case for the CustomField model and resource.
     """
+
     resource_class = CustomFieldResource
     model_type = CustomField
     queryset_type = CustomFieldQuerySet
     #factory = PydanticFactory
 
 class DocumentUnitTest(UnitTestCase["Document", "DocumentResource", "DocumentQuerySet"]):
+
     """
     A test case for the Document model and resource.
     """
+
     resource_class = DocumentResource
     model_type = Document
     queryset_type = DocumentQuerySet
     factory = DocumentFactory
 
 class DocumentTypeUnitTest(UnitTestCase["DocumentType", "DocumentTypeResource", "DocumentTypeQuerySet"]):
+
     """
     A test case for the DocumentType model and resource.
     """
+
     resource_class = DocumentTypeResource
     model_type = DocumentType
     queryset_type = DocumentTypeQuerySet
     factory = DocumentTypeFactory
 
 class CorrespondentUnitTest(UnitTestCase["Correspondent", "CorrespondentResource", "CorrespondentQuerySet"]):
+
     """
     A test case for the Correspondent model and resource.
     """
+
     resource_class = CorrespondentResource
     model_type = Correspondent
     queryset_type = CorrespondentQuerySet
     factory = CorrespondentFactory
 
 class TagUnitTest(UnitTestCase["Tag", "TagResource", "TagQuerySet"]):
+
     """
     A test case for the Tag model and resource.
     """
+
     resource_class = TagResource
     model_type = Tag
     queryset_type = TagQuerySet
     factory = TagFactory
 
 class UserUnitTest(UnitTestCase["User", "UserResource", "UserQuerySet"]):
+
     """
     A test case for the User model and resource.
     """
+
     resource_class = UserResource
     model_type = User
     queryset_type = UserQuerySet
     factory = UserFactory
 
 class GroupUnitTest(UnitTestCase["Group", "GroupResource", "GroupQuerySet"]):
+
     """
     A test case for the Group model and resource.
     """
+
     resource_class = GroupResource
     model_type = Group
     queryset_type = GroupQuerySet
     factory = GroupFactory
 
 class ProfileUnitTest(UnitTestCase["Profile", "ProfileResource", "ProfileQuerySet"]):
+
     """
     A test case for the Profile model and resource.
     """
+
     resource_class = ProfileResource
     model_type = Profile
     queryset_type = ProfileQuerySet
     factory = ProfileFactory
 
 class TaskUnitTest(UnitTestCase["Task", "TaskResource", "TaskQuerySet"]):
+
     """
     A test case for the Task model and resource.
     """
+
     resource_class = TaskResource
     model_type = Task
     queryset_type = TaskQuerySet
     factory = TaskFactory
 
 class WorkflowUnitTest(UnitTestCase["Workflow", "WorkflowResource", "WorkflowQuerySet"]):
+
     """
     A test case for the Workflow model and resource.
     """
+
     resource_class = WorkflowResource
     model_type = Workflow
     queryset_type = WorkflowQuerySet
     factory = WorkflowFactory
 
 class SavedViewUnitTest(UnitTestCase["SavedView", "SavedViewResource", "SavedViewQuerySet"]):
+
     """
     A test case for the SavedView model and resource.
     """
+
     resource_class = SavedViewResource
     model_type = SavedView
     queryset_type = SavedViewQuerySet
     factory = SavedViewFactory
 
 class ShareLinksUnitTest(UnitTestCase["ShareLinks", "ShareLinksResource", "ShareLinksQuerySet"]):
+
     """
     A test case for ShareLinks
     """
+
     resource_class = ShareLinksResource
     model_type = ShareLinks
     queryset_type = ShareLinksQuerySet
     factory = ShareLinksFactory
 
 class UISettingsUnitTest(UnitTestCase["UISettings", "UISettingsResource", "UISettingsQuerySet"]):
+
     """
     A test case for the UISettings model and resource.
     """
+
     resource_class = UISettingsResource
     model_type = UISettings
     queryset_type = UISettingsQuerySet
     factory = UISettingsFactory
 
 class StoragePathUnitTest(UnitTestCase["StoragePath", "StoragePathResource", "StoragePathQuerySet"]):
+
     """
     A test case for the StoragePath model and resource.
     """
+
     resource_class = StoragePathResource
     model_type = StoragePath
     queryset_type = StoragePathQuerySet
     factory = StoragePathFactory
 
 class WorkflowActionUnitTest(UnitTestCase["WorkflowAction", "WorkflowActionResource", "WorkflowActionQuerySet"]):
+
     """
     A test case for the WorkflowAction model and resource.
     """
+
     resource_class = WorkflowActionResource
     model_type = WorkflowAction
     queryset_type = WorkflowActionQuerySet
     factory = WorkflowActionFactory
 
 class WorkflowTriggerUnitTest(UnitTestCase["WorkflowTrigger", "WorkflowTriggerResource", "WorkflowTriggerQuerySet"]):
+
     """
     A test case for the WorkflowTrigger model and resource.
     """
+
     resource_class = WorkflowTriggerResource
     model_type = WorkflowTrigger
     queryset_type = WorkflowTriggerQuerySet

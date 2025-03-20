@@ -2,31 +2,31 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    testcase.py
-        Project: paperap
-        Created: 2025-03-04
-        Version: 0.0.8
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    testcase.py
+Project: paperap
+Created: 2025-03-04
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-04     By Jess Mann
+2025-03-04     By Jess Mann
 
 """
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
 import logging
 import os
 import unittest
+from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Generic, Iterator, override
 from unittest.mock import MagicMock, patch
@@ -35,36 +35,82 @@ from pydantic import ValidationError
 from typing_extensions import TypeAlias, TypeVar
 
 from paperap.client import PaperlessClient
-from paperap.models import (BaseQuerySet, Correspondent, CorrespondentQuerySet,
-                            CustomField, CustomFieldQuerySet,
-                            Document, DocumentQuerySet, DocumentType,
-                            DocumentTypeQuerySet, Group, GroupQuerySet,
-                            Profile, ProfileQuerySet, SavedView,
-                            SavedViewQuerySet, ShareLinks, ShareLinksQuerySet,
-                            StandardModel, StandardQuerySet, StoragePath,
-                            StoragePathQuerySet, Tag, TagQuerySet, Task,
-                            TaskQuerySet, UISettings, UISettingsQuerySet, User,
-                            UserQuerySet, Workflow, WorkflowAction,
-                            WorkflowActionQuerySet, WorkflowQuerySet,
-                            WorkflowTrigger, WorkflowTriggerQuerySet)
-from paperap.resources import (BaseResource, CorrespondentResource,
-                               CustomFieldResource,
-                               DocumentResource, DocumentTypeResource,
-                               GroupResource, ProfileResource,
-                               SavedViewResource, ShareLinksResource,
-                               StandardResource, StoragePathResource,
-                               TagResource, TaskResource, UISettingsResource,
-                               UserResource, WorkflowActionResource,
-                               WorkflowResource, WorkflowTriggerResource)
+from paperap.models import (
+    BaseQuerySet,
+    Correspondent,
+    CorrespondentQuerySet,
+    CustomField,
+    CustomFieldQuerySet,
+    Document,
+    DocumentQuerySet,
+    DocumentType,
+    DocumentTypeQuerySet,
+    Group,
+    GroupQuerySet,
+    Profile,
+    ProfileQuerySet,
+    SavedView,
+    SavedViewQuerySet,
+    ShareLinks,
+    ShareLinksQuerySet,
+    StandardModel,
+    StandardQuerySet,
+    StoragePath,
+    StoragePathQuerySet,
+    Tag,
+    TagQuerySet,
+    Task,
+    TaskQuerySet,
+    UISettings,
+    UISettingsQuerySet,
+    User,
+    UserQuerySet,
+    Workflow,
+    WorkflowAction,
+    WorkflowActionQuerySet,
+    WorkflowQuerySet,
+    WorkflowTrigger,
+    WorkflowTriggerQuerySet,
+)
+from paperap.resources import (
+    BaseResource,
+    CorrespondentResource,
+    CustomFieldResource,
+    DocumentResource,
+    DocumentTypeResource,
+    GroupResource,
+    ProfileResource,
+    SavedViewResource,
+    ShareLinksResource,
+    StandardResource,
+    StoragePathResource,
+    TagResource,
+    TaskResource,
+    UISettingsResource,
+    UserResource,
+    WorkflowActionResource,
+    WorkflowResource,
+    WorkflowTriggerResource,
+)
+from tests.lib.factories import (
+    CorrespondentFactory,
+    DocumentFactory,
+    DocumentTypeFactory,
+    GroupFactory,
+    ProfileFactory,
+    PydanticFactory,
+    SavedViewFactory,
+    ShareLinksFactory,
+    StoragePathFactory,
+    TagFactory,
+    TaskFactory,
+    UISettingsFactory,
+    UserFactory,
+    WorkflowActionFactory,
+    WorkflowFactory,
+    WorkflowTriggerFactory,
+)
 from tests.lib.utils import load_sample_data
-from tests.lib.factories import (CorrespondentFactory, DocumentFactory,
-                                     DocumentTypeFactory, GroupFactory,
-                                     ProfileFactory, PydanticFactory,
-                                     SavedViewFactory, ShareLinksFactory,
-                                     StoragePathFactory, TagFactory,
-                                     TaskFactory, UISettingsFactory,
-                                     UserFactory, WorkflowActionFactory,
-                                     WorkflowFactory, WorkflowTriggerFactory)
 
 _StandardModel = TypeVar("_StandardModel", bound=StandardModel, default=StandardModel)
 _StandardResource = TypeVar("_StandardResource", bound=StandardResource, default=StandardResource)
@@ -73,6 +119,7 @@ _StandardQuerySet = TypeVar("_StandardQuerySet", bound=StandardQuerySet, default
 logger = logging.getLogger(__name__)
 
 class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySet]):
+
     """
     A base test case class for testing Paperless NGX resources.
 
@@ -85,7 +132,9 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
         factory: The factory class for creating model instances.
         model_data_parsed: The data for creating a model instance.
         list_data: The data for creating a list of model instances.
+
     """
+
     # Patching stuff
     mock_env : bool = True
     env_data : dict[str, Any] = {'PAPERLESS_BASE_URL': 'http://example.com', 'PAPERLESS_TOKEN': '40characterslong40characterslong40charac', 'PAPERLESS_SAVE_ON_WRITE': 'False'}
@@ -143,6 +192,7 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
                 (Decimal('42.5'), ValidationError),
             ]
             self.validate_field("age", test_cases)
+
         """
         raise NotImplementedError("Method must be implemented in subclasses.")
 
@@ -211,6 +261,7 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
 
         Returns:
             A new model instance.
+
         """
         return self.factory.create(*args, **kwargs)
 
@@ -225,6 +276,7 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
 
         Returns:
             A list of new model instances.
+
         """
         return [self.bake_model(*args, **kwargs) for _ in range(count)]
 
@@ -237,6 +289,7 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
 
         Returns:
             A new model instance created from the sample data.
+
         """
         sample_data = self.load_model_data(resource_name)
         return self.resource.parse_to_model(sample_data)
@@ -250,6 +303,7 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
 
         Returns:
             A list of new model instances created from the sample data.
+
         """
         sample_data = self.load_list_data(resource_name)
         return [self.resource.parse_to_model(item) for item in sample_data["results"]]
@@ -264,6 +318,7 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
 
         Returns:
             A BaseQuerySet of model instances.
+
         """
         if not resource:
             if not (resource := getattr(self,"resource", None)):
@@ -284,6 +339,7 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
 
         Returns:
             The model instance with the specified primary key.
+
         """
         # If resource is a type, instantiate it
         if isinstance(resource, type):
@@ -301,6 +357,7 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
 
         Returns:
             A BaseQuerySet of model instances.
+
         """
         if not resource:
             if not (resource := getattr(self, "resource", None)):
@@ -328,6 +385,7 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
 
         Returns:
             The model instance with the specified primary key.
+
         """
         try:
             sample_data = self.load_model_data()
@@ -346,6 +404,7 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
 
         Returns:
             A dictionary containing the model data.
+
         """
         if not getattr(self, "model_data_parsed", None):
             try:
@@ -373,6 +432,7 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
 
         Returns:
             A dictionary containing the list data.
+
         """
         if not getattr(self, "list_data", None):
             resource_name = resource_name or self.resource.name

@@ -3,34 +3,36 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_base.py
-        Project: paperap
-        Created: 2025-03-13
-        Version: 0.0.8
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_base.py
+Project: paperap
+Created: 2025-03-13
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-13     By Jess Mann
+2025-03-13     By Jess Mann
 
 """
+import unittest
 from string import Template
 from typing import override
-import unittest
 from unittest.mock import MagicMock
 
 from pydantic import ValidationError
+
 from paperap.models import StandardModel
-from tests.lib import UnitTestCase
 from paperap.resources.base import BaseResource
+from tests.lib import UnitTestCase
+
 
 class ExampleModel(StandardModel):
     name : str | None = None

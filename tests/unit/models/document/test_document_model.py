@@ -2,42 +2,43 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_document.py
-        Project: paperap
-        Created: 2025-03-04
-        Version: 0.0.8
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_document.py
+Project: paperap
+Created: 2025-03-04
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-12     By Jess Mann
+2025-03-12     By Jess Mann
 
 """
 from __future__ import annotations
 
 import copy
+import logging
 import os
+import unittest
+from datetime import datetime, timezone
 from random import sample
 from typing import Any, Iterable, List, Optional, override
-import unittest
-from unittest.mock import patch, MagicMock, PropertyMock
-import logging
-from datetime import datetime, timezone
+from unittest.mock import MagicMock, PropertyMock, patch
+
 from paperap.client import PaperlessClient
-from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models import *
-from paperap.resources.documents import DocumentResource
+from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
+from paperap.models.document.model import CustomFieldTypedDict, CustomFieldValues, DocumentNote
 from paperap.models.tag import Tag, TagQuerySet
-from paperap.models.document.model import CustomFieldValues, CustomFieldTypedDict, DocumentNote
-from tests.lib import load_sample_data, DocumentUnitTest, factories
+from paperap.resources.documents import DocumentResource
+from tests.lib import DocumentUnitTest, factories, load_sample_data
 
 logger = logging.getLogger(__name__)
 
@@ -378,7 +379,9 @@ class TestCustomFieldAccess(DocumentUnitTest):
 
 
 class TestDocumentNotes(DocumentUnitTest):
+
     """Test the DocumentNote model and related functionality."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
     @override
@@ -439,9 +442,10 @@ class TestDocumentNotes(DocumentUnitTest):
 
 
 class TestCustomFieldValues(unittest.TestCase):
-    """Test the CustomFieldValues model."""
-    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
+    """Test the CustomFieldValues model."""
+
+    # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
     def test_init(self):
         """Test creating a CustomFieldValues instance."""
@@ -490,7 +494,9 @@ class TestCustomFieldValues(unittest.TestCase):
 
 
 class TestDocumentSetters(DocumentUnitTest):
+
     """Test the setter methods for Document relationships."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
     @override

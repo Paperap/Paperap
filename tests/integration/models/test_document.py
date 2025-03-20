@@ -2,42 +2,43 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_document.py
-        Project: paperap
-        Created: 2025-03-08
-        Version: 0.0.8
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_document.py
+Project: paperap
+Created: 2025-03-08
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-08     By Jess Mann
+2025-03-08     By Jess Mann
 
 """
 from __future__ import annotations
 
-import os
-from typing import Iterable, override
-import unittest
-from unittest.mock import patch, MagicMock
 import logging
+import os
+import unittest
 from datetime import datetime, timezone
+from typing import Iterable, override
+from unittest.mock import MagicMock, patch
 
 from dateparser.data.date_translation_data import ar
-from paperap.exceptions import ReadOnlyFieldError
-from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
-from paperap.models import *
+
 from paperap.client import PaperlessClient
-from paperap.resources.documents import DocumentResource
+from paperap.exceptions import ReadOnlyFieldError
+from paperap.models import *
+from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models.tag import Tag, TagQuerySet
-from tests.lib import load_sample_data, DocumentUnitTest
+from paperap.resources.documents import DocumentResource
+from tests.lib import DocumentUnitTest, load_sample_data
 
 logger = logging.getLogger(__name__)
 

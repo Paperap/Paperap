@@ -2,35 +2,37 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_client.py
-        Project: paperap
-        Created: 2025-03-04
-        Version: 0.0.8
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_client.py
+Project: paperap
+Created: 2025-03-04
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-13     By Jess Mann
+2025-03-13     By Jess Mann
 
 """
 from __future__ import annotations
+
 import json
 import os
-import requests
-from typing import Any, Dict, Iterator, override
 import unittest
-from unittest.mock import MagicMock, Mock, patch, PropertyMock
-from pydantic import HttpUrl
 from pathlib import Path
 from string import Template
+from typing import Any, Dict, Iterator, override
+from unittest.mock import MagicMock, Mock, PropertyMock, patch
+
+import requests
+from pydantic import HttpUrl
 
 from paperap.auth import AuthBase, BasicAuth, TokenAuth
 from paperap.client import PaperlessClient
@@ -42,20 +44,20 @@ from paperap.exceptions import (
     InsufficientPermissionError,
     RequestError,
     ResourceNotFoundError,
-    ResponseParsingError
+    ResponseParsingError,
 )
+from paperap.models.abstract import BaseQuerySet
+from paperap.models.document import Document
+from paperap.models.tag import Tag
 from paperap.resources.correspondents import CorrespondentResource
 from paperap.resources.custom_fields import CustomFieldResource
-from paperap.resources.documents import DocumentResource
 from paperap.resources.document_types import DocumentTypeResource
+from paperap.resources.documents import DocumentResource
 from paperap.resources.storage_paths import StoragePathResource
 from paperap.resources.tags import TagResource
 from paperap.resources.tasks import TaskResource
 from paperap.settings import Settings
 from tests.lib import UnitTestCase, load_sample_data
-from paperap.models.abstract import BaseQuerySet
-from paperap.models.document import Document
-from paperap.models.tag import Tag
 
 # Load sample response from tests/sample_data/documents_list.json
 sample_data = load_sample_data('documents_list.json')
@@ -102,7 +104,9 @@ class TestClient(UnitTestCase):
 
 
 class TestClientInitialization(unittest.TestCase):
+
     """Test the initialization of the PaperlessClient class."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
     def test_init_with_token(self):
@@ -158,7 +162,9 @@ class TestClientInitialization(unittest.TestCase):
 
 
 class TestClientRequests(UnitTestCase):
+
     """Test the request methods of the PaperlessClient class."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
     @override
     def setUp(self):
@@ -261,7 +267,9 @@ class TestClientRequests(UnitTestCase):
 
 
 class TestClientErrorHandling(UnitTestCase):
+
     """Test the error handling of the PaperlessClient class."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
 
     @override
@@ -371,7 +379,9 @@ class TestClientErrorHandling(UnitTestCase):
 
 
 class TestClientUtilityMethods(UnitTestCase):
+
     """Test the utility methods of the PaperlessClient class."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
     @patch("paperap.client.PaperlessClient.request")
     def test_get_statistics(self, mock_request):
@@ -421,7 +431,9 @@ class TestClientUtilityMethods(UnitTestCase):
 
 
 class TestTokenGeneration(UnitTestCase):
+
     """Test the token generation functionality."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this note when it is reviewed.
     @patch("requests.post")
     def test_generate_token_success(self, mock_post):

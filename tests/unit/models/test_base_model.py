@@ -2,44 +2,48 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_base.py
-        Project: paperap
-        Created: 2025-03-04
-        Version: 0.0.8
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_base.py
+Project: paperap
+Created: 2025-03-04
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-04     By Jess Mann
+2025-03-04     By Jess Mann
 
 """
 from __future__ import annotations
+
 import os
-from typing import override
 import unittest
 from datetime import datetime, timezone
+from typing import override
 from unittest.mock import patch
+
 from pydantic import field_serializer
+
 from paperap.exceptions import FilterDisabledError
-from paperap.models.abstract.queryset import StandardQuerySet
-from tests.lib import UnitTestCase
-from unittest.mock import patch
-from tests.lib import UnitTestCase
 from paperap.models import StandardModel
+from paperap.models.abstract.queryset import StandardQuerySet
 from paperap.resources.base import StandardResource
+from tests.lib import UnitTestCase
+
 
 class ExampleModel(StandardModel):
+
     """
     Example model for testing purposes.
     """
+
     a_str : str
     a_date : datetime
     an_int : int
@@ -55,9 +59,11 @@ class ExampleModel(StandardModel):
         return value.isoformat() if value else None
 
 class ExampleResource(StandardResource[ExampleModel]):
+
     """
     Example resource for testing purposes.
     """
+
     name = "example"
     model_class = ExampleModel
 

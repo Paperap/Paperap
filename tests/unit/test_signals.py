@@ -2,28 +2,30 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_signals.py
-        Project: paperap
-        Created: 2025-03-08
-        Version: 0.0.8
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_signals.py
+Project: paperap
+Created: 2025-03-08
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-12     By Jess Mann
+2025-03-12     By Jess Mann
 
 """
 import unittest
 from typing import Any, Dict, List, override
+
 from paperap.signals import Signal, SignalPriority, SignalRegistry
+
 
 class TestSignalSystem(unittest.TestCase):
     @override

@@ -3,35 +3,39 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_document.py
-        Project: paperap
-        Created: 2025-03-12
-        Version: 0.0.8
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_document.py
+Project: paperap
+Created: 2025-03-12
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-12     By Jess Mann
+2025-03-12     By Jess Mann
 
 """
-from typing import Union
 import datetime
-from faker import Faker
-from hypothesis import example, given, strategies as st
-from pydantic import ValidationError
-from paperap.models import CustomFieldValues, Document, DocumentNote, DocumentQuerySet
-from tests.lib import create_resource, defaults as d
-from paperap.resources.documents import DocumentResource
-from tests.lib.factories import DocumentFactory, DocumentNoteFactory
 import json
+from typing import Union
+
+from faker import Faker
+from hypothesis import example, given
+from hypothesis import strategies as st
+from pydantic import ValidationError
+
+from paperap.models import CustomFieldValues, Document, DocumentNote, DocumentQuerySet
+from paperap.resources.documents import DocumentResource
+from tests.lib import create_resource
+from tests.lib import defaults as d
+from tests.lib.factories import DocumentFactory, DocumentNoteFactory
 
 resource = create_resource(DocumentResource)
 doc = DocumentFactory.to_dict()

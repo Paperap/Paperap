@@ -2,23 +2,23 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_queryset.py
-        Project: paperap
-        Created: 2025-03-13
-        Version: 0.0.8
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_queryset.py
+Project: paperap
+Created: 2025-03-13
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-13     By Jess Mann
+2025-03-13     By Jess Mann
 
 """
 
@@ -42,7 +42,9 @@ from tests.lib import UnitTestCase
 
 
 class DocumentQuerySetTestCase(UnitTestCase):
+
     """Base test case for DocumentQuerySet tests."""
+
     # TODO: All methods in this class are AI Generated tests. Will remove this message when they are reviews.
 
     @override
@@ -118,7 +120,9 @@ class DocumentQuerySetTestCase(UnitTestCase):
 
 
 class TestTagFilters(DocumentQuerySetTestCase):
+
     """Test tag filtering methods."""
+
     # TODO: All methods in this class are AI Generated tests. Will remove this message when they are reviews.
 
     def test_tag_id_single(self):
@@ -147,7 +151,9 @@ class TestTagFilters(DocumentQuerySetTestCase):
 
 
 class TestTitleFilter(DocumentQuerySetTestCase):
+
     """Test title filtering method."""
+
     # TODO: All methods in this class are AI Generated tests. Will remove this message when they are reviews.
 
     def test_title_exact_case_insensitive(self):
@@ -164,7 +170,9 @@ class TestTitleFilter(DocumentQuerySetTestCase):
 
 
 class TestCorrespondentFilters(DocumentQuerySetTestCase):
+
     """Test correspondent filtering methods."""
+
     # TODO: All methods in this class are AI Generated tests. Will remove this message when they are reviews.
 
     def test_correspondent_with_id(self):
@@ -287,7 +295,9 @@ class TestCorrespondentFilters(DocumentQuerySetTestCase):
 
 
 class TestDocumentTypeFilters(DocumentQuerySetTestCase):
+
     """Test document type filtering methods."""
+
     # TODO: All methods in this class are AI Generated tests. Will remove this message when they are reviews.
 
     def test_document_type_with_id(self):
@@ -381,6 +391,7 @@ class TestDocumentTypeFilters(DocumentQuerySetTestCase):
 
 
 class TestStoragePathFilters(DocumentQuerySetTestCase):
+
     """Test storage path filtering methods."""
 
     def test_storage_path_with_id(self):
@@ -474,7 +485,9 @@ class TestStoragePathFilters(DocumentQuerySetTestCase):
 
 
 class TestContentFilter(DocumentQuerySetTestCase):
+
     """Test content filtering method."""
+
     # TODO: All methods in this class are AI Generated tests. Will remove this message when they are reviews.
 
     def test_content(self):
@@ -485,6 +498,7 @@ class TestContentFilter(DocumentQuerySetTestCase):
 
 
 class TestDateFilters(DocumentQuerySetTestCase):
+
     """Test date filtering methods."""
 
     def test_added_after(self):
@@ -547,7 +561,9 @@ class TestDateFilters(DocumentQuerySetTestCase):
         self.assertIsInstance(result, DocumentQuerySet)
 
 class TestMiscFilters(DocumentQuerySetTestCase):
+
     """Test miscellaneous filtering methods."""
+
     # TODO: All methods in this class are AI Generated tests. Will remove this message when they are reviews.
 
     def test_asn(self):
@@ -578,7 +594,9 @@ class TestMiscFilters(DocumentQuerySetTestCase):
 
 
 class TestCustomFieldFilters(DocumentQuerySetTestCase):
+
     """Test custom field filtering methods."""
+
     # TODO: All methods in this class are AI Generated tests. Will remove this message when they are reviews.
 
     def test_custom_field_fullsearch_case_insensitive(self):
@@ -652,7 +670,9 @@ class TestCustomFieldFilters(DocumentQuerySetTestCase):
 
 
 class TestCustomFieldQueryNormalization(DocumentQuerySetTestCase):
+
     """Test custom field query normalization methods."""
+
     # TODO: All methods in this class are AI Generated tests. Will remove this message when they are reviews.
 
     def test_normalize_custom_field_query_item_string(self):
@@ -695,7 +715,9 @@ class TestCustomFieldQueryNormalization(DocumentQuerySetTestCase):
 
 
 class TestCustomFieldQueryMethods(DocumentQuerySetTestCase):
+
     """Test custom field query methods."""
+
     # TODO: All methods in this class are AI Generated tests. Will remove this message when they are reviews.
 
     def test_custom_field_query_with_query_object(self):

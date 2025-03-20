@@ -12,11 +12,10 @@ import unittest
 from datetime import date, datetime
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, override
 from unittest.mock import MagicMock, Mock, patch
 
 import fitz
-import pytest
 from PIL import Image, UnidentifiedImageError
 from pydantic import ValidationError
 
@@ -35,12 +34,14 @@ from paperap.scripts.describe import (
     main,
 )
 from paperap.settings import Settings
-from tests.lib import UnitTestCase, DocumentUnitTest
+from tests.lib import DocumentUnitTest, UnitTestCase
 
 
 class TestDescribePhotos(DocumentUnitTest):
+
     """Test the DescribePhotos class."""
 
+    @override
     def setUp(self):
         """Set up test fixtures."""
         super().setUp()
@@ -48,10 +49,26 @@ class TestDescribePhotos(DocumentUnitTest):
         self.client.settings.openai_key = "test-key"
         self.client.settings.openai_model = "gpt-4o-mini"
 
-        self.describe = DescribePhotos(client=self.client)
+        # Setup model data
+        self.model_data_unparsed = {
+            "id": 1,
+            "created": "2025-03-01T12:00:00Z",
+            "updated": "2025-03-02T12:00:00Z",
+            "title": "Test Document",
+            "correspondent_id": 1,
+            "document_type_id": 1,
+            "tag_ids": [1, 2, 3],
+            "content": b"document_content",
+            "original_file_name": "test.jpg"
+        }
+        self.model_data_parsed = {**self.model_data_unparsed}
 
-        # Create a sample document for testing
+        # Create the model using the test helper
+        self.model = self.bake_model(**self.model_data_parsed)
         self.model._meta.save_on_write = False
+
+        # Initialize the describe object with our test client
+        self.describe = DescribePhotos(client=self.client)
 
     def test_init_default_values(self):
         """Test initialization with default values."""
@@ -89,15 +106,15 @@ class TestDescribePhotos(DocumentUnitTest):
             self.describe.openai
             mock_openai.assert_called_once_with()
 
-    def test_openai_property_custom_url(self):
+    @patch("paperap.scripts.describe.OpenAI")
+    def test_openai_property_custom_url(self, mock_openai):
         """Test openai property with custom URL."""
         self.client.settings.openai_url = "https://custom-openai.example.com"
-        with patch("paperap.scripts.describe.OpenAI") as mock_openai:
-            self.describe.openai
-            mock_openai.assert_called_once_with(
-                api_key="test-key",
-                base_url="https://custom-openai.example.com"
-            )
+        self.describe.openai
+        mock_openai.assert_called_once_with(
+            api_key="test-key",
+            base_url="https://custom-openai.example.com"
+        )
 
     def test_jinja_env_property(self):
         """Test jinja_env property."""
@@ -465,33 +482,28 @@ class TestDescribePhotos(DocumentUnitTest):
     @patch("paperap.scripts.describe.DescribePhotos.process_response")
     def test_describe_document_success(self, mock_process, mock_send_request):
         """Test describe_document with successful description."""
-        # Mock document
-        document = MagicMock(spec=Document)
-        document.id = 123
-        document.content = "document_content"
-        document.original_file_name = "test.jpg"
-        document.tag_names = []
-
+        # Use the model from setUp instead of creating a new mock
         # Mock successful request
         mock_send_request.return_value = '{"title": "Test", "description": "Test description"}'
 
-        # Mock process_response
-        result = self.describe.describe_document(document)
+        # Test the describe_document method
+        result = self.describe.describe_document(self.model)
 
         self.assertTrue(result)
-        mock_send_request.assert_called_once_with(b"document_content", document)
+        mock_send_request.assert_called_once_with(self.model.content, self.model)
         mock_process.assert_called_once_with(
             '{"title": "Test", "description": "Test description"}',
-            document
+            self.model
         )
 
     def test_describe_document_empty_content(self):
         """Test describe_document with empty content."""
-        # Mock document with empty content
-        document = MagicMock(spec=Document)
-        document.id = 123
-        document.content = None
-        document.original_file_name = "test.jpg"
+        # Use bake_model to create a document with empty content
+        document = self.bake_model(
+            id=123,
+            content=None,
+            original_file_name="test.jpg"
+        )
 
         result = self.describe.describe_document(document)
 
@@ -499,11 +511,12 @@ class TestDescribePhotos(DocumentUnitTest):
 
     def test_describe_document_unsupported_format(self):
         """Test describe_document with unsupported format."""
-        # Mock document with unsupported format
-        document = MagicMock(spec=Document)
-        document.id = 123
-        document.content = "document_content"
-        document.original_file_name = "test.txt"
+        # Use bake_model to create a document with unsupported format
+        document = self.bake_model(
+            id=123,
+            content=b"document_content",
+            original_file_name="test.txt"
+        )
 
         result = self.describe.describe_document(document)
 
@@ -512,59 +525,50 @@ class TestDescribePhotos(DocumentUnitTest):
     @patch("paperap.scripts.describe.DescribePhotos._send_describe_request")
     def test_describe_document_empty_response(self, mock_send_request):
         """Test describe_document with empty response."""
-        # Mock document
-        document = MagicMock(spec=Document)
-        document.id = 123
-        document.content = "document_content"
-        document.original_file_name = "test.jpg"
-
+        # Use the model from setUp
         # Mock empty response
         mock_send_request.return_value = None
 
-        result = self.describe.describe_document(document)
+        result = self.describe.describe_document(self.model)
 
         self.assertFalse(result)
 
     @patch("paperap.scripts.describe.DescribePhotos._send_describe_request")
     def test_describe_document_no_images_error(self, mock_send_request):
         """Test describe_document with NoImagesError."""
-        # Mock document
-        document = MagicMock(spec=Document)
-        document.id = 123
-        document.content = "document_content"
-        document.original_file_name = "test.jpg"
-
+        # Use the model from setUp
         # Mock NoImagesError
         mock_send_request.side_effect = NoImagesError("No images found")
 
-        result = self.describe.describe_document(document)
+        result = self.describe.describe_document(self.model)
 
         self.assertFalse(result)
 
     @patch("paperap.scripts.describe.DescribePhotos._send_describe_request")
     def test_describe_document_parsing_error(self, mock_send_request):
         """Test describe_document with DocumentParsingError."""
-        # Mock document
-        document = MagicMock(spec=Document)
-        document.id = 123
-        document.content = "document_content"
-        document.original_file_name = "test.jpg"
-
+        # Use the model from setUp
         # Mock DocumentParsingError
         mock_send_request.side_effect = DocumentParsingError("Parsing error")
 
-        result = self.describe.describe_document(document)
+        result = self.describe.describe_document(self.model)
 
         self.assertFalse(result)
 
     def test_process_response_valid_json(self):
         """Test process_response with valid JSON response."""
-        # Mock document
-        document = MagicMock(spec=Document)
-        document.id = 123
-        document.title = "Old Title"
-        document.created = "2023-01-01"
-        document.tag_names = [ScriptDefaults.NEEDS_TITLE, ScriptDefaults.NEEDS_DESCRIPTION]
+        # Create a document with specific tags for this test
+        document = self.bake_model(
+            id=123,
+            title="Old Title",
+            created="2023-01-01",
+            tag_names=[ScriptDefaults.NEEDS_TITLE, ScriptDefaults.NEEDS_DESCRIPTION]
+        )
+
+        # Add mock methods that will be called by process_response
+        document.remove_tag = MagicMock()
+        document.add_tag = MagicMock()
+        document.append_content = MagicMock()
 
         # Valid JSON response
         response = json.dumps({
@@ -582,17 +586,21 @@ class TestDescribePhotos(DocumentUnitTest):
         self.assertEqual(document.title, "New Title")
         document.remove_tag.assert_called_with(ScriptDefaults.NEEDS_DESCRIPTION)
         document.add_tag.assert_called_with("described")
-        self.assertIn("AI IMAGE DESCRIPTION", document.content)
-        self.assertIn("New Title", document.content)
-        self.assertIn("Test description", document.content)
-        self.assertIn("Test summary", document.content)
-        self.assertIn("Test content", document.content)
+
+        # Check that append_content was called with text containing these elements
+        args, _ = document.append_content.call_args
+        content_text = args[0]
+        self.assertIn("AI IMAGE DESCRIPTION", content_text)
+        self.assertIn("New Title", content_text)
+        self.assertIn("Test description", content_text)
+        self.assertIn("Test summary", content_text)
+        self.assertIn("Test content", content_text)
 
     def test_process_response_invalid_json(self):
         """Test process_response with invalid JSON response."""
-        # Mock document
-        document = MagicMock(spec=Document)
-        document.id = 123
+        # Create a document for this test
+        document = self.bake_model(id=123)
+        document.append_content = MagicMock()
 
         # Invalid JSON response
         response = "Invalid JSON"
@@ -604,9 +612,9 @@ class TestDescribePhotos(DocumentUnitTest):
 
     def test_process_response_non_dict_json(self):
         """Test process_response with non-dict JSON response."""
-        # Mock document
-        document = MagicMock(spec=Document)
-        document.id = 123
+        # Create a document for this test
+        document = self.bake_model(id=123)
+        document.append_content = MagicMock()
 
         # Non-dict JSON response
         response = json.dumps(["item1", "item2"])
@@ -618,9 +626,9 @@ class TestDescribePhotos(DocumentUnitTest):
 
     def test_process_response_empty_json(self):
         """Test process_response with empty JSON response."""
-        # Mock document
-        document = MagicMock(spec=Document)
-        document.id = 123
+        # Create a document for this test
+        document = self.bake_model(id=123)
+        document.append_content = MagicMock()
 
         # Empty JSON response
         response = json.dumps({})
@@ -634,17 +642,15 @@ class TestDescribePhotos(DocumentUnitTest):
     @patch("paperap.scripts.describe.DescribePhotos.progress_bar")
     def test_describe_documents_with_provided_list(self, mock_progress_bar, mock_describe_document):
         """Test describe_documents with provided document list."""
-        # Mock documents
-        doc1 = MagicMock(spec=Document)
-        doc1.id = 1
-        doc2 = MagicMock(spec=Document)
-        doc2.id = 2
+        # Create test documents using bake_model
+        doc1 = self.bake_model(id=1, title="Document 1")
+        doc2 = self.bake_model(id=2, title="Document 2")
         documents = [doc1, doc2]
 
         # Mock describe_document to succeed for first doc and fail for second
         mock_describe_document.side_effect = [True, False]
 
-        # Mock progress_bar
+        # Test the method
         result = self.describe.describe_documents(documents)
 
         self.assertEqual(len(result), 1)
@@ -654,21 +660,19 @@ class TestDescribePhotos(DocumentUnitTest):
     @patch("paperap.scripts.describe.DescribePhotos.describe_document")
     def test_describe_documents_with_filter(self, mock_describe_document):
         """Test describe_documents with tag filter."""
-        # Mock client documents query
-        mock_queryset = MagicMock()
+        # Create a test document
+        doc1 = self.bake_model(id=1, title="Document 1")
+
+        # Setup the resource mock using get_resource_mock
+        mock_queryset = self.get_resource_mock(self.client.documents)
         mock_filter = MagicMock()
         mock_queryset.filter.return_value = mock_filter
-        self.client.documents.return_value = mock_queryset
-
-        # Mock filtered documents
-        doc1 = MagicMock(spec=Document)
-        doc1.id = 1
         mock_filter.__iter__.return_value = [doc1]
 
         # Mock describe_document to succeed
         mock_describe_document.return_value = True
 
-        # Mock progress_bar
+        # Test the method with progress_bar mocked
         with patch.object(self.describe, 'progress_bar'):
             result = self.describe.describe_documents()
 
@@ -679,6 +683,7 @@ class TestDescribePhotos(DocumentUnitTest):
 
 
 class TestArgNamespace(DocumentUnitTest):
+
     """Test the ArgNamespace class."""
 
     def test_arg_namespace_defaults(self):
@@ -698,6 +703,7 @@ class TestArgNamespace(DocumentUnitTest):
 @patch("paperap.scripts.describe.PaperlessClient")
 @patch("paperap.scripts.describe.DescribePhotos")
 class TestMain(DocumentUnitTest):
+
     """Test the main function."""
 
     def test_main_success(

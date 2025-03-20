@@ -3,29 +3,31 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_auth.py
-        Project: paperap
-        Created: 2025-03-13
-        Version: 0.0.7
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_auth.py
+Project: paperap
+Created: 2025-03-13
+Version: 0.0.7
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-13     By Jess Mann
+2025-03-13     By Jess Mann
 
 """
 import unittest
 
 from pydantic import ValidationError
-from paperap.auth import TokenAuth, BasicAuth
+
+from paperap.auth import BasicAuth, TokenAuth
+
 
 class TestTokenAuth(unittest.TestCase):
     # All tests in this class were AI Generated (gpt-4o). Will remove this message when they are reviewed.

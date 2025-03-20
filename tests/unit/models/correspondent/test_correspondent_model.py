@@ -2,38 +2,39 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_correspondent.py
-        Project: paperap
-        Created: 2025-03-04
-        Version: 0.0.8
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_correspondent.py
+Project: paperap
+Created: 2025-03-04
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-04     By Jess Mann
+2025-03-04     By Jess Mann
 
 """
 from __future__ import annotations
 
 import os
-from typing import Iterable, override
 import unittest
-from unittest.mock import patch, MagicMock
 from datetime import datetime, timezone
+from typing import Iterable, override
+from unittest.mock import MagicMock, patch
+
+from paperap.client import PaperlessClient
+from paperap.models import DocumentQuerySet, Tag
 from paperap.models.abstract.queryset import BaseQuerySet
 from paperap.models.correspondent import Correspondent
-from paperap.client import PaperlessClient
 from paperap.resources.correspondents import CorrespondentResource
-from paperap.models import Tag, DocumentQuerySet
-from tests.lib import UnitTestCase, load_sample_data, CorrespondentUnitTest
+from tests.lib import CorrespondentUnitTest, UnitTestCase, load_sample_data
 
 sample_correspondent_list = load_sample_data('correspondents_list.json')
 sample_correspondent = load_sample_data('correspondents_item.json')

@@ -2,33 +2,36 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_settings.py
-        Project: paperap
-        Created: 2025-03-04
-        Version: 0.0.8
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_settings.py
+Project: paperap
+Created: 2025-03-04
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-04     By Jess Mann
+2025-03-04     By Jess Mann
 
 """
 from __future__ import annotations
+
 import os
-from typing import Any, Iterable
 import unittest
+from typing import Any, Iterable
 from unittest.mock import patch
+
 from pydantic import HttpUrl, ValidationError
-from paperap.settings import Settings
+
 from paperap.exceptions import ConfigurationError
+from paperap.settings import Settings
 from tests.lib import UnitTestCase
 
 TOKEN_DATA = {
@@ -57,6 +60,7 @@ class NoEnvTestCase(UnitTestCase):
         self.patcher.stop()
 
 class TestSettings(NoEnvTestCase):
+
     """Unit tests for the Settings class."""
 
     def test_valid_settings(self):

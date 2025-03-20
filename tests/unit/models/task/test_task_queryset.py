@@ -2,23 +2,23 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_queryset.py
-        Project: paperap
-        Created: 2025-03-13
-        Version: 0.0.8
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_queryset.py
+Project: paperap
+Created: 2025-03-13
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-13     By Jess Mann
+2025-03-13     By Jess Mann
 
 """
 
@@ -36,7 +36,9 @@ from tests.lib import UnitTestCase
 
 
 class TaskQuerySetTestCase(UnitTestCase):
+
     """Base test case for TaskQuerySet tests."""
+
     # TODO: All methods in this class are AI Generated tests. Will remove this message when they are reviews.
 
     @override
@@ -66,7 +68,9 @@ class TaskQuerySetTestCase(UnitTestCase):
 
 
 class TestTaskIdFilter(TaskQuerySetTestCase):
+
     """Test task_id filtering method."""
+
     # TODO: All methods in this class are AI Generated tests. Will remove this message when they are reviews.
 
     def test_task_id(self):
@@ -77,7 +81,9 @@ class TestTaskIdFilter(TaskQuerySetTestCase):
 
 
 class TestTaskFileNameFilter(TaskQuerySetTestCase):
+
     """Test task_file_name filtering method."""
+
     # TODO: All methods in this class are AI Generated tests. Will remove this message when they are reviews.
 
     def test_task_file_name_default(self):
@@ -114,7 +120,9 @@ class TestTaskFileNameFilter(TaskQuerySetTestCase):
 
 
 class TestDateDoneFilter(TaskQuerySetTestCase):
+
     """Test date_done filtering method."""
+
     # TODO: All methods in this class are AI Generated tests. Will remove this message when they are reviews.
 
     def test_date_done_with_date(self):
@@ -131,7 +139,9 @@ class TestDateDoneFilter(TaskQuerySetTestCase):
 
 
 class TestTypeFilter(TaskQuerySetTestCase):
+
     """Test type filtering method."""
+
     # TODO: All methods in this class are AI Generated tests. Will remove this message when they are reviews.
 
     def test_type_default(self):
@@ -168,7 +178,9 @@ class TestTypeFilter(TaskQuerySetTestCase):
 
 
 class TestStatusFilter(TaskQuerySetTestCase):
+
     """Test status filtering method."""
+
     # TODO: All methods in this class are AI Generated tests. Will remove this message when they are reviews.
 
     def test_status_default(self):
@@ -205,7 +217,9 @@ class TestStatusFilter(TaskQuerySetTestCase):
 
 
 class TestResultFilter(TaskQuerySetTestCase):
+
     """Test result filtering method."""
+
     # TODO: All methods in this class are AI Generated tests. Will remove this message when they are reviews.
 
     def test_result_with_string(self):
@@ -248,7 +262,9 @@ class TestResultFilter(TaskQuerySetTestCase):
 
 
 class TestAcknowledgedFilter(TaskQuerySetTestCase):
+
     """Test acknowledged filtering method."""
+
     # TODO: All methods in this class are AI Generated tests. Will remove this message when they are reviews.
 
     def test_acknowledged_true(self):
@@ -265,6 +281,7 @@ class TestAcknowledgedFilter(TaskQuerySetTestCase):
 
 
 class TestRelatedDocumentFilter(TaskQuerySetTestCase):
+
     """Test related_document filtering method."""
 
     def test_related_document_with_single_id(self):
@@ -281,7 +298,9 @@ class TestRelatedDocumentFilter(TaskQuerySetTestCase):
 
 
 class TestChaining(TaskQuerySetTestCase):
+
     """Test method chaining."""
+
     # TODO: All methods in this class are AI Generated tests. Will remove this message when they are reviews.
 
     def test_method_chaining(self):

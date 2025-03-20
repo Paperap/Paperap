@@ -23,18 +23,17 @@ least a base level of testing for all models.
         2025-03-04     By Jess Mann
 
 """
-from abc import ABC, abstractmethod
-import os
 import logging
+import os
 import types
+from abc import ABC, abstractmethod
 from datetime import datetime, timezone
-from typing import Any, Iterable, Iterator, get_type_hints, get_origin, get_args, Union, override
-
+from typing import Any, Iterable, Iterator, Union, get_args, get_origin, get_type_hints, override
 from unittest.mock import patch
+
 from pydantic import ValidationError
 
-from paperap.models.abstract import BaseModel, StandardModel, BaseQuerySet
-from paperap.resources.base import BaseResource, StandardResource
+from paperap.models.abstract import BaseModel, BaseQuerySet, StandardModel
 from paperap.models.correspondent import Correspondent
 from paperap.models.custom_field import CustomField
 from paperap.models.document import Document
@@ -48,9 +47,9 @@ from paperap.models.task import Task
 from paperap.models.ui_settings import UISettings
 from paperap.models.user import Group, User
 from paperap.models.workflow import Workflow, WorkflowAction, WorkflowTrigger
-from tests.lib.factories import *
-
+from paperap.resources.base import BaseResource, StandardResource
 from tests.lib import UnitTestCase
+from tests.lib.factories import *
 
 logger = logging.getLogger(__name__)
 

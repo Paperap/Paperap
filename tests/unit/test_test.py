@@ -2,42 +2,43 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_document.py
-        Project: paperap
-        Created: 2025-03-04
-        Version: 0.0.8
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_document.py
+Project: paperap
+Created: 2025-03-04
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-12     By Jess Mann
+2025-03-12     By Jess Mann
 
 """
 from __future__ import annotations
 
 import copy
+import logging
 import os
+import unittest
+from datetime import datetime, timezone
 from random import sample
 from typing import Any, Iterable, List, Optional, override
-import unittest
-from unittest.mock import patch, MagicMock, PropertyMock
-import logging
-from datetime import datetime, timezone
+from unittest.mock import MagicMock, PropertyMock, patch
+
 from paperap.client import PaperlessClient
-from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models import *
-from paperap.resources.documents import DocumentResource
+from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
+from paperap.models.document.model import CustomFieldTypedDict, CustomFieldValues, DocumentNote
 from paperap.models.tag import Tag, TagQuerySet
-from paperap.models.document.model import CustomFieldValues, CustomFieldTypedDict, DocumentNote
-from tests.lib import load_sample_data, DocumentUnitTest, factories, UnitTestConfigurationError, UnitTestCase
+from paperap.resources.documents import DocumentResource
+from tests.lib import DocumentUnitTest, UnitTestCase, UnitTestConfigurationError, factories, load_sample_data
 
 logger = logging.getLogger(__name__)
 

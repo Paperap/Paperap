@@ -2,27 +2,28 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    models.py
-        Project: paperap
-        Created: 2025-03-07
-        Version: 0.0.8
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    models.py
+Project: paperap
+Created: 2025-03-07
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-07     By Jess Mann
+2025-03-07     By Jess Mann
 
 """
 from __future__ import annotations
 
+import secrets
 from abc import ABC
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any, Generic, override
@@ -31,19 +32,37 @@ import factory
 from factory.base import StubObject
 from faker import Faker
 from typing_extensions import TypeVar
-import secrets
 
-from paperap.models import (StandardModel, Correspondent, CustomField, Document,
-                            DocumentNote, DocumentType, Group, Profile, SavedView,
-                            ShareLinks, StoragePath, Tag, Task, UISettings,
-                            User, Workflow, WorkflowAction, WorkflowTrigger)
+from paperap.models import (
+    Correspondent,
+    CustomField,
+    Document,
+    DocumentNote,
+    DocumentType,
+    Group,
+    Profile,
+    SavedView,
+    ShareLinks,
+    StandardModel,
+    StoragePath,
+    Tag,
+    Task,
+    UISettings,
+    User,
+    Workflow,
+    WorkflowAction,
+    WorkflowTrigger,
+)
+
 if TYPE_CHECKING:
     from paperap.resources import BaseResource
 
 fake = Faker()
 
 class PydanticFactory[_StandardModel](factory.Factory[_StandardModel]):
+
     """Base factory for Pydantic models."""
+
     class Meta: # type: ignore # pyright handles this wrong
         abstract = True
 
@@ -54,6 +73,7 @@ class PydanticFactory[_StandardModel](factory.Factory[_StandardModel]):
 
         Returns:
             The resource for the model specified in this factory's Meta.model
+
         """
         return cls._meta.model._resource # type: ignore # model is always defined on subclasses
 
@@ -67,6 +87,7 @@ class PydanticFactory[_StandardModel](factory.Factory[_StandardModel]):
 
         Returns:
             dict: A dictionary of the model's fields.
+
         """
         _instance = cls.create(**kwargs)
         return cls.get_resource().transform_data_output(_instance, exclude_unset = exclude_unset)
@@ -82,6 +103,7 @@ class PydanticFactory[_StandardModel](factory.Factory[_StandardModel]):
 
         Returns:
             dict: A dictionary of the model's fields.
+
         """
         _instance = cls.create(**kwargs)
         return _instance.to_dict(exclude_unset=exclude_unset)

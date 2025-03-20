@@ -2,37 +2,38 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_meta.py
-        Project: paperap
-        Created: 2025-03-07
-        Version: 0.0.8
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_meta.py
+Project: paperap
+Created: 2025-03-07
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-07     By Jess Mann
+2025-03-07     By Jess Mann
 
 """
 import unittest
-from unittest.mock import MagicMock
-from typing import Iterable, Literal, Any, ClassVar, override
 from enum import StrEnum
+from typing import Any, ClassVar, Iterable, Literal, override
+from unittest.mock import MagicMock
 
 from paperap.const import ModelStatus
-from paperap.models.abstract.meta import StatusContext
-from tests.lib import UnitTestCase, load_sample_data, DocumentUnitTest
-from paperap.models.document import Document
-from paperap.resources.documents import DocumentResource
 from paperap.models.abstract import StandardModel
+from paperap.models.abstract.meta import StatusContext
+from paperap.models.document import Document
 from paperap.resources.base import StandardResource
+from paperap.resources.documents import DocumentResource
+from tests.lib import DocumentUnitTest, UnitTestCase, load_sample_data
+
 
 # Unit tests
 class TestStatusContext(DocumentUnitTest):
@@ -144,9 +145,11 @@ class TestStatusContext(DocumentUnitTest):
             context.previous_status = ModelStatus.READY # type: ignore
 
 class SampleResource(StandardResource):
+
     """
     Sample resource for testing purposes.
     """
+
     name = "sample"
     model_class = StandardModel
 

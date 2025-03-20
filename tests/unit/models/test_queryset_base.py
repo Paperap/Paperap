@@ -2,44 +2,45 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    test_queryset.py
-        Project: paperap
-        Created: 2025-03-04
-        Version: 0.0.8
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    test_queryset.py
+Project: paperap
+Created: 2025-03-04
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-04     By Jess Mann
+2025-03-04     By Jess Mann
 
 """
 from __future__ import annotations
 
 import logging
 import os
-from string import Template
-from typing import override
 import unittest
 from datetime import datetime
+from string import Template
+from typing import override
 from unittest.mock import MagicMock, patch
 
+from paperap.client import PaperlessClient
+
 # Import the exceptions used by BaseQuerySet.
-from paperap.exceptions import ObjectNotFoundError, MultipleObjectsFoundError, ResponseParsingError
-from paperap.models import StandardModel, BaseQuerySet
+from paperap.exceptions import MultipleObjectsFoundError, ObjectNotFoundError, ResponseParsingError
+from paperap.models import BaseQuerySet, StandardModel
 from paperap.models.abstract.queryset import StandardQuerySet
 from paperap.models.document import Document
 from paperap.resources import BaseResource, StandardResource
-from paperap.client import PaperlessClient
 from paperap.resources.documents import DocumentResource
-from tests.lib import load_sample_data, UnitTestCase, DocumentUnitTest
+from tests.lib import DocumentUnitTest, UnitTestCase, load_sample_data
 from tests.lib.factories import DocumentFactory, PydanticFactory
 
 MockClient = MagicMock(PaperlessClient)
@@ -443,7 +444,9 @@ class TestQuerySetGetItem(UnitTestCase):
             _ = self.qs[0]
 
 class TestContains(UnitTestCase):
+
     """Test the __contains__ method."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @override
@@ -489,7 +492,9 @@ class TestContains(UnitTestCase):
 
 
 class TestRequestIter(UnitTestCase):
+
     """Test the _request_iter method."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @override
@@ -536,7 +541,9 @@ class TestRequestIter(UnitTestCase):
 
 
 class TestGetNext(UnitTestCase):
+
     """Test the _get_next method."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @override
@@ -587,7 +594,9 @@ class TestGetNext(UnitTestCase):
 
 
 class TestReset(UnitTestCase):
+
     """Test the _reset method."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @override
@@ -619,7 +628,9 @@ class TestReset(UnitTestCase):
 
 
 class TestFetchAllResults(UnitTestCase):
+
     """Test the _fetch_all_results method."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @override
@@ -701,7 +712,9 @@ class TestFetchAllResults(UnitTestCase):
 
 
 class TestNone(UnitTestCase):
+
     """Test the none method."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @override
@@ -721,6 +734,7 @@ class TestNone(UnitTestCase):
 
 
 class TestFilterFieldByStr(UnitTestCase):
+
     """Test the filter_field_by_str method."""
 
     @override
@@ -767,7 +781,9 @@ class TestFilterFieldByStr(UnitTestCase):
 
 
 class TestStandardQuerySetMethods(UnitTestCase):
+
     """Test the StandardQuerySet-specific methods."""
+
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
     @override

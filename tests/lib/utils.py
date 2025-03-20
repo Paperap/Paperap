@@ -3,36 +3,39 @@
 
 
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    METADATA:
+METADATA:
 
-        File:    utils.py
-        Project: paperap
-        Created: 2025-03-12
-        Version: 0.0.8
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+File:    utils.py
+Project: paperap
+Created: 2025-03-12
+Version: 0.0.8
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
 
- ----------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
-    LAST MODIFIED:
+LAST MODIFIED:
 
-        2025-03-12     By Jess Mann
+2025-03-12     By Jess Mann
 
 """
 from __future__ import annotations
+
 import json
 import os
-from pathlib import Path
 import random
 import string
-from typing import Any, TYPE_CHECKING
-from typing_extensions import TypeVar
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
-from paperap.client import PaperlessClient
+
 from faker import Faker
+from typing_extensions import TypeVar
+
+from paperap.client import PaperlessClient
 
 if TYPE_CHECKING:
     from paperap.resources import BaseResource
@@ -42,14 +45,15 @@ def defaults(defaults : dict[str, Any], **kwargs : Any) -> dict[str, Any]:
     Merge default fields with overrides for hypothesis @example
 
     This avoids ugly double unpacking. The following two examples are equivalent:
-	- @example(**defaults(v, field1="value1", field2="value2"))
-	- @example(**{**v, "field1": "value1", "field2": "value2"})
+    - @example(**defaults(v, field1="value1", field2="value2"))
+    - @example(**{**v, "field1": "value1", "field2": "value2"})
 
-	Examples:
-		>>> from tests.lib.utils import default as d
-		>>> note = { "title": "Sample Title", "created": datetime.datetime.now() }
-		>>> @example(**d(note, title="Note Title", content="Note Content"))
-		>>> def test_create_note(note: dict[str, Any]): ...
+    Examples:
+    >>> from tests.lib.utils import default as d
+    >>> note = { "title": "Sample Title", "created": datetime.datetime.now() }
+    >>> @example(**d(note, title="Note Title", content="Note Content"))
+    >>> def test_create_note(note: dict[str, Any]): ...
+
     """
     return {**defaults, **kwargs}
 
@@ -62,6 +66,7 @@ def load_sample_data(filename : str) -> dict[str, Any]:
 
     Returns:
         A dictionary containing the sample data.
+
     """
     # Load sample response from tests/sample_data/{model}_{endpoint}.json
     sample_data_filepath = Path(__file__).parent.parent / "sample_data" / filename
