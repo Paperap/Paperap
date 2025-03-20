@@ -69,21 +69,35 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             return self.upload_content(f.read(), filepath.name)
 
     def upload_content(self, file_content: bytes, filename: str, **metadata) -> Document:
-        """Upload a document with optional metadata."""
-        files = {"document": (filename, file_content)}
+        """
+        Upload a document with optional metadata.
         
+        Args:
+            file_content: The binary content of the file to upload
+            filename: The name of the file
+            **metadata: Additional metadata to include with the upload
+            
+        Returns:
+            The uploaded document
+            
+        Raises:
+            ResourceNotFoundError: If the upload fails
+
+        """
+        files = {"document": (filename, file_content)}
+
         # Make sure we're using the correct endpoint
         endpoint = "api/documents/post_document/"
-        
+
         # For multipart/form-data requests with files, metadata must be passed as form fields
         response = self.client.request(
-            "POST", 
-            endpoint, 
-            files=files, 
+            "POST",
+            endpoint,
+            files=files,
             data=metadata,
             json_response=True
         )
-        
+
         if not response:
             raise ResourceNotFoundError("Document upload failed")
         return self.parse_to_model(response)

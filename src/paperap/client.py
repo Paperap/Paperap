@@ -314,13 +314,14 @@ class PaperlessClient:
             logger.debug("Request (%s) url %s, params %s, data %s, files %s, headers %s",
                         method, url, params, data, files, headers)
             # When uploading files, we need to pass data as form data, not JSON
+            # The key difference is that with files, we MUST use data parameter, not json
             response = self.session.request(
                 method=method,
                 url=url,
                 headers=headers,
                 params=params,
-                json=data if not files and data else None,
-                data=data if files and data else None,
+                json=None if files else data,  # Never use json with files
+                data=data if files else None,  # Always use data with files
                 files=files,
                 timeout=self.settings.timeout,
                 **self._get_auth_params(),
