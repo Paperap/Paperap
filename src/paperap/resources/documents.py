@@ -6,7 +6,7 @@
        File:    documents.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.8
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -71,7 +71,19 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
     def upload_content(self, file_content: bytes, filename: str, **metadata) -> Document:
         """Upload a document with optional metadata."""
         files = {"document": (filename, file_content)}
-        response = self.client.request("POST", "documents/post_document/", files=files, data=metadata)
+        
+        # Make sure we're using the correct endpoint
+        endpoint = "api/documents/post_document/"
+        
+        # For multipart/form-data requests with files, metadata must be passed as form fields
+        response = self.client.request(
+            "POST", 
+            endpoint, 
+            files=files, 
+            data=metadata,
+            json_response=True
+        )
+        
         if not response:
             raise ResourceNotFoundError("Document upload failed")
         return self.parse_to_model(response)

@@ -10,7 +10,7 @@
         File:    first_run.py
         Project: paperap
         Created: 2025-03-20
-        Version: 0.0.8
+        Version: 0.0.9
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -26,9 +26,10 @@ from pathlib import Path
 import json
 import logging
 from typing import Any, Dict, List, Type
-
+import re
 from paperap.client import PaperlessClient
 from paperap.models import Correspondent, DocumentType, Tag
+from paperap.resources import *
 from paperap.exceptions import PaperapError
 
 # Configure logging
@@ -74,15 +75,28 @@ class PaperlessManager:
         """
         Deletes test entities from Paperless while handling errors gracefully.
         """
-        for name, (filename, model, manager) in self.SAMPLE_FILES.items():
-            data = self.load_sample_data(filename)
-            if not data:
-                continue
-            try:
-                manager.delete(data["id"])
-                logger.info("Deleted %s with ID %s", name, data["id"])
-            except PaperapError as e:
-                logger.warning("Failed to delete %s: %s", name, e)
+        if not re.match(r"https?://(192.168|10.|127.0.0|0.0.0|localhost)", str(self.client.base_url)):
+            logger.error(f"Refusing to delete data from a non-local server: {self.client.base_url}")
+            return
+
+        """
+        print(f"This will delete all data in the {self.client.base_url} server. Do you want to continue? Type 'delete everything' to continue.")
+        
+        confirmation = input()
+        if confirmation.lower() != 'delete everything':
+            logger.info("Cleanup operation cancelled.")
+            return
+        """
+        
+        resources = [
+            DocumentResource, CorrespondentResource, DocumentTypeResource, TagResource
+        ]
+        for resource in resources:
+            for model in resource(client=self.client).all():
+                try:
+                    model.delete()
+                except PaperapError as e:
+                    logger.warning("Failed to delete %s: %s", model, e)        
 
     def upload(self) -> None:
         """
@@ -100,8 +114,8 @@ class PaperlessManager:
 
         # Upload 2 sample documents
         documents = [
-            Path(__file__).parent / "sample_data" / "Sample JPG.jpg",
-            Path(__file__).parent / "sample_data" / "Sample PDF.pdf",
+            Path(__file__).parent / "sample_data" / "uploads" / "Sample JPG.jpg",
+            Path(__file__).parent / "sample_data" / "uploads" / "Sample PDF.pdf",
         ]
         for document in documents:
             try:

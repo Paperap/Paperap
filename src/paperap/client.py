@@ -6,7 +6,7 @@
        File:    client.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.8
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -301,7 +301,9 @@ class PaperlessClient:
         # Add headers from authentication and session defaults
         headers = {**self.session.headers, **self.get_headers()}
 
-        # If we're uploading files, don't set Content-Type
+        # If we're uploading files, don't set Content-Type in headers
+        # This allows the requests library to set the appropriate multipart/form-data
+        # Content-Type with boundary
         if files:
             headers.pop("Content-Type", None)
 
@@ -309,14 +311,16 @@ class PaperlessClient:
             # TODO: Temporary hack
             params = params.get("params", params) if params else params
 
-            # logger.critical("Request (%s) url %s, params %s, data %s, files %s", method, url, params, data, files)
+            logger.debug("Request (%s) url %s, params %s, data %s, files %s, headers %s",
+                        method, url, params, data, files, headers)
+            # When uploading files, we need to pass data as form data, not JSON
             response = self.session.request(
                 method=method,
                 url=url,
                 headers=headers,
                 params=params,
                 json=data if not files and data else None,
-                data=data if files else None,
+                data=data if files and data else None,
                 files=files,
                 timeout=self.settings.timeout,
                 **self._get_auth_params(),
