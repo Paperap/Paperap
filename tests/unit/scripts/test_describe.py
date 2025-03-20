@@ -35,41 +35,36 @@ from paperap.scripts.describe import (
     main,
 )
 from paperap.settings import Settings
+from tests.lib import UnitTestCase, DocumentUnitTest
 
 
-class TestDescribePhotos(unittest.TestCase):
+class TestDescribePhotos(DocumentUnitTest):
     """Test the DescribePhotos class."""
 
     def setUp(self):
         """Set up test fixtures."""
-        self.mock_client = MagicMock(spec=PaperlessClient)
-        self.mock_client.settings = MagicMock(spec=Settings)
-        self.mock_client.settings.openai_url = None
-        self.mock_client.settings.openai_key = "test-key"
-        self.mock_client.settings.openai_model = "gpt-4o-mini"
+        super().setUp()
+        self.client.settings.openai_url = None
+        self.client.settings.openai_key = "test-key"
+        self.client.settings.openai_model = "gpt-4o-mini"
 
-        self.describe = DescribePhotos(client=self.mock_client)
+        self.describe = DescribePhotos(client=self.client)
 
         # Create a sample document for testing
-        self.mock_document = MagicMock(spec=Document)
-        self.mock_document.id = 123
-        self.mock_document.title = "Test Document"
-        self.mock_document.original_file_name = "test.jpg"
-        self.mock_document.content = b"test content"
-        self.mock_document.tag_names = []
+        self.model._meta.save_on_write = False
 
     def test_init_default_values(self):
         """Test initialization with default values."""
-        describe = DescribePhotos(client=self.mock_client)
+        describe = DescribePhotos(client=self.client)
         self.assertEqual(describe.paperless_tag, ScriptDefaults.NEEDS_DESCRIPTION)
         self.assertIsNone(describe.prompt)
         self.assertGreaterEqual(describe.max_threads, 1)
-        self.assertEqual(describe.client, self.mock_client)
+        self.assertEqual(describe.client, self.client)
 
     def test_init_custom_values(self):
         """Test initialization with custom values."""
         describe = DescribePhotos(
-            client=self.mock_client,
+            client=self.client,
             paperless_tag="custom-tag",
             prompt="custom prompt",
             max_threads=2
@@ -81,11 +76,11 @@ class TestDescribePhotos(unittest.TestCase):
     def test_validate_max_threads_negative(self):
         """Test validation of negative max_threads."""
         with self.assertRaises(ValueError):
-            DescribePhotos(client=self.mock_client, max_threads=-1)
+            DescribePhotos(client=self.client, max_threads=-1)
 
     def test_validate_max_threads_zero(self):
         """Test validation of zero max_threads."""
-        describe = DescribePhotos(client=self.mock_client, max_threads=0)
+        describe = DescribePhotos(client=self.client, max_threads=0)
         self.assertGreaterEqual(describe.max_threads, 1)
 
     def test_openai_property_default_url(self):
@@ -96,7 +91,7 @@ class TestDescribePhotos(unittest.TestCase):
 
     def test_openai_property_custom_url(self):
         """Test openai property with custom URL."""
-        self.mock_client.settings.openai_url = "https://custom-openai.example.com"
+        self.client.settings.openai_url = "https://custom-openai.example.com"
         with patch("paperap.scripts.describe.OpenAI") as mock_openai:
             self.describe.openai
             mock_openai.assert_called_once_with(
@@ -112,13 +107,13 @@ class TestDescribePhotos(unittest.TestCase):
 
     def test_choose_template(self):
         """Test choose_template method."""
-        template = self.describe.choose_template(self.mock_document)
+        template = self.describe.choose_template(self.model)
         self.assertEqual(template, "photo.jinja")
 
     def test_get_prompt_custom(self):
         """Test get_prompt with custom prompt."""
-        describe = DescribePhotos(client=self.mock_client, prompt="Custom prompt")
-        prompt = describe.get_prompt(self.mock_document)
+        describe = DescribePhotos(client=self.client, prompt="Custom prompt")
+        prompt = describe.get_prompt(self.model)
         self.assertEqual(prompt, "Custom prompt")
 
     @patch("paperap.scripts.describe.Environment")
@@ -131,10 +126,10 @@ class TestDescribePhotos(unittest.TestCase):
         mock_env.return_value = mock_env_instance
 
         self.describe._jinja_env = mock_env_instance
-        prompt = self.describe.get_prompt(self.mock_document)
+        prompt = self.describe.get_prompt(self.model)
 
         self.assertEqual(prompt, "Template prompt")
-        mock_template.render.assert_called_once_with(document=self.mock_document)
+        mock_template.render.assert_called_once_with(document=self.model)
 
     @patch("paperap.scripts.describe.Environment")
     def test_get_prompt_template_empty(self, mock_env):
@@ -148,7 +143,7 @@ class TestDescribePhotos(unittest.TestCase):
         self.describe._jinja_env = mock_env_instance
 
         with self.assertRaises(ValueError):
-            self.describe.get_prompt(self.mock_document)
+            self.describe.get_prompt(self.model)
 
     @patch("paperap.scripts.describe.fitz.open")
     def test_extract_images_from_pdf_success(self, mock_fitz_open):
@@ -337,23 +332,21 @@ class TestDescribePhotos(unittest.TestCase):
 
     @patch("paperap.scripts.describe.Image.open")
     @patch("paperap.scripts.describe.DescribePhotos.extract_images_from_pdf")
-    def test_standardize_image_contents_fallback_to_pdf(self, mock_extract, mock_image_open):
+    @patch("paperap.scripts.describe.DescribePhotos._convert_to_png")
+    def test_standardize_image_contents_fallback_to_pdf(self, mock_convert, mock_extract, mock_image_open):
         """Test standardize_image_contents falling back to PDF extraction."""
         # Mock image open failure
         mock_image_open.side_effect = Exception("Image open error")
-
         # Mock PDF extraction success
         mock_extract.return_value = [b"pdf_image1", b"pdf_image2"]
-
         # Mock _convert_to_png
-        with patch.object(self.describe, '_convert_to_png') as mock_convert:
-            mock_convert.side_effect = ["png_data1", "png_data2"]
+        mock_convert.side_effect = ["png_data1", "png_data2"]
 
-            result = self.describe.standardize_image_contents(b"pdf_data")
+        result = self.describe.standardize_image_contents(b"pdf_data")
 
-            self.assertEqual(result, ["png_data1", "png_data2"])
-            mock_extract.assert_called_once_with(b"pdf_data")
-            self.assertEqual(mock_convert.call_count, 2)
+        self.assertEqual(result, ["png_data1", "png_data2"])
+        mock_extract.assert_called_once_with(b"pdf_data")
+        self.assertEqual(mock_convert.call_count, 2)
 
     @patch("paperap.scripts.describe.Image.open")
     @patch("paperap.scripts.describe.DescribePhotos.extract_images_from_pdf")
@@ -397,11 +390,11 @@ class TestDescribePhotos(unittest.TestCase):
         # Set up OpenAI client
         self.describe._openai = mock_openai
 
-        result = self.describe._send_describe_request(b"image_data", self.mock_document)
+        result = self.describe._send_describe_request(b"image_data", self.model)
 
         self.assertEqual(result, "Generated description")
         mock_standardize.assert_called_once_with(b"image_data")
-        mock_get_prompt.assert_called_once_with(self.mock_document)
+        mock_get_prompt.assert_called_once_with(self.model)
         mock_completions.create.assert_called_once()
 
     @patch("paperap.scripts.describe.DescribePhotos.standardize_image_contents")
@@ -411,7 +404,7 @@ class TestDescribePhotos(unittest.TestCase):
         mock_standardize.return_value = []
 
         with self.assertRaises(NoImagesError):
-            self.describe._send_describe_request(b"image_data", self.mock_document)
+            self.describe._send_describe_request(b"image_data", self.model)
 
     @patch("paperap.scripts.describe.DescribePhotos.standardize_image_contents")
     @patch("paperap.scripts.describe.DescribePhotos.get_prompt")
@@ -437,7 +430,7 @@ class TestDescribePhotos(unittest.TestCase):
         # Set up OpenAI client
         self.describe._openai = mock_openai
 
-        result = self.describe._send_describe_request(b"image_data", self.mock_document)
+        result = self.describe._send_describe_request(b"image_data", self.model)
 
         self.assertIsNone(result)
 
@@ -469,12 +462,13 @@ class TestDescribePhotos(unittest.TestCase):
             self.describe.convert_image_to_jpg(b"image_data")
 
     @patch("paperap.scripts.describe.DescribePhotos._send_describe_request")
-    def test_describe_document_success(self, mock_send_request):
+    @patch("paperap.scripts.describe.DescribePhotos.process_response")
+    def test_describe_document_success(self, mock_process, mock_send_request):
         """Test describe_document with successful description."""
         # Mock document
         document = MagicMock(spec=Document)
         document.id = 123
-        document.content = b"document_content"
+        document.content = "document_content"
         document.original_file_name = "test.jpg"
         document.tag_names = []
 
@@ -482,15 +476,14 @@ class TestDescribePhotos(unittest.TestCase):
         mock_send_request.return_value = '{"title": "Test", "description": "Test description"}'
 
         # Mock process_response
-        with patch.object(self.describe, 'process_response') as mock_process:
-            result = self.describe.describe_document(document)
+        result = self.describe.describe_document(document)
 
-            self.assertTrue(result)
-            mock_send_request.assert_called_once_with(b"document_content", document)
-            mock_process.assert_called_once_with(
-                '{"title": "Test", "description": "Test description"}',
-                document
-            )
+        self.assertTrue(result)
+        mock_send_request.assert_called_once_with(b"document_content", document)
+        mock_process.assert_called_once_with(
+            '{"title": "Test", "description": "Test description"}',
+            document
+        )
 
     def test_describe_document_empty_content(self):
         """Test describe_document with empty content."""
@@ -509,7 +502,7 @@ class TestDescribePhotos(unittest.TestCase):
         # Mock document with unsupported format
         document = MagicMock(spec=Document)
         document.id = 123
-        document.content = b"document_content"
+        document.content = "document_content"
         document.original_file_name = "test.txt"
 
         result = self.describe.describe_document(document)
@@ -522,7 +515,7 @@ class TestDescribePhotos(unittest.TestCase):
         # Mock document
         document = MagicMock(spec=Document)
         document.id = 123
-        document.content = b"document_content"
+        document.content = "document_content"
         document.original_file_name = "test.jpg"
 
         # Mock empty response
@@ -538,7 +531,7 @@ class TestDescribePhotos(unittest.TestCase):
         # Mock document
         document = MagicMock(spec=Document)
         document.id = 123
-        document.content = b"document_content"
+        document.content = "document_content"
         document.original_file_name = "test.jpg"
 
         # Mock NoImagesError
@@ -554,7 +547,7 @@ class TestDescribePhotos(unittest.TestCase):
         # Mock document
         document = MagicMock(spec=Document)
         document.id = 123
-        document.content = b"document_content"
+        document.content = "document_content"
         document.original_file_name = "test.jpg"
 
         # Mock DocumentParsingError
@@ -638,7 +631,8 @@ class TestDescribePhotos(unittest.TestCase):
         document.append_content.assert_not_called()
 
     @patch("paperap.scripts.describe.DescribePhotos.describe_document")
-    def test_describe_documents_with_provided_list(self, mock_describe_document):
+    @patch("paperap.scripts.describe.DescribePhotos.progress_bar")
+    def test_describe_documents_with_provided_list(self, mock_progress_bar, mock_describe_document):
         """Test describe_documents with provided document list."""
         # Mock documents
         doc1 = MagicMock(spec=Document)
@@ -651,12 +645,11 @@ class TestDescribePhotos(unittest.TestCase):
         mock_describe_document.side_effect = [True, False]
 
         # Mock progress_bar
-        with patch.object(self.describe, 'progress_bar'):
-            result = self.describe.describe_documents(documents)
+        result = self.describe.describe_documents(documents)
 
-            self.assertEqual(len(result), 1)
-            self.assertEqual(result[0], doc1)
-            self.assertEqual(mock_describe_document.call_count, 2)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0], doc1)
+        self.assertEqual(mock_describe_document.call_count, 2)
 
     @patch("paperap.scripts.describe.DescribePhotos.describe_document")
     def test_describe_documents_with_filter(self, mock_describe_document):
@@ -665,7 +658,7 @@ class TestDescribePhotos(unittest.TestCase):
         mock_queryset = MagicMock()
         mock_filter = MagicMock()
         mock_queryset.filter.return_value = mock_filter
-        self.mock_client.documents.return_value = mock_queryset
+        self.client.documents.return_value = mock_queryset
 
         # Mock filtered documents
         doc1 = MagicMock(spec=Document)
@@ -685,7 +678,7 @@ class TestDescribePhotos(unittest.TestCase):
             mock_describe_document.assert_called_once_with(doc1)
 
 
-class TestArgNamespace(unittest.TestCase):
+class TestArgNamespace(DocumentUnitTest):
     """Test the ArgNamespace class."""
 
     def test_arg_namespace_defaults(self):
@@ -704,7 +697,7 @@ class TestArgNamespace(unittest.TestCase):
 @patch("paperap.scripts.describe.Settings")
 @patch("paperap.scripts.describe.PaperlessClient")
 @patch("paperap.scripts.describe.DescribePhotos")
-class TestMain(unittest.TestCase):
+class TestMain(DocumentUnitTest):
     """Test the main function."""
 
     def test_main_success(

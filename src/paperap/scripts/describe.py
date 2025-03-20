@@ -84,6 +84,7 @@ SCRIPT_VERSION = "0.2.2"
 
 
 class DescribePhotos(BaseModel):
+
     """
     Describes photos in the Paperless NGX instance using an LLM (such as OpenAI's GPT-4o-mini model).
     """
@@ -441,8 +442,7 @@ class DescribePhotos(BaseModel):
 
             try:
                 # Convert content to bytes if it's a string
-                # content_bytes = content if isinstance(content, bytes) else content.encode("utf-8")
-                content_bytes = content.encode("utf-8")
+                content_bytes = content if isinstance(content, bytes) else content.encode("utf-8")
                 if not (response := self._send_describe_request(content_bytes, document)):
                     logger.error(f"OpenAI returned empty description for document {document.id}.")
                     return False
@@ -591,6 +591,7 @@ class DescribePhotos(BaseModel):
 
 
 class ArgNamespace(argparse.Namespace):
+
     """
     A custom namespace class for argparse.
     """
