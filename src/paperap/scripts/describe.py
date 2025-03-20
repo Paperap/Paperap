@@ -441,7 +441,7 @@ class DescribePhotos(BaseModel):
 
             try:
                 # Convert content to bytes if it's a string
-                #content_bytes = content if isinstance(content, bytes) else content.encode("utf-8")
+                # content_bytes = content if isinstance(content, bytes) else content.encode("utf-8")
                 content_bytes = content.encode("utf-8")
                 if not (response := self._send_describe_request(content_bytes, document)):
                     logger.error(f"OpenAI returned empty description for document {document.id}.")
@@ -545,7 +545,7 @@ class DescribePhotos(BaseModel):
 
         if date and "ScriptDefaults.NEEDS_DATE" in document.tag_names:
             try:
-                document.created = date # type: ignore # pydantic will handle casting
+                document.created = date  # type: ignore # pydantic will handle casting
                 document.remove_tag("ScriptDefaults.NEEDS_DATE")
             except Exception as e:
                 logger.error(

@@ -38,7 +38,8 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-#_BaseResource = TypeVar("_BaseResource", bound="BaseResource", default="BaseResource")
+# _BaseResource = TypeVar("_BaseResource", bound="BaseResource", default="BaseResource")
+
 
 class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
     """
@@ -569,7 +570,7 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
 
         """
         # Create a new BaseQuerySet with copied attributes
-        clone = self.__class__(self.resource) # type: ignore # pyright not handling Self correctly
+        clone = self.__class__(self.resource)  # type: ignore # pyright not handling Self correctly
 
         # Copy attributes from self
         clone.filters = copy.deepcopy(self.filters)
@@ -733,7 +734,8 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
 
         return any(obj == item for obj in self)
 
-class StandardQuerySet[_Model : StandardModel](BaseQuerySet[_Model]):
+
+class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
     """
     A queryset for StandardModel instances (i.e. BaseModels with standard fields, like id).
 
@@ -763,7 +765,7 @@ class StandardQuerySet[_Model : StandardModel](BaseQuerySet[_Model]):
 
     """
 
-    resource: "StandardResource[_Model, Self]" # type: ignore # pyright is getting inheritance wrong
+    resource: "StandardResource[_Model, Self]"  # type: ignore # pyright is getting inheritance wrong
 
     @override
     def get(self, pk: int) -> _Model:
@@ -875,7 +877,7 @@ class StandardQuerySet[_Model : StandardModel](BaseQuerySet[_Model]):
 
         """
         return self.bulk_action("delete")
-    
+
     def bulk_update(self, **kwargs: Any) -> dict[str, Any]:
         """
         Update all objects in the queryset with the given values.

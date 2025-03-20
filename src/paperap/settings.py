@@ -69,10 +69,6 @@ class Settings(BaseSettings):
         if not all([value.scheme, value.host]):
             raise ConfigurationError("Base URL must have a scheme and host")
 
-        # Remove trailing slash
-        if value.path and value.path.endswith("/"):
-            value = HttpUrl(str(value)[:-1])
-
         return value
 
     @field_validator("timeout", mode="before")

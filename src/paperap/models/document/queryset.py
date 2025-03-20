@@ -44,8 +44,10 @@ class CustomFieldQuery(NamedTuple):
     operation: _OperationType
     value: Any
 
+
 class DocumentNoteQuerySet(StandardQuerySet["DocumentNote"]):
     pass
+
 
 class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
     """

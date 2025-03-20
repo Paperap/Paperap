@@ -39,7 +39,6 @@ from typing_extensions import TypeVar
 from paperap.const import FilteringStrategies, ModelStatus
 from paperap.exceptions import APIError, ConfigurationError, ReadOnlyFieldError, RequestError, ResourceNotFoundError
 from paperap.models.abstract.meta import StatusContext
-from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.signals import registry
 
 if TYPE_CHECKING:
@@ -49,6 +48,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 _Self = TypeVar("_Self", bound="BaseModel")
+
 
 class ModelConfigType(TypedDict):
     populate_by_name: bool
@@ -68,6 +68,7 @@ BASE_MODEL_CONFIG: ModelConfigType = {
     "arbitrary_types_allowed": True,
 }
 
+
 class BaseModel(pydantic.BaseModel, ABC):
     """
     Base model for all Paperless-ngx API objects.
@@ -85,7 +86,7 @@ class BaseModel(pydantic.BaseModel, ABC):
 
     """
 
-    _meta: "ClassVar[Meta[Self]]" # type: ignore
+    _meta: "ClassVar[Meta[Self]]"  # type: ignore
     _save_lock: threading.RLock = PrivateAttr(default_factory=threading.RLock)
     _pending_save: concurrent.futures.Future | None = PrivateAttr(default=None)
     _save_executor: concurrent.futures.ThreadPoolExecutor | None = None
@@ -252,7 +253,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         field_map = cls.Meta.field_map
         for base in cls.__bases__:
             _meta: BaseModel.Meta[Self] | None
-            if _meta := getattr(base, "Meta", None): # type: ignore # we are confident this is BaseModel.Meta
+            if _meta := getattr(base, "Meta", None):  # type: ignore # we are confident this is BaseModel.Meta
                 if hasattr(_meta, "read_only_fields"):
                     read_only_fields.update(_meta.read_only_fields)
                 if hasattr(_meta, "filtering_disabled"):
@@ -590,7 +591,7 @@ class StandardModel(BaseModel, ABC):
     """
 
     id: int = Field(description="Unique identifier from Paperless NGX", default=0)
-    resource: "StandardResource[Self]" # type: ignore # override
+    _resource: "StandardResource[Self]"  # type: ignore # override
 
     class Meta(BaseModel.Meta):
         """
@@ -680,7 +681,7 @@ class StandardModel(BaseModel, ABC):
                 kwargs={"model": self, "current_data": current_data},
             )
 
-            new_model = self._resource.update(self) # type: ignore # basedmypy complaining about self
+            new_model = self._resource.update(self)  # type: ignore # basedmypy complaining about self
 
             if not new_model:
                 logger.warning(f"Result of save was none for model id {self.id}")
@@ -786,7 +787,7 @@ class StandardModel(BaseModel, ABC):
         """
         try:
             # Get the result with a timeout
-            new_model : Self = future.result(timeout=self._meta.save_timeout)
+            new_model: Self = future.result(timeout=self._meta.save_timeout)
 
             if not new_model:
                 logger.warning(f"Result of save was none for model id {self.id}")

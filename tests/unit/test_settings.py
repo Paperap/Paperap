@@ -26,7 +26,7 @@ import os
 from typing import Any, Iterable
 import unittest
 from unittest.mock import patch
-from pydantic import HttpUrl
+from pydantic import HttpUrl, ValidationError
 from paperap.settings import Settings
 from paperap.exceptions import ConfigurationError
 from tests.lib import UnitTestCase
@@ -135,29 +135,29 @@ class TestSettingsURL(NoEnvTestCase):
             'https://',
         ]
         for value in test_cases:
-            with self.assertRaises(ConfigurationError, msg=f"URL should be invalid: {value}"):
+            with self.assertRaises(ValidationError, msg=f"URL should be invalid: {value}"):
                 params = {**TOKEN_DATA, 'base_url': value}
                 Settings(**params)
-            with self.assertRaises(ConfigurationError, msg=f"URL object should be invalid: {value}"):
+            with self.assertRaises(ValidationError, msg=f"URL object should be invalid: {value}"):
                 params = {**TOKEN_DATA, 'base_url': HttpUrl(value)}
                 Settings(**params)
 
-    def test_url_final_slash_removed(self):
+    def test_url_final_slash_added(self):
         """Test that a URL with a final slash is correctly removed."""
         test_cases = {
-            'http://example.com/': 'http://example.com',
-            'https://example.com/': 'https://example.com',
-            'http://example.com:8080/': 'http://example.com:8080',
-            'https://example.com:8080/': 'https://example.com:8080',
-            'http://example.com/path/': 'http://example.com/path',
-            'https://example.com/path/': 'https://example.com/path',
-            'http://example.com:8080/path/': 'http://example.com:8080/path',
-            'https://example.com:8080/path/': 'https://example.com:8080/path',
+            'http://example.com/': 'http://example.com/',
+            'https://example.com/': 'https://example.com/',
+            'http://example.com:8080/': 'http://example.com:8080/',
+            'https://example.com:8080/': 'https://example.com:8080/',
+            'http://example.com/path/': 'http://example.com/path/',
+            'https://example.com/path/': 'https://example.com/path/',
+            'http://example.com:8080/path/': 'http://example.com:8080/path/',
+            'https://example.com:8080/path/': 'https://example.com:8080/path/',
         }
         for url, expected in test_cases.items():
             params = {**TOKEN_DATA, 'base_url': url}
             settings = Settings(**params)
-            self.assertEqual(str(settings.base_url), expected, f"URL final slash not removed. {settings.base_url} != {HttpUrl(expected)}")
+            self.assertEqual(str(settings.base_url), expected, f"URL final slash not added. {settings.base_url} != {HttpUrl(expected)}")
 
 class TestSettingsToken(NoEnvTestCase):
     def test_null_token(self):

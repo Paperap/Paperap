@@ -55,7 +55,7 @@ class PydanticFactory[_StandardModel](factory.Factory[_StandardModel]):
         Returns:
             The resource for the model specified in this factory's Meta.model
         """
-        return cls._meta.model._meta.resource # type: ignore # model is always defined on subclasses
+        return cls._meta.model._resource # type: ignore # model is always defined on subclasses
 
     @classmethod
     def create_api_data(cls, exclude_unset : bool = False, **kwargs : Any) -> dict[str, Any]:

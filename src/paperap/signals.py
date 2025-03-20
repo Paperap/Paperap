@@ -190,6 +190,7 @@ class Signal[_ReturnType]:
         if handler in self._disabled_handlers:
             self._disabled_handlers.remove(handler)
 
+
 class SignalRegistry:
     """
     Registry of all signals in the application.
@@ -279,9 +280,7 @@ class SignalRegistry:
         for handler in self._queue["enable"].pop(signal.name, set()):
             signal.enable(handler)
 
-    def queue_action(
-        self, action: ActionType, name: str, handler: Callable, priority: int | None = None
-    ) -> None:
+    def queue_action(self, action: ActionType, name: str, handler: Callable, priority: int | None = None) -> None:
         """
         Queue any signal-related action to be processed when the signal is registered.
 

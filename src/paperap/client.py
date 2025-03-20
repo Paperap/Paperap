@@ -24,7 +24,7 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 from string import Template
-from typing import TYPE_CHECKING, Any, Iterator, Literal, Union, Unpack, overload
+from typing import TYPE_CHECKING, Any, Literal, Unpack, overload
 
 import requests
 from pydantic import HttpUrl
@@ -36,7 +36,6 @@ from paperap.exceptions import (
     BadResponseError,
     ConfigurationError,
     InsufficientPermissionError,
-    PaperapError,
     RequestError,
     ResourceNotFoundError,
     ResponseParsingError,
@@ -282,17 +281,18 @@ class PaperlessClient:
         # Handle different endpoint types
         if isinstance(endpoint, Template):
             # Convert Template to string representation
-            url = f"{self.base_url}/{endpoint.template.lstrip('/')}"
+            url = f"{self.base_url}{endpoint.template.lstrip('/')}"
         elif isinstance(endpoint, HttpUrl):
             # Use URL object directly
             url = str(endpoint)
+
         elif isinstance(endpoint, str):
             if endpoint.startswith("http"):
                 url = endpoint
             else:
-                url = f"{self.base_url}/{endpoint.lstrip('/')}"
+                url = f"{self.base_url}{endpoint.lstrip('/')}"
         else:
-            url = f"{self.base_url}/{str(endpoint).lstrip('/')}"
+            url = f"{self.base_url}{str(endpoint).lstrip('/')}"
 
         logger.debug("Requesting %s %s", method, url)
 

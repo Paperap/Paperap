@@ -28,6 +28,7 @@ import requests
 from typing import Any, Dict, Iterator, override
 import unittest
 from unittest.mock import MagicMock, Mock, patch, PropertyMock
+from pydantic import HttpUrl
 from pathlib import Path
 from string import Template
 
@@ -109,7 +110,7 @@ class TestClientInitialization(unittest.TestCase):
         client = PaperlessClient(Settings(base_url="https://example.com", token="40characterslong40characterslong40charac"))
         self.assertIsInstance(client.auth, TokenAuth)
         self.assertEqual(client.auth.token, "40characterslong40characterslong40charac")
-        self.assertEqual(str(client.base_url), "https://example.com")
+        self.assertEqual(str(client.base_url), "https://example.com/")
 
     def test_init_with_basic_auth(self):
         """Test initializing with username and password."""
@@ -219,7 +220,7 @@ class TestClientRequests(UnitTestCase):
 
     def test_request_with_url_object(self):
         """Test making a request with a pydantic HttpUrl object."""
-        url = HttpUrl("api/documents/")
+        url = HttpUrl("http://example.com/api/documents/")
         self.client.request("GET", url)
         call_args = self.mock_session_request.call_args[1]
         self.assertEqual(call_args["url"], "http://example.com/api/documents/")

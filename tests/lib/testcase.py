@@ -66,9 +66,13 @@ from tests.lib.factories import (CorrespondentFactory, DocumentFactory,
                                      UserFactory, WorkflowActionFactory,
                                      WorkflowFactory, WorkflowTriggerFactory)
 
+_StandardModel = TypeVar("_StandardModel", bound=StandardModel, default=StandardModel)
+_StandardResource = TypeVar("_StandardResource", bound=StandardResource, default=StandardResource)
+_StandardQuerySet = TypeVar("_StandardQuerySet", bound=StandardQuerySet, default=StandardQuerySet)
+
 logger = logging.getLogger(__name__)
 
-class TestMixin[_StandardModel : StandardModel, _StandardResource : StandardResource, _StandardQuerySet : StandardQuerySet](ABC):
+class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySet]):
     """
     A base test case class for testing Paperless NGX resources.
 
@@ -147,23 +151,23 @@ class TestMixin[_StandardModel : StandardModel, _StandardResource : StandardReso
         if hasattr(self, "modal_type"):
             self.resource = getattr(self, "resource", self.model_type._meta.resource) # type: ignore
             self.resource_class = getattr(self, "resource_class", self.resource.__class__) # type: ignore
-            self.queryset_type = getattr(self, "queryset_type", self.model_type._meta.queryset) # type: ignore
+            self.queryset_type = getattr(self, "queryset_type", self.model_type.resource.queryset_class) # type: ignore
         if hasattr(self, "model"):
             self.model_type = getattr(self, "model_type", self.model.__class__) # type: ignore
-            self.resource = getattr(self, "resource", self._meta.resource) # type: ignore
+            self.resource = getattr(self, "resource", self.model.resource) # type: ignore
             self.resource_class = getattr(self, "resource_class", self.resource.__class__) # type: ignore
-            self.queryset_type = getattr(self, "queryset_type", self._meta.queryset) # type: ignore
+            self.queryset_type = getattr(self, "queryset_type", self.resource.queryset_class) # type: ignore
         '''
         if hasattr(self, "factory"):
             self.model_type = getattr(self, "model_type", self.factory._meta.model) # type: ignore
             self.resource = getattr(self, "resource", self.model_type._meta.resource) # type: ignore
             self.resource_class = getattr(self, "resource_class", self.resource.__class__) # type: ignore
-            self.queryset_type = getattr(self, "queryset_type", self.model_type._meta.queryset) # type: ignore
+            self.queryset_type = getattr(self, "queryset_type", self.model_type.resource.queryset_class) # type: ignore
         '''
         if hasattr(self, "resource"):
             self.resource_class = getattr(self, "resource_class", self.resource.__class__) # type: ignore
             self.model_type = getattr(self, "model_type", self.resource.model_class) # type: ignore
-            self.queryset_type = getattr(self, "queryset_type", self.model_type._meta.queryset) # type: ignore
+            self.queryset_type = getattr(self, "queryset_type", self.model_type.resource.queryset_class) # type: ignore
 
     def setup_resource(self) -> None:
         """

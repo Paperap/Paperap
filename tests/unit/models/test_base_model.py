@@ -225,7 +225,7 @@ class TestModel(TestWithModel):
 
 class TestClassAttributes(UnitTestCase):
     def test_filtering_fields(self):
-        expected_fields = {"id", "a_str", "a_date", "an_int", "a_float", "a_bool", "an_optional_str"}
+        expected_fields = {"id", "a_str", "a_date", "an_int", "a_float", "a_bool", "an_optional_str", "_resource"}
         self.assertEqual(set(ExampleModel._meta.filtering_fields), expected_fields) # type: ignore
 
     def test_new_fields_in_filtering_fields(self):

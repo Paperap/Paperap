@@ -51,6 +51,7 @@ _StandardQuerySet = TypeVar("_StandardQuerySet", bound="StandardQuerySet", defau
 
 logger = logging.getLogger(__name__)
 
+
 class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
     """
     Base class for API resources.
@@ -65,7 +66,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
     # The model class for this resource.
     model_class: type[_BaseModel]
     queryset_class: type[_BaseQuerySet]
-    
+
     # The PaperlessClient instance.
     client: "PaperlessClient"
     # The name of the model. This must line up with the API endpoint
@@ -88,7 +89,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             self.endpoints[key] = Template(value.safe_substitute(resource=self.name))
 
         # Ensure the model has a link back to this resource
-        self.model_class._resource = self # type: ignore # allow private access
+        self.model_class._resource = self  # type: ignore # allow private access
 
         super().__init__()
 
@@ -158,7 +159,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             A QuerySet for this resource
 
         """
-        return self._meta.queryset(self)  # type: ignore # _meta.queryset is always the right queryset type
+        return self.queryset_class(self)  # type: ignore # _meta.queryset is always the right queryset type
 
     def filter(self, **kwargs: Any) -> _BaseQuerySet:
         """
@@ -242,7 +243,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         Subclasses may implement this.
         """
         raise NotImplementedError("update_dict method not available for resources without an id")
-    
+
     def delete(self, *args, **kwargs) -> None:
         """
         Delete a resource.
@@ -259,7 +260,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
 
         Args:
             item: The item dictionary.
- 
+
         Returns:
             The parsed model instance.
 
@@ -525,11 +526,7 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         url = template.safe_substitute(resource=self.name)
 
         # Prepare the data for the bulk action
-        data = {
-            "action": action,
-            "documents": ids,
-            **kwargs
-        }
+        data = {"action": action, "documents": ids, **kwargs}
 
         response = self.client.request("POST", f"{url}bulk_edit/", data=data)
 
@@ -538,7 +535,7 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
             "resource.bulk_action:after",
             "Emitted after bulk action",
             args=[self],
-            kwargs={**signal_params, "response": response}
+            kwargs={**signal_params, "response": response},
         )
 
         return response or {}
@@ -555,7 +552,7 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
 
         """
         return self.bulk_action("delete", ids)
-    
+
     def bulk_update(self, ids: list[int], **kwargs: Any) -> dict[str, Any]:
         """
         Update multiple resources at once.
