@@ -58,7 +58,7 @@ class TestDescribePhotos(DocumentUnitTest):
             "correspondent_id": 1,
             "document_type_id": 1,
             "tag_ids": [1, 2, 3],
-            "content": b"document_content",
+            "content": "document_content",
             "original_file_name": "test.jpg"
         }
         self.model_data_parsed = {**self.model_data_unparsed}
@@ -490,7 +490,8 @@ class TestDescribePhotos(DocumentUnitTest):
         result = self.describe.describe_document(self.model)
 
         self.assertTrue(result)
-        mock_send_request.assert_called_once_with(self.model.content, self.model)
+        # Convert content to bytes for the request
+        mock_send_request.assert_called_once_with(self.model.content.encode(), self.model)
         mock_process.assert_called_once_with(
             '{"title": "Test", "description": "Test description"}',
             self.model
@@ -501,7 +502,7 @@ class TestDescribePhotos(DocumentUnitTest):
         # Use bake_model to create a document with empty content
         document = self.bake_model(
             id=123,
-            content=None,
+            content="",
             original_file_name="test.jpg"
         )
 
@@ -514,7 +515,7 @@ class TestDescribePhotos(DocumentUnitTest):
         # Use bake_model to create a document with unsupported format
         document = self.bake_model(
             id=123,
-            content=b"document_content",
+            content="document_content",
             original_file_name="test.txt"
         )
 
@@ -896,8 +897,7 @@ class TestMain(DocumentUnitTest):
         # Verify error logged
         mock_logger.error.assert_called_once()
         args, kwargs = mock_logger.error.call_args
-        self.assertEqual(args[0], "An error occurred: %s")
-        self.assertEqual(args[1].args[0], "Test error")
+        self.assertEqual(args[0], "An error occurred: Test error")
         self.assertTrue(kwargs["exc_info"])
 
 
