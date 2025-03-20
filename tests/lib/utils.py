@@ -8,12 +8,12 @@
 METADATA:
 
 File:    utils.py
-Project: paperap
+        Project: paperap
 Created: 2025-03-12
-Version: 0.0.8
+        Version: 0.0.8
 Author:  Jess Mann
 Email:   jess@jmann.me
-Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -81,6 +81,6 @@ def create_client() -> PaperlessClient:
     with patch.dict(os.environ, env_data, clear=True):
         return PaperlessClient()
 
-def create_resource(resource : type[_BaseResource]) -> _BaseResource:
+def create_resource[R : BaseResource](resource : type[R]) -> R:
     client = create_client()
     return resource(client=client)

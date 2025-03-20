@@ -8,12 +8,12 @@
 METADATA:
 
 File:    test_async_save.py
-Project: paperap
+        Project: paperap
 Created: 2025-03-15
-Version: 0.0.8
+        Version: 0.0.8
 Author:  Jess Mann
 Email:   jess@jmann.me
-Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -36,7 +36,6 @@ from pydantic.v1 import NoneBytes
 
 from paperap.const import ModelStatus
 from paperap.exceptions import APIError, RequestError, ResourceNotFoundError
-from paperap.models import StandardModel
 from paperap.models.abstract.meta import StatusContext
 from paperap.models.abstract.model import StandardModel
 from paperap.resources.base import StandardResource

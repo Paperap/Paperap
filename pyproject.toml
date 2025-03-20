@@ -762,7 +762,8 @@ unfixable = []
 # F401 removed because it eliminates TYPE_CHECKING imports used as forward references
 "*.py" = ["F401"]
 "__init__.py" = ["E402", "F401"]
-"**/{tests,docs,tools}/*" = ["E402", "F401"]
+"docs/*" = ["E402", "F401"]
+"tests/**" = ["D", "E402", "F401", "F403", "F405", "E501", "F841", "N802"]
 
 [tool.pytype]
 exclude = [

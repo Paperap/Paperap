@@ -7,12 +7,12 @@
 METADATA:
 
 File:    test_document_queryset.py
-Project: paperap
+        Project: paperap
 Created: 2025-03-05
-Version: 0.0.8
+        Version: 0.0.8
 Author:  Jess Mann
 Email:   jess@jmann.me
-Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -46,7 +46,6 @@ from paperap.models import (
     User,
     UserQuerySet,
 )
-from paperap.models.tag import Tag, TagQuerySet
 from paperap.resources.documents import DocumentResource
 from tests.lib import DocumentUnitTest, UnitTestCase, load_sample_data
 
