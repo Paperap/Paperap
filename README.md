@@ -146,27 +146,27 @@ pre-commit run --all-files
 ```
 
 ## TODO
-- [x] Replace yarl with pydantic urls
-- [ ] unit tests to 100% coverage (currently 86%)
+- [ ] unit tests to 100% coverage (currently around 85%)
 - [ ] Make integration tests easier to setup for other users (wip)
-- [x] Compile sphinx documentation
 - [ ] Deleting tags, custom fields, etc
 - [ ] devcontainer (wip)
 - [ ] git action to distribute to pypi
 - [ ] Remove validators that pydantic handles natively
 - [ ] cli tools
-- [ ] batch editing (needs integration tests)
-- [x] async model updates
-- [ ] uploading documents
+- [ ] batch editing (done? needs integration tests)
 - [ ] updating permissions, ownership, sharing, etc
 - [ ] changing settings
 - [ ] local queryset filtering not supported by api
-- [x] raise errors for intuitive features unsupported by api (partially done)
-- [x] enforce read-only fields
 - [ ] unit tests for additional edge cases
-- [x] migrate to pytest
 - [ ] immutability (resources, response dicts, (optionally) for models)
 - [ ] hypothesis testing (additional models)
+- [x] Compile sphinx documentation
+- [x] async model updates
+- [x] uploading documents
+- [x] raise errors for intuitive features unsupported by api (partially done)
+- [x] enforce read-only fields
+- [x] migrate to pytest
+- [x] Replace yarl with pydantic urls
 - [x] fetch each model synchronously and validate data types
 - [x] lazy loading querysets
 - [x] relationships between models using querysets
