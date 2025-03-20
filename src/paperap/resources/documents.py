@@ -47,7 +47,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             raise ResourceNotFoundError(f"Document {document_id} download failed", self.name)
         return response.get("content")
 
-    def upload(self, filepath : Path | str) -> Document:
+    def upload(self, filepath: Path | str) -> str:
         """
         Upload a document from a file to paperless ngx.
 
@@ -55,7 +55,8 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             filepath: The path to the file to upload.
 
         Returns:
-            The uploaded document.
+            A string that looks like this: ca6a6dc8-b434-4fcd-8436-8b2546465622
+            This is likely a task id, or similar.
 
         Raises:
             FileNotFoundError: If the file does not exist.
@@ -68,18 +69,19 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         with filepath.open("rb") as f:
             return self.upload_content(f.read(), filepath.name)
 
-    def upload_content(self, file_content: bytes, filename: str, **metadata) -> Document:
+    def upload_content(self, file_content: bytes, filename: str, **metadata) -> str:
         """
         Upload a document with optional metadata.
-        
+
         Args:
             file_content: The binary content of the file to upload
             filename: The name of the file
             **metadata: Additional metadata to include with the upload
-            
+
         Returns:
-            The uploaded document
-            
+            A string that looks like this: ca6a6dc8-b434-4fcd-8436-8b2546465622
+            This is likely a task id, or similar.
+
         Raises:
             ResourceNotFoundError: If the upload fails
 
@@ -90,18 +92,12 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         endpoint = "api/documents/post_document/"
 
         # For multipart/form-data requests with files, metadata must be passed as form fields
-        response = self.client.request(
-            "POST",
-            endpoint,
-            files=files,
-            data=metadata,
-            json_response=True
-        )
+        response = self.client.request("POST", endpoint, files=files, data=metadata, json_response=True)
 
         if not response:
             raise ResourceNotFoundError("Document upload failed")
-        return self.parse_to_model(response)
 
+        return str(response)
 
 
 class DocumentNoteResource(StandardResource[DocumentNote, DocumentNoteQuerySet]):

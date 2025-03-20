@@ -610,7 +610,7 @@ class StandardModel(BaseModel, ABC):
         supported_filtering_params = {"id__in", "id"}
 
     @property
-    def resource(self) -> "StandardResource[Self]": # type: ignore
+    def resource(self) -> "StandardResource[Self]":  # type: ignore
         return self._resource
 
     @override

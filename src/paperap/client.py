@@ -157,7 +157,8 @@ class PaperlessClient:
         self.session.headers.update(
             {
                 "Accept": "application/json; version=2",
-                "Content-Type": "application/json",
+                # Don't set Content-Type here as it will be set appropriately per request
+                # "Content-Type": "application/json",
             }
         )
 
@@ -301,31 +302,52 @@ class PaperlessClient:
         # Add headers from authentication and session defaults
         headers = {**self.session.headers, **self.get_headers()}
 
-        # If we're uploading files, don't set Content-Type in headers
-        # This allows the requests library to set the appropriate multipart/form-data
-        # Content-Type with boundary
+        # Set the appropriate Content-Type header based on the request type
         if files:
+            # For file uploads, let requests set the multipart/form-data Content-Type with boundary
             headers.pop("Content-Type", None)
+        elif "Content-Type" not in headers:
+            # For JSON requests, explicitly set the Content-Type
+            headers["Content-Type"] = "application/json"
 
         try:
             # TODO: Temporary hack
             params = params.get("params", params) if params else params
 
-            logger.debug("Request (%s) url %s, params %s, data %s, files %s, headers %s",
-                        method, url, params, data, files, headers)
+            logger.debug(
+                "Request (%s) url %s, params %s, data %s, files %s, headers %s",
+                method,
+                url,
+                params,
+                data,
+                files,
+                headers,
+            )
             # When uploading files, we need to pass data as form data, not JSON
             # The key difference is that with files, we MUST use data parameter, not json
-            response = self.session.request(
-                method=method,
-                url=url,
-                headers=headers,
-                params=params,
-                json=None if files else data,  # Never use json with files
-                data=data if files else None,  # Always use data with files
-                files=files,
-                timeout=self.settings.timeout,
-                **self._get_auth_params(),
-            )
+            if files:
+                # For file uploads, use data parameter (not json) to ensure proper multipart/form-data encoding
+                response = self.session.request(
+                    method=method,
+                    url=url,
+                    headers=headers,
+                    params=params,
+                    data=data,  # Use data for form fields with files
+                    files=files,
+                    timeout=self.settings.timeout,
+                    **self._get_auth_params(),
+                )
+            else:
+                # For regular JSON requests
+                response = self.session.request(
+                    method=method,
+                    url=url,
+                    headers=headers,
+                    params=params,
+                    json=data,  # Use json for regular requests
+                    timeout=self.settings.timeout,
+                    **self._get_auth_params(),
+                )
 
             # Handle HTTP errors
             if response.status_code >= 400:

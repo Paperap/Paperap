@@ -18,6 +18,7 @@
        2025-03-04     By Jess Mann
 
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -31,6 +32,7 @@ from paperap.models.tag.queryset import TagQuerySet
 
 if TYPE_CHECKING:
     from paperap.models.document import Document, DocumentQuerySet
+
 
 class Tag(StandardModel, MatcherMixin):
     """

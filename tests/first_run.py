@@ -56,7 +56,7 @@ class PaperlessManager:
     def load_sample_data(filename: str) -> Dict[str, Any]:
         """
         Load sample data from a JSON file.
-        
+
         Args:
             filename: The name of the file to load.
 
@@ -81,13 +81,13 @@ class PaperlessManager:
 
         """
         print(f"This will delete all data in the {self.client.base_url} server. Do you want to continue? Type 'delete everything' to continue.")
-        
+
         confirmation = input()
         if confirmation.lower() != 'delete everything':
             logger.info("Cleanup operation cancelled.")
             return
         """
-        
+
         resources = [
             DocumentResource, CorrespondentResource, DocumentTypeResource, TagResource
         ]
@@ -96,7 +96,7 @@ class PaperlessManager:
                 try:
                     model.delete()
                 except PaperapError as e:
-                    logger.warning("Failed to delete %s: %s", model, e)        
+                    logger.warning("Failed to delete %s: %s", model, e)
 
     def upload(self) -> None:
         """
