@@ -49,7 +49,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
     def upload(self, filepath : Path | str) -> Document:
         """
-        Upload a document from a file.
+        Upload a document from a file to paperless ngx.
 
         Args:
             filepath: The path to the file to upload.
@@ -70,11 +70,12 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
     def upload_content(self, file_content: bytes, filename: str, **metadata) -> Document:
         """Upload a document with optional metadata."""
-        data = {"document": (filename, file_content), **metadata}
-        response = self.client.request("POST", "documents/post_document/", data=data)
+        files = {"document": (filename, file_content)}
+        response = self.client.request("POST", "documents/post_document/", files=files, data=metadata)
         if not response:
             raise ResourceNotFoundError("Document upload failed")
         return self.parse_to_model(response)
+
 
 
 class DocumentNoteResource(StandardResource[DocumentNote, DocumentNoteQuerySet]):
