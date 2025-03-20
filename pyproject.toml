@@ -738,6 +738,7 @@ select = ["E", "F", "W", "C90", "I", "N", "D"]
 ignore = [
   "D107", # Missing docstring in __init__
   "D200", # One-line docstring should fit on one line with quotes
+  "D203", # 1 blank line required before class docstring
   "D205", # Blank line required between summary line and description
   #"D203", # No blank line before class
   "D211", # No blank line before docstring
