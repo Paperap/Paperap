@@ -103,14 +103,14 @@ class PaperlessManager:
         Creates test entities in Paperless while handling errors gracefully.
         """
         for name, (filename, model, manager) in self.SAMPLE_FILES.items():
-            data = self.load_sample_data(filename)
-            if not data:
-                continue
-            try:
-                instance = model.create(**data)
-                logger.info("Created %s with ID %s", name, instance.id)
-            except PaperapError as e:
-                logger.warning("Failed to create %s: %s", name, e)
+            for i in range(100):
+                if not data:
+                    continue
+                try:
+                    instance = model.create(**data)
+                    logger.info("Created %s with ID %s", name, instance.id)
+                except PaperapError as e:
+                    logger.warning("Failed to create %s: %s", name, e)
 
         # Upload 2 sample documents
         documents = [

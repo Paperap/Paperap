@@ -1,22 +1,7 @@
 {
-	"count": 1,
-	"next": null,
-	"previous": null,
-	"all": [
-		1
-	],
-	"results": [
-		{
-			"id": 1,
-			"slug": "example-slug",
-			"name": "example-name",
-			"path": "{{ created_year }}/{{ correspondent }}/{{ title }}",
-			"match": ".*",
-			"matching_algorithm": 0,
-			"is_insensitive": true,
-			"document_count": 22,
-			"owner": 3,
-			"user_can_change": true
-		}
-	]
+    "count": 0,
+    "next": null,
+    "previous": null,
+    "all": [],
+    "results": []
 }

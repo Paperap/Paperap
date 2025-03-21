@@ -7,12 +7,12 @@
 METADATA:
 
 File:    testcase.py
-Project: paperap
+        Project: paperap
 Created: 2025-03-04
-Version: 0.0.8
+        Version: 0.0.9
 Author:  Jess Mann
 Email:   jess@jmann.me
-Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -138,6 +138,7 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
     # Patching stuff
     mock_env : bool = True
     env_data : dict[str, Any] = {'PAPERLESS_BASE_URL': 'http://example.com', 'PAPERLESS_TOKEN': '40characterslong40characterslong40charac', 'PAPERLESS_SAVE_ON_WRITE': 'False'}
+    save_on_write: bool | None = None
 
     # Data for the test
     sample_data_filename : str | None = None
@@ -251,6 +252,9 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
         if getattr(self, "resource", None) and getattr(self, "model_data_unparsed", None):
             self.model = self.resource.parse_to_model(self.model_data_unparsed)
 
+        if model := getattr(self, 'model', None) and self.save_on_write is not None:
+            model._meta.save_on_write = self.save_on_write
+
     def bake_model(self, *args, **kwargs : Any) -> _StandardModel:
         """
         Create a model instance using the factory.
@@ -292,7 +296,10 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
 
         """
         sample_data = self.load_model_data(resource_name)
-        return self.resource.parse_to_model(sample_data)
+        model = self.resource.parse_to_model(sample_data)
+        if self.save_on_write is not None:
+            model._meta.save_on_write = self.save_on_write
+        return model
 
     def load_list(self, resource_name : str | None = None) -> list[_StandardModel]:
         """
@@ -306,7 +313,11 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
 
         """
         sample_data = self.load_list_data(resource_name)
-        return [self.resource.parse_to_model(item) for item in sample_data["results"]]
+        models = [self.resource.parse_to_model(item) for item in sample_data["results"]]
+        if self.save_on_write is not None:
+            for model in models:
+                model._meta.save_on_write = self.save_on_write
+        return models
 
     def _call_list_resource(self, resource : type[StandardResource[_StandardModel]] | StandardResource[_StandardModel] | None = None, **kwargs : Any) -> BaseQuerySet[_StandardModel]:
         """

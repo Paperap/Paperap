@@ -9,7 +9,7 @@ METADATA:
 File:    test_document.py
         Project: paperap
 Created: 2025-03-08
-        Version: 0.0.8
+        Version: 0.0.9
 Author:  Jess Mann
 Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -106,10 +106,7 @@ class TestIntegrationTest(IntegrationTest):
         return False
 
 class TestFeatures(IntegrationTest):
-    @override
-    def setup_model(self):
-        super().setup_model()
-        self._meta.save_on_write = False
+    save_on_write = False
 
     def test_refresh(self):
         # Test that the document is updated locally when refresh is called
@@ -150,10 +147,7 @@ class TestFeatures(IntegrationTest):
         self.assertNotEqual(original_filename, document.archived_file_name, "Archived file name did not change after title update")
 
 class TestUpload(IntegrationTest):
-    @override
-    def setup_model(self):
-        super().setup_model()
-        self._meta.save_on_write = False
+    save_on_write = False
 
     def test_upload(self):
         # Test that the document is saved when a file is uploaded
@@ -176,10 +170,7 @@ class TestUpload(IntegrationTest):
             self.client.documents().get(document.id)
 
 class TestSaveManual(IntegrationTest):
-    @override
-    def setup_model(self):
-        super().setup_model()
-        self._meta.save_on_write = False
+    save_on_write = False
 
     def test_save(self):
         # Append a bunch of random gibberish
@@ -265,10 +256,11 @@ class TestSaveManual(IntegrationTest):
             self.assertEqual(self.model.id, 7411, f"ID changed after update to {field}")
 
 class TestSaveNone(IntegrationTest):
+    save_on_write = False
+    
     @override
     def setUp(self):
         super().setUp()
-        self._meta.save_on_write = False
 
         if not self.model.tag_ids:
             self.model.tag_ids = [38]
@@ -368,10 +360,7 @@ class TestSaveNone(IntegrationTest):
                 self.assertEqual(value, getattr(document, field), f"{field} not updated in remote instance")
 
 class TestSaveOnWrite(IntegrationTest):
-    @override
-    def setup_model(self):
-        super().setup_model()
-        self._meta.save_on_write = True
+    save_on_write = True
 
     def test_save_on_write(self):
         # Test that the document is saved when a field is written to
