@@ -44,6 +44,19 @@ from pydantic import ConfigDict, Field
 
 logger = logging.getLogger(__name__)
 
+class StrEnumWithUnknown(StrEnum):
+    @override
+    @classmethod
+    def _missing_(cls, value: object) -> str:
+        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
+        return getattr(cls, 'UNKNOWN')
+
+class IntEnumWithUnknown(IntEnum):
+    @override
+    @classmethod
+    def _missing_(cls, value: object) -> int:
+        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
+        return getattr(cls, 'UNKNOWN')
 
 class ConstModel(pydantic.BaseModel):
     model_config = ConfigDict(
@@ -109,7 +122,7 @@ class ModelStatus(StrEnum):
     ERROR = "error"
 
 
-class CustomFieldTypes(StrEnum):
+class CustomFieldTypes(StrEnumWithUnknown):
     STRING = "string"
     BOOLEAN = "boolean"
     INTEGER = "integer"
@@ -150,7 +163,7 @@ class DocumentSearchHitType(ConstModel):
     note_highlights: str | None = None
     rank: int | None = None
 
-class MatchingAlgorithmType(IntEnum):
+class MatchingAlgorithmType(IntEnumWithUnknown):
     NONE = 0
     ANY = 1
     ALL = 2
@@ -188,7 +201,7 @@ class SavedViewFilterRuleType(ConstModel):
     value: str | None = None
 
 
-class ShareLinkFileVersionType(StrEnum):
+class ShareLinkFileVersionType(StrEnumWithUnknown):
     ARCHIVE = "archive"
     ORIGINAL = "original"
     UNKNOWN = "unknown"
@@ -200,7 +213,7 @@ class ShareLinkFileVersionType(StrEnum):
         return cls.UNKNOWN
 
 
-class StatusType(StrEnum):
+class StatusType(StrEnumWithUnknown):
     OK = "OK"
     ERROR = "ERROR"
     UNKNOWN = "UNKNOWN"
@@ -242,61 +255,36 @@ class StatusTasksType(ConstModel):
     classifier_last_trained: datetime | None = None
     classifier_error: str | None = None
 
-
-class TaskStatusType(StrEnum):
+class TaskStatusType(StrEnumWithUnknown):
     PENDING = "PENDING"
     STARTED = "STARTED"
     SUCCESS = "SUCCESS"
     FAILURE = "FAILURE"
     UNKNOWN = "UNKNOWN"
 
-    @override
-    @classmethod
-    def _missing_(cls, value: object) -> "Literal[TaskStatusType.UNKNOWN]":
-        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
-        return cls.UNKNOWN
 
-
-class WorkflowActionType(IntEnum):
+class WorkflowActionType(IntEnumWithUnknown):
     ASSIGNMENT = 1
     REMOVAL = 2
     EMAIL = 3
     WEBHOOK = 4
     UNKNOWN = -1
 
-    @override
-    @classmethod
-    def _missing_(cls, value: object) -> "Literal[WorkflowActionType.UNKNOWN]":
-        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
-        return cls.UNKNOWN
 
-
-class WorkflowTriggerType(IntEnum):
+class WorkflowTriggerType(IntEnumWithUnknown):
     CONSUMPTION = 1
     DOCUMENT_ADDED = 2
     DOCUMENT_UPDATED = 3
     UNKNOWN = -1
 
-    @override
-    @classmethod
-    def _missing_(cls, value: object) -> "Literal[WorkflowTriggerType.UNKNOWN]":
-        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
-        return cls.UNKNOWN
 
-
-class WorkflowTriggerSourceType(IntEnum):
+class WorkflowTriggerSourceType(IntEnumWithUnknown):
     CONSUME_FOLDER = 1
     API_UPLOAD = 2
     MAIL_FETCH = 3
     UNKNOWN = -1
 
-    @override
-    @classmethod
-    def _missing_(cls, value: object) -> "Literal[WorkflowTriggerSourceType.UNKNOWN]":
-        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
-        return cls.UNKNOWN
-
-class WorkflowTriggerMatchingType(IntEnum):
+class WorkflowTriggerMatchingType(IntEnumWithUnknown):
     NONE = 0
     ANY = 1
     ALL = 2
@@ -305,27 +293,27 @@ class WorkflowTriggerMatchingType(IntEnum):
     FUZZY = 5
     UNKNOWN = -1
 
-class ScheduleDateFieldType(StrEnum):
+class ScheduleDateFieldType(StrEnumWithUnknown):
     ADDED = "added"
     CREATED = "created"
     MODIFIED = "modified"
     CUSTOM_FIELD = "custom_field"
     UNKNOWN = "unknown"
 
-class WorkflowTriggerScheduleDateFieldType(StrEnum):
+class WorkflowTriggerScheduleDateFieldType(StrEnumWithUnknown):
     ADDED = "added"
     CREATED = "created"
     MODIFIED = "modified"
     CUSTOM_FIELD = "custom_field"
     UNKNOWN = "unknown"
 
-class SavedViewDisplayModeType(StrEnum):
+class SavedViewDisplayModeType(StrEnumWithUnknown):
     TABLE = "table"
     SMALL_CARDS = "smallCards"
     LARGE_CARDS = "largeCards"
     UNKNOWN = "unknown"
 
-class SavedViewDisplayFieldType(StrEnum):
+class SavedViewDisplayFieldType(StrEnumWithUnknown):
     TITLE = "title"
     CREATED = "created"
     ADDED = "added"
@@ -341,12 +329,12 @@ class SavedViewDisplayFieldType(StrEnum):
     CUSTOM_FIELD = "custom_field_%d"
     UNKNOWN = "unknown"
 
-class DocumentStorageType(StrEnum):
+class DocumentStorageType(StrEnumWithUnknown):
     UNENCRYPTED = "unencrypted"
     GPG = "gpg"
     UNKNOWN = "unknown"
 
-class TaskNameType(StrEnum):
+class TaskNameType(StrEnumWithUnknown):
     CONSUME_FILE = "consume_file"
     TRAIN_CLASSIFIER = "train_classifier"
     CHECK_SANITY = "check_sanity"
