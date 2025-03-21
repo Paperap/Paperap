@@ -109,6 +109,51 @@ class PydanticFactory[_StandardModel](factory.Factory[_StandardModel]):
         """
         _instance = cls.create(**kwargs)
         return _instance.to_dict(exclude_unset=exclude_unset)
+        
+    @classmethod
+    def create_empty(cls, **kwargs: Any) -> _StandardModel:
+        """
+        Create a model with all relationships set to None or empty collections.
+        
+        This is useful for testing scenarios where you want a model with minimal
+        relationships to other models.
+        
+        Args:
+            **kwargs: Arbitrary keyword arguments to override specific fields.
+            
+        Returns:
+            A model instance with all relationship fields set to None or empty collections.
+        """
+        # Get all factory declarations
+        declarations = {
+            name: declaration for name, declaration in cls._meta.declarations.items()
+            if not name.startswith('_')
+        }
+        
+        # Prepare empty values for different field types
+        empty_values = {}
+        for name, declaration in declarations.items():
+            # Skip fields explicitly provided in kwargs
+            if name in kwargs:
+                continue
+                
+            # Handle different types of fields
+            if isinstance(declaration, factory.List):
+                empty_values[name] = []
+            elif isinstance(declaration, factory.Dict):
+                empty_values[name] = {}
+            elif isinstance(declaration, factory.Maybe):
+                empty_values[name] = None
+            elif name in ['correspondent', 'document_type', 'storage_path', 'owner', 
+                         'related_document', 'document', 'user']:
+                # Common relationship fields that should be None
+                empty_values[name] = None
+                
+        # Override with any provided kwargs
+        empty_values.update(kwargs)
+        
+        # Create the model with empty relationships
+        return cls.create(**empty_values)
 
 class CorrespondentFactory(PydanticFactory[Correspondent]):
     class Meta: # type: ignore # pyright handles this wrong
@@ -168,6 +213,27 @@ class DocumentFactory(PydanticFactory[Document]):
     user_can_change = factory.Faker("boolean")
     # notes is a list of DocumentNote instances
     notes = factory.LazyFunction(lambda: [DocumentNoteFactory.create() for _ in range(3)])
+    
+    @classmethod
+    @override
+    def create_empty(cls, **kwargs: Any) -> Document:
+        """
+        Create a Document with all relationships set to None or empty collections.
+        
+        Overrides the base implementation to ensure notes is an empty list.
+        
+        Args:
+            **kwargs: Arbitrary keyword arguments to override specific fields.
+            
+        Returns:
+            A Document instance with all relationship fields set to None or empty collections.
+        """
+        if 'notes' not in kwargs:
+            kwargs['notes'] = []
+        if 'tag_ids' not in kwargs:
+            kwargs['tag_ids'] = []
+        
+        return super().create_empty(**kwargs)
 
 class DocumentTypeFactory(PydanticFactory[DocumentType]):
     class Meta: # type: ignore # pyright handles this wrong
