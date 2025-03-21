@@ -6,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-05
-        Version: 0.0.5
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -41,7 +41,7 @@ class QuerySetProtocol(Protocol):
     ) -> Self: ...
 
 
-class HasDocumentCount(QuerySetProtocol):
+class HasDocumentCount(QuerySetProtocol, Protocol):
     """
     Mixin for querysets that have a document_count field.
     """
@@ -100,7 +100,7 @@ class HasDocumentCount(QuerySetProtocol):
         return self.filter(document_count__range=(lower, upper))
 
 
-class HasOwner(QuerySetProtocol):
+class HasOwner(QuerySetProtocol, Protocol):
     """
     Mixin for querysets that have an owner field.
     """
@@ -121,7 +121,7 @@ class HasOwner(QuerySetProtocol):
         return self.filter(owner=owner)
 
 
-class HasStandard(HasOwner, HasDocumentCount):
+class HasStandard(HasOwner, HasDocumentCount, Protocol):
     """
     Mixin for querysets that have standard fields: owner, document_count, name, slug
     """

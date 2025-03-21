@@ -603,7 +603,7 @@ class ArgNamespace(argparse.Namespace):
     verbose: bool = False
 
 
-def main():
+def main() -> None:
     """
     Run the script.
     """

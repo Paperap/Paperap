@@ -22,11 +22,18 @@
         2025-03-20     By Jess Mann
 
 """
-from pathlib import Path
+from __future__ import annotations
+
 import json
 import logging
-from typing import Any, Dict, List, Type
+import os
 import re
+from pathlib import Path
+from typing import Any
+
+import requests
+from dotenv import load_dotenv
+
 from paperap.client import PaperlessClient
 from paperap.models import *
 from paperap.resources import *
@@ -34,9 +41,9 @@ from paperap.exceptions import PaperapError
 from . import create_samples
 from .lib import factories
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+# Setup logger
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 SAMPLE_DATA = Path(__file__).parent / "sample_data"
 
@@ -49,10 +56,20 @@ class PaperlessManager:
     def __init__(self) -> None:
         self.client = PaperlessClient()
 
+        # Register factories for every model exposed by paperless-ngx
         self.factories = {
             "correspondents": (Correspondent, factories.CorrespondentFactory),
             "document_types": (DocumentType, factories.DocumentTypeFactory),
             "tags": (Tag, factories.TagFactory),
+            "custom_fields": (CustomField, factories.CustomFieldFactory),
+            "storage_paths": (StoragePath, factories.StoragePathFactory),
+            "saved_views": (SavedView, factories.SavedViewFactory),
+            "share_links": (ShareLinks, factories.ShareLinksFactory),
+            "groups": (Group, factories.GroupFactory),
+            "workflows": (Workflow, factories.WorkflowFactory),
+            "workflow_triggers": (WorkflowTrigger, factories.WorkflowTriggerFactory),
+            "workflow_actions": (WorkflowAction, factories.WorkflowActionFactory),
+            "ui_settings": (UISettings, factories.UISettingsFactory),
         }
 
     def cleanup(self) -> None:
@@ -73,17 +90,30 @@ class PaperlessManager:
         """
 
         resources = [
-            DocumentResource, CorrespondentResource, DocumentTypeResource,
-            TagResource, CustomFieldResource, StoragePathResource, SavedViewResource,
+            DocumentResource, 
+            CorrespondentResource, 
+            DocumentTypeResource,
+            TagResource, 
+            CustomFieldResource, 
+            StoragePathResource, 
+            SavedViewResource,
+            ShareLinksResource,
+            GroupResource,
+            WorkflowResource,
+            WorkflowTriggerResource,
+            WorkflowActionResource,
+            UISettingsResource,
         ]
-        for resource in resources:
-            for model in list(resource(client=self.client).all()):
+        for resource_cls in resources:
+            resource = resource_cls(client=self.client)
+            for model in list(resource.all()):
                 try:
                     model.delete()
+                    logger.info(f"Deleted {model}")
                 except PaperapError as e:
                     logger.warning("Failed to delete %s: %s", model, e)
 
-    def create_models(self, name : str, model_class : StandardModel, factory : factories.PydanticFactory, *, _number : int = 76, **kwargs : Any) -> None:
+    def create_models(self, name: str, model_class: StandardModel, factory: factories.PydanticFactory, *, _number: int = 76, **kwargs: Any) -> None:
         for i in range(_number):
             try:
                 data = factory.create_api_data(**kwargs)
@@ -93,19 +123,14 @@ class PaperlessManager:
                 logger.warning("Failed to create %s: %s", name, e)
 
     def upload(self) -> None:
-        """
-        Creates test entities in Paperless while handling errors gracefully.
-        """
         basic = {"owner": 1, "id": 0}
-        # Note: some of these models won't be created due to name:owner being unique
-        self.create_models("correspondents", Correspondent, factories.CorrespondentFactory, **basic)
-        self.create_models("document_types", DocumentType, factories.DocumentTypeFactory, **basic)
-        self.create_models("tags", Tag, factories.TagFactory, **basic)
-        #self.create_models("custom_fields", CustomField, factories.CustomFieldFactory, id=0)
-        #self.create_models("storage_paths", StoragePath, factories.StoragePathFactory, **basic)
-        #self.create_models("saved_view", SavedView, factories.SavedViewFactory, **basic)
 
-        # Upload 2 sample documents
+        # Create sample data for every model registered in the factories dictionary.
+        for key, (model_class, factory) in self.factories.items():
+            logger.info(f"Creating sample data for {key}...")
+            self.create_models(key, model_class, factory, **basic)
+
+        # Upload sample documents
         documents = [
             SAMPLE_DATA / "uploads" / "Sample JPG.jpg",
             SAMPLE_DATA / "uploads" / "Sample PDF.pdf",
@@ -117,14 +142,11 @@ class PaperlessManager:
             except PaperapError as e:
                 logger.warning("Failed to upload document %s: %s", document, e)
 
-    # TODO: Document note, Workflows, User, Group, UISettings, Task, ShareLinks, Profile
-
 def main() -> None:
     manager = PaperlessManager()
     manager.cleanup()
     manager.upload()
     create_samples.main()
-
 
 if __name__ == "__main__":
     main()

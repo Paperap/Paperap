@@ -37,8 +37,11 @@ from paperap.models import (
     Correspondent,
     CustomField,
     Document,
+    DocumentMetadata,
     DocumentNote,
+    DocumentSuggestions,
     DocumentType,
+    DownloadedDocument,
     Group,
     Profile,
     SavedView,
@@ -177,7 +180,7 @@ class DocumentNoteFactory(PydanticFactory[DocumentNote]):
         model = DocumentNote
 
     note = factory.Faker("sentence")
-    created = factory.LazyFunction(datetime.now)
+    created = factory.LazyFunction(lambda: datetime.now(timezone.utc))
     deleted_at = None
     restored_at = None
     transaction_id = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
@@ -188,21 +191,26 @@ class DocumentFactory(PydanticFactory[Document]):
     class Meta: # type: ignore # pyright handles this wrong
         model = Document
 
-    added = factory.LazyFunction(datetime.now)
+    added = factory.LazyFunction(lambda: datetime.now(timezone.utc))
     archive_serial_number = factory.Faker("random_int", min=1, max=100000)
+    archive_checksum = factory.Faker("sha256")
+    archive_filename = factory.Faker("file_name")
     archived_file_name = factory.Faker("file_name")
+    checksum = factory.Faker("sha256")
     content = factory.Faker("text")
-    correspondent = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
-    created = factory.LazyFunction(datetime.now)
+    correspondent_id = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
+    created = factory.LazyFunction(lambda: datetime.now(timezone.utc))
     created_date = factory.Maybe(factory.Faker("boolean"), factory.Faker("date"), None)
-    updated = factory.LazyFunction(datetime.now)
+    custom_field_dicts = factory.List([{"field": fake.random_int(min=1, max=50), "value": fake.word()} for _ in range(3)])
     deleted_at = None
-    document_type = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
+    document_type_id = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
+    filename = factory.Faker("file_name")
     is_shared_by_requester = factory.Faker("boolean")
     original_filename = factory.Faker("file_name")
     owner = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
     page_count = factory.Faker("random_int", min=1, max=500)
-    storage_path = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
+    storage_path_id = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
+    storage_type = factory.Faker("random_element", elements=["pdf", "image", "text"])
     tag_ids = factory.List([factory.Faker("random_int", min=1, max=50) for _ in range(5)])
     title = factory.Faker("sentence")
     user_can_change = factory.Faker("boolean")
@@ -327,6 +335,51 @@ class UISettingsFactory(PydanticFactory[UISettings]):
     settings = factory.Dict({"dashboard_layout": "grid", "notification_settings": {"email": True}})
     permissions = factory.List([factory.Faker("word") for _ in range(5)])
 
+class MetadataElementFactory(PydanticFactory[MetadataElement]):
+    class Meta: # type: ignore # pyright handles this wrong
+        model = MetadataElement
+    
+    key = factory.Faker("word")
+    value = factory.Faker("sentence")
+
+class DocumentMetadataFactory(PydanticFactory[DocumentMetadata]):
+    class Meta: # type: ignore # pyright handles this wrong
+        model = DocumentMetadata
+    
+    original_checksum = factory.Faker("sha256")
+    original_size = factory.Faker("random_int", min=1000, max=10000000)
+    original_mime_type = factory.Faker("mime_type")
+    media_filename = factory.Faker("file_name")
+    has_archive_version = factory.Faker("boolean")
+    original_metadata = factory.List([MetadataElementFactory.build() for _ in range(3)])
+    archive_checksum = factory.Faker("sha256")
+    archive_media_filename = factory.Faker("file_name")
+    original_filename = factory.Faker("file_name")
+    lang = factory.Faker("language_code")
+    archive_size = factory.Faker("random_int", min=1000, max=10000000)
+    archive_metadata = factory.List([MetadataElementFactory.build() for _ in range(3)])
+
+class DocumentSuggestionsFactory(PydanticFactory[DocumentSuggestions]):
+    class Meta: # type: ignore # pyright handles this wrong
+        model = DocumentSuggestions
+    
+    correspondents = factory.List([factory.Faker("random_int", min=1, max=100) for _ in range(3)])
+    tags = factory.List([factory.Faker("random_int", min=1, max=50) for _ in range(5)])
+    document_types = factory.List([factory.Faker("random_int", min=1, max=100) for _ in range(3)])
+    storage_paths = factory.List([factory.Faker("random_int", min=1, max=100) for _ in range(3)])
+    dates = factory.List([factory.Faker("date_object") for _ in range(3)])
+
+class DownloadedDocumentFactory(PydanticFactory[DownloadedDocument]):
+    class Meta: # type: ignore # pyright handles this wrong
+        model = DownloadedDocument
+    
+    mode = factory.Faker("random_element", elements=["download", "preview", "thumbnail"])
+    original = factory.Faker("boolean")
+    content = factory.LazyFunction(lambda: bytes(fake.binary(length=1024)))
+    content_type = factory.Faker("mime_type")
+    disposition_filename = factory.Faker("file_name")
+    disposition_type = factory.Faker("random_element", elements=["inline", "attachment"])
+
 class GroupFactory(PydanticFactory[Group]):
     class Meta: # type: ignore # pyright handles this wrong
         model = Group
@@ -375,3 +428,16 @@ class WorkflowFactory(PydanticFactory[Workflow]):
     enabled = factory.Faker("boolean")
     triggers = factory.List([factory.Dict({"type": fake.random_int(min=1, max=10), "match": fake.word()}) for _ in range(3)])
     actions = factory.List([factory.Dict({"type": fake.word(), "assign_tags": [fake.random_int(min=1, max=50)]}) for _ in range(3)])
+
+class WorkflowRunFactory(PydanticFactory[WorkflowRun]):
+    class Meta: # type: ignore # pyright handles this wrong
+        model = WorkflowRun
+    
+    workflow = factory.Faker("random_int", min=1, max=100)
+    document = factory.Faker("random_int", min=1, max=1000)
+    type = factory.Faker("random_int", min=1, max=10)
+    run_at = factory.LazyFunction(lambda: datetime.now(timezone.utc))
+    started = factory.Maybe(factory.Faker("boolean"), factory.LazyFunction(lambda: datetime.now(timezone.utc)), None)
+    finished = factory.Maybe(factory.Faker("boolean"), factory.LazyFunction(lambda: datetime.now(timezone.utc)), None)
+    status = factory.Faker("random_element", elements=["pending", "running", "completed", "failed"])
+    error = factory.Maybe(factory.Faker("boolean"), factory.Faker("sentence"), None)

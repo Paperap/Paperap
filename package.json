@@ -9,7 +9,8 @@
     "hypothesis": "pytest tests/unit/models/hypothesis --hypothesis-show-statistics",
     "integration": "python -m unittest discover -s tests/integration --failfast",
     "pre-commit": "uv run pre-commit run --all-files",
-    "mypy": "uv run mypy src/paperap",
+    "mypy": "uvx --from basedmypy --with pydantic mypy --config-file ./pyproject.toml src",
+    "pyright": "uvx --from basedpyright --with pydantic basedpyright src",
     "coverage-test": "uv run coverage run --source=src -m unittest discover -s tests/unit --failfast",
     "coverage-html": "uv run coverage html -d tests/coverage",
     "coverage": "pytest --cov=paperap --cov-report=html tests/unit"

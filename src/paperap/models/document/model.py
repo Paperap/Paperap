@@ -180,7 +180,7 @@ class Document(StandardModel):
     _correspondent: tuple[int, Correspondent] | None = None
     _document_type: tuple[int, DocumentType] | None = None
     _storage_path: tuple[int, StoragePath] | None = None
-    __search_hit__: Optional[dict[str, Any]] = None
+    __search_hit__: dict[str, Any] | None = None
 
     class Meta(StandardModel.Meta):
         # NOTE: Filtering appears to be disabled by paperless on page_count
@@ -744,7 +744,7 @@ class Document(StandardModel):
         return self.__search_hit__ is not None
 
     @property
-    def search_hit(self) -> Optional[dict[str, Any]]:
+    def search_hit(self) -> dict[str, Any] | None:
         return self.__search_hit__
 
     def custom_field_value(self, field_id: int, default: Any = None, *, raise_errors: bool = False) -> Any:

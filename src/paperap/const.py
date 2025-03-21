@@ -148,6 +148,7 @@ class CustomFieldTypedDict(TypedDict):
     value: Any
 
 
+# Possibly not used after refactoring
 class DocumentMetadataType(ConstModel):
     namespace: str | None = None
     prefix: str | None = None

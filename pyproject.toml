@@ -1059,6 +1059,6 @@ dev = [
   "types-factory-boy>=0.4.1",
   "types-pyyaml>=6.0.12.20241230",
   "types-requests>=2.32.0.20241016",
-  "basedmypy>=2.10.0",
   "pydantic-basedtyping>=0.1.0",
+  "mypy>=1.15.0",
 ]

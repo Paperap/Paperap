@@ -6,7 +6,7 @@ METADATA:
 File:    metadata.py
         Project: paperap
 Created: 2025-03-18
-        Version: 0.0.8
+        Version: 0.0.9
 Author:  Jess Mann
 Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -24,7 +24,7 @@ from __future__ import annotations
 from paperap.models.abstract import StandardModel
 
 
-class DocumentMetadataType(StandardModel):
+class MetadataElement(StandardModel):
     """
     Represents metadata for a document in Paperless-NgX.
 
@@ -63,13 +63,13 @@ class DocumentMetadata(StandardModel):
     original_mime_type: str | None = None
     media_filename: str | None = None
     has_archive_version: bool | None = None
-    original_metadata: list[DocumentMetadataType] = []
+    original_metadata: list[MetadataElement] = []
     archive_checksum: str | None = None
     archive_media_filename: str | None = None
     original_filename: str | None = None
     lang: str | None = None
     archive_size: int | None = None
-    archive_metadata: list[DocumentMetadataType] = []
+    archive_metadata: list[MetadataElement] = []
 
     class Meta(StandardModel.Meta):
         read_only_fields = {

@@ -28,6 +28,7 @@ from typing import Any, Iterator, Optional, override
 
 from typing_extensions import TypeVar
 
+from paperap.const import URLS
 from paperap.exceptions import APIError, BadResponseError, ResourceNotFoundError
 from paperap.models.document import Document, DocumentNote, DocumentNoteQuerySet, DocumentQuerySet
 from paperap.resources.base import BaseResource, StandardResource
@@ -39,16 +40,44 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
     model_class = Document
     queryset_class = DocumentQuerySet
     name = "documents"
+    endpoints = {
+        "list": URLS.list,
+        "detail": URLS.detail,
+        "create": URLS.create,
+        "update": URLS.update,
+        "delete": URLS.delete,
+        "download": URLS.download,
+        "preview": URLS.preview,
+        "thumbnail": URLS.thumbnail,
+        # The upload endpoint does not follow the standard pattern, so we define it explicitly.
+        "upload": Template("/api/document/post_document/"),
+        "next_asn": URLS.next_asn,
+    }
 
-    def download(self, document_id: int, *, original: bool = False) -> bytes | None:
-        url = f"documents/{document_id}/download"
+    def download(self, document_id: int, *, original: bool = False) -> bytes:
+        url = self.get_endpoint("download", pk=document_id)
         params = {"original": str(original).lower()}
-        response = self.client.request("GET", url, params=params)
+        # Request raw bytes by setting json_response to False
+        response = self.client.request("GET", url, params=params, json_response=False)
         if not response:
             raise ResourceNotFoundError(f"Document {document_id} download failed", self.name)
-        return response.get("content")
+        return response
 
-    def upload(self, filepath: Path | str) -> str:
+    def preview(self, document_id: int) -> bytes:
+        url = self.get_endpoint("preview", pk=document_id)
+        response = self.client.request("GET", url, json_response=False)
+        if response is None:
+            raise ResourceNotFoundError(f"Document {document_id} preview failed", self.name)
+        return response
+
+    def thumbnail(self, document_id: int) -> bytes:
+        url = self.get_endpoint("thumbnail", pk=document_id)
+        response = self.client.request("GET", url, json_response=False)
+        if response is None:
+            raise ResourceNotFoundError(f"Document {document_id} thumbnail failed", self.name)
+        return response
+
+    def upload(self, filepath: Path | str, **metadata) -> str:
         """
         Upload a document from a file to paperless ngx.
 
@@ -66,9 +95,8 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         """
         if not isinstance(filepath, Path):
             filepath = Path(filepath)
-
         with filepath.open("rb") as f:
-            return self.upload_content(f.read(), filepath.name)
+            return self.upload_content(f.read(), filepath.name, **metadata)
 
     def upload_content(self, file_content: bytes, filename: str, **metadata) -> str:
         """
@@ -88,18 +116,19 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         """
         files = {"document": (filename, file_content)}
-
-        # Make sure we're using the correct endpoint
-        endpoint = "api/documents/post_document/"
-
-        # For multipart/form-data requests with files, metadata must be passed as form fields
+        endpoint = self.get_endpoint("upload")
         response = self.client.request("POST", endpoint, files=files, data=metadata, json_response=True)
-
         if not response:
-            raise ResourceNotFoundError("Document upload failed")
-
+            raise ResourceNotFoundError("Document upload failed", self.name)
         return str(response)
 
+
+    def next_asn(self) -> int:
+        url = self.get_endpoint("next_asn")
+        response = self.client.request("GET", url)
+        if not response or "next_asn" not in response:
+            raise APIError("Failed to retrieve next ASN")
+        return response["next_asn"]
 
 class DocumentNoteResource(StandardResource[DocumentNote, DocumentNoteQuerySet]):
     """Resource for managing document notes."""

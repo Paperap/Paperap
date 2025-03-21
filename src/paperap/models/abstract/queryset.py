@@ -83,13 +83,13 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
     def __init__(
         self,
         resource: "BaseResource[_Model, Self]",
-        filters: Optional[dict[str, Any]] = None,
-        _cache: Optional[list[_Model]] = None,
+        filters: dict[str, Any] | None = None,
+        _cache: list[_Model] | None = None,
         _fetch_all: bool = False,
         _next_url: str | None = None,
-        _last_response: Optional[dict[str, Any]] = None,
-        _iter: Optional[Iterator[_Model]] = None,
-        _urls_fetched: Optional[list[str]] = None,
+        _last_response: dict[str, Any] | None = None,
+        _iter: Iterator[_Model] | None = None,
+        _urls_fetched: list[str] | None = None,
     ) -> None:
         self.resource = resource
         self.filters = filters or {}
@@ -500,7 +500,7 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         self._fetch_all = True
 
     def _request_iter(
-        self, url: str | HttpUrl | Template | None = None, params: Optional[dict[str, Any]] = None
+        self, url: str | HttpUrl | Template | None = None, params: dict[str, Any] | None = None
     ) -> Iterator[_Model]:
         """
         Get an iterator of resources.
