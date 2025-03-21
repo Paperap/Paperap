@@ -67,7 +67,7 @@ class WorkflowAction(StandardModel):
     """
 
     type: WorkflowActionType | None = None
-    
+
     # Assignment actions
     assign_title: str | None = None
     assign_tags: list[int] = Field(default_factory=list)
@@ -81,7 +81,7 @@ class WorkflowAction(StandardModel):
     assign_change_groups: list[int] = Field(default_factory=list)
     assign_custom_fields: list[int] = Field(default_factory=list)
     assign_custom_fields_values: dict[str, Any] = Field(default_factory=dict)
-    
+
     # Removal actions
     remove_all_tags: bool | None = None
     remove_tags: list[int] = Field(default_factory=list)
@@ -100,10 +100,10 @@ class WorkflowAction(StandardModel):
     remove_view_groups: list[int] = Field(default_factory=list)
     remove_change_users: list[int] = Field(default_factory=list)
     remove_change_groups: list[int] = Field(default_factory=list)
-    
+
     # Email action
     email: dict[str, Any] | None = None
-    
+
     # Webhook action
     webhook: dict[str, Any] | None = None
 

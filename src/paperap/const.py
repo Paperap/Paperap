@@ -44,19 +44,22 @@ from pydantic import ConfigDict, Field
 
 logger = logging.getLogger(__name__)
 
+
 class StrEnumWithUnknown(StrEnum):
     @override
     @classmethod
     def _missing_(cls, value: object) -> str:
         logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
-        return getattr(cls, 'UNKNOWN')
+        return cls.UNKNOWN # type: ignore # subclasses will define unknown
+
 
 class IntEnumWithUnknown(IntEnum):
     @override
     @classmethod
     def _missing_(cls, value: object) -> int:
         logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
-        return getattr(cls, 'UNKNOWN')
+        return cls.UNKNOWN # type: ignore # subclasses will define unknown
+
 
 class ConstModel(pydantic.BaseModel):
     model_config = ConfigDict(
@@ -107,11 +110,13 @@ class URLS:
 CommonEndpoints: TypeAlias = Literal["list", "detail", "create", "update", "delete"]
 Endpoints: TypeAlias = dict[CommonEndpoints | str, Template]
 
+
 class FilteringStrategies(StrEnum):
     WHITELIST = "whitelist"
     BLACKLIST = "blacklist"
     ALLOW_ALL = "allow_all"
     ALLOW_NONE = "allow_none"
+
 
 class ModelStatus(StrEnum):
     INITIALIZING = "initializing"
@@ -119,6 +124,7 @@ class ModelStatus(StrEnum):
     SAVING = "saving"
     READY = "ready"
     ERROR = "error"
+
 
 class CustomFieldTypes(StrEnumWithUnknown):
     STRING = "string"
@@ -131,13 +137,16 @@ class CustomFieldTypes(StrEnumWithUnknown):
     DOCUMENT_LINK = "documentlink"
     UNKNOWN = "unknown"
 
+
 class CustomFieldValues(ConstModel):
     field: int
     value: Any
 
+
 class CustomFieldTypedDict(TypedDict):
     field: int
     value: Any
+
 
 class DocumentMetadataType(ConstModel):
     namespace: str | None = None
@@ -145,11 +154,13 @@ class DocumentMetadataType(ConstModel):
     key: str | None = None
     value: str | None = None
 
+
 class DocumentSearchHitType(ConstModel):
     score: float | None = None
     highlights: str | None = None
     note_highlights: str | None = None
     rank: int | None = None
+
 
 class MatchingAlgorithmType(IntEnumWithUnknown):
     NONE = 0
@@ -167,9 +178,11 @@ class MatchingAlgorithmType(IntEnumWithUnknown):
         logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
         return cls.UNKNOWN
 
+
 class PermissionSetType(ConstModel):
     users: list[int] = Field(default_factory=list)
     groups: list[int] = Field(default_factory=list)
+
 
 class PermissionTableType(ConstModel):
     view: PermissionSetType = Field(default_factory=PermissionSetType)
@@ -242,12 +255,14 @@ class StatusTasksType(ConstModel):
     classifier_last_trained: datetime | None = None
     classifier_error: str | None = None
 
+
 class TaskStatusType(StrEnumWithUnknown):
     PENDING = "PENDING"
     STARTED = "STARTED"
     SUCCESS = "SUCCESS"
     FAILURE = "FAILURE"
     UNKNOWN = "UNKNOWN"
+
 
 class TaskTypeType(StrEnumWithUnknown):
     AUTO = "auto_task"
@@ -277,6 +292,7 @@ class WorkflowTriggerSourceType(IntEnumWithUnknown):
     MAIL_FETCH = 3
     UNKNOWN = -1
 
+
 class WorkflowTriggerMatchingType(IntEnumWithUnknown):
     NONE = 0
     ANY = 1
@@ -286,12 +302,14 @@ class WorkflowTriggerMatchingType(IntEnumWithUnknown):
     FUZZY = 5
     UNKNOWN = -1
 
+
 class ScheduleDateFieldType(StrEnumWithUnknown):
     ADDED = "added"
     CREATED = "created"
     MODIFIED = "modified"
     CUSTOM_FIELD = "custom_field"
     UNKNOWN = "unknown"
+
 
 class WorkflowTriggerScheduleDateFieldType(StrEnumWithUnknown):
     ADDED = "added"
@@ -300,11 +318,13 @@ class WorkflowTriggerScheduleDateFieldType(StrEnumWithUnknown):
     CUSTOM_FIELD = "custom_field"
     UNKNOWN = "unknown"
 
+
 class SavedViewDisplayModeType(StrEnumWithUnknown):
     TABLE = "table"
     SMALL_CARDS = "smallCards"
     LARGE_CARDS = "largeCards"
     UNKNOWN = "unknown"
+
 
 class SavedViewDisplayFieldType(StrEnumWithUnknown):
     TITLE = "title"
@@ -322,10 +342,12 @@ class SavedViewDisplayFieldType(StrEnumWithUnknown):
     CUSTOM_FIELD = "custom_field_%d"
     UNKNOWN = "unknown"
 
+
 class DocumentStorageType(StrEnumWithUnknown):
     UNENCRYPTED = "unencrypted"
     GPG = "gpg"
     UNKNOWN = "unknown"
+
 
 class TaskNameType(StrEnumWithUnknown):
     CONSUME_FILE = "consume_file"

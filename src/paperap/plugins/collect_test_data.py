@@ -7,7 +7,7 @@
        File:    collect_test_data.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.8
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -53,7 +53,7 @@ SANITIZE_KEYS = [
     "filename",
     "title",
     "slug",
-    "original_file_name",
+    "original_filename",
     "archived_file_name",
     "task_file_name",
     "filename",

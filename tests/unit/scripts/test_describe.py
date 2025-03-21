@@ -59,7 +59,7 @@ class TestDescribePhotos(DocumentUnitTest):
             "document_type_id": 1,
             "tag_ids": [1, 2, 3],
             "content": "document_content",
-            "original_file_name": "test.jpg"
+            "original_filename": "test.jpg"
         }
         self.model_data_parsed = {**self.model_data_unparsed}
 
@@ -505,7 +505,7 @@ class TestDescribePhotos(DocumentUnitTest):
         document = self.bake_model(
             id=123,
             content="",
-            original_file_name="test.jpg"
+            original_filename="test.jpg"
         )
 
         result = self.describe.describe_document(document)
@@ -518,7 +518,7 @@ class TestDescribePhotos(DocumentUnitTest):
         document = self.bake_model(
             id=123,
             content="document_content",
-            original_file_name="test.txt"
+            original_filename="test.txt"
         )
 
         result = self.describe.describe_document(document)

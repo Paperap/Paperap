@@ -156,7 +156,7 @@ class TestUpload(IntegrationTest):
         document = self.resource.upload(filepath)
 
         self.assertIsInstance(document, Document)
-        self.assertEqual(document.original_file_name, filename, "Original file name does not match expected value")
+        self.assertEqual(document.original_filename, filename, "Original file name does not match expected value")
         self.assertIsInstance(document.id, int)
         self.assertGreater(document.id, 0, "Document ID is not set")
 

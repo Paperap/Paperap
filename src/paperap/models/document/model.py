@@ -120,7 +120,7 @@ class Document(StandardModel):
         document_type: The document type associated with the document.
         is_shared_by_requester: Whether the document is shared by the requester.
         notes: Notes associated with the document.
-        original_file_name: The original file name of the document.
+        original_filename: The original file name of the document.
         owner: The owner of the document.
         page_count: The number of pages in the document.
         storage_path: The storage path of the document.
@@ -234,13 +234,6 @@ class Document(StandardModel):
             "added__gt",
             "added__date__lt",
             "added__lt",
-            "modified__year",
-            "modified__month",
-            "modified__day",
-            "modified__date__gt",
-            "modified__gt",
-            "modified__date__lt",
-            "modified__lt",
             "original_filename__istartswith",
             "original_filename__iendswith",
             "original_filename__icontains",
@@ -291,7 +284,7 @@ class Document(StandardModel):
             "shared_by__id__in",
         }
 
-    @field_serializer("added", "created", "updated", "deleted_at")
+    @field_serializer("added", "created", "deleted_at")
     def serialize_datetime(self, value: datetime | None) -> str | None:
         """
         Serialize datetime fields to ISO format.

@@ -199,7 +199,7 @@ class DocumentFactory(PydanticFactory[Document]):
     deleted_at = None
     document_type = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
     is_shared_by_requester = factory.Faker("boolean")
-    original_file_name = factory.Faker("file_name")
+    original_filename = factory.Faker("file_name")
     owner = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
     page_count = factory.Faker("random_int", min=1, max=500)
     storage_path = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)

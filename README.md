@@ -178,6 +178,7 @@ pre-commit run --all-files
 
 ## Known Bugs
 - Looping over a queryset and deleting items will not modify the next page of the queryset
+- Running unit tests and integration tests together causes errors, meaning something is not being cleaned up properly
 
 
 ## License

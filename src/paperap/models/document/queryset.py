@@ -6,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.8
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -494,7 +494,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter_field_by_str("asn", value, exact=exact, case_insensitive=case_insensitive)
 
-    def original_file_name(self, name: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def original_filename(self, name: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
         Filter documents by original file name.
 
@@ -506,7 +506,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             Filtered DocumentQuerySet
 
         """
-        return self.filter_field_by_str("original_file_name", name, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str("original_filename", name, exact=exact, case_insensitive=case_insensitive)
 
     def user_can_change(self, value: bool) -> Self:
         """

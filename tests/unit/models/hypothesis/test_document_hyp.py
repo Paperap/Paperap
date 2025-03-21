@@ -8,12 +8,12 @@
 METADATA:
 
 File:    test_document.py
-Project: paperap
+        Project: paperap
 Created: 2025-03-12
-Version: 0.0.8
+        Version: 0.0.9
 Author:  Jess Mann
 Email:   jess@jmann.me
-Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -82,7 +82,7 @@ custom_field_strategy = st.fixed_dictionaries(
             user=st.integers(min_value=0),
         )
     ),
-    original_file_name=st.one_of(st.none(), st.text(min_size=0, max_size=255)),
+    original_filename=st.one_of(st.none(), st.text(min_size=0, max_size=255)),
     owner=st.one_of(st.none(), st.integers(min_value=0)),
     page_count=st.one_of(st.none(), st.integers(min_value=0, max_value=10**5)),
     title=st.text(min_size=1, max_size=300),
@@ -119,7 +119,7 @@ def test_fuzz_Document(**kwargs) -> None:
     assert document.is_shared_by_requester == kwargs.get("is_shared_by_requester", False)
     assert document.archive_serial_number == kwargs.get("archive_serial_number", None)
     assert document.archived_file_name == kwargs.get("archived_file_name", None)
-    assert document.original_file_name == kwargs.get("original_file_name", None)
+    assert document.original_filename == kwargs.get("original_filename", None)
     #assert document.created_date == kwargs.get("created_date", None)
     #assert document.created == kwargs.get("created", None)
     #assert document.updated == kwargs.get("updated", None)
