@@ -130,7 +130,7 @@ class DescribePhotos(BaseModel):
 
     @field_validator("max_threads", mode="before")
     @classmethod
-    def validate_max_threads(cls, value) -> int:
+    def validate_max_threads(cls, value: Any) -> int:
         # Sensible default
         if not value:
             # default is between 1-4 threads. More than 4 presumptively stresses the HDD non-optimally.
@@ -544,7 +544,7 @@ class DescribePhotos(BaseModel):
 
         if date and "ScriptDefaults.NEEDS_DATE" in document.tag_names:
             try:
-                document.created = date  # type: ignore # pydantic will handle casting
+                document.created = date  # pydantic will handle casting
                 document.remove_tag("ScriptDefaults.NEEDS_DATE")
             except Exception as e:
                 logger.error(

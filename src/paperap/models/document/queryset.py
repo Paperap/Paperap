@@ -30,7 +30,7 @@ from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models.mixins.queryset import HasOwner
 
 if TYPE_CHECKING:
-    from paperap.models.correspondent import Correspondent
+    from paperap.models.correspondent.model import Correspondent
     from paperap.models.document.model import Document, DocumentNote
 
 logger = logging.getLogger(__name__)
@@ -146,7 +146,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         return self.filter(more_like_id=document_id)
 
     def correspondent(
-        self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs
+        self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs: Any
     ) -> Self:
         """
         Filter documents by correspondent.
@@ -258,7 +258,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         return self.filter_field_by_str("correspondent__slug", slug, exact=exact, case_insensitive=case_insensitive)
 
     def document_type(
-        self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs
+        self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs: Any
     ) -> Self:
         """
         Filter documents by document type.
@@ -350,7 +350,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         return self.filter_field_by_str("document_type__name", name, exact=exact, case_insensitive=case_insensitive)
 
     def storage_path(
-        self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs
+        self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs: Any
     ) -> Self:
         """
         Filter documents by storage path.
@@ -636,7 +636,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         ...
 
     @singledispatchmethod  # type: ignore # mypy does not handle singledispatchmethod with overloads correctly
-    def custom_field_query(self, *args, **kwargs: Any) -> Self:
+    def custom_field_query(self, *args: Any, **kwargs: Any) -> Self:
         """
         Filter documents by custom field query.
         """

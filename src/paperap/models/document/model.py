@@ -34,19 +34,20 @@ from typing_extensions import TypeVar
 
 from paperap.const import CustomFieldTypedDict, CustomFieldTypes, CustomFieldValues, DocumentStorageType
 from paperap.exceptions import ResourceNotFoundError
-from paperap.models.abstract import FilteringStrategies, StandardModel
+from paperap.models.abstract.model import StandardModel
+from paperap.const import FilteringStrategies
 from paperap.models.document.queryset import DocumentQuerySet
 
 if TYPE_CHECKING:
-    from paperap.models.correspondent import Correspondent
-    from paperap.models.custom_field import CustomField, CustomFieldQuerySet
-    from paperap.models.document.download import DownloadedDocument
-    from paperap.models.document.metadata import DocumentMetadata
-    from paperap.models.document.suggestions import DocumentSuggestions
-    from paperap.models.document_type import DocumentType
-    from paperap.models.storage_path import StoragePath
-    from paperap.models.tag import Tag, TagQuerySet
-    from paperap.models.user import User
+    from paperap.models.correspondent.model import Correspondent
+    from paperap.models.custom_field.model import CustomField, CustomFieldQuerySet
+    from paperap.models.document.download.model import DownloadedDocument
+    from paperap.models.document.metadata.model import DocumentMetadata
+    from paperap.models.document.suggestions.model import DocumentSuggestions
+    from paperap.models.document_type.model import DocumentType
+    from paperap.models.storage_path.model import StoragePath
+    from paperap.models.tag.model import Tag, TagQuerySet
+    from paperap.models.user.model import User
 
 logger = logging.getLogger(__name__)
 
@@ -901,7 +902,7 @@ class Document(StandardModel):
         """
         raise NotImplementedError()
 
-    def append_content(self, value: str):
+    def append_content(self, value: str) -> None:
         """
         Append content to the document.
 
@@ -912,7 +913,7 @@ class Document(StandardModel):
         self.content = f"{self.content}\n{value}"
 
     @override
-    def update_locally(self, from_db: bool | None = None, **kwargs: Any):
+    def update_locally(self, from_db: bool | None = None, **kwargs: Any) -> None:
         """
         Update the document locally with the provided data.
 

@@ -118,7 +118,7 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         return self.resource.model_class
 
     @property
-    def _meta(self) -> "BaseModel.Meta":
+    def _meta(self) -> "BaseModel.Meta[Any]":
         """
         Return the model's metadata.
 

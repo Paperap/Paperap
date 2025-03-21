@@ -90,7 +90,7 @@ class Settings(BaseSettings):
         return value
 
     @override
-    def model_post_init(self, __context: Any):
+    def model_post_init(self, __context: Any) -> None:
         """
         Validate the settings after they have been initialized.
         """

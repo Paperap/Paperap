@@ -6,7 +6,7 @@
        File:    meta.py
         Project: paperap
        Created: 2025-03-07
-        Version: 0.0.8
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -26,7 +26,7 @@ from typing import TYPE_CHECKING, Any, Iterable, Literal
 from paperap.const import ModelStatus
 
 if TYPE_CHECKING:
-    from paperap.models.abstract import BaseModel
+    from paperap.models.abstract.model import BaseModel
 
 
 class StatusContext:
@@ -57,7 +57,7 @@ class StatusContext:
         return self._model
 
     @property
-    def _model_meta(self) -> "BaseModel.Meta":
+    def _model_meta(self) -> "BaseModel.Meta[Any]":
         """Read-only access to the model's meta."""
         return self.model._meta  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
 

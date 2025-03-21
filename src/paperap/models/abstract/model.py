@@ -86,9 +86,9 @@ class BaseModel(pydantic.BaseModel, ABC):
 
     """
 
-    _meta: "ClassVar[Meta[Self]]"  # type: ignore
+    _meta: ClassVar["Meta[Self]"]
     _save_lock: threading.RLock = PrivateAttr(default_factory=threading.RLock)
-    _pending_save: concurrent.futures.Future | None = PrivateAttr(default=None)
+    _pending_save: concurrent.futures.Future[Any] | None = PrivateAttr(default=None)
     _save_executor: concurrent.futures.ThreadPoolExecutor | None = None
     # Updating attributes will not trigger save()
     _status: ModelStatus = ModelStatus.INITIALIZING  # The last data we retrieved from the db
@@ -223,7 +223,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             # Iterate over ancestors to get the top-most explicitly defined Meta.
             for base in cls.__mro__[1:]:
                 if "Meta" in base.__dict__:
-                    top_meta = cast(type[BaseModel.Meta[Self]], base.Meta)
+                    top_meta = cast("type[BaseModel.Meta[Self]]", base.Meta)
                     break
             if top_meta is None:
                 # This should never happen.
@@ -335,7 +335,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             self._save_executor = None
 
     @override
-    def model_post_init(self, __context) -> None:
+    def model_post_init(self, __context: Any) -> None:
         super().model_post_init(__context)
 
         # Save original_data to support dirty fields
@@ -466,7 +466,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         return cls._resource.create(**kwargs)
 
-    def delete(self):
+    def delete(self) -> None:
         return self._resource.delete(self)
 
     def update_locally(self, *, from_db: bool | None = None, skip_changed_fields: bool = False, **kwargs: Any) -> None:
@@ -802,7 +802,7 @@ class StandardModel(BaseModel, ABC):
 
         return self._resource.update(self)
 
-    def _handle_save_result_async(self, future: concurrent.futures.Future) -> bool:
+    def _handle_save_result_async(self, future: concurrent.futures.Future[Any]) -> bool:
         """
         Handle the result of an asynchronous save operation.
 

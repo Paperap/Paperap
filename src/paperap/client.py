@@ -175,7 +175,7 @@ class PaperlessClient:
     def __enter__(self) -> PaperlessClient:
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         self.close()
 
     def _init_resources(self) -> None:
@@ -210,7 +210,7 @@ class PaperlessClient:
             plugin_config: Optional configuration dictionary for plugins.
 
         """
-        from paperap.plugins.manager import PluginManager  # type: ignore # pylint: disable=import-outside-toplevel
+        from paperap.plugins.manager import PluginManager  # pylint: disable=import-outside-toplevel
 
         PluginManager.model_rebuild()
 
@@ -428,7 +428,7 @@ class PaperlessClient:
         # Try to parse as JSON if requested
         if json_response:
             try:
-                return response.json()
+                return response.json()  # type: ignore # mypy can't infer the return type correctly
             except ValueError as e:
                 url = getattr(response, "url", "unknown URL")
                 logger.error("Failed to parse JSON response: %s -> url %s -> content: %s", e, url, response.content)
@@ -539,9 +539,9 @@ class PaperlessClient:
             if isinstance(error_data, dict):
                 # Try different possible error formats
                 if "detail" in error_data:
-                    return error_data["detail"]
+                    return str(error_data["detail"])
                 if "error" in error_data:
-                    return error_data["error"]
+                    return str(error_data["error"])
                 if "non_field_errors" in error_data:
                     return ", ".join(error_data["non_field_errors"])
 
@@ -616,7 +616,7 @@ class PaperlessClient:
             if "token" not in data:
                 raise ResponseParsingError("Token not found in response")
 
-            return data["token"]
+            return str(data["token"])
         except requests.exceptions.HTTPError as he:
             if he.response.status_code == 401:
                 raise AuthenticationError("Invalid username or password") from he

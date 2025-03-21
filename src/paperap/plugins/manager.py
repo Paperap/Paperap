@@ -110,7 +110,7 @@ class PluginManager(pydantic.BaseModel):
             except Exception as e:
                 logger.error("Error loading plugin module %s: %s", module_name, e)
 
-    def configure(self, config: PluginConfig | None = None, **kwargs) -> None:
+    def configure(self, config: PluginConfig | None = None, **kwargs: Any) -> None:
         """
         Configure the plugin manager with plugin-specific configurations.
 
@@ -131,7 +131,7 @@ class PluginManager(pydantic.BaseModel):
 
     def get_plugin_config(self, plugin_name: str) -> dict[str, Any]:
         """Get the configuration for a specific plugin."""
-        return self.config["settings"].get(plugin_name, {})
+        return self.config["settings"].get(plugin_name, {})  # type: ignore # mypy can't infer the return type correctly
 
     def initialize_plugin(self, plugin_name: str) -> Plugin | None:
         """

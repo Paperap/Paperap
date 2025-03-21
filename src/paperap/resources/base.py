@@ -42,12 +42,13 @@ from paperap.signals import registry
 
 if TYPE_CHECKING:
     from paperap.client import PaperlessClient
-    from paperap.models.abstract import BaseModel, BaseQuerySet, StandardModel, StandardQuerySet
+    from paperap.models.abstract.model import BaseModel, StandardModel
+    from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 
 _BaseModel = TypeVar("_BaseModel", bound="BaseModel", default="BaseModel")
-_BaseQuerySet = TypeVar("_BaseQuerySet", bound="BaseQuerySet", default="BaseQuerySet")
+_BaseQuerySet = TypeVar("_BaseQuerySet", bound="BaseQuerySet[Any]", default="BaseQuerySet")
 _StandardModel = TypeVar("_StandardModel", bound="StandardModel", default="StandardModel")
-_StandardQuerySet = TypeVar("_StandardQuerySet", bound="StandardQuerySet", default="StandardQuerySet")
+_StandardQuerySet = TypeVar("_StandardQuerySet", bound="StandardQuerySet[Any]", default="StandardQuerySet")
 
 logger = logging.getLogger(__name__)
 
@@ -239,7 +240,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         """
         raise NotImplementedError("update method not available for resources without an id")
 
-    def update_dict(self, *args, **kwargs) -> _BaseModel:
+    def update_dict(self, *args: Any, **kwargs: Any) -> _BaseModel:
         """
         Update a resource.
 
@@ -247,7 +248,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         """
         raise NotImplementedError("update_dict method not available for resources without an id")
 
-    def delete(self, *args, **kwargs) -> None:
+    def delete(self, *args: Any, **kwargs: Any) -> None:
         """
         Delete a resource.
 
@@ -416,7 +417,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             )
             yield self.parse_to_model(item)
 
-    def __call__(self, *args, **keywords) -> _BaseQuerySet:
+    def __call__(self, *args: Any, **keywords: Any) -> _BaseQuerySet:
         """
         Make the resource callable to get a BaseQuerySet.
 
@@ -445,7 +446,7 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
     """
 
     @override
-    def get(self, model_id: int, *args, **kwargs: Any) -> _StandardModel:
+    def get(self, model_id: int, *args: Any, **kwargs: Any) -> _StandardModel:
         """
         Get a model within this resource by ID.
 

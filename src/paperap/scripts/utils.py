@@ -10,7 +10,7 @@ METADATA:
 File:    utils.py
         Project: paperap
 Created: 2025-03-18
-        Version: 0.0.8
+        Version: 0.0.9
 Author:  Jess Mann
 Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -24,7 +24,7 @@ LAST MODIFIED:
 """
 
 import logging
-from typing import Protocol, override
+from typing import Any, Protocol, override
 
 import colorlog
 
@@ -33,7 +33,7 @@ import colorlog
 class ProgressBar(Protocol):
     total: int
 
-    def __call__(self, *args, **kwargs) -> None: ...
+    def __call__(self, *args: Any, **kwargs: Any) -> None: ...
 
     def text(self, text: str) -> None: ...
 
@@ -47,7 +47,7 @@ def setup_logging() -> logging.Logger:
     # Define a custom formatter class
     class CustomFormatter(colorlog.ColoredFormatter):
         @override
-        def format(self, record) -> str:
+        def format(self, record: logging.LogRecord) -> str:
             self._style._fmt = "(%(log_color)s%(levelname)s%(reset)s) %(message)s"
             return super().format(record)
 

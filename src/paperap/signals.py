@@ -49,10 +49,10 @@ class QueueType(TypedDict):
     A type used by SignalRegistry for storing queued signal actions.
     """
 
-    connect: dict[str, set[tuple[Callable, int]]]
-    disconnect: dict[str, set[Callable]]
-    disable: dict[str, set[Callable]]
-    enable: dict[str, set[Callable]]
+    connect: dict[str, set[tuple[Callable[..., Any], int]]]
+    disconnect: dict[str, set[Callable[..., Any]]]
+    disable: dict[str, set[Callable[..., Any]]]
+    enable: dict[str, set[Callable[..., Any]]]
 
 
 ActionType = Literal["connect", "disconnect", "disable", "enable"]
@@ -216,7 +216,7 @@ class SignalRegistry:
     """
 
     _instance: Self
-    _signals: dict[str, Signal]
+    _signals: dict[str, Signal[Any]]
     _queue: QueueType
 
     def __init__(self) -> None:
@@ -252,9 +252,9 @@ class SignalRegistry:
         """
         if not hasattr(cls, "_instance"):
             cls._instance = cls()
-        return cls._instance
+        return cls._instance  # type: ignore # mypy issue with Self return type
 
-    def register(self, signal: Signal) -> None:
+    def register(self, signal: Signal[Any]) -> None:
         """
         Register a signal and process queued actions.
 
@@ -280,7 +280,7 @@ class SignalRegistry:
         for handler in self._queue["enable"].pop(signal.name, set()):
             signal.enable(handler)
 
-    def queue_action(self, action: ActionType, name: str, handler: Callable, priority: int | None = None) -> None:
+    def queue_action(self, action: ActionType, name: str, handler: Callable[..., Any], priority: int | None = None) -> None:
         """
         Queue any signal-related action to be processed when the signal is registered.
 
@@ -305,7 +305,7 @@ class SignalRegistry:
             # For non-connect actions, just add the handler without priority
             self._queue[action].setdefault(name, set()).add(handler)
 
-    def get(self, name: str) -> Signal | None:
+    def get(self, name: str) -> Signal[Any] | None:
         """
         Get a signal by name.
 
@@ -410,7 +410,7 @@ class SignalRegistry:
         kwargs = kwargs or {}
         return signal.emit(*arg_tuple, **kwargs)
 
-    def connect(self, name: str, handler: Callable, priority: int = SignalPriority.NORMAL) -> None:
+    def connect(self, name: str, handler: Callable[..., Any], priority: int = SignalPriority.NORMAL) -> None:
         """
         Connect a handler to a signal, or queue it if the signal is not yet registered.
 
@@ -425,7 +425,7 @@ class SignalRegistry:
         else:
             self.queue_action("connect", name, handler, priority)
 
-    def disconnect(self, name: str, handler: Callable) -> None:
+    def disconnect(self, name: str, handler: Callable[..., Any]) -> None:
         """
         Disconnect a handler from a signal, or queue it if the signal is not yet registered.
 
@@ -439,7 +439,7 @@ class SignalRegistry:
         else:
             self.queue_action("disconnect", name, handler)
 
-    def disable(self, name: str, handler: Callable) -> None:
+    def disable(self, name: str, handler: Callable[..., Any]) -> None:
         """
         Temporarily disable a handler for a signal, or queue it if the signal is not yet registered.
 
@@ -453,7 +453,7 @@ class SignalRegistry:
         else:
             self.queue_action("disable", name, handler)
 
-    def enable(self, name: str, handler: Callable) -> None:
+    def enable(self, name: str, handler: Callable[..., Any]) -> None:
         """
         Enable a previously disabled handler, or queue it if the signal is not yet registered.
 
@@ -467,7 +467,7 @@ class SignalRegistry:
         else:
             self.queue_action("enable", name, handler)
 
-    def is_queued(self, action: ActionType, name: str, handler: Callable) -> bool:
+    def is_queued(self, action: ActionType, name: str, handler: Callable[..., Any]) -> bool:
         """
         Check if a handler is queued for a signal action.
 
