@@ -6,7 +6,7 @@
        File:    workflow.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -21,11 +21,13 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any, Optional, Self
 
 from pydantic import Field
 
 from paperap.const import (
+    ScheduleDateFieldType,
     WorkflowActionType,
     WorkflowTriggerMatchingType,
     WorkflowTriggerSourceType,
@@ -49,6 +51,7 @@ class WorkflowTrigger(StandardModel, MatcherMixin):
     filter_has_tags: list[int] = Field(default_factory=list)
     filter_has_correspondent: int | None = None
     filter_has_document_type: int | None = None
+    schedule_date_field: ScheduleDateFieldType | None = None
 
     class Meta(StandardModel.Meta):
         queryset = WorkflowTriggerQuerySet
@@ -110,3 +113,14 @@ class Workflow(StandardModel):
         """
 
         queryset = WorkflowQuerySet
+
+
+class WorkflowRun(StandardModel):
+    """
+    Represents a workflow run in Paperless-NgX.
+    """
+
+    workflow: int | None = None
+    document: int | None = None
+    type: WorkflowTriggerType | None = None
+    run_at: datetime

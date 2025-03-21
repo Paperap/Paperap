@@ -24,8 +24,10 @@ LAST MODIFIED:
 
 from __future__ import annotations
 
+from paperap.const import MatchingAlgorithmType
+
 
 class MatcherMixin:
     match: str | None = None
-    matching_algorithm: int | None = None
+    matching_algorithm: MatchingAlgorithmType | None = None
     is_insensitive: bool | None = None

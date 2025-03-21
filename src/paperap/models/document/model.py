@@ -163,6 +163,7 @@ class Document(StandardModel):
     title: str = ""
     user_can_change: bool | None = None
     checksum: str | None = None
+    storage_type: DocumentStorageType | None = None
 
     created: datetime | None = Field(description="Creation timestamp", default=None)
     created_date: str | None = None

@@ -26,6 +26,7 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from pydantic import Field, field_validator
 
+from paperap.const import MatchingAlgorithmType
 from paperap.models.abstract.model import StandardModel
 from paperap.models.mixins.models import MatcherMixin
 from paperap.models.tag.queryset import TagQuerySet

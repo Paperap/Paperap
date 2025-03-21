@@ -24,6 +24,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Optional
 
+from paperap.const import MatchingAlgorithmType
 from paperap.models.abstract.model import StandardModel
 from paperap.models.document_type.queryset import DocumentTypeQuerySet
 from paperap.models.mixins.models import MatcherMixin
