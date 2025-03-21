@@ -109,17 +109,17 @@ class PydanticFactory[_StandardModel](factory.Factory[_StandardModel]):
         """
         _instance = cls.create(**kwargs)
         return _instance.to_dict(exclude_unset=exclude_unset)
-        
+
     @classmethod
     @override
     def create(cls, _relationships : bool = True, **kwargs: Any) -> _StandardModel:
         """
         Create a model with the given attributes.
-        
+
         Args:
             _relationships: If False, all relationship fields will be set to None or empty collections.
             **kwargs: Arbitrary keyword arguments to pass to the model creation.
-            
+
         Returns:
             A model instance.
         """
@@ -130,7 +130,7 @@ class PydanticFactory[_StandardModel](factory.Factory[_StandardModel]):
                 name: declaration for name, declaration in cls._meta.declarations.items()
                 if not name.startswith('_')
             }
-            
+
             # Identify relationship fields and set them to None or empty collections
             for name, declaration in declarations.items():
                 # Handle different types of fields
@@ -145,10 +145,10 @@ class PydanticFactory[_StandardModel](factory.Factory[_StandardModel]):
                     kwargs[name] = None
                 elif name == "owner":
                     kwargs[name] = 1
-        
+
         # Call the parent create method with the updated kwargs
         return super().create(**kwargs)
-        
+
 
 class CorrespondentFactory(PydanticFactory[Correspondent]):
     class Meta: # type: ignore # pyright handles this wrong

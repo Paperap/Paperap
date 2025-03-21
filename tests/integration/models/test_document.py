@@ -257,7 +257,7 @@ class TestSaveManual(IntegrationTest):
 
 class TestSaveNone(IntegrationTest):
     save_on_write = False
-    
+
     @override
     def setUp(self):
         super().setUp()

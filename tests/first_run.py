@@ -73,7 +73,7 @@ class PaperlessManager:
         """
 
         resources = [
-            DocumentResource, CorrespondentResource, DocumentTypeResource, 
+            DocumentResource, CorrespondentResource, DocumentTypeResource,
             TagResource, CustomFieldResource, StoragePathResource, SavedViewResource,
         ]
         for resource in resources:

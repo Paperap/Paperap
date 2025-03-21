@@ -427,7 +427,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         return {
             field: (compare_dict[field], current_data[field])
             for field in current_data
-            if compare_dict.get(field,None) != current_data[field]
+            if compare_dict.get(field, None) != current_data[field]
         }
 
     def is_dirty(self, comparison: Literal["saved", "db", "both"] = "both") -> bool:
@@ -680,12 +680,12 @@ class StandardModel(BaseModel, ABC):
 
         if not force:
             if self._status == ModelStatus.SAVING:
-                logger.warning('Model is already saving, skipping save')
+                logger.warning("Model is already saving, skipping save")
                 return False
 
             # Only start a save if there are changes
             if not self.is_dirty():
-                logger.warning('Model is not dirty, skipping save')
+                logger.warning("Model is not dirty, skipping save")
                 return False
 
         with StatusContext(self, ModelStatus.SAVING):

@@ -42,6 +42,7 @@ DEFAULT_DISPLAY_FIELDS = [
     SavedViewDisplayFieldType.PAGE_COUNT,
 ]
 
+
 class SavedView(StandardModel):
     """
     Represents a saved view in Paperless-NgX.

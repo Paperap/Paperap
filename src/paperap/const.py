@@ -85,6 +85,7 @@ class ConstModel(pydantic.BaseModel):
 
 
 class URLS:
+    # May be deprecated in the future. Used for reference currently.
     index: Template = Template("/api/")
     token: Template = Template("/api/token/")
     list: Template = Template("/api/${resource}/")
@@ -106,13 +107,11 @@ class URLS:
 CommonEndpoints: TypeAlias = Literal["list", "detail", "create", "update", "delete"]
 Endpoints: TypeAlias = dict[CommonEndpoints | str, Template]
 
-
 class FilteringStrategies(StrEnum):
     WHITELIST = "whitelist"
     BLACKLIST = "blacklist"
     ALLOW_ALL = "allow_all"
     ALLOW_NONE = "allow_none"
-
 
 class ModelStatus(StrEnum):
     INITIALIZING = "initializing"
@@ -120,7 +119,6 @@ class ModelStatus(StrEnum):
     SAVING = "saving"
     READY = "ready"
     ERROR = "error"
-
 
 class CustomFieldTypes(StrEnumWithUnknown):
     STRING = "string"
@@ -133,29 +131,19 @@ class CustomFieldTypes(StrEnumWithUnknown):
     DOCUMENT_LINK = "documentlink"
     UNKNOWN = "unknown"
 
-    @override
-    @classmethod
-    def _missing_(cls, value: object) -> "Literal[CustomFieldTypes.UNKNOWN]":
-        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
-        return cls.UNKNOWN
-
-
 class CustomFieldValues(ConstModel):
     field: int
     value: Any
 
-
 class CustomFieldTypedDict(TypedDict):
     field: int
     value: Any
-
 
 class DocumentMetadataType(ConstModel):
     namespace: str | None = None
     prefix: str | None = None
     key: str | None = None
     value: str | None = None
-
 
 class DocumentSearchHitType(ConstModel):
     score: float | None = None
@@ -179,11 +167,9 @@ class MatchingAlgorithmType(IntEnumWithUnknown):
         logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
         return cls.UNKNOWN
 
-
 class PermissionSetType(ConstModel):
     users: list[int] = Field(default_factory=list)
     groups: list[int] = Field(default_factory=list)
-
 
 class PermissionTableType(ConstModel):
     view: PermissionSetType = Field(default_factory=PermissionSetType)
@@ -197,7 +183,7 @@ class RetrieveFileMode(StrEnum):
 
 
 class SavedViewFilterRuleType(ConstModel):
-    rule_type: int | None = None
+    rule_type: int
     value: str | None = None
 
 

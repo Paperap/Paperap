@@ -107,6 +107,4 @@ class DocumentNoteResource(StandardResource[DocumentNote, DocumentNoteQuerySet])
     model_class = DocumentNote
     queryset_class = DocumentNoteQuerySet
     name = "notes"
-    endpoints = {
-        "list": Template("/api/document/${pk}/notes/")
-    }
+    endpoints = {"list": Template("/api/document/${pk}/notes/")}

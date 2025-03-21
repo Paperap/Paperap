@@ -26,10 +26,10 @@ from typing import Any, Optional, Self
 from pydantic import Field
 
 from paperap.const import (
-    WorkflowTriggerType,
-    WorkflowTriggerSourceType,
+    WorkflowActionType,
     WorkflowTriggerMatchingType,
-    WorkflowActionType
+    WorkflowTriggerSourceType,
+    WorkflowTriggerType,
 )
 from paperap.models.abstract.model import StandardModel
 from paperap.models.mixins.models import MatcherMixin
