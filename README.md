@@ -148,7 +148,7 @@ pre-commit run --all-files
 ## TODO
 - [ ] unit tests to 100% coverage (currently around 85%)
 - [ ] Make integration tests easier to setup for other users (wip)
-- [ ] Deleting tags, custom fields, etc
+- [ ] Deleting tags, custom fields, etc via document.tags = None
 - [ ] devcontainer (wip)
 - [ ] git action to distribute to pypi
 - [ ] Remove validators that pydantic handles natively
@@ -156,10 +156,13 @@ pre-commit run --all-files
 - [ ] batch editing (done? needs integration tests)
 - [ ] updating permissions, ownership, sharing, etc
 - [ ] changing settings
-- [ ] local queryset filtering not supported by api
+- [ ] local queryset filtering on fields not supported by api
 - [ ] unit tests for additional edge cases
 - [ ] immutability (resources, response dicts, (optionally) for models)
 - [ ] hypothesis testing (additional models)
+- [ ] Empty trash
+- [ ] factories create unique names, and create relationships in db
+- [ ] publish sphinx docs (once stable)
 - [x] Compile sphinx documentation
 - [x] async model updates
 - [x] uploading documents
@@ -172,6 +175,10 @@ pre-commit run --all-files
 - [x] relationships between models using querysets
 - [x] saving data to paperless
 - [x] vscode tasks
+
+## Known Bugs
+- Looping over a queryset and deleting items will not modify the next page of the queryset
+
 
 ## License
 

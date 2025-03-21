@@ -6,7 +6,7 @@
        File:    const.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.8
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -150,7 +150,6 @@ class DocumentSearchHitType(ConstModel):
     note_highlights: str | None = None
     rank: int | None = None
 
-
 class MatchingAlgorithmType(IntEnum):
     NONE = 0
     ANY = 1
@@ -260,6 +259,9 @@ class TaskStatusType(StrEnum):
 
 class WorkflowActionType(IntEnum):
     ASSIGNMENT = 1
+    REMOVAL = 2
+    EMAIL = 3
+    WEBHOOK = 4
     UNKNOWN = -1
 
     @override
@@ -293,3 +295,60 @@ class WorkflowTriggerSourceType(IntEnum):
     def _missing_(cls, value: object) -> "Literal[WorkflowTriggerSourceType.UNKNOWN]":
         logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
         return cls.UNKNOWN
+
+class WorkflowTriggerMatchingType(IntEnum):
+    NONE = 0
+    ANY = 1
+    ALL = 2
+    LITERAL = 3
+    REGEX = 4
+    FUZZY = 5
+    UNKNOWN = -1
+
+class ScheduleDateFieldType(StrEnum):
+    ADDED = "added"
+    CREATED = "created"
+    MODIFIED = "modified"
+    CUSTOM_FIELD = "custom_field"
+    UNKNOWN = "unknown"
+
+class WorkflowTriggerScheduleDateFieldType(StrEnum):
+    ADDED = "added"
+    CREATED = "created"
+    MODIFIED = "modified"
+    CUSTOM_FIELD = "custom_field"
+    UNKNOWN = "unknown"
+
+class SavedViewDisplayModeType(StrEnum):
+    TABLE = "table"
+    SMALL_CARDS = "smallCards"
+    LARGE_CARDS = "largeCards"
+    UNKNOWN = "unknown"
+
+class SavedViewDisplayFieldType(StrEnum):
+    TITLE = "title"
+    CREATED = "created"
+    ADDED = "added"
+    TAGS = "tag"
+    CORRESPONDENT = "correspondent"
+    DOCUMENT_TYPE = "documenttype"
+    STORAGE_PATH = "storagepath"
+    NOTES = "note"
+    OWNER = "owner"
+    SHARED = "shared"
+    ASN = "asn"
+    PAGE_COUNT = "pagecount"
+    CUSTOM_FIELD = "custom_field_%d"
+    UNKNOWN = "unknown"
+
+class DocumentStorageType(StrEnum):
+    UNENCRYPTED = "unencrypted"
+    GPG = "gpg"
+    UNKNOWN = "unknown"
+
+class TaskNameType(StrEnum):
+    CONSUME_FILE = "consume_file"
+    TRAIN_CLASSIFIER = "train_classifier"
+    CHECK_SANITY = "check_sanity"
+    INDEX_OPTIMIZE = "index_optimize"
+    UNKNOWN = "unknown"

@@ -23,6 +23,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from pathlib import Path
+from string import Template
 from typing import Any, Iterator, Optional, override
 
 from typing_extensions import TypeVar
@@ -105,4 +106,7 @@ class DocumentNoteResource(StandardResource[DocumentNote, DocumentNoteQuerySet])
 
     model_class = DocumentNote
     queryset_class = DocumentNoteQuerySet
-    name = "document_notes"
+    name = "notes"
+    endpoints = {
+        "list": Template("/api/document/${pk}/notes/")
+    }
