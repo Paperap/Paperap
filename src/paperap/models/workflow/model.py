@@ -52,6 +52,10 @@ class WorkflowTrigger(StandardModel, MatcherMixin):
     filter_has_correspondent: int | None = None
     filter_has_document_type: int | None = None
     schedule_date_field: ScheduleDateFieldType | None = None
+    schedule_date_custom_field: int | None = None
+    schedule_offset_days: int = 0
+    schedule_is_recurring: bool = False
+    schedule_recurring_interval_days: int = 1
 
     class Meta(StandardModel.Meta):
         queryset = WorkflowTriggerQuerySet
@@ -63,6 +67,8 @@ class WorkflowAction(StandardModel):
     """
 
     type: WorkflowActionType | None = None
+    
+    # Assignment actions
     assign_title: str | None = None
     assign_tags: list[int] = Field(default_factory=list)
     assign_correspondent: int | None = None
@@ -74,6 +80,9 @@ class WorkflowAction(StandardModel):
     assign_change_users: list[int] = Field(default_factory=list)
     assign_change_groups: list[int] = Field(default_factory=list)
     assign_custom_fields: list[int] = Field(default_factory=list)
+    assign_custom_fields_values: dict[str, Any] = Field(default_factory=dict)
+    
+    # Removal actions
     remove_all_tags: bool | None = None
     remove_tags: list[int] = Field(default_factory=list)
     remove_all_correspondents: bool | None = None
@@ -91,6 +100,12 @@ class WorkflowAction(StandardModel):
     remove_view_groups: list[int] = Field(default_factory=list)
     remove_change_users: list[int] = Field(default_factory=list)
     remove_change_groups: list[int] = Field(default_factory=list)
+    
+    # Email action
+    email: dict[str, Any] | None = None
+    
+    # Webhook action
+    webhook: dict[str, Any] | None = None
 
     class Meta(StandardModel.Meta):
         queryset = WorkflowActionQuerySet
@@ -124,3 +139,7 @@ class WorkflowRun(StandardModel):
     document: int | None = None
     type: WorkflowTriggerType | None = None
     run_at: datetime
+    started: datetime | None = None
+    finished: datetime | None = None
+    status: str | None = None
+    error: str | None = None

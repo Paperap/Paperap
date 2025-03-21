@@ -26,6 +26,7 @@ from typing import TYPE_CHECKING, Any
 
 from pydantic import Field, field_serializer
 
+from paperap.const import ShareLinkFileVersionType
 from paperap.models.abstract.model import StandardModel
 from paperap.models.share_links.queryset import ShareLinksQuerySet
 
@@ -42,7 +43,8 @@ class ShareLinks(StandardModel):
     slug: str | None = None
     document: int | None = None
     created: datetime | None = Field(description="Creation timestamp", default=None, alias="created_on")
-    file_version: str | None = None
+    file_version: ShareLinkFileVersionType | None = None
+    owner: int | None = None
 
     class Meta(StandardModel.Meta):
         queryset = ShareLinksQuerySet

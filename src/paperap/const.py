@@ -185,6 +185,7 @@ class RetrieveFileMode(StrEnum):
 class SavedViewFilterRuleType(ConstModel):
     rule_type: int
     value: str | None = None
+    saved_view: int | None = None
 
 
 class ShareLinkFileVersionType(StrEnumWithUnknown):
@@ -247,6 +248,12 @@ class TaskStatusType(StrEnumWithUnknown):
     SUCCESS = "SUCCESS"
     FAILURE = "FAILURE"
     UNKNOWN = "UNKNOWN"
+
+class TaskTypeType(StrEnumWithUnknown):
+    AUTO = "auto_task"
+    SCHEDULED_TASK = "scheduled_task"
+    MANUAL_TASK = "manual_task"
+    UNKNOWN = "unknown"
 
 
 class WorkflowActionType(IntEnumWithUnknown):
