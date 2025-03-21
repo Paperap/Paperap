@@ -26,6 +26,7 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from pydantic import Field
 
+from paperap.const import CustomFieldTypes
 from paperap.models.abstract.model import StandardModel
 
 if TYPE_CHECKING:
@@ -38,7 +39,7 @@ class CustomField(StandardModel):
     """
 
     name: str
-    data_type: str | None = None
+    data_type: CustomFieldTypes | None = None
     extra_data: dict[str, Any] = Field(default_factory=dict)
     document_count: int = 0
 

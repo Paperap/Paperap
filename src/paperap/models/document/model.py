@@ -32,7 +32,7 @@ import pydantic
 from pydantic import Field, field_serializer, field_validator, model_serializer
 from typing_extensions import TypeVar
 
-from paperap.const import CustomFieldTypedDict, CustomFieldValues
+from paperap.const import CustomFieldTypedDict, CustomFieldValues, CustomFieldTypes, DocumentStorageType
 from paperap.exceptions import ResourceNotFoundError
 from paperap.models.abstract import FilteringStrategies, StandardModel
 from paperap.models.document.queryset import DocumentQuerySet

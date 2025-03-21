@@ -25,6 +25,12 @@ from typing import Any, Optional, Self
 
 from pydantic import Field
 
+from paperap.const import (
+    WorkflowTriggerType,
+    WorkflowTriggerSourceType,
+    WorkflowTriggerMatchingType,
+    WorkflowActionType
+)
 from paperap.models.abstract.model import StandardModel
 from paperap.models.mixins.models import MatcherMixin
 from paperap.models.workflow.queryset import WorkflowActionQuerySet, WorkflowQuerySet, WorkflowTriggerQuerySet
@@ -35,8 +41,8 @@ class WorkflowTrigger(StandardModel, MatcherMixin):
     Represents a workflow trigger in Paperless-NgX.
     """
 
-    sources: list[Any] = Field(default_factory=list)  # TODO unknown subtype
-    type: int | None = None
+    sources: list[WorkflowTriggerSourceType] = Field(default_factory=list)
+    type: WorkflowTriggerType | None = None
     filter_path: str | None = None
     filter_filename: str | None = None
     filter_mailrule: str | None = None
@@ -53,7 +59,7 @@ class WorkflowAction(StandardModel):
     Represents a workflow action in Paperless-NgX.
     """
 
-    type: str | None = None
+    type: WorkflowActionType | None = None
     assign_title: str | None = None
     assign_tags: list[int] = Field(default_factory=list)
     assign_correspondent: int | None = None
