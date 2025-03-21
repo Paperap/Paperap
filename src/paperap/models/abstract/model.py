@@ -6,7 +6,7 @@
        File:    base.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.8
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -427,7 +427,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         return {
             field: (compare_dict[field], current_data[field])
             for field in current_data
-            if field in compare_dict and compare_dict[field] != current_data[field]
+            if compare_dict.get(field,None) != current_data[field]
         }
 
     def is_dirty(self, comparison: Literal["saved", "db", "both"] = "both") -> bool:
@@ -444,6 +444,8 @@ class BaseModel(pydantic.BaseModel, ABC):
             True if any field has changed.
 
         """
+        if self.is_new():
+            return True
         return bool(self.dirty_fields(comparison=comparison))
 
     @classmethod
@@ -652,15 +654,18 @@ class StandardModel(BaseModel, ABC):
         self.update_locally(from_db=True, **new_model.to_dict())
         return True
 
-    def save(self, *, force: bool = False):
+    def save(self, *, force: bool = False) -> bool:
         return self.save_sync(force=force)
 
-    def save_sync(self, *, force: bool = False) -> None:
+    def save_sync(self, *, force: bool = False) -> bool:
         """
         Save this model instance synchronously.
 
         Changes are sent to the server immediately, and the model is updated
         when the server responds.
+
+        Returns:
+            True if the save was successful, False otherwise.
 
         Raises:
             ResourceNotFoundError: If the resource doesn't exist on the server
@@ -668,13 +673,20 @@ class StandardModel(BaseModel, ABC):
             PermissionError: If the user doesn't have permission to update the resource
 
         """
+        if self.is_new():
+            model = self.create(**self.to_dict())
+            self.update_locally(from_db=True, **model.to_dict())
+            return True
+
         if not force:
             if self._status == ModelStatus.SAVING:
-                return
+                logger.warning('Model is already saving, skipping save')
+                return False
 
             # Only start a save if there are changes
             if not self.is_dirty():
-                return
+                logger.warning('Model is not dirty, skipping save')
+                return False
 
         with StatusContext(self, ModelStatus.SAVING):
             # Prepare and send the update to the server
@@ -691,12 +703,12 @@ class StandardModel(BaseModel, ABC):
 
             if not new_model:
                 logger.warning(f"Result of save was none for model id {self.id}")
-                return
+                return False
 
             if not isinstance(new_model, StandardModel):
                 # This should never happen
                 logger.error("Result of save was not a StandardModel instance")
-                return
+                return False
 
             try:
                 # Update the model with the server response
@@ -728,26 +740,32 @@ class StandardModel(BaseModel, ABC):
                 # Re-raise so the executor can handle it properly
                 raise
 
-    def save_async(self, *, force: bool = False) -> None:
+        return True
+
+    def save_async(self, *, force: bool = False) -> bool:
         """
         Save this model instance asynchronously.
 
         Changes are sent to the server in a background thread, and the model
         is updated when the server responds.
+
+        Returns:
+            True if the save was successfully submitted async, False otherwise.
+
         """
         if not force:
             if self._status == ModelStatus.SAVING:
-                return
+                return False
 
             # Only start a save if there are changes
             if not self.is_dirty():
                 if hasattr(self, "_save_lock") and self._save_lock._is_owned():  # type: ignore # temporary TODO
                     self._save_lock.release()
-                return
+                return False
 
             # If there's a pending save, skip saving until it finishes
             if self._pending_save is not None and not self._pending_save.done():
-                return
+                return False
 
         self._status = ModelStatus.SAVING
         self._save_lock.acquire(timeout=30)
@@ -757,6 +775,7 @@ class StandardModel(BaseModel, ABC):
         future = executor.submit(self._perform_save_async)
         self._pending_save = future
         future.add_done_callback(self._handle_save_result_async)
+        return True
 
     def _perform_save_async(self) -> Self | None:
         """
@@ -783,7 +802,7 @@ class StandardModel(BaseModel, ABC):
 
         return self._resource.update(self)
 
-    def _handle_save_result_async(self, future: concurrent.futures.Future) -> None:
+    def _handle_save_result_async(self, future: concurrent.futures.Future) -> bool:
         """
         Handle the result of an asynchronous save operation.
 
@@ -797,12 +816,12 @@ class StandardModel(BaseModel, ABC):
 
             if not new_model:
                 logger.warning(f"Result of save was none for model id {self.id}")
-                return
+                return False
 
             if not isinstance(new_model, StandardModel):
                 # This should never happen
                 logger.error("Result of save was not a StandardModel instance")
-                return
+                return False
 
             # Update the model with the server response
             new_data = new_model.to_dict()
@@ -863,6 +882,8 @@ class StandardModel(BaseModel, ABC):
                 time.sleep(0.1)
                 # Save, and reset unsaved data
                 self.save()
+
+        return True
 
     @override
     def is_new(self) -> bool:

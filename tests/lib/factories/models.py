@@ -9,7 +9,7 @@ METADATA:
 File:    models.py
         Project: paperap
 Created: 2025-03-07
-        Version: 0.0.8
+        Version: 0.0.9
 Author:  Jess Mann
 Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -27,7 +27,7 @@ import secrets
 from abc import ABC
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any, Generic, override
-
+import logging
 import factory
 from factory.base import StubObject
 from faker import Faker
@@ -59,6 +59,8 @@ if TYPE_CHECKING:
 
 fake = Faker()
 
+logger = logging.getLogger(__name__)
+
 class PydanticFactory[_StandardModel](factory.Factory[_StandardModel]):
     """Base factory for Pydantic models."""
     id : int = factory.Faker("random_int", min=1, max=1000)
@@ -89,7 +91,7 @@ class PydanticFactory[_StandardModel](factory.Factory[_StandardModel]):
             dict: A dictionary of the model's fields.
 
         """
-        _instance = cls.create(**kwargs)
+        _instance = cls.build(**kwargs)
         return cls.get_resource().transform_data_output(_instance, exclude_unset = exclude_unset)
 
     @classmethod

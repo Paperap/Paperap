@@ -10,7 +10,7 @@ but in case it's needed in the future, I'm leaving it here for now.
         File:    create_samples.py
         Project: paperap
         Created: 2025-03-11
-        Version: 0.0.5
+        Version: 0.0.9
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -63,14 +63,11 @@ def fetch_endpoint_data(endpoint_name, endpoint_url) -> None:
 
         # Save response to file
         filename = SAVE_DIR / f"{endpoint_name}_list.json"
-        if filename.exists():
-            logging.warning(f"Skip overwriting existing sample data for {endpoint_name}")
-            return
 
         with filename.open("w", encoding="utf-8") as file:
             json.dump(data, file, indent=4)
 
-        logging.info(f"Saved sample data for {endpoint_name} to {filename}")
+        logging.debug(f"Saved sample data for {endpoint_name} to {filename}")
 
     except requests.RequestException as e:
         logging.error(f"Failed to fetch {endpoint_name}: {e}")
@@ -82,7 +79,7 @@ def main() -> None:
 
     for endpoint, url in api_root.items():
         if isinstance(url, str) and url.startswith("http"):
-            logging.info(f"Fetching sample data from {endpoint}...")
+            logging.debug(f"Fetching sample data from {endpoint}...")
             fetch_endpoint_data(endpoint, url)
 
     logging.info("Data collection complete.")

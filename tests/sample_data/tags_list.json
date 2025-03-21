@@ -1,24 +1,7 @@
 {
-    "count": 1,
+    "count": 0,
     "next": null,
     "previous": null,
-    "all": [
-        16
-    ],
-    "results": [
-        {
-            "id": 16,
-            "slug": "example-tag-name",
-            "name": "Example Tag Name",
-            "color": "#a6cee3",
-            "text_color": "#000000",
-            "match": "",
-            "matching_algorithm": 6,
-            "is_insensitive": true,
-            "is_inbox_tag": false,
-            "document_count": 0,
-            "owner": 3,
-            "user_can_change": true
-        }
-    ]
+    "all": [],
+    "results": []
 }

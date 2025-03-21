@@ -1,21 +1,7 @@
 {
-    "count": 1,
+    "count": 0,
     "next": null,
     "previous": null,
-    "all": [
-        9
-    ],
-    "results": [
-        {
-            "id": 9,
-            "slug": "example-name",
-            "name": "example-name",
-            "match": "",
-            "matching_algorithm": 6,
-            "is_insensitive": true,
-            "document_count": 0,
-            "owner": 3,
-            "user_can_change": true
-        }
-    ]
+    "all": [],
+    "results": []
 }

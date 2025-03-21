@@ -31,11 +31,14 @@ from paperap.client import PaperlessClient
 from paperap.models import Correspondent, DocumentType, Tag
 from paperap.resources import *
 from paperap.exceptions import PaperapError
+from . import create_samples
+from .lib import factories
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+SAMPLE_DATA = Path(__file__).parent / "sample_data"
 
 class PaperlessManager:
     """
@@ -46,30 +49,11 @@ class PaperlessManager:
     def __init__(self) -> None:
         self.client = PaperlessClient()
 
-        self.SAMPLE_FILES = {
-            "correspondents": ("correspondents_item.json", Correspondent, self.client.correspondents),
-            "document_types": ("document_types_item.json", DocumentType, self.client.document_types),
-            "tags": ("tags_item.json", Tag, self.client.tags),
+        self.factories = {
+            "correspondents": (Correspondent, factories.CorrespondentFactory),
+            "document_types": (DocumentType, factories.DocumentTypeFactory),
+            "tags": (Tag, factories.TagFactory),
         }
-
-    @staticmethod
-    def load_sample_data(filename: str) -> Dict[str, Any]:
-        """
-        Load sample data from a JSON file.
-
-        Args:
-            filename: The name of the file to load.
-
-        Returns:
-            A dictionary containing the sample data.
-        """
-        sample_data_filepath = Path(__file__).parent / "sample_data" / filename
-        try:
-            with open(sample_data_filepath, "r", encoding="utf-8") as file:
-                return json.load(file)
-        except (FileNotFoundError, json.JSONDecodeError) as e:
-            logger.error("Failed to load sample data from %s: %s", filename, e)
-            return {}
 
     def cleanup(self) -> None:
         """
@@ -102,33 +86,35 @@ class PaperlessManager:
         """
         Creates test entities in Paperless while handling errors gracefully.
         """
-        for name, (filename, model, manager) in self.SAMPLE_FILES.items():
-            for i in range(100):
-                if not data:
-                    continue
+        for name, (model_class, factory) in self.factories.items():
+            for i in range(76):
                 try:
-                    instance = model.create(**data)
-                    logger.info("Created %s with ID %s", name, instance.id)
+                    data = factory.create_api_data(id=0)
+                    model = model_class(**data)
+                    result = model.save()
+                    logger.info("Created %s with ID %s. Save result: %s", name, model.id, result)
                 except PaperapError as e:
                     logger.warning("Failed to create %s: %s", name, e)
 
         # Upload 2 sample documents
         documents = [
-            Path(__file__).parent / "sample_data" / "uploads" / "Sample JPG.jpg",
-            Path(__file__).parent / "sample_data" / "uploads" / "Sample PDF.pdf",
+            SAMPLE_DATA / "uploads" / "Sample JPG.jpg",
+            SAMPLE_DATA / "uploads" / "Sample PDF.pdf",
         ]
         for document in documents:
             try:
                 self.client.documents.upload(document)
-                logger.info("Uploaded document %s", document)
+                logger.debug("Uploaded document %s", document)
             except PaperapError as e:
                 logger.warning("Failed to upload document %s: %s", document, e)
 
 
 def main() -> None:
+    logger.level = logging.DEBUG
     manager = PaperlessManager()
     manager.cleanup()
     manager.upload()
+    create_samples.main()
 
 
 if __name__ == "__main__":
