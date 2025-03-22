@@ -11,7 +11,7 @@ least a base level of testing for all models.
         File:    test_from_dict.py
         Project: paperap
         Created: 2025-03-04
-        Version: 0.0.8
+        Version: 0.0.9
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -192,7 +192,7 @@ class TestModelFromDict(ModelTestCase):
 
                 model_fields = self._get_model_fields(model)
 
-                for date_field in ['created', 'updated', 'added']:
+                for date_field in ['created', 'added']:
                     if hasattr(model, date_field) and date_field in sample_data:
                         # Allow None
                         if sample_data[date_field] is None:
@@ -202,7 +202,7 @@ class TestModelFromDict(ModelTestCase):
                         self.assertIsInstance(field_value, datetime, f"{model_class.__name__}.{date_field} should be datetime")
 
                 for attr_name, expected_value in sample_data.items():
-                    if attr_name in ['id', 'created', 'updated', 'added']:
+                    if attr_name in ['id', 'created', 'added']:
                         continue
                     if hasattr(model, attr_name):
                         field_types = model_fields.get(attr_name, [])
@@ -259,13 +259,13 @@ class TestRequest(ModelTestCase):
                     if hasattr(model, 'id'):
                         self.assertIsInstance(model.id, int, f"{model_class.__name__}.id should be int")
                     model_fields = self._get_model_fields(model)
-                    for date_field in ['created', 'updated', 'added']:
+                    for date_field in ['created', 'added']:
                         if hasattr(model, date_field):
                             field_value = getattr(model, date_field)
                             if field_value is not None:
                                 self.assertIsInstance(field_value, datetime, f"{model_class.__name__}.{date_field} should be datetime")
                     for attr_name, _expected_value in model.to_dict().items():
-                        if attr_name in ['id', 'created', 'updated', 'added']:
+                        if attr_name in ['id', 'created', 'added']:
                             continue
                         if hasattr(model, attr_name):
                             field_types = model_fields.get(attr_name, [])
@@ -290,12 +290,12 @@ class TestRequest(ModelTestCase):
                 if hasattr(model, 'id'):
                     self.assertEqual(model.id, 1, f"{model_class.__name__}.id mismatch")
                 model_fields = self._get_model_fields(model)
-                for date_field in ['created', 'updated', 'added']:
+                for date_field in ['created', 'added']:
                     if hasattr(model, date_field):
                         field_value = getattr(model, date_field)
                         self.assertIsInstance(field_value, datetime, f"{model_class.__name__}.{date_field} should be datetime")
                 for attr_name, expected_value in model.to_dict().items():
-                    if attr_name in ['id', 'created', 'updated', 'added']:
+                    if attr_name in ['id', 'created', 'added']:
                         continue
                     if hasattr(model, attr_name):
                         field_types = model_fields.get(attr_name, [])

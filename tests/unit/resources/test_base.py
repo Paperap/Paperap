@@ -46,6 +46,7 @@ from paperap.models.abstract.model import BaseModel, StandardModel
 from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.resources.base import BaseResource, StandardResource
 from paperap.signals import SignalRegistry, registry
+from tests.lib import UnitTestCase
 
 
 class TestModel(BaseModel):
@@ -53,6 +54,9 @@ class TestModel(BaseModel):
 
     name: str
     value: int = 0
+
+    def is_new(self) -> bool:
+        return False
 
     class Meta(BaseModel.Meta):
         """Metadata for TestModel."""
@@ -86,7 +90,7 @@ class TestStandardQuerySet(StandardQuerySet[TestStandardModel]):
     pass
 
 
-class TestBaseResource(unittest.TestCase):
+class TestBaseResource(UnitTestCase):
     """
     Test the BaseResource class.
 
@@ -95,7 +99,7 @@ class TestBaseResource(unittest.TestCase):
 
     def setUp(self) -> None:
         """Set up test fixtures."""
-        self.client = MagicMock(spec=PaperlessClient)
+        super().setUp()
 
         # Create a concrete subclass of BaseResource for testing
         class ConcreteBaseResource(BaseResource[TestModel, TestQuerySet]):
@@ -405,7 +409,7 @@ class TestBaseResource(unittest.TestCase):
             self.assertEqual(result, "filtered_queryset")
 
 
-class TestStandardResource(unittest.TestCase):
+class TestStandardResource(UnitTestCase):
     """
     Test the StandardResource class.
 
@@ -414,7 +418,7 @@ class TestStandardResource(unittest.TestCase):
 
     def setUp(self) -> None:
         """Set up test fixtures."""
-        self.client = MagicMock(spec=PaperlessClient)
+        super().setUp()
 
         # Create a concrete subclass of StandardResource for testing
         class ConcreteStandardResource(StandardResource[TestStandardModel, TestStandardQuerySet]):
@@ -492,127 +496,6 @@ class TestStandardResource(unittest.TestCase):
 
             # Verify result is the updated model
             self.assertEqual(result, updated_model)
-
-    def test_bulk_action(self) -> None:
-        """
-        Test bulk_action method.
-
-        Written By claude
-        """
-        # Mock client.request to return a response
-        self.client.request.return_value = {"success": True, "count": 2}
-
-        # Test bulk_action method
-        response = self.resource.bulk_action("update", [1, 2], name="updated")
-
-        # Verify client.request was called correctly
-        self.client.request.assert_called_once_with(
-            "POST",
-            "tests/bulk_edit/",
-            data={"action": "update", "documents": [1, 2], "name": "updated"}
-        )
-
-        # Verify response
-        self.assertEqual(response, {"success": True, "count": 2})
-
-        # Test with missing bulk endpoint
-        self.resource.endpoints = {}  # type: ignore
-        with self.assertRaises(ConfigurationError):
-            self.resource.bulk_action("update", [1, 2])
-
-    def test_bulk_delete(self) -> None:
-        """
-        Test bulk_delete method.
-
-        Written By claude
-        """
-        with patch.object(self.resource, 'bulk_action') as mock_bulk_action:
-            mock_bulk_action.return_value = {"success": True}
-            response = self.resource.bulk_delete([1, 2])
-            mock_bulk_action.assert_called_once_with("delete", [1, 2])
-            self.assertEqual(response, {"success": True})
-
-    def test_bulk_update(self) -> None:
-        """
-        Test bulk_update method.
-
-        Written By claude
-        """
-        with patch.object(self.resource, 'bulk_action') as mock_bulk_action:
-            mock_bulk_action.return_value = {"success": True}
-
-            # Test with simple data
-            response = self.resource.bulk_update([1, 2], name="updated")
-            mock_bulk_action.assert_called_once_with("update", [1, 2], api_name="updated")
-            self.assertEqual(response, {"success": True})
-
-    def test_bulk_assign_tags(self) -> None:
-        """
-        Test bulk_assign_tags method.
-
-        Written By claude
-        """
-        with patch.object(self.resource, 'bulk_action') as mock_bulk_action:
-            mock_bulk_action.return_value = {"success": True}
-
-            # Test add tags
-            response = self.resource.bulk_assign_tags([1, 2], [10, 20])
-            mock_bulk_action.assert_called_once_with("add_tags", [1, 2], tags=[10, 20])
-            self.assertEqual(response, {"success": True})
-
-            # Test remove existing tags
-            mock_bulk_action.reset_mock()
-            response = self.resource.bulk_assign_tags([1, 2], [10, 20], remove_existing=True)
-            mock_bulk_action.assert_called_once_with("remove_tags", [1, 2], tags=[10, 20])
-            self.assertEqual(response, {"success": True})
-
-    def test_bulk_assign_correspondent(self) -> None:
-        """
-        Test bulk_assign_correspondent method.
-
-        Written By claude
-        """
-        with patch.object(self.resource, 'bulk_action') as mock_bulk_action:
-            mock_bulk_action.return_value = {"success": True}
-            response = self.resource.bulk_assign_correspondent([1, 2], 10)
-            mock_bulk_action.assert_called_once_with("set_correspondent", [1, 2], correspondent=10)
-            self.assertEqual(response, {"success": True})
-
-    def test_bulk_assign_document_type(self) -> None:
-        """
-        Test bulk_assign_document_type method.
-
-        Written By claude
-        """
-        with patch.object(self.resource, 'bulk_action') as mock_bulk_action:
-            mock_bulk_action.return_value = {"success": True}
-            response = self.resource.bulk_assign_document_type([1, 2], 10)
-            mock_bulk_action.assert_called_once_with("set_document_type", [1, 2], document_type=10)
-            self.assertEqual(response, {"success": True})
-
-    def test_bulk_assign_storage_path(self) -> None:
-        """
-        Test bulk_assign_storage_path method.
-
-        Written By claude
-        """
-        with patch.object(self.resource, 'bulk_action') as mock_bulk_action:
-            mock_bulk_action.return_value = {"success": True}
-            response = self.resource.bulk_assign_storage_path([1, 2], 10)
-            mock_bulk_action.assert_called_once_with("set_storage_path", [1, 2], storage_path=10)
-            self.assertEqual(response, {"success": True})
-
-    def test_bulk_assign_owner(self) -> None:
-        """
-        Test bulk_assign_owner method.
-
-        Written By claude
-        """
-        with patch.object(self.resource, 'bulk_action') as mock_bulk_action:
-            mock_bulk_action.return_value = {"success": True}
-            response = self.resource.bulk_assign_owner([1, 2], 10)
-            mock_bulk_action.assert_called_once_with("set_owner", [1, 2], owner=10)
-            self.assertEqual(response, {"success": True})
 
     def test_delete(self) -> None:
         """

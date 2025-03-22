@@ -53,7 +53,6 @@ class TestDescribePhotos(DocumentUnitTest):
         self.model_data_unparsed = {
             "id": 1,
             "created": "2025-03-01T12:00:00Z",
-            "updated": "2025-03-02T12:00:00Z",
             "title": "Test Document",
             "correspondent_id": 1,
             "document_type_id": 1,

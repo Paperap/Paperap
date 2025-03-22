@@ -51,7 +51,6 @@ class TestDocumentInit(DocumentUnitTest):
         self.model_data_unparsed = {
             "id": 1,
             "created": "2025-03-01T12:00:00Z",
-            "updated": "2025-03-02T12:00:00Z",
             "title": "Test Document",
             "correspondent_id": 1,
             "document_type_id": 1,
@@ -90,7 +89,6 @@ class TestDocumentBase(DocumentUnitTest):
         self.model_data_unparsed = {
             "id": 1,
             "created": "2025-03-01T12:00:00Z",
-            "updated": "2025-03-02T12:00:00Z",
             "title": "Test Document",
             "correspondent_id": 1,
             "document_type_id": 1,
@@ -123,7 +121,6 @@ class TestDocumentBase(DocumentUnitTest):
         model_dict = self.model.to_dict()
 
         self.assertEqual(model_dict["created"], '2025-03-01T12:00:00+00:00')
-        self.assertEqual(model_dict['updated'], '2025-03-02T12:00:00+00:00')
         self.assertEqual(model_dict["title"], "Test Document")
         self.assertEqual(model_dict["correspondent_id"], 1)
         self.assertEqual(model_dict["document_type_id"], 1)
@@ -333,7 +330,6 @@ class TestCustomFieldAccess(DocumentUnitTest):
         self.model = self.bake_model(**{
             "id": 1,
             "created": "2025-03-01T12:00:00Z",
-            "updated": "2025-03-02T12:00:00Z",
             "title": "Test Document",
             "correspondent_id": 1,
             "document_type_id": 1,
@@ -647,7 +643,6 @@ class TestDocumentInitialization(DocumentUnitTest):
         self.model_data_parsed = {
             "id": 1,
             "created": "2025-03-01T12:00:00Z",
-            "updated": "2025-03-02T12:00:00Z",
             "title": "Test Document",
             "correspondent_id": 1,
             "document_type_id": 1,
@@ -675,7 +670,6 @@ class TestDocument(DocumentUnitTest):
         self.model_data_parsed = {
             "id": 1,
             "created": "2025-03-01T12:00:00Z",
-            "updated": "2025-03-02T12:00:00Z",
             "title": "Test Document",
             "correspondent_id": 1,
             "document_type_id": 1,
@@ -709,7 +703,6 @@ class TestDocument(DocumentUnitTest):
         model_dict = self.model.to_dict()
 
         self.assertEqual(model_dict["created"], "2025-03-01T12:00:00+00:00")
-        self.assertEqual(model_dict["updated"], "2025-03-02T12:00:00+00:00")
         self.assertEqual(model_dict["title"], "Test Document")
         self.assertEqual(model_dict["correspondent_id"], 1)
         self.assertEqual(model_dict["document_type_id"], 1)

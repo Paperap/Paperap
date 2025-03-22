@@ -90,7 +90,7 @@ class TestIntegrationTest(IntegrationTest):
                 continue
             # Test notes individually
             # Temporarily skip dates (TODO)
-            if field in ['added', 'created', 'updated', 'notes']:
+            if field in ['added', 'created', 'notes']:
                 continue
             paperless_value = getattr(document, field)
             self.assertEqual(paperless_value, initial_value, f"Field {field} did not revert to initial value on teardown. Integration tests will fail")

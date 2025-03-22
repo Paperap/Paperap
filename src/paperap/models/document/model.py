@@ -190,8 +190,8 @@ class Document(StandardModel):
 
     class Meta(StandardModel.Meta):
         # NOTE: Filtering appears to be disabled by paperless on page_count
-        read_only_fields = {"page_count", "deleted_at", "updated", "is_shared_by_requester", "archived_file_name"}
-        filtering_disabled = {"page_count", "deleted_at", "updated", "is_shared_by_requester"}
+        read_only_fields = {"page_count", "deleted_at", "is_shared_by_requester", "archived_file_name"}
+        filtering_disabled = {"page_count", "deleted_at", "is_shared_by_requester"}
         filtering_strategies = {FilteringStrategies.WHITELIST}
         field_map = {
             "tags": "tag_ids",
