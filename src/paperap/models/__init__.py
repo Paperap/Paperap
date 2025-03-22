@@ -50,6 +50,7 @@ from paperap.models.workflow import (
     WorkflowAction,
     WorkflowActionQuerySet,
     WorkflowQuerySet,
+    WorkflowRun,
     WorkflowTrigger,
     WorkflowTriggerQuerySet,
 )

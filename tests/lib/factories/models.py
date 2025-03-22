@@ -429,16 +429,3 @@ class WorkflowFactory(PydanticFactory[Workflow]):
     enabled = factory.Faker("boolean")
     triggers = factory.List([factory.Dict({"type": fake.random_int(min=1, max=10), "match": fake.word()}) for _ in range(3)])
     actions = factory.List([factory.Dict({"type": fake.word(), "assign_tags": [fake.random_int(min=1, max=50)]}) for _ in range(3)])
-
-class WorkflowRunFactory(PydanticFactory[WorkflowRun]):
-    class Meta: # type: ignore # pyright handles this wrong
-        model = WorkflowRun
-    
-    workflow = factory.Faker("random_int", min=1, max=100)
-    document = factory.Faker("random_int", min=1, max=1000)
-    type = factory.Faker("random_int", min=1, max=10)
-    run_at = factory.LazyFunction(lambda: datetime.now(timezone.utc))
-    started = factory.Maybe(factory.Faker("boolean"), factory.LazyFunction(lambda: datetime.now(timezone.utc)), None)
-    finished = factory.Maybe(factory.Faker("boolean"), factory.LazyFunction(lambda: datetime.now(timezone.utc)), None)
-    status = factory.Faker("random_element", elements=["pending", "running", "completed", "failed"])
-    error = factory.Maybe(factory.Faker("boolean"), factory.Faker("sentence"), None)

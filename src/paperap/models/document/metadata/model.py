@@ -21,10 +21,12 @@ LAST MODIFIED:
 
 from __future__ import annotations
 
+import pydantic
+
 from paperap.models.abstract import StandardModel
 
 
-class MetadataElement(StandardModel):
+class MetadataElement(pydantic.BaseModel):
     """
     Represents metadata for a document in Paperless-NgX.
 
@@ -33,9 +35,6 @@ class MetadataElement(StandardModel):
 
     key: str
     value: str
-
-    class Meta(StandardModel.Meta):
-        read_only_fields = {"key", "value"}
 
 
 class DocumentMetadata(StandardModel):

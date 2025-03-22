@@ -47,9 +47,6 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-_Self = TypeVar("_Self", bound="BaseModel")
-
-
 class ModelConfigType(TypedDict):
     populate_by_name: bool
     validate_assignment: bool
@@ -99,7 +96,7 @@ class BaseModel(pydantic.BaseModel, ABC):
     _saved_data: dict[str, Any] = {}
     _resource: "BaseResource[Self]"
 
-    class Meta[_Self]:
+    class Meta[_Self: "BaseModel"]:
         """
         Metadata for the Model.
 
