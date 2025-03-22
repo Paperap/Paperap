@@ -408,6 +408,7 @@ class BaseModel(pydantic.BaseModel, ABC):
 
         """
         current_data = self.model_dump()
+        current_data.pop('id', None)
 
         if comparison == "saved":
             compare_dict = self._saved_data
@@ -426,9 +427,9 @@ class BaseModel(pydantic.BaseModel, ABC):
                 compare_dict[field] = self._original_data.get(field, self._saved_data.get(field))
 
         return {
-            field: (compare_dict[field], current_data[field])
+            field: (compare_dict.get(field, None), current_data.get(field, None))
             for field in current_data
-            if compare_dict.get(field, None) != current_data[field]
+            if compare_dict.get(field, None) != current_data.get(field, None)
         }
 
     def is_dirty(self, comparison: Literal["saved", "db", "both"] = "both") -> bool:
