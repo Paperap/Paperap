@@ -144,7 +144,7 @@ class TestCustomFieldResource(unittest.TestCase):
         self.mock_client.request.return_value = mock_response
 
         # Set the client on the model
-        model._client = self.mock_client
+        model.resource.client = self.mock_client
 
         # Update the model
         model.update(name="New Name")

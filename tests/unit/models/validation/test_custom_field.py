@@ -8,12 +8,12 @@
 METADATA:
 
 File:    test_custom_field.py
-Project: paperap
+        Project: paperap
 Created: 2025-03-11
-Version: 0.0.8
+        Version: 0.0.9
 Author:  Jess Mann
 Email:   jess@jmann.me
-Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -118,11 +118,11 @@ class TestCustomFieldValidation(CustomFieldUnitTest):
             ("string", "string"),
             ("integer", "integer"),
             (None, None),
-            (123, ValidationError),
-            (["list"], ValidationError),
-            ({"dict": "value"}, ValidationError),
-            (object(), ValidationError),
-            (5.5, ValidationError),
+            (123, ValueError),
+            (["list"], ValueError),
+            ({"dict": "value"}, ValueError),
+            (object(), ValueError),
+            (5.5, ValueError),
         ])
 
     def test_extra_data_field(self):

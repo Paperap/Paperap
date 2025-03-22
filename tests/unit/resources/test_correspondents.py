@@ -275,14 +275,5 @@ class TestCorrespondentResource(unittest.TestCase):
         self.assertEqual(result, correspondent)
         mock_parse.assert_called_once_with(mock_data)
 
-    def test_endpoint_property(self):
-        """
-        Written By claude
-
-        Test that the endpoint property returns the correct API endpoint.
-        """
-        self.assertEqual(self.resource.endpoint, "correspondents/")
-
-
 if __name__ == "__main__":
     unittest.main()

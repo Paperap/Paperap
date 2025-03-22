@@ -157,7 +157,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         # We validated that converted matches endpoints above
         return converted
 
-    def get_endpoint(self, name: str, **kwargs: Any) -> HttpUrl:
+    def get_endpoint(self, name: str, **kwargs: Any) -> str | HttpUrl:
         if not (template := self.endpoints.get(name, None)):
             raise ConfigurationError(f"Endpoint {name} not defined for resource {self.name}")
 
@@ -545,7 +545,14 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         """
         data = model.to_dict()
         data = self.transform_data_output(**data)
-        return self.update_dict(model.id, **data)
+
+        # Save the model ID
+        model_id = model.id
+
+        # Remove ID from the data dict to avoid duplicating it in the call
+        data.pop("id", None)
+
+        return self.update_dict(model_id, **data)
 
     @override
     def delete(self, model_id: int | _StandardModel) -> None:
@@ -614,7 +621,7 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
 
 class BulkEditing:
 
-    def bulk_edit_objects(
+    def bulk_edit_objects( # type: ignore
         self : BaseResource, # type: ignore
         object_type: str,
         ids: list[int],

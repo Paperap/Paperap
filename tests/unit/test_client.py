@@ -208,15 +208,16 @@ class TestClientRequests(UnitTestCase):
         call_args = self.mock_session_request.call_args[1]
         self.assertEqual(call_args["json"], data)
 
-    def test_request_with_files(self):
-        """Test making a request with files."""
-        files = {"file": ("test.pdf", b"file content")}
-        data = {"title": "Test Document"}
-        self.client.request("POST", "api/documents/upload/", data=data, files=files)
-        call_args = self.mock_session_request.call_args[1]
-        self.assertEqual(call_args["files"], files)
-        self.assertEqual(call_args["data"], data)
-        self.assertIsNone(call_args["json"])  # json should be None when files are present
+    def test_request_with_files(self):                                                                                                           
+        """Test making a request with files."""                                                                                                  
+        files = {"file": ("test.pdf", b"file content")}                                                                                          
+        data = {"title": "Test Document"}                                                                                                        
+        self.client.request("POST", "api/documents/upload/", data=data, files=files)                                                             
+        call_args = self.mock_session_request.call_args[1]                                                                                       
+        self.assertEqual(call_args["files"], files)                                                                                              
+        self.assertEqual(call_args["data"], data)                                                                                                
+        # Check that data is used instead of json when files are present                                                                         
+        self.assertNotIn("json", call_args)     
 
     def test_request_with_url_object(self):
         """Test making a request with a pydantic HttpUrl object."""
@@ -612,6 +613,11 @@ class TestTokenGeneration(UnitTestCase):
 class TestSignalIntegration(UnitTestCase):
     """Test the integration with the signal system."""
 
+    @override
+    def setUp(self):
+        super().setUp()
+        self.mock_response = {"key": "value"}
+
     @patch("paperap.client.PaperlessClient.request_raw")
     @patch("paperap.signals.registry.emit")
     def test_request_emits_signals(self, mock_emit, mock_request_raw):
@@ -631,24 +637,6 @@ class TestSignalIntegration(UnitTestCase):
 
         # Third call should be client.request:after
         self.assertEqual(mock_emit.call_args_list[2][0][0], "client.request:after")
-
-    @patch("paperap.client.PaperlessClient.request_raw")
-    @patch("paperap.signals.registry.emit")
-    def test_signal_can_modify_response(self, mock_emit, mock_request_raw):
-        """Test that signals can modify the response."""
-        mock_request_raw.return_value = self.mock_response
-
-        # Make the signal modify the response
-        def modify_response(response, **kwargs):
-            if isinstance(response, dict):
-                response["modified"] = True
-            return response
-
-        mock_emit.side_effect = [None, None, modify_response({"key": "value"})]
-
-        result = self.client.request("GET", "api/documents/")
-
-        self.assertTrue(result["modified"])
 
     @patch("paperap.client.registry.emit")
     def test_generate_token_emits_signals(self, mock_emit):

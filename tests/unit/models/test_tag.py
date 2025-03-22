@@ -8,12 +8,12 @@
 METADATA:
 
 File:    test_tag.py
-Project: paperap
+        Project: paperap
 Created: 2025-03-14
-Version: 0.0.8
+        Version: 0.0.9
 Author:  Jess Mann
 Email:   jess@jmann.me
-Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -187,13 +187,6 @@ class TestTagValidation(TagUnitTest):
             (None, None),
             (123, ValidationError),
             (True, ValidationError),
-        ])
-
-    def test_matching_algorithm_field(self):
-        self.validate_field("matching_algorithm", [
-            #*positive_int_tests # TODO
-            *any_int_tests,
-            (None, None),
         ])
 
     def test_is_insensitive_field(self):

@@ -48,6 +48,17 @@ class Tag(StandardModel, MatcherMixin):
     owner: int | None = None
     user_can_change: bool | None = None
 
+    # Alias for colour
+    @property
+    def color(self) -> str | int | None:
+        """Alias for colour field."""
+        return self.colour
+
+    @color.setter
+    def color(self, value: str | int | None) -> None:
+        """Setter for colour field."""
+        self.colour = value
+
     class Meta(StandardModel.Meta):
         # Fields that should not be modified
         read_only_fields = {"slug", "document_count"}
