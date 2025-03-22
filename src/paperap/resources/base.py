@@ -10,7 +10,7 @@ METADATA:
 File:    base.py
         Project: paperap
 Created: 2025-03-21
-        Version: 0.0.9
+        Version: 0.0.10
 Author:  Jess Mann
 Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
