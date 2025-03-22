@@ -41,6 +41,7 @@ _QueryParam = Union["CustomFieldQuery", tuple[str, _OperationType, Any]]
 if TYPE_CHECKING:
     from paperap.resources.documents import DocumentResource
 
+
 class CustomFieldQuery(NamedTuple):
     field: str
     operation: _OperationType
@@ -68,7 +69,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
     """
 
-    resource : "DocumentResource" # type: ignore # because nested generics are not allowed
+    resource: "DocumentResource"  # type: ignore # because nested generics are not allowed
 
     def tag_id(self, tag_id: int | list[int]) -> Self:
         """
@@ -1025,9 +1026,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             self.resource.bulk_remove_tag(ids, tag_id)
         return self
 
-    def set_permissions(
-        self, permissions: dict[str, Any] | None = None, owner_id: int | None = None, merge: bool = False
-    ) -> Self:
+    def set_permissions(self, permissions: dict[str, Any] | None = None, owner_id: int | None = None, merge: bool = False) -> Self:
         """
         Set permissions for all documents in the current queryset.
 

@@ -188,7 +188,7 @@ class Document(StandardModel):
     _correspondent: tuple[int, Correspondent] | None = None
     _document_type: tuple[int, DocumentType] | None = None
     _storage_path: tuple[int, StoragePath] | None = None
-    _resource : "DocumentResource" # type: ignore # nested generics not supported
+    _resource: "DocumentResource"  # type: ignore # nested generics not supported
     __search_hit__: dict[str, Any] | None = None
 
     class Meta(StandardModel.Meta):
