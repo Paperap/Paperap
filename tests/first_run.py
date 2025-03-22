@@ -139,12 +139,12 @@ class PaperlessManager:
             SAMPLE_DATA / "uploads" / "Sample JPG.jpg",
             SAMPLE_DATA / "uploads" / "Sample PDF.pdf",
         ]
-        for document in documents:
+        for filename in documents:
             try:
-                self.client.documents.upload(document)
-                logger.debug("Uploaded document %s", document)
+                document = self.client.documents.upload_sync(filename)
+                logger.debug("Uploaded document %s", document.id)
             except PaperapError as e:
-                logger.warning("Failed to upload document %s: %s", document, e)
+                logger.warning("Failed to upload document %s: %s", filename, e)
 
 def main() -> None:
     manager = PaperlessManager()

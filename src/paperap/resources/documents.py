@@ -22,6 +22,7 @@
 from __future__ import annotations
 
 import logging
+import time
 from datetime import datetime
 from pathlib import Path
 from string import Template
@@ -81,7 +82,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             raise ResourceNotFoundError(f"Document {document_id} thumbnail failed", self.name)
         return response
 
-    def upload(self, filepath: Path | str, **metadata) -> str:
+    def upload_async(self, filepath: Path | str, **metadata) -> str:
         """
         Upload a document from a file to paperless ngx.
 
@@ -89,8 +90,8 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             filepath: The path to the file to upload.
 
         Returns:
-            A string that looks like this: ca6a6dc8-b434-4fcd-8436-8b2546465622
-            This is likely a task id, or similar.
+            A UUID string (task identifier) as returned by Paperless ngx.
+            e.g. ca6a6dc8-b434-4fcd-8436-8b2546465622
 
         Raises:
             FileNotFoundError: If the file does not exist.
@@ -101,6 +102,45 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             filepath = Path(filepath)
         with filepath.open("rb") as f:
             return self.upload_content(f.read(), filepath.name, **metadata)
+
+    def upload_sync(
+        self, filepath: Path | str, max_wait: int = 300, poll_interval: float = 1.0, **metadata
+    ) -> Document:
+        """
+        Upload a document and wait until it has been processed.
+
+        Args:
+            filepath: Path to the file to upload.
+            max_wait: Maximum time (in seconds) to wait for processing.
+            poll_interval: Seconds between polling attempts.
+            **metadata: Additional metadata for the upload.
+
+        Returns:
+            A Document instance once available.
+
+        Raises:
+            APIError: If the document is not processed within the max_wait.
+
+        """
+        task_id = self.upload_async(filepath, **metadata)
+        logger.debug("Upload async complete, task id: %s", task_id)
+        end_time = time.monotonic() + max_wait
+        while time.monotonic() < end_time:
+            try:
+                # Poll detail endpoint using the task id as the primary key.
+                task = self.client.tasks(task_id=task_id).first()
+                if task is not None:
+                    if task.status == "SUCCESS":
+                        if not task.related_document:
+                            raise BadResponseError("Document processing succeeded but no document ID was returned")
+                        return self.get(task.related_document)
+                    if task.status == "FAILURE":
+                        raise APIError("Document processing failed")
+            except ResourceNotFoundError:
+                logger.debug("Task %s not finished yet; retrying...", task_id)
+            time.sleep(poll_interval)
+        raise APIError("Timed out waiting for document processing")
+
 
     def upload_content(self, file_content: bytes, filename: str, **metadata) -> str:
         """

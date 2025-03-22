@@ -213,7 +213,7 @@ class TestDocumentResource(unittest.TestCase):
         metadata = {"title": "Test Document", "correspondent": 1}
 
         # Execute
-        result = self.resource.upload(filepath, **metadata)
+        result = self.resource.upload_async(filepath, **metadata)
 
         # Verify
         mock_open.assert_called_once_with("rb")

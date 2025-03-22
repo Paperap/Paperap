@@ -31,7 +31,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, override
 
 from faker import Faker
-from pydantic import field_validator
+from pydantic import HttpUrl, field_validator
 
 from paperap.exceptions import ModelValidationError
 from paperap.models import StandardModel
@@ -201,7 +201,7 @@ class SampleDataCollector(Plugin):
         method: str,
         params: dict[str, Any] | None,
         json_response: bool,
-        endpoint: str,
+        endpoint: str | HttpUrl,
         **kwargs: Any,
     ) -> dict[str, Any]:
         """
@@ -209,6 +209,11 @@ class SampleDataCollector(Plugin):
 
         Connects to client.request:after signal.
         """
+        if not endpoint:
+            raise ValueError("Endpoint is required to save parsed response")
+
+        endpoint = str(endpoint)
+
         # If endpoint contains "example.com", we're testing, so skip it
         if "example.com" in str(endpoint):
             return parsed_response

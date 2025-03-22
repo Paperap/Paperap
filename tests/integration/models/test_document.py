@@ -153,7 +153,7 @@ class TestUpload(IntegrationTest):
         # Test that the document is saved when a file is uploaded
         filename = "Sample JPG.jpg"
         filepath = Path(__file__).parents[3] / "sample_data" / filename
-        document = self.resource.upload(filepath)
+        document = self.resource.upload_sync(filepath)
 
         self.assertIsInstance(document, Document)
         self.assertEqual(document.original_filename, filename, "Original file name does not match expected value")

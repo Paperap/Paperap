@@ -149,7 +149,7 @@ class PydanticFactory[_StandardModel](factory.Factory[_StandardModel]):
 
 class CorrespondentFactory(PydanticFactory[Correspondent]):
     _RELATIONSHIPS = {"owner"}
-    
+
     class Meta: # type: ignore # pyright handles this wrong
         model = Correspondent
 
@@ -164,7 +164,7 @@ class CorrespondentFactory(PydanticFactory[Correspondent]):
 
 class CustomFieldFactory(PydanticFactory[CustomField]):
     _RELATIONSHIPS = {"extra_data"}
-    
+
     class Meta: # type: ignore # pyright handles this wrong
         model = CustomField
 
@@ -175,7 +175,7 @@ class CustomFieldFactory(PydanticFactory[CustomField]):
 
 class DocumentNoteFactory(PydanticFactory[DocumentNote]):
     _RELATIONSHIPS = {"document", "user", "transaction_id"}
-    
+
     class Meta: # type: ignore # pyright handles this wrong
         model = DocumentNote
 
@@ -189,10 +189,10 @@ class DocumentNoteFactory(PydanticFactory[DocumentNote]):
 
 class DocumentFactory(PydanticFactory[Document]):
     _RELATIONSHIPS = {
-        "correspondent_id", "document_type_id", "owner", "storage_path_id", 
+        "correspondent_id", "document_type_id", "owner", "storage_path_id",
         "tag_ids", "notes", "custom_field_dicts"
     }
-    
+
     class Meta: # type: ignore # pyright handles this wrong
         model = Document
 
@@ -224,7 +224,7 @@ class DocumentFactory(PydanticFactory[Document]):
 
 class DocumentTypeFactory(PydanticFactory[DocumentType]):
     _RELATIONSHIPS = {"owner"}
-    
+
     class Meta: # type: ignore # pyright handles this wrong
         model = DocumentType
 
@@ -239,7 +239,7 @@ class DocumentTypeFactory(PydanticFactory[DocumentType]):
 
 class TagFactory(PydanticFactory[Tag]):
     _RELATIONSHIPS = {"owner"}
-    
+
     class Meta: # type: ignore # pyright handles this wrong
         model = Tag
 
@@ -256,7 +256,7 @@ class TagFactory(PydanticFactory[Tag]):
 
 class ProfileFactory(PydanticFactory[Profile]):
     _RELATIONSHIPS = {"social_accounts"}
-    
+
     class Meta: # type: ignore # pyright handles this wrong
         model = Profile
 
@@ -270,7 +270,7 @@ class ProfileFactory(PydanticFactory[Profile]):
 
 class UserFactory(PydanticFactory[User]):
     _RELATIONSHIPS = {"groups", "user_permissions", "inherited_permissions"}
-    
+
     class Meta: # type: ignore # pyright handles this wrong
         model = User
 
@@ -289,7 +289,7 @@ class UserFactory(PydanticFactory[User]):
 
 class StoragePathFactory(PydanticFactory[StoragePath]):
     _RELATIONSHIPS = {"owner"}
-    
+
     class Meta: # type: ignore # pyright handles this wrong
         model = StoragePath
 
@@ -305,7 +305,7 @@ class StoragePathFactory(PydanticFactory[StoragePath]):
 
 class SavedViewFactory(PydanticFactory[SavedView]):
     _RELATIONSHIPS = {"filter_rules", "owner", "display_fields"}
-    
+
     class Meta: # type: ignore # pyright handles this wrong
         model = SavedView
 
@@ -323,7 +323,7 @@ class SavedViewFactory(PydanticFactory[SavedView]):
 
 class ShareLinksFactory(PydanticFactory[ShareLinks]):
     _RELATIONSHIPS = {"document"}
-    
+
     class Meta: # type: ignore # pyright handles this wrong
         model = ShareLinks
 
@@ -335,7 +335,7 @@ class ShareLinksFactory(PydanticFactory[ShareLinks]):
 
 class TaskFactory(PydanticFactory[Task]):
     _RELATIONSHIPS = {"related_document"}
-    
+
     class Meta: # type: ignore # pyright handles this wrong
         model = Task
 
@@ -350,7 +350,7 @@ class TaskFactory(PydanticFactory[Task]):
 
 class UISettingsFactory(PydanticFactory[UISettings]):
     _RELATIONSHIPS = {"user", "settings", "permissions"}
-    
+
     class Meta: # type: ignore # pyright handles this wrong
         model = UISettings
 
@@ -552,7 +552,7 @@ class UISettingsFactory(PydanticFactory[UISettings]):
 
 class MetadataElementFactory(PydanticFactory[MetadataElement]):
     _RELATIONSHIPS = set()
-    
+
     class Meta: # type: ignore # pyright handles this wrong
         model = MetadataElement
 
@@ -561,7 +561,7 @@ class MetadataElementFactory(PydanticFactory[MetadataElement]):
 
 class DocumentMetadataFactory(PydanticFactory[DocumentMetadata]):
     _RELATIONSHIPS = {"original_metadata", "archive_metadata"}
-    
+
     class Meta: # type: ignore # pyright handles this wrong
         model = DocumentMetadata
 
@@ -580,7 +580,7 @@ class DocumentMetadataFactory(PydanticFactory[DocumentMetadata]):
 
 class DocumentSuggestionsFactory(PydanticFactory[DocumentSuggestions]):
     _RELATIONSHIPS = {"correspondents", "tags", "document_types", "storage_paths", "dates"}
-    
+
     class Meta: # type: ignore # pyright handles this wrong
         model = DocumentSuggestions
 
@@ -603,7 +603,7 @@ class DownloadedDocumentFactory(PydanticFactory[DownloadedDocument]):
 
 class GroupFactory(PydanticFactory[Group]):
     _RELATIONSHIPS = {"permissions"}
-    
+
     class Meta: # type: ignore # pyright handles this wrong
         model = Group
 
@@ -614,7 +614,7 @@ class WorkflowTriggerFactory(PydanticFactory[WorkflowTrigger]):
     _RELATIONSHIPS = {
         "sources", "filter_has_tags", "filter_has_correspondent", "filter_has_document_type"
     }
-    
+
     class Meta: # type: ignore # pyright handles this wrong
         model = WorkflowTrigger
 
@@ -632,11 +632,11 @@ class WorkflowTriggerFactory(PydanticFactory[WorkflowTrigger]):
 
 class WorkflowActionFactory(PydanticFactory[WorkflowAction]):
     _RELATIONSHIPS = {
-        "assign_tags", "assign_correspondent", "assign_document_type", 
-        "assign_storage_path", "assign_owner", "assign_view_users", 
+        "assign_tags", "assign_correspondent", "assign_document_type",
+        "assign_storage_path", "assign_owner", "assign_view_users",
         "assign_view_groups"
     }
-    
+
     class Meta: # type: ignore # pyright handles this wrong
         model = WorkflowAction
 
@@ -654,7 +654,7 @@ class WorkflowActionFactory(PydanticFactory[WorkflowAction]):
 
 class WorkflowFactory(PydanticFactory[Workflow]):
     _RELATIONSHIPS = {"triggers", "actions"}
-    
+
     class Meta: # type: ignore # pyright handles this wrong
         model = Workflow
 
