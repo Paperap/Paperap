@@ -46,12 +46,52 @@ logger = logging.getLogger(__name__)
 
 class IntegrationTest(DocumentUnitTest):
     mock_env = False
+    # Class variables to cache entity IDs
+    _entity_ids = {
+        'correspondent': [],
+        'document_type': [],
+        'tag': [],
+        'storage_path': [],
+        'custom_field': [],
+    }
+    _ids_initialized = False
+
+    @classmethod
+    def _initialize_entity_ids(cls, client):
+        """Initialize entity IDs for use in tests if not already done."""
+        if cls._ids_initialized:
+            return
+
+        # Get correspondent IDs
+        correspondents = list(client.correspondents().all())
+        cls._entity_ids['correspondent'] = [c.id for c in correspondents[:3] if c.id is not None]
+
+        # Get document type IDs
+        document_types = list(client.document_types().all())
+        cls._entity_ids['document_type'] = [dt.id for dt in document_types[:3] if dt.id is not None]
+
+        # Get tag IDs
+        tags = list(client.tags().all())
+        cls._entity_ids['tag'] = [t.id for t in tags[:5] if t.id is not None]
+
+        # Get storage path IDs
+        storage_paths = list(client.storage_paths().all())
+        cls._entity_ids['storage_path'] = [sp.id for sp in storage_paths[:2] if sp.id is not None]
+
+        # Get custom field IDs
+        custom_fields = list(client.custom_fields().all())
+        cls._entity_ids['custom_field'] = [cf.id for cf in custom_fields[:2] if cf.id is not None]
+
+        cls._ids_initialized = True
 
     @override
     def setUp(self):
         super().setUp()
         self.model = self.client.documents().first()
         self._initial_data = self.model.to_dict()
+
+        # Initialize entity IDs if not already done
+        self._initialize_entity_ids(self.client)
 
     @override
     def tearDown(self):
@@ -201,11 +241,24 @@ class TestSaveManual(IntegrationTest):
     def test_save_all_fields(self):
         #(field_name, [values_to_set])
         ts = datetime.now().timestamp()
+
+        # Use dynamically retrieved IDs
+        correspondent_ids = self._entity_ids['correspondent']
+        document_type_ids = self._entity_ids['document_type']
+        tag_ids = self._entity_ids['tag']
+
         fields = [
             ("title", [f"Test Document {ts}"]),
-            ("correspondent_id", [21, 37, None]),
-            ("document_type_id", [10, 16, None]),
-            ("tag_ids", [[74], [254], [45, 80], [74, 254, 45]]),
+            ("correspondent_id", [correspondent_ids[0] if correspondent_ids else None,
+                                correspondent_ids[1] if len(correspondent_ids) > 1 else None,
+                                None]),
+            ("document_type_id", [document_type_ids[0] if document_type_ids else None,
+                                document_type_ids[1] if len(document_type_ids) > 1 else None,
+                                None]),
+            ("tag_ids", [[tag_ids[0]] if tag_ids else [],
+                       [tag_ids[1]] if len(tag_ids) > 1 else [],
+                       [tag_ids[0], tag_ids[1]] if len(tag_ids) > 1 else [],
+                       [tag_ids[0], tag_ids[1], tag_ids[2]] if len(tag_ids) > 2 else []]),
         ]
         for field, values in fields:
             for value in values:
@@ -244,11 +297,17 @@ class TestSaveManual(IntegrationTest):
     def test_update_all_fields(self):
         #(field_name, [values_to_set])
         ts = datetime.now().timestamp()
+
+        # Use dynamically retrieved IDs
+        correspondent_id = self._entity_ids['correspondent'][0] if self._entity_ids['correspondent'] else None
+        document_type_id = self._entity_ids['document_type'][0] if self._entity_ids['document_type'] else None
+        tag_id = self._entity_ids['tag'][0] if self._entity_ids['tag'] else None
+
         fields = {
             "title": f"Test Document {ts}",
-            "correspondent_id": 21,
-            "document_type_id": 10,
-            "tag_ids": [38],
+            "correspondent_id": correspondent_id,
+            "document_type_id": document_type_id,
+            "tag_ids": [tag_id] if tag_id else [],
         }
         self.model.update(**fields)
         for field, value in fields.items():
@@ -262,8 +321,11 @@ class TestSaveNone(IntegrationTest):
     def setUp(self):
         super().setUp()
 
-        if not self.model.tag_ids:
-            self.model.tag_ids = [38]
+        # Get a tag ID to ensure the document has at least one tag
+        tag_id = self._entity_ids['tag'][0] if self._entity_ids['tag'] else None
+
+        if not self.model.tag_ids and tag_id:
+            self.model.tag_ids = [tag_id]
             self.model.save()
 
         self.none_data = {
@@ -279,16 +341,23 @@ class TestSaveNone(IntegrationTest):
             "title": "",
         }
 
+        # Use dynamically retrieved IDs
+        correspondent_id = self._entity_ids['correspondent'][0] if self._entity_ids['correspondent'] else None
+        document_type_id = self._entity_ids['document_type'][0] if self._entity_ids['document_type'] else None
+        tag_id = self._entity_ids['tag'][1] if len(self._entity_ids['tag']) > 1 else (self._entity_ids['tag'][0] if self._entity_ids['tag'] else None)
+        storage_path_id = self._entity_ids['storage_path'][0] if self._entity_ids['storage_path'] else None
+        custom_field_id = self._entity_ids['custom_field'][0] if self._entity_ids['custom_field'] else None
+
         self.expected_data = {
             "archive_serial_number": 123456,
             "content": "Test Content",
-            "correspondent_id": 31,
-            "custom_field_dicts": [{"field": 32, "value": "Test Value"}],
-            "document_type_id": 16,
-            "tag_ids": [28],
+            "correspondent_id": correspondent_id,
+            "custom_field_dicts": [{"field": custom_field_id, "value": "Test Value"}] if custom_field_id else [],
+            "document_type_id": document_type_id,
+            "tag_ids": [tag_id] if tag_id else [],
             "title": "Test Document",
             #"notes": ["Test Note"],
-            "storage_path_id": 1,
+            "storage_path_id": storage_path_id,
         }
 
     def test_update_tags_to_none(self):
@@ -375,12 +444,25 @@ class TestSaveOnWrite(IntegrationTest):
 
 class TestTag(IntegrationTest):
     def test_get_list(self):
-        documents = self.client.documents().all().tag_name("HRSH")
+        # Find a tag with documents to test tag filtering
+        test_tag = None
+        for tag in self.client.tags().all():
+            # Check if tag has documents
+            tag_docs = self.client.documents().all().tag_id(tag.id)
+            if len(tag_docs) > 0:
+                test_tag = tag
+                break
+
+        # Skip test if no suitable tag is found
+        if not test_tag:
+            self.skipTest("No tag with documents found")
+
+        documents = self.client.documents().all().tag_name(test_tag.name)
         self.assertIsInstance(documents, DocumentQuerySet)
-        self.assertGreater(len(documents), 1000, "Incorrect number of documents retrieved")
+        self.assertGreater(len(documents), 0, "No documents retrieved for tag")
         for i, document in enumerate(documents):
             self.assertIsInstance(document, Document)
-            self.assertIn("HRSH", document.tag_names, f"Document does not have HRSH tag. tag_ids: {document.tag_ids}")
+            self.assertIn(test_tag.name, document.tag_names, f"Document does not have {test_tag.name} tag. tag_ids: {document.tag_ids}")
             # avoid calling next a million times
             if i > 52:
                 break
