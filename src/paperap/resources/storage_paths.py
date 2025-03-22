@@ -30,4 +30,4 @@ class StoragePathResource(StandardResource[StoragePath, StoragePathQuerySet]):
 
     model_class = StoragePath
     queryset_class = StoragePathQuerySet
-    name = "storage_paths"
+    name: str = "storage_paths"

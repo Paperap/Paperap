@@ -10,3 +10,4 @@ dist/
 .hypothesis
 paperless-ngx
 *.out
+.stubs

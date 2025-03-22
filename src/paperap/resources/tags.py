@@ -30,4 +30,4 @@ class TagResource(StandardResource[Tag, TagQuerySet]):
 
     model_class = Tag
     queryset_class = TagQuerySet
-    name = "tags"
+    name: str = "tags"

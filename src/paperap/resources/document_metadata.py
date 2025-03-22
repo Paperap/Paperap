@@ -26,7 +26,7 @@ LAST MODIFIED:
 from __future__ import annotations
 
 from typing import Any
-
+ 
 from typing_extensions import TypeVar
 
 from paperap.const import URLS
@@ -38,7 +38,7 @@ from paperap.resources.base import BaseResource, StandardResource
 class DocumentMetadataResource(StandardResource[DocumentMetadata, DocumentMetadataQuerySet]):
     model_class = DocumentMetadata
     queryset_class = DocumentMetadataQuerySet
-    name = "document_metadata"
+    name: str = "document_metadata"
     endpoints = {
         # Override the detail endpoint to point to metadata
         "detail": URLS.meta,

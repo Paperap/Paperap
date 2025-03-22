@@ -30,4 +30,4 @@ class DocumentTypeResource(StandardResource[DocumentType, DocumentTypeQuerySet])
 
     model_class = DocumentType
     queryset_class = DocumentTypeQuerySet
-    name = "document_types"
+    name: str = "document_types"

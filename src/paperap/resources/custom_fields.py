@@ -30,4 +30,4 @@ class CustomFieldResource(StandardResource[CustomField, CustomFieldQuerySet]):
 
     model_class = CustomField
     queryset_class = CustomFieldQuerySet
-    name = "custom_fields"
+    name: str = "custom_fields"

@@ -30,4 +30,4 @@ class CorrespondentResource(StandardResource[Correspondent, CorrespondentQuerySe
 
     model_class = Correspondent
     queryset_class = CorrespondentQuerySet
-    name = "correspondents"
+    name: str = "correspondents"

@@ -26,7 +26,7 @@ LAST MODIFIED:
 from __future__ import annotations
 
 from typing import Any
-
+ 
 from typing_extensions import TypeVar
 
 from paperap.const import URLS
@@ -38,7 +38,7 @@ from paperap.resources.base import BaseResource, StandardResource
 class DocumentSuggestionsResource(StandardResource[DocumentSuggestions, DocumentSuggestionsQuerySet]):
     model_class = DocumentSuggestions
     queryset_class = DocumentSuggestionsQuerySet
-    name = "document_suggestions"
+    name: str = "document_suggestions"
     endpoints = {
         # Override the detail endpoint to point to suggestions
         "detail": URLS.suggestions,
