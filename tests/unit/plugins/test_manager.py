@@ -44,6 +44,7 @@ class MockPlugin(Plugin):
 
     name = "MockPlugin"
 
+
     name = "AnotherMockPlugin"
 
     def __init__(self, manager: PluginManager, **kwargs: Any) -> None:
