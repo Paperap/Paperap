@@ -47,6 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">paperap</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="paperap.html">paperap package</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="paperap.html#paperap.PaperlessClient"><code class="docutils literal notranslate"><span class="pre">PaperlessClient</span></code></a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="paperap.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l4 current"><a class="reference internal" href="paperap.models.html">paperap.models package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="paperap.plugins.html">paperap.plugins package</a></li>
@@ -89,14 +90,71 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="paperap-models-custom-field-package">
-<h1>paperap.models.custom_field package<a class="headerlink" href="#paperap-models-custom-field-package" title="Link to this heading"></a></h1>
+  <section id="module-paperap.models.custom_field">
+<span id="paperap-models-custom-field-package"></span><h1>paperap.models.custom_field package<a class="headerlink" href="#module-paperap.models.custom_field" title="Link to this heading"></a></h1>
+<hr class="docutils" />
+<blockquote>
+<div><p>METADATA:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>File:    __init__.py</dt><dd><p>Project: paperap</p>
+</dd>
+<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.8</p>
+</dd>
+</dl>
+<p>Author:  Jess Mann
+Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
+<blockquote>
+<div><p>Copyright (c) 2025 Jess Mann</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>LAST MODIFIED:</p>
+<blockquote>
+<div><p>2025-03-04     By Jess Mann</p>
+</div></blockquote>
+</div></blockquote>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="paperap.models.custom_field.model.html">paperap.models.custom_field.model module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="paperap.models.custom_field.queryset.html">paperap.models.custom_field.queryset module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="paperap.models.custom_field.model.html">paperap.models.custom_field.model module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="paperap.models.custom_field.model.html#paperap.models.custom_field.model.CustomField"><code class="docutils literal notranslate"><span class="pre">CustomField</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.custom_field.model.html#paperap.models.custom_field.model.CustomField.name"><code class="docutils literal notranslate"><span class="pre">CustomField.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.custom_field.model.html#paperap.models.custom_field.model.CustomField.data_type"><code class="docutils literal notranslate"><span class="pre">CustomField.data_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.custom_field.model.html#paperap.models.custom_field.model.CustomField.validate_data_type"><code class="docutils literal notranslate"><span class="pre">CustomField.validate_data_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.custom_field.model.html#paperap.models.custom_field.model.CustomField.extra_data"><code class="docutils literal notranslate"><span class="pre">CustomField.extra_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.custom_field.model.html#paperap.models.custom_field.model.CustomField.document_count"><code class="docutils literal notranslate"><span class="pre">CustomField.document_count</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.custom_field.model.html#paperap.models.custom_field.model.CustomField.model_config"><code class="docutils literal notranslate"><span class="pre">CustomField.model_config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.custom_field.model.html#paperap.models.custom_field.model.CustomField.Meta"><code class="docutils literal notranslate"><span class="pre">CustomField.Meta</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="paperap.models.custom_field.model.html#paperap.models.custom_field.model.CustomField.Meta.read_only_fields"><code class="docutils literal notranslate"><span class="pre">CustomField.Meta.read_only_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="paperap.models.custom_field.model.html#paperap.models.custom_field.model.CustomField.Meta.blacklist_filtering_params"><code class="docutils literal notranslate"><span class="pre">CustomField.Meta.blacklist_filtering_params</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="paperap.models.custom_field.model.html#paperap.models.custom_field.model.CustomField.Meta.field_map"><code class="docutils literal notranslate"><span class="pre">CustomField.Meta.field_map</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="paperap.models.custom_field.model.html#paperap.models.custom_field.model.CustomField.Meta.filtering_disabled"><code class="docutils literal notranslate"><span class="pre">CustomField.Meta.filtering_disabled</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="paperap.models.custom_field.model.html#paperap.models.custom_field.model.CustomField.Meta.filtering_fields"><code class="docutils literal notranslate"><span class="pre">CustomField.Meta.filtering_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="paperap.models.custom_field.model.html#paperap.models.custom_field.model.CustomField.Meta.supported_filtering_params"><code class="docutils literal notranslate"><span class="pre">CustomField.Meta.supported_filtering_params</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="paperap.models.custom_field.model.html#paperap.models.custom_field.model.CustomField.Meta.model"><code class="docutils literal notranslate"><span class="pre">CustomField.Meta.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="paperap.models.custom_field.model.html#paperap.models.custom_field.model.CustomField.Meta.name"><code class="docutils literal notranslate"><span class="pre">CustomField.Meta.name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.custom_field.model.html#paperap.models.custom_field.model.CustomField.documents"><code class="docutils literal notranslate"><span class="pre">CustomField.documents</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.custom_field.model.html#paperap.models.custom_field.model.CustomField.model_post_init"><code class="docutils literal notranslate"><span class="pre">CustomField.model_post_init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.custom_field.model.html#paperap.models.custom_field.model.CustomField.id"><code class="docutils literal notranslate"><span class="pre">CustomField.id</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="paperap.models.custom_field.queryset.html">paperap.models.custom_field.queryset module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="paperap.models.custom_field.queryset.html#paperap.models.custom_field.queryset.CustomFieldQuerySet"><code class="docutils literal notranslate"><span class="pre">CustomFieldQuerySet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.custom_field.queryset.html#paperap.models.custom_field.queryset.CustomFieldQuerySet.name"><code class="docutils literal notranslate"><span class="pre">CustomFieldQuerySet.name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.custom_field.queryset.html#paperap.models.custom_field.queryset.CustomFieldQuerySet.data_type"><code class="docutils literal notranslate"><span class="pre">CustomFieldQuerySet.data_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.custom_field.queryset.html#paperap.models.custom_field.queryset.CustomFieldQuerySet.extra_data"><code class="docutils literal notranslate"><span class="pre">CustomFieldQuerySet.extra_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </section>

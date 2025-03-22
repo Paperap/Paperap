@@ -47,6 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">paperap</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="paperap.html">paperap package</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="paperap.html#paperap.PaperlessClient"><code class="docutils literal notranslate"><span class="pre">PaperlessClient</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="paperap.html#subpackages">Subpackages</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="paperap.html#submodules">Submodules</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="paperap.auth.html">paperap.auth module</a></li>
@@ -91,8 +92,372 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="paperap-client-module">
-<h1>paperap.client module<a class="headerlink" href="#paperap-client-module" title="Link to this heading"></a></h1>
+  <section id="module-paperap.client">
+<span id="paperap-client-module"></span><h1>paperap.client module<a class="headerlink" href="#module-paperap.client" title="Link to this heading"></a></h1>
+<hr class="docutils" />
+<blockquote>
+<div><p>METADATA:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>File:    client.py</dt><dd><p>Project: paperap</p>
+</dd>
+<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.9</p>
+</dd>
+</dl>
+<p>Author:  Jess Mann
+Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
+<blockquote>
+<div><p>Copyright (c) 2025 Jess Mann</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>LAST MODIFIED:</p>
+<blockquote>
+<div><p>2025-03-04     By Jess Mann</p>
+</div></blockquote>
+</div></blockquote>
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.client.</span></span><span class="sig-name descname"><span class="pre">PaperlessClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/client.html#PaperlessClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.client.PaperlessClient" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Client for interacting with the Paperless-NgX API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>settings</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="paperap.settings.html#paperap.settings.Settings" title="paperap.settings.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Settings object containing client configuration.</p>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p><a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>python
+# Using token authentication
+client = PaperlessClient(</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Settings(</dt><dd><p>base_url=”<a class="reference external" href="https://paperless.example.com">https://paperless.example.com</a>”,
+token=”40characterslong40characterslong40charac”</p>
+</dd>
+</dl>
+<p>)</p>
+</div></blockquote>
+<p>)</p>
+<p># Using basic authentication
+client = PaperlessClient(</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Settings(</dt><dd><p>base_url=”<a class="reference external" href="https://paperless.example.com">https://paperless.example.com</a>”,
+username=”user”,
+password=”pass”</p>
+</dd>
+</dl>
+<p>)</p>
+</div></blockquote>
+<p>)</p>
+<p># Loading all settings from environment variables (e.g. PAPERLESS_TOKEN)
+client = PaperlessClient()</p>
+<p># With context manager
+with PaperlessClient(…) as client:</p>
+<blockquote>
+<div><p>docs = client.documents.list()</p>
+</div></blockquote>
+<p><a href="#id5"><span class="problematic" id="id6">``</span></a><a href="#id7"><span class="problematic" id="id8">`</span></a></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unpack</span></code>[<a class="reference internal" href="paperap.settings.html#paperap.settings.SettingsArgs" title="paperap.settings.SettingsArgs"><code class="xref py py-class docutils literal notranslate"><span class="pre">SettingsArgs</span></code></a>]</span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.plugins">
+<span class="sig-name descname"><span class="pre">plugins</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">,</span> <a class="reference internal" href="paperap.plugins.base.html#paperap.plugins.base.Plugin" title="paperap.plugins.base.Plugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plugin</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#paperap.client.PaperlessClient.plugins" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.correspondents">
+<span class="sig-name descname"><span class="pre">correspondents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.correspondents.html#paperap.resources.correspondents.CorrespondentResource" title="paperap.resources.correspondents.CorrespondentResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">CorrespondentResource</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.correspondents" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.custom_fields">
+<span class="sig-name descname"><span class="pre">custom_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.custom_fields.html#paperap.resources.custom_fields.CustomFieldResource" title="paperap.resources.custom_fields.CustomFieldResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomFieldResource</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.custom_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.document_types">
+<span class="sig-name descname"><span class="pre">document_types</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.document_types.html#paperap.resources.document_types.DocumentTypeResource" title="paperap.resources.document_types.DocumentTypeResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentTypeResource</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.document_types" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.document_metadata">
+<span class="sig-name descname"><span class="pre">document_metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.document_metadata.html#paperap.resources.document_metadata.DocumentMetadataResource" title="paperap.resources.document_metadata.DocumentMetadataResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentMetadataResource</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.document_metadata" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.document_suggestions">
+<span class="sig-name descname"><span class="pre">document_suggestions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.document_suggestions.html#paperap.resources.document_suggestions.DocumentSuggestionsResource" title="paperap.resources.document_suggestions.DocumentSuggestionsResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentSuggestionsResource</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.document_suggestions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.downloaded_documents">
+<span class="sig-name descname"><span class="pre">downloaded_documents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.document_download.html#paperap.resources.document_download.DownloadedDocumentResource" title="paperap.resources.document_download.DownloadedDocumentResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">DownloadedDocumentResource</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.downloaded_documents" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.documents">
+<span class="sig-name descname"><span class="pre">documents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.documents.html#paperap.resources.documents.DocumentResource" title="paperap.resources.documents.DocumentResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentResource</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.documents" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.document_notes">
+<span class="sig-name descname"><span class="pre">document_notes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.documents.html#paperap.resources.documents.DocumentNoteResource" title="paperap.resources.documents.DocumentNoteResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentNoteResource</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.document_notes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.groups">
+<span class="sig-name descname"><span class="pre">groups</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.users.html#paperap.resources.users.GroupResource" title="paperap.resources.users.GroupResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">GroupResource</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.groups" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.profile">
+<span class="sig-name descname"><span class="pre">profile</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.profile.html#paperap.resources.profile.ProfileResource" title="paperap.resources.profile.ProfileResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileResource</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.profile" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.saved_views">
+<span class="sig-name descname"><span class="pre">saved_views</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.saved_views.html#paperap.resources.saved_views.SavedViewResource" title="paperap.resources.saved_views.SavedViewResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">SavedViewResource</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.saved_views" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.share_links">
+<span class="sig-name descname"><span class="pre">share_links</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.share_links.html#paperap.resources.share_links.ShareLinksResource" title="paperap.resources.share_links.ShareLinksResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShareLinksResource</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.share_links" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.storage_paths">
+<span class="sig-name descname"><span class="pre">storage_paths</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.storage_paths.html#paperap.resources.storage_paths.StoragePathResource" title="paperap.resources.storage_paths.StoragePathResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoragePathResource</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.storage_paths" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.tags">
+<span class="sig-name descname"><span class="pre">tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.tags.html#paperap.resources.tags.TagResource" title="paperap.resources.tags.TagResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">TagResource</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.tags" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.tasks">
+<span class="sig-name descname"><span class="pre">tasks</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.tasks.html#paperap.resources.tasks.TaskResource" title="paperap.resources.tasks.TaskResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskResource</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.tasks" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.ui_settings">
+<span class="sig-name descname"><span class="pre">ui_settings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.ui_settings.html#paperap.resources.ui_settings.UISettingsResource" title="paperap.resources.ui_settings.UISettingsResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">UISettingsResource</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.ui_settings" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.users">
+<span class="sig-name descname"><span class="pre">users</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.users.html#paperap.resources.users.UserResource" title="paperap.resources.users.UserResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserResource</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.users" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.workflow_actions">
+<span class="sig-name descname"><span class="pre">workflow_actions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.workflows.html#paperap.resources.workflows.WorkflowActionResource" title="paperap.resources.workflows.WorkflowActionResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">WorkflowActionResource</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.workflow_actions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.workflow_triggers">
+<span class="sig-name descname"><span class="pre">workflow_triggers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.workflows.html#paperap.resources.workflows.WorkflowTriggerResource" title="paperap.resources.workflows.WorkflowTriggerResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">WorkflowTriggerResource</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.workflow_triggers" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.workflows">
+<span class="sig-name descname"><span class="pre">workflows</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.workflows.html#paperap.resources.workflows.WorkflowResource" title="paperap.resources.workflows.WorkflowResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">WorkflowResource</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.workflows" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/client.html#PaperlessClient.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.client.PaperlessClient.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>settings</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="paperap.settings.html#paperap.settings.Settings" title="paperap.settings.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>)</p></li>
+<li><p><strong>kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unpack</span></code>[<a class="reference internal" href="paperap.settings.html#paperap.settings.SettingsArgs" title="paperap.settings.SettingsArgs"><code class="xref py py-class docutils literal notranslate"><span class="pre">SettingsArgs</span></code></a>]</span>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.settings">
+<span class="sig-name descname"><span class="pre">settings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.settings.html#paperap.settings.Settings" title="paperap.settings.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.settings" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.auth">
+<span class="sig-name descname"><span class="pre">auth</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.auth.html#paperap.auth.AuthBase" title="paperap.auth.AuthBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuthBase</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.auth" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.session">
+<span class="sig-name descname"><span class="pre">session</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.Session" title="(in Requests v2.32.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Session</span></code></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.session" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.base_url">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">base_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.pydantic.dev/latest/api/networks/#pydantic.networks.HttpUrl" title="(in Pydantic v0.0.0)"><span class="pre">HttpUrl</span></a></em><a class="headerlink" href="#paperap.client.PaperlessClient.base_url" title="Link to this definition"></a></dt>
+<dd><p>Get the base URL.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.get_headers">
+<span class="sig-name descname"><span class="pre">get_headers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/client.html#PaperlessClient.get_headers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.client.PaperlessClient.get_headers" title="Link to this definition"></a></dt>
+<dd><p>Get headers for requests.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/client.html#PaperlessClient.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.client.PaperlessClient.close" title="Link to this definition"></a></dt>
+<dd><p>Close the client and release resources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.request_raw">
+<span class="sig-name descname"><span class="pre">request_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/client.html#PaperlessClient.request_raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.client.PaperlessClient.request_raw" title="Link to this definition"></a></dt>
+<dd><p>Make a request to the Paperless-NgX API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – HTTP method (GET, POST, PUT, DELETE).</p></li>
+<li><p><strong>endpoint</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.pydantic.dev/latest/api/networks/#pydantic.networks.HttpUrl" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">HttpUrl</span></code></a></span>) – API endpoint relative to base URL.</p></li>
+<li><p><strong>params</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Query parameters for the request.</p></li>
+<li><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Request body data.</p></li>
+<li><p><strong>files</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Files to upload.</p></li>
+<li><p><strong>json_response</strong> – Whether to parse the response as JSON.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.Response" title="(in Requests v2.32.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Response object or None if no content.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.AuthenticationError" title="paperap.exceptions.AuthenticationError"><strong>AuthenticationError</strong></a> – If authentication fails.</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the requested resource doesn’t exist.</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><strong>APIError</strong></a> – If the API returns an error.</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.PaperapError" title="paperap.exceptions.PaperapError"><strong>PaperapError</strong></a> – For other errors.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.request">
+<span class="sig-name descname"><span class="pre">request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/client.html#PaperlessClient.request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.client.PaperlessClient.request" title="Link to this definition"></a></dt>
+<dd><p>Make a request to the Paperless-NgX API.</p>
+<p>Generally, this should be done using resources, not by calling this method directly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – HTTP method (GET, POST, PUT, DELETE).</p></li>
+<li><p><strong>endpoint</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.pydantic.dev/latest/api/networks/#pydantic.networks.HttpUrl" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">HttpUrl</span></code></a></span>) – API endpoint relative to base URL.</p></li>
+<li><p><strong>params</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Query parameters for the request.</p></li>
+<li><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Request body data.</p></li>
+<li><p><strong>files</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Files to upload.</p></li>
+<li><p><strong>json_response</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Whether to parse the response as JSON.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Parsed response data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.generate_token">
+<span class="sig-name descname"><span class="pre">generate_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/client.html#PaperlessClient.generate_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.client.PaperlessClient.generate_token" title="Link to this definition"></a></dt>
+<dd><p>Generate an API token using username and password.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The base URL of the Paperless-NgX instance.</p></li>
+<li><p><strong>username</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Username for authentication.</p></li>
+<li><p><strong>password</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Password for authentication.</p></li>
+<li><p><strong>timeout</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Request timeout in seconds.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Generated API token.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.AuthenticationError" title="paperap.exceptions.AuthenticationError"><strong>AuthenticationError</strong></a> – If authentication fails.</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.PaperapError" title="paperap.exceptions.PaperapError"><strong>PaperapError</strong></a> – For other errors.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.get_statistics">
+<span class="sig-name descname"><span class="pre">get_statistics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/client.html#PaperlessClient.get_statistics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.client.PaperlessClient.get_statistics" title="Link to this definition"></a></dt>
+<dd><p>Get system statistics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing system statistics.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.get_system_status">
+<span class="sig-name descname"><span class="pre">get_system_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/client.html#PaperlessClient.get_system_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.client.PaperlessClient.get_system_status" title="Link to this definition"></a></dt>
+<dd><p>Get system status.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing system status information.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.client.PaperlessClient.get_config">
+<span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/client.html#PaperlessClient.get_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.client.PaperlessClient.get_config" title="Link to this definition"></a></dt>
+<dd><p>Get system configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing system configuration.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 

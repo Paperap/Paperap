@@ -3,8 +3,8 @@ paperap.models.mixins package
 
 .. automodule:: paperap.models.mixins
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Submodules
 ----------

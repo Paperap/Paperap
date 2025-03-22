@@ -25,7 +25,6 @@ from paperap.models.document.model import CustomFieldValues, Document, DocumentN
 from paperap.models.document.queryset import DocumentNoteQuerySet, DocumentQuerySet
 from paperap.models.document.suggestions import DocumentSuggestions, DocumentSuggestionsQuerySet
 
-# Explicitly export these symbols
 __all__ = [
     "Document",
     "DocumentNote",

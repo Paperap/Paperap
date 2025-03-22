@@ -47,6 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">paperap</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="paperap.html">paperap package</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="paperap.html#paperap.PaperlessClient"><code class="docutils literal notranslate"><span class="pre">PaperlessClient</span></code></a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="paperap.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="paperap.models.html">paperap.models package</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">paperap.plugins package</a></li>
@@ -88,15 +89,100 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="paperap-plugins-package">
-<h1>paperap.plugins package<a class="headerlink" href="#paperap-plugins-package" title="Link to this heading"></a></h1>
+  <section id="module-paperap.plugins">
+<span id="paperap-plugins-package"></span><h1>paperap.plugins package<a class="headerlink" href="#module-paperap.plugins" title="Link to this heading"></a></h1>
+<hr class="docutils" />
+<blockquote>
+<div><p>METADATA:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>File:    __init__.py</dt><dd><p>Project: paperap</p>
+</dd>
+<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.7</p>
+</dd>
+</dl>
+<p>Author:  Jess Mann
+Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
+<blockquote>
+<div><p>Copyright (c) 2025 Jess Mann</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>LAST MODIFIED:</p>
+<blockquote>
+<div><p>2025-03-04     By Jess Mann</p>
+</div></blockquote>
+</div></blockquote>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="paperap.plugins.base.html">paperap.plugins.base module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="paperap.plugins.collect_test_data.html">paperap.plugins.collect_test_data module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="paperap.plugins.manager.html">paperap.plugins.manager module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="paperap.plugins.base.html">paperap.plugins.base module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="paperap.plugins.base.html#paperap.plugins.base.ConfigType"><code class="docutils literal notranslate"><span class="pre">ConfigType</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.base.html#paperap.plugins.base.ConfigType.type"><code class="docutils literal notranslate"><span class="pre">ConfigType.type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.base.html#paperap.plugins.base.ConfigType.description"><code class="docutils literal notranslate"><span class="pre">ConfigType.description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.base.html#paperap.plugins.base.ConfigType.required"><code class="docutils literal notranslate"><span class="pre">ConfigType.required</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="paperap.plugins.base.html#paperap.plugins.base.Plugin"><code class="docutils literal notranslate"><span class="pre">Plugin</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.base.html#paperap.plugins.base.Plugin.name"><code class="docutils literal notranslate"><span class="pre">Plugin.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.base.html#paperap.plugins.base.Plugin.description"><code class="docutils literal notranslate"><span class="pre">Plugin.description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.base.html#paperap.plugins.base.Plugin.version"><code class="docutils literal notranslate"><span class="pre">Plugin.version</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.base.html#paperap.plugins.base.Plugin.manager"><code class="docutils literal notranslate"><span class="pre">Plugin.manager</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.base.html#paperap.plugins.base.Plugin.model_config"><code class="docutils literal notranslate"><span class="pre">Plugin.model_config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.base.html#paperap.plugins.base.Plugin.__init__"><code class="docutils literal notranslate"><span class="pre">Plugin.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.base.html#paperap.plugins.base.Plugin.client"><code class="docutils literal notranslate"><span class="pre">Plugin.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.base.html#paperap.plugins.base.Plugin.setup"><code class="docutils literal notranslate"><span class="pre">Plugin.setup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.base.html#paperap.plugins.base.Plugin.teardown"><code class="docutils literal notranslate"><span class="pre">Plugin.teardown()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.base.html#paperap.plugins.base.Plugin.get_config_schema"><code class="docutils literal notranslate"><span class="pre">Plugin.get_config_schema()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="paperap.plugins.collect_test_data.html">paperap.plugins.collect_test_data module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector"><code class="docutils literal notranslate"><span class="pre">SampleDataCollector</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.name"><code class="docutils literal notranslate"><span class="pre">SampleDataCollector.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.description"><code class="docutils literal notranslate"><span class="pre">SampleDataCollector.description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.version"><code class="docutils literal notranslate"><span class="pre">SampleDataCollector.version</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.fake"><code class="docutils literal notranslate"><span class="pre">SampleDataCollector.fake</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.test_dir"><code class="docutils literal notranslate"><span class="pre">SampleDataCollector.test_dir</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.validate_test_dir"><code class="docutils literal notranslate"><span class="pre">SampleDataCollector.validate_test_dir()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.setup"><code class="docutils literal notranslate"><span class="pre">SampleDataCollector.setup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.teardown"><code class="docutils literal notranslate"><span class="pre">SampleDataCollector.teardown()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.save_response"><code class="docutils literal notranslate"><span class="pre">SampleDataCollector.save_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.save_list_response"><code class="docutils literal notranslate"><span class="pre">SampleDataCollector.save_list_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.save_first_item"><code class="docutils literal notranslate"><span class="pre">SampleDataCollector.save_first_item()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.save_parsed_response"><code class="docutils literal notranslate"><span class="pre">SampleDataCollector.save_parsed_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.get_config_schema"><code class="docutils literal notranslate"><span class="pre">SampleDataCollector.get_config_schema()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.model_config"><code class="docutils literal notranslate"><span class="pre">SampleDataCollector.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="paperap.plugins.manager.html">paperap.plugins.manager module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="paperap.plugins.manager.html#paperap.plugins.manager.PluginConfig"><code class="docutils literal notranslate"><span class="pre">PluginConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.manager.html#paperap.plugins.manager.PluginConfig.enabled_plugins"><code class="docutils literal notranslate"><span class="pre">PluginConfig.enabled_plugins</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.manager.html#paperap.plugins.manager.PluginConfig.settings"><code class="docutils literal notranslate"><span class="pre">PluginConfig.settings</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="paperap.plugins.manager.html#paperap.plugins.manager.PluginManager"><code class="docutils literal notranslate"><span class="pre">PluginManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.manager.html#paperap.plugins.manager.PluginManager.plugins"><code class="docutils literal notranslate"><span class="pre">PluginManager.plugins</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.manager.html#paperap.plugins.manager.PluginManager.instances"><code class="docutils literal notranslate"><span class="pre">PluginManager.instances</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.manager.html#paperap.plugins.manager.PluginManager.config"><code class="docutils literal notranslate"><span class="pre">PluginManager.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.manager.html#paperap.plugins.manager.PluginManager.client"><code class="docutils literal notranslate"><span class="pre">PluginManager.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.manager.html#paperap.plugins.manager.PluginManager.model_config"><code class="docutils literal notranslate"><span class="pre">PluginManager.model_config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.manager.html#paperap.plugins.manager.PluginManager.enabled_plugins"><code class="docutils literal notranslate"><span class="pre">PluginManager.enabled_plugins</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.manager.html#paperap.plugins.manager.PluginManager.discover_plugins"><code class="docutils literal notranslate"><span class="pre">PluginManager.discover_plugins()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.manager.html#paperap.plugins.manager.PluginManager.configure"><code class="docutils literal notranslate"><span class="pre">PluginManager.configure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.manager.html#paperap.plugins.manager.PluginManager.get_plugin_config"><code class="docutils literal notranslate"><span class="pre">PluginManager.get_plugin_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.manager.html#paperap.plugins.manager.PluginManager.initialize_plugin"><code class="docutils literal notranslate"><span class="pre">PluginManager.initialize_plugin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.plugins.manager.html#paperap.plugins.manager.PluginManager.initialize_all_plugins"><code class="docutils literal notranslate"><span class="pre">PluginManager.initialize_all_plugins()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </section>

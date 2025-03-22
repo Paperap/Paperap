@@ -19,7 +19,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="paperap.models.document.model module" href="paperap.models.document.model.html" />
+    <link rel="next" title="paperap.models.document.meta module" href="paperap.models.document.meta.html" />
     <link rel="prev" title="paperap.models.document.suggestions.model module" href="paperap.models.document.suggestions.model.html" /> 
 </head>
 
@@ -47,6 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">paperap</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="paperap.html">paperap package</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="paperap.html#paperap.PaperlessClient"><code class="docutils literal notranslate"><span class="pre">PaperlessClient</span></code></a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="paperap.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l4 current"><a class="reference internal" href="paperap.models.html">paperap.models package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="paperap.plugins.html">paperap.plugins package</a></li>
@@ -91,8 +92,40 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="paperap-models-document-suggestions-queryset-module">
-<h1>paperap.models.document.suggestions.queryset module<a class="headerlink" href="#paperap-models-document-suggestions-queryset-module" title="Link to this heading"></a></h1>
+  <section id="module-paperap.models.document.suggestions.queryset">
+<span id="paperap-models-document-suggestions-queryset-module"></span><h1>paperap.models.document.suggestions.queryset module<a class="headerlink" href="#module-paperap.models.document.suggestions.queryset" title="Link to this heading"></a></h1>
+<hr class="docutils" />
+<p>METADATA:</p>
+<p>File:    queryset.py
+Project: paperap
+Created: 2025-03-18
+Version: 0.0.8
+Author:  Jess Mann
+Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a>
+Copyright (c) 2025 Jess Mann</p>
+<hr class="docutils" />
+<p>LAST MODIFIED:</p>
+<p>2025-03-18     By Jess Mann</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.models.document.suggestions.queryset.DocumentSuggestionsQuerySet">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.document.suggestions.queryset.</span></span><span class="sig-name descname"><span class="pre">DocumentSuggestionsQuerySet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_fetch_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_next_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_last_response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_urls_fetched</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/document/suggestions/queryset.html#DocumentSuggestionsQuerySet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.document.suggestions.queryset.DocumentSuggestionsQuerySet" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.queryset.html#paperap.models.abstract.queryset.StandardQuerySet" title="paperap.models.abstract.queryset.StandardQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardQuerySet</span></code></a>[DocumentSuggestions]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>resource</strong> (<span class="sphinx_autodoc_typehints-type">BaseResource[_Model, Self]</span>)</p></li>
+<li><p><strong>filters</strong> (<span class="sphinx_autodoc_typehints-type">dict[str, Any] | None</span>)</p></li>
+<li><p><strong>_cache</strong> (<span class="sphinx_autodoc_typehints-type">list[_Model] | None</span>)</p></li>
+<li><p><strong>_fetch_all</strong> (<span class="sphinx_autodoc_typehints-type">bool</span>)</p></li>
+<li><p><strong>_next_url</strong> (<span class="sphinx_autodoc_typehints-type">str | None</span>)</p></li>
+<li><p><strong>_last_response</strong> (<span class="sphinx_autodoc_typehints-type">ClientResponse</span>)</p></li>
+<li><p><strong>_iter</strong> (<span class="sphinx_autodoc_typehints-type">Iterator[_Model] | None</span>)</p></li>
+<li><p><strong>_urls_fetched</strong> (<span class="sphinx_autodoc_typehints-type">list[str] | None</span>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
@@ -100,7 +133,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="paperap.models.document.suggestions.model.html" class="btn btn-neutral float-left" title="paperap.models.document.suggestions.model module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="paperap.models.document.model.html" class="btn btn-neutral float-right" title="paperap.models.document.model module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="paperap.models.document.meta.html" class="btn btn-neutral float-right" title="paperap.models.document.meta module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

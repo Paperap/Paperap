@@ -12,7 +12,8 @@
     "pyright": "uvx --from basedpyright --with pydantic basedpyright src",
     "coverage-test": "uv run coverage run --source=src -m unittest discover -s tests/unit --failfast",
     "coverage-html": "uv run coverage html -d tests/coverage",
-    "coverage": "pytest --cov=paperap --cov-report=html tests/unit"
+    "coverage": "pytest --cov=paperap --cov-report=html tests/unit",
+    "docs": "python docs/generaste_api_docs.py"
   },
   "author": "Jess Mann <jess@jmann.me>",
   "license": "MIT",

@@ -1,0 +1,1216 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>paperap.models.abstract.queryset &mdash; Paperap 0.0.8 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=53b53b71"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            Paperap
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Paperap</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">paperap.models.abstract.queryset</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for paperap.models.abstract.queryset</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">----------------------------------------------------------------------------</span>
+
+<span class="sd">   METADATA:</span>
+
+<span class="sd">       File:    queryset.py</span>
+<span class="sd">        Project: paperap</span>
+<span class="sd">       Created: 2025-03-04</span>
+<span class="sd">        Version: 0.0.9</span>
+<span class="sd">       Author:  Jess Mann</span>
+<span class="sd">       Email:   jess@jmann.me</span>
+<span class="sd">        Copyright (c) 2025 Jess Mann</span>
+
+<span class="sd">----------------------------------------------------------------------------</span>
+
+<span class="sd">   LAST MODIFIED:</span>
+
+<span class="sd">       2025-03-04     By Jess Mann</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">string</span><span class="w"> </span><span class="kn">import</span> <span class="n">Template</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Final</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Self</span><span class="p">,</span> <span class="n">TypeAlias</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">override</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpUrl</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeVar</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">FilterDisabledError</span><span class="p">,</span> <span class="n">MultipleObjectsFoundError</span><span class="p">,</span> <span class="n">ObjectNotFoundError</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.abstract.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">StandardModel</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.resources.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseResource</span><span class="p">,</span> <span class="n">StandardResource</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># _BaseResource = TypeVar(&quot;_BaseResource&quot;, bound=&quot;BaseResource&quot;, default=&quot;BaseResource&quot;)</span>
+
+<span class="nb">type</span> <span class="n">ClientResponse</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="BaseQuerySet">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.BaseQuerySet">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseQuerySet</span><span class="p">[</span><span class="n">_Model</span><span class="p">:</span> <span class="n">BaseModel</span><span class="p">](</span><span class="n">Iterable</span><span class="p">[</span><span class="n">_Model</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A lazy-loaded, chainable query interface for Paperless NGX resources.</span>
+
+<span class="sd">    BaseQuerySet provides pagination, filtering, and caching functionality similar to Django&#39;s QuerySet.</span>
+<span class="sd">    It&#39;s designed to be lazy - only fetching data when it&#39;s actually needed.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        resource: The BaseResource instance.</span>
+<span class="sd">        filters: Initial filter parameters.</span>
+<span class="sd">        _cache: Optional internal result cache.</span>
+<span class="sd">        _fetch_all: Whether all results have been fetched.</span>
+<span class="sd">        _next_url: URL for the next page of results.</span>
+<span class="sd">        _last_response: Optional last response from the API.</span>
+<span class="sd">        _iter: Optional iterator for the results.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A new instance of BaseQuerySet.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        # Create a QuerySet for documents</span>
+<span class="sd">        &gt;&gt;&gt; docs = client.documents()</span>
+<span class="sd">        &gt;&gt;&gt; for doc in docs:</span>
+<span class="sd">        ...    print(doc.id)</span>
+<span class="sd">        1</span>
+<span class="sd">        2</span>
+<span class="sd">        3</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">resource</span><span class="p">:</span> <span class="s2">&quot;BaseResource[_Model, Self]&quot;</span>
+    <span class="n">filters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+    <span class="n">_last_response</span><span class="p">:</span> <span class="n">ClientResponse</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_result_cache</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">_Model</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">_fetch_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_next_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_urls_fetched</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">_iter</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">_Model</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="BaseQuerySet.__init__">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.BaseQuerySet.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">resource</span><span class="p">:</span> <span class="s2">&quot;BaseResource[_Model, Self]&quot;</span><span class="p">,</span>
+        <span class="n">filters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">_cache</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">_Model</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">_fetch_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">_next_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">_last_response</span><span class="p">:</span> <span class="n">ClientResponse</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">_iter</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">_Model</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">_urls_fetched</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resource</span> <span class="o">=</span> <span class="n">resource</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filters</span> <span class="o">=</span> <span class="n">filters</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span> <span class="o">=</span> <span class="n">_cache</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_all</span> <span class="o">=</span> <span class="n">_fetch_all</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_next_url</span> <span class="o">=</span> <span class="n">_next_url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_urls_fetched</span> <span class="o">=</span> <span class="n">_urls_fetched</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span> <span class="o">=</span> <span class="n">_last_response</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iter</span> <span class="o">=</span> <span class="n">_iter</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">_Model</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the model class associated with the resource.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The model class</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            # Create a model instance</span>
+<span class="sd">            &gt;&gt;&gt; model = queryset._model(**params)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">model_class</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BaseModel.Meta[Any]&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the model&#39;s metadata.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The model&#39;s metadata</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            # Get the model&#39;s metadata</span>
+<span class="sd">            &gt;&gt;&gt; queryset._meta.read_only_fields</span>
+<span class="sd">            {&#39;id&#39;, &#39;added&#39;, &#39;modified&#39;}</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">_meta</span>  <span class="c1"># pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset the QuerySet to its initial state.</span>
+
+<span class="sd">        This clears the result cache and resets the fetch state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_all</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_next_url</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_urls_fetched</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iter</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the current filters with new values.</span>
+
+<span class="sd">        This updates the current queryset instance. It does not return a new instance. For that reason,</span>
+<span class="sd">        do not call this directly. Call filter() or exclude() instead.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            values: New filter values to add</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            FilterDisabledError: If a filter is not allowed by the resource</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            # Update filters with new values</span>
+<span class="sd">            queryset._update_filters({&quot;correspondent&quot;: 1})</span>
+
+<span class="sd">            # Update filters with multiple values</span>
+<span class="sd">            queryset._update_filters({&quot;correspondent&quot;: 1, &quot;document_type&quot;: 2})</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">_value</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">filter_allowed</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">FilterDisabledError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Filtering by </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not appear to be supported by the API.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">values</span><span class="p">:</span>
+            <span class="c1"># Reset the cache if filters change</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reset</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">values</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BaseQuerySet.filter">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.BaseQuerySet.filter">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a new QuerySet with the given filters applied.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Filters to apply, where keys are field names and values are desired values.</span>
+<span class="sd">                    Supports Django-style lookups like field__contains, field__in, etc.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A new QuerySet with the additional filters applied</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            # Get documents with specific correspondent</span>
+<span class="sd">            docs = client.documents.filter(correspondent=1)</span>
+
+<span class="sd">            # Get documents with specific correspondent and document type</span>
+<span class="sd">            docs = client.documents.filter(correspondent=1, document_type=2)</span>
+
+<span class="sd">            # Get documents with title containing &quot;invoice&quot;</span>
+<span class="sd">            docs = client.documents.filter(title__contains=&quot;invoice&quot;)</span>
+
+<span class="sd">            # Get documents with IDs in a list</span>
+<span class="sd">            docs = client.documents.filter(id__in=[1, 2, 3])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">processed_filters</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Handle list values for __in lookups</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">set</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="c1"># Convert list to comma-separated string for the API</span>
+                <span class="n">processed_value</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">)</span>
+                <span class="n">processed_filters</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">processed_value</span>
+            <span class="c1"># Handle boolean values</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+                <span class="n">processed_filters</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="c1"># Handle normal values</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">processed_filters</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chain</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span> <span class="o">**</span><span class="n">processed_filters</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="BaseQuerySet.exclude">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.BaseQuerySet.exclude">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">exclude</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a new QuerySet excluding objects with the given filters.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Filters to exclude, where keys are field names and values are excluded values</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A new QuerySet excluding objects that match the filters</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            # Get documents with any correspondent except ID 1</span>
+<span class="sd">            docs = client.documents.exclude(correspondent=1)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Transform each key to its &quot;not&quot; equivalent</span>
+        <span class="n">exclude_filters</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s2">&quot;__&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+                <span class="n">field</span><span class="p">,</span> <span class="n">lookup</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="c1"># If it already has a &quot;not&quot; prefix, remove it</span>
+                <span class="k">if</span> <span class="n">lookup</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;not_&quot;</span><span class="p">):</span>
+                    <span class="n">exclude_filters</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">lookup</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">exclude_filters</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">__not_</span><span class="si">{</span><span class="n">lookup</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">exclude_filters</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">__not&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chain</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span> <span class="o">**</span><span class="n">exclude_filters</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="BaseQuerySet.get">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.BaseQuerySet.get">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Model</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve a single object from the API.</span>
+
+<span class="sd">        Raises NotImplementedError. Subclasses may implement this.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">             pk: The primary key (e.g. the id) of the object to retrieve</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A single object matching the query</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ObjectNotFoundError: If no object or multiple objects are found</span>
+<span class="sd">            NotImplementedError: If the method is not implemented by the subclass</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            # Get document with ID 123</span>
+<span class="sd">            doc = client.documents.get(123)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Getting a single resource is not defined by BaseModels without an id.&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_last_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BaseQuerySet.count">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.BaseQuerySet.count">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the total number of objects in the queryset.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The total count of objects matching the filters</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError: If the response does not have a count attribute</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If we have a last response, we can use the &quot;count&quot; field</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">count</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_last_count</span><span class="p">())</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">count</span>
+
+        <span class="c1"># Get one page of results, to populate last response</span>
+        <span class="n">_iter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_iter</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">)</span>
+
+        <span class="c1"># TODO Hack</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">_iter</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span><span class="p">:</span>
+            <span class="c1"># I don&#39;t think this should ever occur, but just in case.</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Requested iter, but no last response&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">count</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_last_count</span><span class="p">())</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">count</span>
+
+        <span class="c1"># I don&#39;t think this should ever occur, but just in case.</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected Error: Could not determine count of objects. Last response: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseQuerySet.count_this_page">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.BaseQuerySet.count_this_page">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">count_this_page</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the number of objects on the current page.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The count of objects on the current page</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError: If _last_response is not set</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If we have a last response, we can count it without a new request</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span><span class="p">)</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+
+        <span class="c1"># Get one page of results, to populate last response</span>
+        <span class="n">_iter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_iter</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">)</span>
+
+        <span class="c1"># TODO Hack</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">_iter</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span><span class="p">:</span>
+            <span class="c1"># I don&#39;t think this should ever occur, but just in case.</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Requested iter, but no last response&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseQuerySet.all">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.BaseQuerySet.all">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a new QuerySet that copies the current one.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A copy of the current BaseQuerySet</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chain</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="BaseQuerySet.order_by">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.BaseQuerySet.order_by">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">order_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">fields</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a new QuerySet ordered by the specified fields.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *fields: Field names to order by. Prefix with &#39;-&#39; for descending order.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A new QuerySet with the ordering applied</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            # Order documents by title ascending</span>
+<span class="sd">            docs = client.documents.order_by(&#39;title&#39;)</span>
+
+<span class="sd">            # Order documents by added date descending</span>
+<span class="sd">            docs = client.documents.order_by(&#39;-added&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
+
+        <span class="c1"># Combine with existing ordering if any</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ordering&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ordering</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="n">ordering</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ordering</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">ordering</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ordering</span><span class="p">)</span>
+
+        <span class="c1"># Add new ordering fields</span>
+        <span class="n">new_ordering</span> <span class="o">=</span> <span class="n">ordering</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+
+        <span class="c1"># Join with commas for API</span>
+        <span class="n">ordering_param</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_ordering</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chain</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span> <span class="s2">&quot;ordering&quot;</span><span class="p">:</span> <span class="n">ordering_param</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="BaseQuerySet.first">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.BaseQuerySet.first">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Model</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the first object in the QuerySet, or None if empty.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The first object or None if no objects match</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># If not cached, create a copy limited to 1 result</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chain</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span> <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}))</span>
+        <span class="k">return</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">results</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="BaseQuerySet.last">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.BaseQuerySet.last">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">last</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Model</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the last object in the QuerySet, or None if empty.</span>
+
+<span class="sd">        Note: This requires fetching all results to determine the last one.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The last object or None if no objects match</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If we have all results, we can just return the last one</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_all</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># We need all results to get the last one</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_all_results</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="BaseQuerySet.exists">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.BaseQuerySet.exists">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return True if the QuerySet contains any results.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if there are any objects matching the filters</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check the cache before potentially making a new request</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_all</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+        <span class="c1"># Check if there&#39;s at least one result</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="BaseQuerySet.none">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.BaseQuerySet.none">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">none</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return an empty QuerySet.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An empty QuerySet</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chain</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="BaseQuerySet.filter_field_by_str">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.BaseQuerySet.filter_field_by_str">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter_field_by_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter a queryset based on a given field.</span>
+
+<span class="sd">        This allows subclasses to easily implement custom filter methods.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            field: The field name to filter by.</span>
+<span class="sd">            value: The value to filter against.</span>
+<span class="sd">            exact: Whether to filter by an exact match.</span>
+<span class="sd">            case_insensitive: Whether the filter should be case-insensitive.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A new QuerySet instance with the filter applied.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">exact</span><span class="p">:</span>
+            <span class="n">lookup</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">__iexact&quot;</span> <span class="k">if</span> <span class="n">case_insensitive</span> <span class="k">else</span> <span class="n">field</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lookup</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">__icontains&quot;</span> <span class="k">if</span> <span class="n">case_insensitive</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">__contains&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">lookup</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_all_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetch all results from the API and populate the cache.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_all</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Clear existing cache if any</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Initial fetch</span>
+        <span class="n">iterator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_iter</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">)</span>
+
+        <span class="c1"># Collect results from initial page</span>
+        <span class="c1"># TODO: Consider itertools chain for performance reasons (?)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">iterator</span><span class="p">))</span>
+
+        <span class="c1"># Fetch additional pages if available</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_url</span><span class="p">:</span>
+            <span class="n">iterator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_iter</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_next_url</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">iterator</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_all</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_request_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">HttpUrl</span> <span class="o">|</span> <span class="n">Template</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">_Model</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get an iterator of resources.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            url: The URL to request, if different from the resource&#39;s default.</span>
+<span class="sd">            params: Query parameters.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An iterator over the resources.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError: If the request cannot be completed.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            # Iterate over documents</span>
+<span class="sd">            for doc in queryset._request_iter():</span>
+<span class="sd">                print(doc)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">response</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">request_raw</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No response from request.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span> <span class="o">=</span> <span class="n">response</span>
+
+        <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">handle_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">ClientResponse</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the next url, and adjust our references accordingly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Allow passing a different response</span>
+        <span class="k">if</span> <span class="n">response</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Last response is not set</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">next_url</span> <span class="o">:=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_next_url</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># For safety, check both instance attributes, even though the first check isn&#39;t strictly necessary</span>
+        <span class="c1"># this hopefully future proofs any changes to the implementation</span>
+        <span class="k">if</span> <span class="n">next_url</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_url</span> <span class="ow">or</span> <span class="n">next_url</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_urls_fetched</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;Next URL was previously fetched. Stopping iteration. URL: </span><span class="si">%s</span><span class="s2">, Already Fetched: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">next_url</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_urls_fetched</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_next_url</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Cache it</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_next_url</span> <span class="o">=</span> <span class="n">next_url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_urls_fetched</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">next_url</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_url</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_chain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a copy of the current BaseQuerySet with updated attributes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Attributes to update in the new BaseQuerySet</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A new QuerySet with the updated attributes</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create a new BaseQuerySet with copied attributes</span>
+        <span class="n">clone</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="p">)</span>  <span class="c1"># type: ignore # pyright not handling Self correctly</span>
+
+        <span class="c1"># Copy attributes from self</span>
+        <span class="n">clone</span><span class="o">.</span><span class="n">filters</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">)</span>
+        <span class="c1"># Do not copy the cache, fetch_all, etc, since filters may change it</span>
+
+        <span class="c1"># Update with provided kwargs</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;filters&quot;</span> <span class="ow">and</span> <span class="n">value</span><span class="p">:</span>
+                <span class="n">clone</span><span class="o">.</span><span class="n">_update_filters</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>  <span class="c1"># pylint: disable=protected-access</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">clone</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">clone</span>
+
+<div class="viewcode-block" id="BaseQuerySet.__iter__">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.BaseQuerySet.__iter__">[docs]</a>
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">_Model</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Iterate over the objects in the QuerySet.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An iterator over the objects</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If we have a fully populated cache, use it</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_all</span><span class="p">:</span>
+            <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iter</span><span class="p">:</span>
+            <span class="c1"># Start a new iteration</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_iter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_iter</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">)</span>
+
+            <span class="c1"># Yield objects from the current page</span>
+            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iter</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                <span class="k">yield</span> <span class="n">obj</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_next</span><span class="p">()</span>
+
+        <span class="c1"># If there are more pages, keep going</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_url</span><span class="p">:</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_iter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_iter</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_next_url</span><span class="p">)</span>
+
+            <span class="c1"># Yield objects from the current page</span>
+            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iter</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                <span class="k">yield</span> <span class="n">obj</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_next</span><span class="p">()</span>
+
+        <span class="c1"># We&#39;ve fetched everything</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_all</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iter</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="BaseQuerySet.__len__">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.BaseQuerySet.__len__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the number of objects in the QuerySet.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The count of objects</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="BaseQuerySet.__bool__">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.BaseQuerySet.__bool__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return True if the QuerySet has any results.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if there are any objects matching the filters</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="BaseQuerySet.__getitem__">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.BaseQuerySet.__getitem__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">slice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Model</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">_Model</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve an item or slice of items from the QuerySet.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key: An integer index or slice</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A single object or list of objects</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            IndexError: If the index is out of range</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="c1"># Handle slicing</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">start</span> <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+            <span class="n">stop</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">stop</span>
+
+            <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="p">(</span><span class="n">stop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">stop</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="c1"># Negative indexing requires knowing the full size</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_all_results</span><span class="p">()</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+            <span class="c1"># Optimize by using limit/offset if available</span>
+            <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">stop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Simple limit</span>
+                <span class="n">clone</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chain</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span> <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="n">stop</span><span class="p">})</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">clone</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">results</span>
+
+            <span class="k">if</span> <span class="n">start</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">stop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Limit with offset</span>
+                <span class="n">clone</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chain</span><span class="p">(</span>
+                    <span class="n">filters</span><span class="o">=</span><span class="p">{</span>
+                        <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span>
+                        <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="n">stop</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span>
+                        <span class="s2">&quot;offset&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">clone</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">results</span>
+
+            <span class="k">if</span> <span class="n">start</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">stop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Just offset</span>
+                <span class="n">clone</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chain</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">})</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_all_results</span><span class="p">()</span>  <span class="c1"># We need all results after the offset</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span>
+
+            <span class="c1"># Default to fetching all and slicing</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_all_results</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="c1"># Handle integer indexing</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Negative indexing requires the full result set</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_all_results</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="c1"># Positive indexing - we can optimize with limit/offset</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">key</span><span class="p">:</span>
+            <span class="c1"># Already have this item cached</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="c1"># Fetch specific item by position</span>
+        <span class="n">clone</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chain</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span> <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">})</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">clone</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">results</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;BaseQuerySet index </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> out of range&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="BaseQuerySet.__contains__">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.BaseQuerySet.__contains__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return True if the QuerySet contains the given object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            item: The object to check for</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if the object is in the QuerySet</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">obj</span> <span class="o">==</span> <span class="n">item</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="StandardQuerySet">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.StandardQuerySet">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">StandardQuerySet</span><span class="p">[</span><span class="n">_Model</span><span class="p">:</span> <span class="n">StandardModel</span><span class="p">](</span><span class="n">BaseQuerySet</span><span class="p">[</span><span class="n">_Model</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A queryset for StandardModel instances (i.e. BaseModels with standard fields, like id).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A new instance of StandardModel.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If resource is not provided.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        # Create a StandardModel instance</span>
+<span class="sd">        model = StandardModel(id=1)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        resource: The BaseResource instance.</span>
+<span class="sd">        filters: Initial filter parameters.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A new instance of StandardQuerySet.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ObjectNotFoundError: If no object or multiple objects are found.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        # Create a StandardQuerySet for documents</span>
+<span class="sd">        docs = StandardQuerySet(resource=client.documents)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">resource</span><span class="p">:</span> <span class="s2">&quot;StandardResource[_Model, Self]&quot;</span>  <span class="c1"># type: ignore # pyright is getting inheritance wrong</span>
+
+<div class="viewcode-block" id="StandardQuerySet.get">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.StandardQuerySet.get">[docs]</a>
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Model</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve a single object from the API.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pk: The ID of the object to retrieve</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A single object matching the query</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ObjectNotFoundError: If no object or multiple objects are found</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            # Get document with ID 123</span>
+<span class="sd">            doc = client.documents.get(123)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Attempt to find it in the result cache</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_cache</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">pk</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">obj</span>
+
+        <span class="c1"># Direct lookup by ID - use the resource&#39;s get method</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StandardQuerySet.id">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.StandardQuerySet.id">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter models by ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: The ID or list of IDs to filter by</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Filtered QuerySet</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">id__in</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StandardQuerySet.__contains__">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.StandardQuerySet.__contains__">[docs]</a>
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return True if the QuerySet contains the given object.</span>
+
+<span class="sd">        NOTE: This method only ensures a match by ID, not by full object equality.</span>
+<span class="sd">        This is intentional, as the object may be outdated or not fully populated.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            item: The object or ID to check for</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if the object is in the QuerySet</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Handle integers directly</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">item</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># Handle model objects that have an id attribute</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">item</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+            <span class="k">pass</span>
+
+        <span class="c1"># For any other type, it&#39;s not in the queryset</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="StandardQuerySet.bulk_action">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.StandardQuerySet.bulk_action">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bulk_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClientResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform a bulk action on all objects in the queryset.</span>
+
+<span class="sd">        This method fetches all IDs in the queryset and passes them to the resource&#39;s bulk_action method.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            action: The action to perform</span>
+<span class="sd">            **kwargs: Additional parameters for the action</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The API response</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError: If the resource doesn&#39;t support bulk actions</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">fn</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span> <span class="s2">&quot;bulk_action&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Resource </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not support bulk actions&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Fetch all IDs in the queryset</span>
+        <span class="c1"># We only need IDs, so optimize by requesting just the ID field if possible</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ids</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StandardQuerySet.bulk_delete">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.StandardQuerySet.bulk_delete">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bulk_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClientResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Delete all objects in the queryset.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The API response</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_action</span><span class="p">(</span><span class="s2">&quot;delete&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StandardQuerySet.bulk_update">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.StandardQuerySet.bulk_update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bulk_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClientResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update all objects in the queryset with the given values.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Fields to update</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The API response</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">fn</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span> <span class="s2">&quot;bulk_update&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Resource </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not support bulk updates&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Fetch all IDs in the queryset</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ids</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StandardQuerySet.bulk_assign_tags">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.StandardQuerySet.bulk_assign_tags">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bulk_assign_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">remove_existing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClientResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assign tags to all objects in the queryset.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tag_ids: List of tag IDs to assign</span>
+<span class="sd">            remove_existing: If True, remove existing tags before assigning new ones</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The API response</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">fn</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span> <span class="s2">&quot;bulk_assign_tags&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Resource </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not support bulk tag assignment&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Fetch all IDs in the queryset</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ids</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">tag_ids</span><span class="p">,</span> <span class="n">remove_existing</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StandardQuerySet.bulk_assign_correspondent">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.StandardQuerySet.bulk_assign_correspondent">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bulk_assign_correspondent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">correspondent_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClientResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assign a correspondent to all objects in the queryset.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            correspondent_id: Correspondent ID to assign</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The API response</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">fn</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span> <span class="s2">&quot;bulk_assign_correspondent&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Resource </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not support bulk correspondent assignment&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Fetch all IDs in the queryset</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ids</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">correspondent_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StandardQuerySet.bulk_assign_document_type">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.StandardQuerySet.bulk_assign_document_type">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bulk_assign_document_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document_type_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClientResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assign a document type to all objects in the queryset.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            document_type_id: Document type ID to assign</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The API response</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">fn</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span> <span class="s2">&quot;bulk_assign_document_type&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Resource </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not support bulk document type assignment&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Fetch all IDs in the queryset</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ids</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">document_type_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StandardQuerySet.bulk_assign_storage_path">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.StandardQuerySet.bulk_assign_storage_path">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bulk_assign_storage_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage_path_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClientResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assign a storage path to all objects in the queryset.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            storage_path_id: Storage path ID to assign</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The API response</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">fn</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span> <span class="s2">&quot;bulk_assign_storage_path&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Resource </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not support bulk storage path assignment&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Fetch all IDs in the queryset</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ids</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">storage_path_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StandardQuerySet.bulk_assign_owner">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.queryset.html#paperap.models.StandardQuerySet.bulk_assign_owner">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bulk_assign_owner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClientResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assign an owner to all objects in the queryset.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            owner_id: Owner ID to assign</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The API response</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">fn</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span> <span class="s2">&quot;bulk_assign_owner&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Resource </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not support bulk owner assignment&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Fetch all IDs in the queryset</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ids</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">owner_id</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Jess Mann.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

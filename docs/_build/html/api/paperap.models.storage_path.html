@@ -47,6 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">paperap</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="paperap.html">paperap package</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="paperap.html#paperap.PaperlessClient"><code class="docutils literal notranslate"><span class="pre">PaperlessClient</span></code></a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="paperap.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l4 current"><a class="reference internal" href="paperap.models.html">paperap.models package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="paperap.plugins.html">paperap.plugins package</a></li>
@@ -89,14 +90,75 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="paperap-models-storage-path-package">
-<h1>paperap.models.storage_path package<a class="headerlink" href="#paperap-models-storage-path-package" title="Link to this heading"></a></h1>
+  <section id="module-paperap.models.storage_path">
+<span id="paperap-models-storage-path-package"></span><h1>paperap.models.storage_path package<a class="headerlink" href="#module-paperap.models.storage_path" title="Link to this heading"></a></h1>
+<hr class="docutils" />
+<blockquote>
+<div><p>METADATA:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>File:    __init__.py</dt><dd><p>Project: paperap</p>
+</dd>
+<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.5</p>
+</dd>
+</dl>
+<p>Author:  Jess Mann
+Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
+<blockquote>
+<div><p>Copyright (c) 2025 Jess Mann</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>LAST MODIFIED:</p>
+<blockquote>
+<div><p>2025-03-04     By Jess Mann</p>
+</div></blockquote>
+</div></blockquote>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="paperap.models.storage_path.model.html">paperap.models.storage_path.model module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="paperap.models.storage_path.queryset.html">paperap.models.storage_path.queryset module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="paperap.models.storage_path.model.html">paperap.models.storage_path.model module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath"><code class="docutils literal notranslate"><span class="pre">StoragePath</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath.name"><code class="docutils literal notranslate"><span class="pre">StoragePath.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath.slug"><code class="docutils literal notranslate"><span class="pre">StoragePath.slug</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath.path"><code class="docutils literal notranslate"><span class="pre">StoragePath.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath.document_count"><code class="docutils literal notranslate"><span class="pre">StoragePath.document_count</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath.owner"><code class="docutils literal notranslate"><span class="pre">StoragePath.owner</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath.user_can_change"><code class="docutils literal notranslate"><span class="pre">StoragePath.user_can_change</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath.Meta"><code class="docutils literal notranslate"><span class="pre">StoragePath.Meta</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath.Meta.read_only_fields"><code class="docutils literal notranslate"><span class="pre">StoragePath.Meta.read_only_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath.Meta.queryset"><code class="docutils literal notranslate"><span class="pre">StoragePath.Meta.queryset</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath.Meta.blacklist_filtering_params"><code class="docutils literal notranslate"><span class="pre">StoragePath.Meta.blacklist_filtering_params</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath.Meta.field_map"><code class="docutils literal notranslate"><span class="pre">StoragePath.Meta.field_map</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath.Meta.filtering_disabled"><code class="docutils literal notranslate"><span class="pre">StoragePath.Meta.filtering_disabled</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath.Meta.filtering_fields"><code class="docutils literal notranslate"><span class="pre">StoragePath.Meta.filtering_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath.Meta.supported_filtering_params"><code class="docutils literal notranslate"><span class="pre">StoragePath.Meta.supported_filtering_params</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath.Meta.model"><code class="docutils literal notranslate"><span class="pre">StoragePath.Meta.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath.Meta.name"><code class="docutils literal notranslate"><span class="pre">StoragePath.Meta.name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath.documents"><code class="docutils literal notranslate"><span class="pre">StoragePath.documents</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath.model_config"><code class="docutils literal notranslate"><span class="pre">StoragePath.model_config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath.model_post_init"><code class="docutils literal notranslate"><span class="pre">StoragePath.model_post_init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath.id"><code class="docutils literal notranslate"><span class="pre">StoragePath.id</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="paperap.models.storage_path.queryset.html">paperap.models.storage_path.queryset module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="paperap.models.storage_path.queryset.html#paperap.models.storage_path.queryset.StoragePathQuerySet"><code class="docutils literal notranslate"><span class="pre">StoragePathQuerySet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.storage_path.queryset.html#paperap.models.storage_path.queryset.StoragePathQuerySet.path"><code class="docutils literal notranslate"><span class="pre">StoragePathQuerySet.path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.storage_path.queryset.html#paperap.models.storage_path.queryset.StoragePathQuerySet.match"><code class="docutils literal notranslate"><span class="pre">StoragePathQuerySet.match()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.storage_path.queryset.html#paperap.models.storage_path.queryset.StoragePathQuerySet.matching_algorithm"><code class="docutils literal notranslate"><span class="pre">StoragePathQuerySet.matching_algorithm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.storage_path.queryset.html#paperap.models.storage_path.queryset.StoragePathQuerySet.case_insensitive"><code class="docutils literal notranslate"><span class="pre">StoragePathQuerySet.case_insensitive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.storage_path.queryset.html#paperap.models.storage_path.queryset.StoragePathQuerySet.user_can_change"><code class="docutils literal notranslate"><span class="pre">StoragePathQuerySet.user_can_change()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </section>

@@ -47,6 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">paperap</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="paperap.html">paperap package</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="paperap.html#paperap.PaperlessClient"><code class="docutils literal notranslate"><span class="pre">PaperlessClient</span></code></a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="paperap.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="paperap.models.html">paperap.models package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="paperap.plugins.html">paperap.plugins package</a></li>
@@ -89,8 +90,71 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="paperap-resources-storage-paths-module">
-<h1>paperap.resources.storage_paths module<a class="headerlink" href="#paperap-resources-storage-paths-module" title="Link to this heading"></a></h1>
+  <section id="module-paperap.resources.storage_paths">
+<span id="paperap-resources-storage-paths-module"></span><h1>paperap.resources.storage_paths module<a class="headerlink" href="#module-paperap.resources.storage_paths" title="Link to this heading"></a></h1>
+<hr class="docutils" />
+<blockquote>
+<div><p>METADATA:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>File:    storage_paths.py</dt><dd><p>Project: paperap</p>
+</dd>
+<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.9</p>
+</dd>
+</dl>
+<p>Author:  Jess Mann
+Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
+<blockquote>
+<div><p>Copyright (c) 2025 Jess Mann</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>LAST MODIFIED:</p>
+<blockquote>
+<div><p>2025-03-04     By Jess Mann</p>
+</div></blockquote>
+</div></blockquote>
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.resources.storage_paths.StoragePathResource">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.resources.storage_paths.</span></span><span class="sig-name descname"><span class="pre">StoragePathResource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/resources/storage_paths.html#StoragePathResource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.resources.storage_paths.StoragePathResource" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.StandardResource" title="paperap.resources.base.StandardResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardResource</span></code></a>[<a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath" title="paperap.models.storage_path.model.StoragePath"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoragePath</span></code></a>, <a class="reference internal" href="paperap.models.storage_path.queryset.html#paperap.models.storage_path.queryset.StoragePathQuerySet" title="paperap.models.storage_path.queryset.StoragePathQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoragePathQuerySet</span></code></a>], <a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.BulkEditing" title="paperap.resources.base.BulkEditing"><code class="xref py py-class docutils literal notranslate"><span class="pre">BulkEditing</span></code></a></p>
+<p>Resource for managing storage paths.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>client</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="paperap.client.html#paperap.client.PaperlessClient" title="paperap.client.PaperlessClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">PaperlessClient</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.resources.storage_paths.StoragePathResource.model_class">
+<span class="sig-name descname"><span class="pre">model_class</span></span><a class="headerlink" href="#paperap.resources.storage_paths.StoragePathResource.model_class" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="paperap.models.storage_path.model.html#paperap.models.storage_path.model.StoragePath" title="paperap.models.storage_path.model.StoragePath"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoragePath</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.resources.storage_paths.StoragePathResource.queryset_class">
+<span class="sig-name descname"><span class="pre">queryset_class</span></span><a class="headerlink" href="#paperap.resources.storage_paths.StoragePathResource.queryset_class" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="paperap.models.storage_path.queryset.html#paperap.models.storage_path.queryset.StoragePathQuerySet" title="paperap.models.storage_path.queryset.StoragePathQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoragePathQuerySet</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.resources.storage_paths.StoragePathResource.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'storage_paths'</span></em><a class="headerlink" href="#paperap.resources.storage_paths.StoragePathResource.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.resources.storage_paths.StoragePathResource.endpoints">
+<span class="sig-name descname"><span class="pre">endpoints</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[Endpoints]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'create':</span> <span class="pre">&lt;string.Template</span> <span class="pre">object&gt;,</span> <span class="pre">'delete':</span> <span class="pre">&lt;string.Template</span> <span class="pre">object&gt;,</span> <span class="pre">'detail':</span> <span class="pre">&lt;string.Template</span> <span class="pre">object&gt;,</span> <span class="pre">'list':</span> <span class="pre">&lt;string.Template</span> <span class="pre">object&gt;,</span> <span class="pre">'update':</span> <span class="pre">&lt;string.Template</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#paperap.resources.storage_paths.StoragePathResource.endpoints" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.resources.storage_paths.StoragePathResource.client">
+<span class="sig-name descname"><span class="pre">client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">PaperlessClient</span></em><a class="headerlink" href="#paperap.resources.storage_paths.StoragePathResource.client" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 

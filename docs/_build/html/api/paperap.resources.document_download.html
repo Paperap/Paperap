@@ -47,6 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">paperap</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="paperap.html">paperap package</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="paperap.html#paperap.PaperlessClient"><code class="docutils literal notranslate"><span class="pre">PaperlessClient</span></code></a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="paperap.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="paperap.models.html">paperap.models package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="paperap.plugins.html">paperap.plugins package</a></li>
@@ -89,8 +90,87 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="paperap-resources-document-download-module">
-<h1>paperap.resources.document_download module<a class="headerlink" href="#paperap-resources-document-download-module" title="Link to this heading"></a></h1>
+  <section id="module-paperap.resources.document_download">
+<span id="paperap-resources-document-download-module"></span><h1>paperap.resources.document_download module<a class="headerlink" href="#module-paperap.resources.document_download" title="Link to this heading"></a></h1>
+<hr class="docutils" />
+<blockquote>
+<div><p>METADATA:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>File:    documents.py</dt><dd><p>Project: paperap</p>
+</dd>
+<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.9</p>
+</dd>
+</dl>
+<p>Author:  Jess Mann
+Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
+<blockquote>
+<div><p>Copyright (c) 2025 Jess Mann</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>LAST MODIFIED:</p>
+<blockquote>
+<div><p>2025-03-04     By Jess Mann</p>
+</div></blockquote>
+</div></blockquote>
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.resources.document_download.DownloadedDocumentResource">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.resources.document_download.</span></span><span class="sig-name descname"><span class="pre">DownloadedDocumentResource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/resources/document_download.html#DownloadedDocumentResource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.resources.document_download.DownloadedDocumentResource" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.StandardResource" title="paperap.resources.base.StandardResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardResource</span></code></a>[<a class="reference internal" href="paperap.models.document.download.model.html#paperap.models.document.download.model.DownloadedDocument" title="paperap.models.document.download.model.DownloadedDocument"><code class="xref py py-class docutils literal notranslate"><span class="pre">DownloadedDocument</span></code></a>, <a class="reference internal" href="paperap.models.document.download.queryset.html#paperap.models.document.download.queryset.DownloadedDocumentQuerySet" title="paperap.models.document.download.queryset.DownloadedDocumentQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DownloadedDocumentQuerySet</span></code></a>]</p>
+<p>Resource for managing downloaded document content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>client</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="paperap.client.html#paperap.client.PaperlessClient" title="paperap.client.PaperlessClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">PaperlessClient</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.resources.document_download.DownloadedDocumentResource.model_class">
+<span class="sig-name descname"><span class="pre">model_class</span></span><a class="headerlink" href="#paperap.resources.document_download.DownloadedDocumentResource.model_class" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="paperap.models.document.download.model.html#paperap.models.document.download.model.DownloadedDocument" title="paperap.models.document.download.model.DownloadedDocument"><code class="xref py py-class docutils literal notranslate"><span class="pre">DownloadedDocument</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.resources.document_download.DownloadedDocumentResource.queryset_class">
+<span class="sig-name descname"><span class="pre">queryset_class</span></span><a class="headerlink" href="#paperap.resources.document_download.DownloadedDocumentResource.queryset_class" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="paperap.models.document.download.queryset.html#paperap.models.document.download.queryset.DownloadedDocumentQuerySet" title="paperap.models.document.download.queryset.DownloadedDocumentQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DownloadedDocumentQuerySet</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.resources.document_download.DownloadedDocumentResource.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'document'</span></em><a class="headerlink" href="#paperap.resources.document_download.DownloadedDocumentResource.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.resources.document_download.DownloadedDocumentResource.endpoints">
+<span class="sig-name descname"><span class="pre">endpoints</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[Endpoints]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{RetrieveFileMode.DOWNLOAD:</span> <span class="pre">&lt;string.Template</span> <span class="pre">object&gt;,</span> <span class="pre">RetrieveFileMode.PREVIEW:</span> <span class="pre">&lt;string.Template</span> <span class="pre">object&gt;,</span> <span class="pre">RetrieveFileMode.THUMBNAIL:</span> <span class="pre">&lt;string.Template</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#paperap.resources.document_download.DownloadedDocumentResource.endpoints" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.resources.document_download.DownloadedDocumentResource.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">downloaded_document</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/resources/document_download.html#DownloadedDocumentResource.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.resources.document_download.DownloadedDocumentResource.load" title="Link to this definition"></a></dt>
+<dd><p>Load the document file content from the API.</p>
+<p>This method fetches the binary content of the document file
+and updates the model with the response data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>downloaded_document</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="paperap.models.document.download.model.html#paperap.models.document.download.model.DownloadedDocument" title="paperap.models.document.download.model.DownloadedDocument"><code class="xref py py-class docutils literal notranslate"><span class="pre">DownloadedDocument</span></code></a></span>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.resources.document_download.DownloadedDocumentResource.client">
+<span class="sig-name descname"><span class="pre">client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">PaperlessClient</span></em><a class="headerlink" href="#paperap.resources.document_download.DownloadedDocumentResource.client" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 

@@ -22,5 +22,6 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   paperap.models.document.meta
    paperap.models.document.model
    paperap.models.document.queryset

@@ -3,8 +3,8 @@ paperap.models.saved\_view package
 
 .. automodule:: paperap.models.saved_view
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Submodules
 ----------

@@ -3,8 +3,8 @@ paperap.models.custom\_field package
 
 .. automodule:: paperap.models.custom_field
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Submodules
 ----------

@@ -19,7 +19,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="paperap.resources.document_suggestions module" href="paperap.resources.document_suggestions.html" />
+    <link rel="next" title="paperap.resources.document_notes module" href="paperap.resources.document_notes.html" />
     <link rel="prev" title="paperap.resources.document_download module" href="paperap.resources.document_download.html" /> 
 </head>
 
@@ -47,6 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">paperap</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="paperap.html">paperap package</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="paperap.html#paperap.PaperlessClient"><code class="docutils literal notranslate"><span class="pre">PaperlessClient</span></code></a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="paperap.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="paperap.models.html">paperap.models package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="paperap.plugins.html">paperap.plugins package</a></li>
@@ -89,8 +90,75 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="paperap-resources-document-metadata-module">
-<h1>paperap.resources.document_metadata module<a class="headerlink" href="#paperap-resources-document-metadata-module" title="Link to this heading"></a></h1>
+  <section id="module-paperap.resources.document_metadata">
+<span id="paperap-resources-document-metadata-module"></span><h1>paperap.resources.document_metadata module<a class="headerlink" href="#module-paperap.resources.document_metadata" title="Link to this heading"></a></h1>
+<hr class="docutils" />
+<p>METADATA:</p>
+<dl class="simple">
+<dt>File:    document_metadata.py</dt><dd><p>Project: paperap</p>
+</dd>
+<dt>Created: 2025-03-18</dt><dd><p>Version: 0.0.9</p>
+</dd>
+</dl>
+<p>Author:  Jess Mann
+Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
+<blockquote>
+<div><p>Copyright (c) 2025 Jess Mann</p>
+</div></blockquote>
+<hr class="docutils" />
+<p>LAST MODIFIED:</p>
+<p>2025-03-18     By Jess Mann</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.resources.document_metadata.DocumentMetadataResource">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.resources.document_metadata.</span></span><span class="sig-name descname"><span class="pre">DocumentMetadataResource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/resources/document_metadata.html#DocumentMetadataResource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.resources.document_metadata.DocumentMetadataResource" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.StandardResource" title="paperap.resources.base.StandardResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardResource</span></code></a>[<a class="reference internal" href="paperap.models.document.metadata.model.html#paperap.models.document.metadata.model.DocumentMetadata" title="paperap.models.document.metadata.model.DocumentMetadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentMetadata</span></code></a>, <a class="reference internal" href="paperap.models.document.metadata.queryset.html#paperap.models.document.metadata.queryset.DocumentMetadataQuerySet" title="paperap.models.document.metadata.queryset.DocumentMetadataQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentMetadataQuerySet</span></code></a>]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>client</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="paperap.client.html#paperap.client.PaperlessClient" title="paperap.client.PaperlessClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">PaperlessClient</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.resources.document_metadata.DocumentMetadataResource.model_class">
+<span class="sig-name descname"><span class="pre">model_class</span></span><a class="headerlink" href="#paperap.resources.document_metadata.DocumentMetadataResource.model_class" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="paperap.models.document.metadata.model.html#paperap.models.document.metadata.model.DocumentMetadata" title="paperap.models.document.metadata.model.DocumentMetadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentMetadata</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.resources.document_metadata.DocumentMetadataResource.queryset_class">
+<span class="sig-name descname"><span class="pre">queryset_class</span></span><a class="headerlink" href="#paperap.resources.document_metadata.DocumentMetadataResource.queryset_class" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="paperap.models.document.metadata.queryset.html#paperap.models.document.metadata.queryset.DocumentMetadataQuerySet" title="paperap.models.document.metadata.queryset.DocumentMetadataQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentMetadataQuerySet</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.resources.document_metadata.DocumentMetadataResource.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'document_metadata'</span></em><a class="headerlink" href="#paperap.resources.document_metadata.DocumentMetadataResource.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.resources.document_metadata.DocumentMetadataResource.endpoints">
+<span class="sig-name descname"><span class="pre">endpoints</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[Endpoints]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'detail':</span> <span class="pre">&lt;string.Template</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#paperap.resources.document_metadata.DocumentMetadataResource.endpoints" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.resources.document_metadata.DocumentMetadataResource.get_metadata">
+<span class="sig-name descname"><span class="pre">get_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">document_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/resources/document_metadata.html#DocumentMetadataResource.get_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.resources.document_metadata.DocumentMetadataResource.get_metadata" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>document_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="paperap.models.document.metadata.model.html#paperap.models.document.metadata.model.DocumentMetadata" title="paperap.models.document.metadata.model.DocumentMetadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentMetadata</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.resources.document_metadata.DocumentMetadataResource.client">
+<span class="sig-name descname"><span class="pre">client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">PaperlessClient</span></em><a class="headerlink" href="#paperap.resources.document_metadata.DocumentMetadataResource.client" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -98,7 +166,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="paperap.resources.document_download.html" class="btn btn-neutral float-left" title="paperap.resources.document_download module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="paperap.resources.document_suggestions.html" class="btn btn-neutral float-right" title="paperap.resources.document_suggestions module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="paperap.resources.document_notes.html" class="btn btn-neutral float-right" title="paperap.resources.document_notes module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

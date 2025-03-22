@@ -3,8 +3,8 @@ paperap.scripts package
 
 .. automodule:: paperap.scripts
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Submodules
 ----------

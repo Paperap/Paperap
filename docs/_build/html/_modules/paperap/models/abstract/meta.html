@@ -79,7 +79,7 @@
 <span class="sd">       File:    meta.py</span>
 <span class="sd">        Project: paperap</span>
 <span class="sd">       Created: 2025-03-07</span>
-<span class="sd">        Version: 0.0.8</span>
+<span class="sd">        Version: 0.0.9</span>
 <span class="sd">       Author:  Jess Mann</span>
 <span class="sd">       Email:   jess@jmann.me</span>
 <span class="sd">        Copyright (c) 2025 Jess Mann</span>
@@ -99,11 +99,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.const</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelStatus</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.abstract</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.abstract.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 
 
 <div class="viewcode-block" id="StatusContext">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.meta.html#paperap.models.abstract.meta.StatusContext">[docs]</a>
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.meta.html#paperap.models.abstract.StatusContext">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StatusContext</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Context manager for safely updating model status.</span>
@@ -132,7 +132,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_model_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BaseModel.Meta&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_model_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BaseModel.Meta[Any]&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Read-only access to the model&#39;s meta.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span>  <span class="c1"># pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access</span>
 
@@ -147,7 +147,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_previous_status</span>
 
 <div class="viewcode-block" id="StatusContext.__init__">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.meta.html#paperap.models.abstract.meta.StatusContext.__init__">[docs]</a>
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.meta.html#paperap.models.abstract.StatusContext.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="s2">&quot;BaseModel&quot;</span><span class="p">,</span> <span class="n">new_status</span><span class="p">:</span> <span class="n">ModelStatus</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_new_status</span> <span class="o">=</span> <span class="n">new_status</span>
@@ -156,7 +156,7 @@
 
 
 <div class="viewcode-block" id="StatusContext.save_lock">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.meta.html#paperap.models.abstract.meta.StatusContext.save_lock">[docs]</a>
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.meta.html#paperap.models.abstract.StatusContext.save_lock">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">save_lock</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Acquire the save lock</span>
@@ -167,7 +167,7 @@
 
 
 <div class="viewcode-block" id="StatusContext.save_unlock">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.meta.html#paperap.models.abstract.meta.StatusContext.save_unlock">[docs]</a>
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.meta.html#paperap.models.abstract.StatusContext.save_unlock">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">save_unlock</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Release the save lock, only if this statuscontext previous acquired it.</span>
@@ -188,9 +188,7 @@
         <span class="c1"># Do NOT return context manager, because we want to guarantee that the status is reverted</span>
         <span class="c1"># so we do not want to allow access to the context manager object</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">:</span> <span class="ne">BaseException</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">traceback</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">:</span> <span class="ne">BaseException</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">traceback</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_status</span>  <span class="c1"># type: ignore # allow private access</span>
         <span class="k">else</span><span class="p">:</span>
