@@ -9,7 +9,7 @@ METADATA:
 File:    signals.py
         Project: paperap
 Created: 2025-03-09
-        Version: 0.0.8
+        Version: 0.0.9
 Author:  Jess Mann
 Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -30,14 +30,12 @@ from typing import (
     Any,
     Callable,
     Generic,
-    Iterable,
     Literal,
-    Optional,
     Self,
-    Set,
     TypeAlias,
     TypedDict,
     TypeVar,
+    final,
     overload,
 )
 
@@ -57,7 +55,7 @@ class QueueType(TypedDict):
 
 ActionType = Literal["connect", "disconnect", "disable", "enable"]
 
-
+@final
 class SignalPriority:
     """
     Priority levels for signal handlers.
@@ -93,7 +91,7 @@ class Signal[_ReturnType]:
     name: str
     description: str
     _handlers: dict[int, list[Callable[..., _ReturnType]]]
-    _disabled_handlers: Set[Callable[..., _ReturnType]]
+    _disabled_handlers: set[Callable[..., _ReturnType]]
 
     def __init__(self, name: str, description: str = "") -> None:
         self.name = name

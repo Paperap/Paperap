@@ -6,7 +6,7 @@
        File:    manager.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.7
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -26,7 +26,7 @@ import inspect
 import logging
 import pkgutil
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar, Optional, Self, Set, TypedDict
+from typing import TYPE_CHECKING, Any, ClassVar, Self, Set, TypedDict
 
 import pydantic
 

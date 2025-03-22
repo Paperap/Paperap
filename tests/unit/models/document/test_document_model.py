@@ -7,12 +7,12 @@
 METADATA:
 
 File:    test_document.py
-Project: paperap
+        Project: paperap
 Created: 2025-03-04
-Version: 0.0.8
+        Version: 0.0.9
 Author:  Jess Mann
 Email:   jess@jmann.me
-Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -29,7 +29,7 @@ import os
 import unittest
 from datetime import datetime, timezone
 from random import sample
-from typing import Any, Iterable, List, Optional, override
+from typing import Any, Iterable, List, override
 from unittest.mock import MagicMock, PropertyMock, patch
 
 from paperap.client import PaperlessClient

@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
-from typing import TYPE_CHECKING, Annotated, Any, Iterable, Iterator, Optional, TypedDict, cast, override
+from typing import TYPE_CHECKING, Annotated, Any, Iterable, Iterator, TypedDict, cast, override
 
 import pydantic
 from pydantic import Field, field_serializer, field_validator, model_serializer

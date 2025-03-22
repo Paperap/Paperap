@@ -25,7 +25,7 @@ import copy
 import logging
 from datetime import datetime
 from string import Template
-from typing import TYPE_CHECKING, Any, Final, Generic, Iterable, Iterator, Optional, Self, TypeAlias, Union, override
+from typing import TYPE_CHECKING, Any, Final, Generic, Iterable, Iterator, Self, TypeAlias, Union, override
 
 from pydantic import HttpUrl
 from typing_extensions import TypeVar

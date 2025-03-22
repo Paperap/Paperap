@@ -7,12 +7,12 @@
 METADATA:
 
 File:    test_queryset.py
-Project: paperap
+        Project: paperap
 Created: 2025-03-13
-Version: 0.0.8
+        Version: 0.0.9
 Author:  Jess Mann
 Email:   jess@jmann.me
-Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ LAST MODIFIED:
 from __future__ import annotations
 
 import unittest
-from typing import Any, Dict, List, Optional, override
+from typing import Any, Dict, List, override
 from unittest.mock import MagicMock, Mock, patch
 
 from paperap.models.abstract.queryset import StandardQuerySet

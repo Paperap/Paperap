@@ -24,7 +24,7 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 from string import Template
-from typing import Any, Iterator, Optional, override
+from typing import Any, Iterator, override
 
 from typing_extensions import TypeVar
 

@@ -48,13 +48,13 @@ HEADERS = {"Authorization": f"Token {TOKEN}"}
 SAVE_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def fetch_api_root() -> Dict[str, Any]:
+def fetch_api_root() -> dict[str, Any]:
     response = requests.get(API_BASE_URL, headers=HEADERS)
     response.raise_for_status()
     return response.json()
 
 
-def fetch_endpoint_data(endpoint_name: str, endpoint_url: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
+def fetch_endpoint_data(endpoint_name: str, endpoint_url: str, params: dict[str, Any] = None) -> dict[str, Any]:
     params = params or {}
     try:
         response = requests.get(endpoint_url, headers=HEADERS, params=params)
@@ -77,7 +77,7 @@ def fetch_item_data(endpoint_name: str, item_url: str) -> None:
         logger.error(f"Failed to fetch item for {endpoint_name}: {e}")
 
 
-def fetch_raw_data(endpoint_name: str, endpoint_url: str, params: Dict[str, Any] = None) -> None:
+def fetch_raw_data(endpoint_name: str, endpoint_url: str, params: dict[str, Any] = None) -> None:
     # Used for endpoints returning non-JSON (e.g. binary downloads)
     params = params or {}
     try:
@@ -193,7 +193,7 @@ def main() -> None:
     logger.info("Data collection complete.")
 
 
-def fetch_api_root_item(url: str) -> Dict[str, Any] | None:
+def fetch_api_root_item(url: str) -> dict[str, Any] | None:
     """
     Try to fetch one item from the endpoint by using page_size=1.
     Returns the first item if available.

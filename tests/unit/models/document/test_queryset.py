@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import unittest
 from datetime import datetime
-from typing import Any, Dict, List, Optional, override
+from typing import Any, Dict, List, override
 from unittest.mock import MagicMock, Mock, patch
 
 from paperap.exceptions import FilterDisabledError

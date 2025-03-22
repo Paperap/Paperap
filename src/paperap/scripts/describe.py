@@ -37,7 +37,7 @@ from enum import StrEnum
 from functools import singledispatchmethod
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Collection, Dict, Iterator, List, Optional, TypeVar, Union, cast
+from typing import Any, Collection, Dict, Iterator, List, TypeVar, Union, cast
 
 import dateparser
 import fitz  # type: ignore
@@ -331,7 +331,7 @@ class DescribePhotos(BaseModel):
             if not images:
                 raise NoImagesError("No images found to describe.")
 
-            message_contents: List[Dict[str, Any]] = [
+            message_contents: list[dict[str, Any]] = [
                 {
                     "type": "text",
                     "text": self.get_prompt(document),

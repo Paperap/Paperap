@@ -24,7 +24,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime
 from functools import singledispatchmethod
-from typing import TYPE_CHECKING, Any, NamedTuple, Optional, Self, Union, overload
+from typing import TYPE_CHECKING, Any, NamedTuple, Self, Union, overload
 
 from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models.mixins.queryset import HasOwner

@@ -8,12 +8,12 @@
 METADATA:
 
 File:    text_write.py
-Project: paperap
+        Project: paperap
 Created: 2025-03-12
-Version: 0.0.8
+        Version: 0.0.9
 Author:  Jess Mann
 Email:   jess@jmann.me
-Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ LAST MODIFIED:
 """
 import datetime
 import os
-from typing import Any, Iterator, Optional, Union
+from typing import Any, Iterator, Union
 
 from hypothesis import example, given
 from hypothesis import strategies as st

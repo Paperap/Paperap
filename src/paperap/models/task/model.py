@@ -6,7 +6,7 @@
        File:    task.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -22,7 +22,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from paperap.const import TaskNameType, TaskStatusType, TaskTypeType
 from paperap.models.abstract.model import StandardModel
