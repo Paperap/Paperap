@@ -403,7 +403,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         Override in subclasses to implement custom result handling.
         """
         if not isinstance(results, list):
-            raise ResponseParsingError(f"Expected results to be a list, got {type(results)}")
+            raise ResponseParsingError(f"Expected {self.name} results to be a list, got {type(results)} -> {results}")
 
         for item in results:
             if not isinstance(item, dict):
