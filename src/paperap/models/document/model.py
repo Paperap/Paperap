@@ -32,21 +32,26 @@ import pydantic
 from pydantic import Field, field_serializer, field_validator, model_serializer
 from typing_extensions import TypeVar
 
-from paperap.const import CustomFieldTypedDict, CustomFieldTypes, CustomFieldValues, DocumentStorageType
+from paperap.const import (
+    CustomFieldTypedDict,
+    CustomFieldTypes,
+    CustomFieldValues,
+    DocumentStorageType,
+    FilteringStrategies,
+)
 from paperap.exceptions import ResourceNotFoundError
 from paperap.models.abstract.model import StandardModel
-from paperap.const import FilteringStrategies
 from paperap.models.document.queryset import DocumentQuerySet
 
 if TYPE_CHECKING:
     from paperap.models.correspondent.model import Correspondent
-    from paperap.models.custom_field.model import CustomField, CustomFieldQuerySet
+    from paperap.models.custom_field import CustomField, CustomFieldQuerySet
     from paperap.models.document.download.model import DownloadedDocument
     from paperap.models.document.metadata.model import DocumentMetadata
     from paperap.models.document.suggestions.model import DocumentSuggestions
     from paperap.models.document_type.model import DocumentType
     from paperap.models.storage_path.model import StoragePath
-    from paperap.models.tag.model import Tag, TagQuerySet
+    from paperap.models.tag import Tag, TagQuerySet
     from paperap.models.user.model import User
 
 logger = logging.getLogger(__name__)

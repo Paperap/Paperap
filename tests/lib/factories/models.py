@@ -44,6 +44,7 @@ from paperap.models import (
     DownloadedDocument,
     Group,
     Profile,
+    MetadataElement,
     SavedView,
     ShareLinks,
     StandardModel,

@@ -422,7 +422,7 @@ class PaperlessClient:
         self, response: requests.Response | None, *, json_response: bool = True
     ) -> dict[str, Any] | bytes | None:
         """Handle the response based on the content type."""
-        if not response:
+        if response is None:
             return None
 
         # Try to parse as JSON if requested

@@ -849,7 +849,7 @@ strict_primitive_comparisons = false
 strict_undefined_checks = true
 
 # Space-separated list of error names to ignore.
-disable = ['pyi-error', 'import-error', 'override-error']
+disable = ['pyi-error', 'import-error', 'override-error', 'not-supported-yet']
 
 # Don't report errors.
 report_errors = true
