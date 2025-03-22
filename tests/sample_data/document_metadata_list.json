@@ -69,7 +69,7 @@
     "archive_checksum": "5dfd61b95ea58624a2aa1813a1783f77",
     "archive_media_filename": "0000017.pdf",
     "original_filename": "Sample PDF.pdf",
-    "archive_size": 1929386,
+    "archive_size": null,
     "archive_metadata": [
         {
             "namespace": "http://example.com/pdf/1.3/",

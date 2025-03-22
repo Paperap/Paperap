@@ -10,7 +10,7 @@ Usage: python -m tests.first_run
         File:    first_run.py
         Project: paperap
         Created: 2025-03-21
-        Version: 0.0.9
+        Version: 0.0.10
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -24,13 +24,17 @@ Usage: python -m tests.first_run
 """
 
 from __future__ import annotations
-
+import tempfile
 import json
 import logging
 import os
 import re
+import random
 from pathlib import Path
-from typing import Any
+from typing import Any, List
+
+from faker import Faker
+from alive_progress import alive_bar
 
 import requests
 from dotenv import load_dotenv
@@ -46,7 +50,58 @@ from .lib import factories
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
+# Initialize faker for content generation
+fake = Faker()
+
 SAMPLE_DATA = Path(__file__).parent / "sample_data"
+
+def generate_sample_text_files(output_dir: Path, count: int = 100) -> List[Path]:
+    """
+    Generate sample text files for document upload testing.
+    
+    Args:
+        output_dir: Directory to save the files in
+        count: Number of files to generate
+        
+    Returns:
+        List of paths to the generated files
+    """
+    # Create the output directory if it doesn't exist
+    sample_dir = output_dir / "sample_text_files"
+    sample_dir.mkdir(parents=True, exist_ok=True)
+    
+    generated_files = []
+    
+    with alive_bar(count, title="Generating sample text files") as bar:
+        for i in range(1, count + 1):
+            # Generate content: 1-3 paragraphs of text
+            num_paragraphs = random.randint(1, 3)
+            paragraphs = [fake.paragraph(nb_sentences=random.randint(3, 8)) for _ in range(num_paragraphs)]
+            content = "\n\n".join(paragraphs)
+            
+            # Add some metadata at the top of some files
+            if random.random() < 0.3:  # 30% chance
+                metadata = [
+                    f"Title: {fake.sentence(nb_words=random.randint(3, 6)).rstrip('.')}",
+                    f"Date: {fake.date()}",
+                    f"Author: {fake.name()}",
+                    f"Subject: {fake.bs()}"
+                ]
+                content = "\n".join(metadata) + "\n\n" + content
+            
+            # Create a filename with a pattern 
+            filename = f"sample_{i:03d}_{fake.word()}.txt"
+            file_path = sample_dir / filename
+            
+            # Write content to file
+            with file_path.open("w", encoding="utf-8") as f:
+                f.write(content)
+                
+            generated_files.append(file_path)
+            bar()
+            
+    logger.info(f"Generated {count} sample text files in {sample_dir}")
+    return generated_files
 
 class PaperlessManager:
     """
@@ -145,6 +200,22 @@ class PaperlessManager:
                 logger.debug("Uploaded document %s", document.id)
             except PaperapError as e:
                 logger.warning("Failed to upload document %s: %s", filename, e)
+                
+        # Generate and upload text files
+        logger.info("Generating and uploading sample text files...")
+        with tempfile.TemporaryDirectory() as text_files_dir:
+            text_files = generate_sample_text_files(text_files_dir)
+            
+            # Upload a subset of the generated text files (first 20 to avoid overloading)
+            with alive_bar(len(text_files), title="Uploading text files") as bar:
+                for filename in text_files:
+                    try:
+                        document = self.client.documents.upload_sync(filename)
+                        logger.debug("Uploaded text document %s", document.id)
+                        bar()
+                    except PaperapError as e:
+                        logger.warning("Failed to upload document %s: %s", filename, e)
+                        bar()
 
 def main() -> None:
     manager = PaperlessManager()

@@ -154,7 +154,7 @@ class CorrespondentFactory(PydanticFactory[Correspondent]):
         model = Correspondent
 
     slug = factory.LazyFunction(fake.slug)
-    name = factory.Faker("name")
+    name = factory.Sequence(lambda n: f"Correspondent-{n}-{fake.word()}")
     match = factory.Faker("word")
     matching_algorithm = factory.Faker("random_int", min=0, max=3)
     is_insensitive = factory.Faker("boolean")
@@ -228,7 +228,7 @@ class DocumentTypeFactory(PydanticFactory[DocumentType]):
     class Meta: # type: ignore # pyright handles this wrong
         model = DocumentType
 
-    name = factory.Faker("word")
+    name = factory.Sequence(lambda n: f"DocType-{n}-{fake.word()}")
     slug = factory.LazyFunction(fake.slug)
     match = factory.Faker("word")
     matching_algorithm = factory.Faker("random_int", min=0, max=3)
@@ -243,7 +243,7 @@ class TagFactory(PydanticFactory[Tag]):
     class Meta: # type: ignore # pyright handles this wrong
         model = Tag
 
-    name = factory.Faker("word")
+    name = factory.Sequence(lambda n: f"Tag-{n}-{fake.word()}")
     slug = factory.LazyFunction(fake.slug)
     colour = factory.Faker("hex_color")
     match = factory.Faker("word")
@@ -293,7 +293,7 @@ class StoragePathFactory(PydanticFactory[StoragePath]):
     class Meta: # type: ignore # pyright handles this wrong
         model = StoragePath
 
-    name = factory.Faker("word")
+    name = factory.Sequence(lambda n: f"StoragePath-{n}-{fake.word()}")
     slug = factory.LazyFunction(fake.slug)
     path = factory.Faker("file_path")
     match = factory.Faker("word")
@@ -309,7 +309,7 @@ class SavedViewFactory(PydanticFactory[SavedView]):
     class Meta: # type: ignore # pyright handles this wrong
         model = SavedView
 
-    name = factory.Faker("sentence", nb_words=3)
+    name = factory.Sequence(lambda n: f"SavedView-{n}-{fake.word()}")
     show_on_dashboard = factory.Faker("boolean")
     show_in_sidebar = factory.Faker("boolean")
     sort_field = factory.Faker("word")
@@ -658,7 +658,7 @@ class WorkflowFactory(PydanticFactory[Workflow]):
     class Meta: # type: ignore # pyright handles this wrong
         model = Workflow
 
-    name = factory.Faker("sentence", nb_words=3)
+    name = factory.Sequence(lambda n: f"Workflow-{n}-{fake.word()}")
     order = factory.Faker("random_int", min=1, max=100)
     enabled = factory.Faker("boolean")
     triggers = factory.List([factory.Dict({"type": fake.random_int(min=1, max=10), "match": fake.word()}) for _ in range(3)])

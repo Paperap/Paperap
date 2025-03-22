@@ -37,6 +37,7 @@ from pathlib import Path
 from typing import Any, ClassVar, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
 
 import requests
+from faker import Faker
 from alive_progress import alive_bar
 from dotenv import load_dotenv
 from faker import Faker
@@ -46,6 +47,7 @@ from requests import Response
 # Initialize logger with default level
 logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
+
 
 # Load environment variables
 load_dotenv()
@@ -375,6 +377,8 @@ class DocumentRelatedCollector(EndpointCollector):
             bar()
 
 
+
+
 class SampleDataCollector:
     """Main class for collecting sample data from Paperless-ngx API."""
 
@@ -453,6 +457,7 @@ class SampleDataCollector:
                 collector.collect_all()
                 bar()
 
+
     def run(self) -> None:
         """Run the complete data collection process."""
         logger.info("Paperless-ngx API Sample Data Collector")
@@ -468,6 +473,7 @@ class SampleDataCollector:
 
         # Collect data from extra endpoints
         self.collect_extra_endpoints()
+        
 
         logger.info("Sample data collection complete.")
 
@@ -494,6 +500,8 @@ def main() -> None:
         # Create and initialize collector with verbosity setting
         collector = SampleDataCollector()
         collector.config.verbose = args.verbose > 0
+        
+        # Run the collection process
         collector.run()
     except Exception as e:
         logger.exception(f"Error in sample data collection: {e}")

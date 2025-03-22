@@ -150,7 +150,7 @@ pre-commit run --all-files
 - [ ] Make integration tests easier to setup for other users (wip)
 - [ ] Deleting tags, custom fields, etc via document.tags = None
 - [ ] devcontainer (wip)
-- [ ] git action to distribute to pypi
+- [x] git action to distribute to pypi
 - [ ] Remove validators that pydantic handles natively
 - [ ] cli tools
 - [ ] batch editing (done? needs integration tests)
