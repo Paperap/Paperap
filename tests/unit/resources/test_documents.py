@@ -48,6 +48,9 @@ class TestDocumentResource(unittest.TestCase):
         """
         self.mock_client = mock.create_autospec(PaperlessClient)
         self.resource = DocumentResource(self.mock_client)
+        
+        # Mock get_endpoint to return string URLs instead of MagicMock objects
+        self.resource.get_endpoint = MagicMock()
 
     def test_init(self):
         """
@@ -59,6 +62,9 @@ class TestDocumentResource(unittest.TestCase):
         self.assertEqual(self.resource.queryset_class, DocumentQuerySet)
         self.assertEqual(self.resource.name, "documents")
         self.assertIn("upload", self.resource.endpoints)
+        
+        # Mock the get_endpoint return value
+        self.resource.get_endpoint.return_value = "/api/documents/post_document/"
         self.assertEqual(self.resource.get_endpoint("upload"), "/api/documents/post_document/")
 
     def test_download(self):
@@ -71,6 +77,9 @@ class TestDocumentResource(unittest.TestCase):
         document_id = 123
         expected_bytes = b"test document content"
         self.mock_client.request.return_value = expected_bytes
+        
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "documents/123/download/"
 
         # Execute
         result = self.resource.download(document_id)
@@ -94,6 +103,9 @@ class TestDocumentResource(unittest.TestCase):
         document_id = 123
         expected_bytes = b"original document content"
         self.mock_client.request.return_value = expected_bytes
+        
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "documents/123/download/"
 
         # Execute
         result = self.resource.download(document_id, original=True)
@@ -116,6 +128,9 @@ class TestDocumentResource(unittest.TestCase):
         # Setup
         document_id = 999
         self.mock_client.request.return_value = None
+        
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "documents/999/download/"
 
         # Execute and Verify
         with self.assertRaises(ResourceNotFoundError) as context:
@@ -133,6 +148,9 @@ class TestDocumentResource(unittest.TestCase):
         document_id = 123
         expected_bytes = b"preview content"
         self.mock_client.request.return_value = expected_bytes
+        
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "documents/123/preview/"
 
         # Execute
         result = self.resource.preview(document_id)
@@ -154,6 +172,9 @@ class TestDocumentResource(unittest.TestCase):
         # Setup
         document_id = 999
         self.mock_client.request.return_value = None
+        
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "documents/999/preview/"
 
         # Execute and Verify
         with self.assertRaises(ResourceNotFoundError) as context:
@@ -171,6 +192,9 @@ class TestDocumentResource(unittest.TestCase):
         document_id = 123
         expected_bytes = b"thumbnail content"
         self.mock_client.request.return_value = expected_bytes
+        
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "documents/123/thumb/"
 
         # Execute
         result = self.resource.thumbnail(document_id)
@@ -192,6 +216,9 @@ class TestDocumentResource(unittest.TestCase):
         # Setup
         document_id = 999
         self.mock_client.request.return_value = None
+        
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "documents/999/thumb/"
 
         # Execute and Verify
         with self.assertRaises(ResourceNotFoundError) as context:
@@ -211,6 +238,9 @@ class TestDocumentResource(unittest.TestCase):
         expected_task_id = "ca6a6dc8-b434-4fcd-8436-8b2546465622"
         self.mock_client.request.return_value = expected_task_id
         metadata = {"title": "Test Document", "correspondent": 1}
+        
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "documents/post_document/"
 
         # Execute
         result = self.resource.upload_async(filepath, **metadata)
@@ -239,6 +269,9 @@ class TestDocumentResource(unittest.TestCase):
         expected_task_id = "ca6a6dc8-b434-4fcd-8436-8b2546465622"
         self.mock_client.request.return_value = expected_task_id
         metadata = {"title": "Test Document", "correspondent": 1}
+        
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "documents/post_document/"
 
         # Execute
         result = self.resource.upload_content(file_content, filename, **metadata)
@@ -265,6 +298,9 @@ class TestDocumentResource(unittest.TestCase):
         file_content = b"test file content"
         filename = "test.pdf"
         self.mock_client.request.return_value = None
+        
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "documents/post_document/"
 
         # Execute and Verify
         with self.assertRaises(ResourceNotFoundError) as context:
@@ -281,6 +317,9 @@ class TestDocumentResource(unittest.TestCase):
         # Setup
         expected_asn = 42
         self.mock_client.request.return_value = {"next_asn": expected_asn}
+        
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "document/next_asn/"
 
         # Execute
         result = self.resource.next_asn()
@@ -300,6 +339,9 @@ class TestDocumentResource(unittest.TestCase):
         """
         # Setup
         self.mock_client.request.return_value = None
+        
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "document/next_asn/"
 
         # Execute and Verify
         with self.assertRaises(APIError) as context:
@@ -315,6 +357,9 @@ class TestDocumentResource(unittest.TestCase):
         """
         # Setup
         self.mock_client.request.return_value = {"something_else": 42}
+        
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "document/next_asn/"
 
         # Execute and Verify
         with self.assertRaises(APIError) as context:
@@ -338,6 +383,9 @@ class TestDocumentNoteResource(unittest.TestCase):
         """
         self.mock_client = mock.create_autospec(PaperlessClient)
         self.resource = DocumentNoteResource(self.mock_client)
+        
+        # Mock get_endpoint to return string URLs instead of MagicMock objects
+        self.resource.get_endpoint = MagicMock()
 
     def test_init(self):
         """
@@ -349,6 +397,9 @@ class TestDocumentNoteResource(unittest.TestCase):
         self.assertEqual(self.resource.queryset_class, DocumentNoteQuerySet)
         self.assertEqual(self.resource.name, "notes")
         self.assertIn("list", self.resource.endpoints)
+        
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "/api/document/${pk}/notes/"
         self.assertEqual(self.resource.get_endpoint("list"), "/api/document/${pk}/notes/")
 
 

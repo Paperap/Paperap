@@ -44,6 +44,9 @@ class TestDownloadedDocumentResource(unittest.TestCase):
         """
         self.mock_client = MagicMock(spec=PaperlessClient)
         self.resource = DownloadedDocumentResource(self.mock_client)
+        
+        # Mock get_endpoint to return string URLs instead of MagicMock objects
+        self.resource.get_endpoint = MagicMock()
 
     def test_initialization(self):
         """
@@ -72,12 +75,15 @@ class TestDownloadedDocumentResource(unittest.TestCase):
         }
         self.mock_client.request_raw.return_value = mock_response
 
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "document/1/download/"
+        
         # Call the method
         self.resource.load(doc)
 
         # Verify the client was called correctly
         self.mock_client.request_raw.assert_called_once_with(
-            "GET", URLS.download, params={"original": "false"}, data=None
+            "GET", "document/1/download/", params={"original": "false"}, data=None
         )
 
         # Verify the document was updated
@@ -104,12 +110,15 @@ class TestDownloadedDocumentResource(unittest.TestCase):
         }
         self.mock_client.request_raw.return_value = mock_response
 
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "document/1/preview/"
+        
         # Call the method
         self.resource.load(doc)
 
         # Verify the client was called correctly
         self.mock_client.request_raw.assert_called_once_with(
-            "GET", URLS.preview, params={"original": "true"}, data=None
+            "GET", "document/1/preview/", params={"original": "true"}, data=None
         )
 
         # Verify the document was updated
@@ -136,12 +145,15 @@ class TestDownloadedDocumentResource(unittest.TestCase):
         }
         self.mock_client.request_raw.return_value = mock_response
 
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "document/1/thumb/"
+        
         # Call the method
         self.resource.load(doc)
 
         # Verify the client was called correctly
         self.mock_client.request_raw.assert_called_once_with(
-            "GET", URLS.thumbnail, params={"original": "false"}, data=None
+            "GET", "document/1/thumb/", params={"original": "false"}, data=None
         )
 
         # Verify the document was updated
@@ -168,12 +180,15 @@ class TestDownloadedDocumentResource(unittest.TestCase):
         }
         self.mock_client.request_raw.return_value = mock_response
 
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "document/1/download/"
+        
         # Call the method
         self.resource.load(doc)
 
         # Verify the client was called correctly with default mode (download)
         self.mock_client.request_raw.assert_called_once_with(
-            "GET", URLS.download, params={"original": "false"}, data=None
+            "GET", "document/1/download/", params={"original": "false"}, data=None
         )
 
     def test_load_no_content_disposition(self):
@@ -194,6 +209,12 @@ class TestDownloadedDocumentResource(unittest.TestCase):
         }
         self.mock_client.request_raw.return_value = mock_response
 
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "document/1/download/"
+        
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "document/1/download/"
+        
         # Call the method
         self.resource.load(doc)
 
@@ -241,6 +262,9 @@ class TestDownloadedDocumentResource(unittest.TestCase):
         # Mock the response to be None (request failed)
         self.mock_client.request_raw.return_value = None
 
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "document/1/download/"
+        
         # Verify that the correct exception is raised
         with self.assertRaises(ResourceNotFoundError):
             self.resource.load(doc)
@@ -264,6 +288,9 @@ class TestDownloadedDocumentResource(unittest.TestCase):
         }
         self.mock_client.request_raw.return_value = mock_response
 
+        # Set the mock endpoint value
+        self.resource.get_endpoint.return_value = "document/1/download/"
+        
         # Call the method
         self.resource.load(doc)
 

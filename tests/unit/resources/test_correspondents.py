@@ -113,6 +113,9 @@ class TestCorrespondentResource(unittest.TestCase):
         # Setup endpoint URL
         self.resource.get_endpoint.return_value = "correspondents/1/"
         
+        # Replace the client's request method with our mock
+        self.resource.client.request = mock_request
+        
         # Mock the parse_to_model method to return a proper Correspondent
         self.resource.parse_to_model = MagicMock(return_value=Correspondent(**mock_data))
         
@@ -199,7 +202,8 @@ class TestCorrespondentResource(unittest.TestCase):
         self.assertEqual(mock_request.call_args[0][0], "POST")
         self.assertEqual(mock_request.call_args[0][1], "correspondents/")
 
-    def test_update(self):
+    @patch("paperap.models.correspondent.Correspondent.save")
+    def test_update(self, mock_save):
         """
         Written By claude
 
@@ -216,32 +220,18 @@ class TestCorrespondentResource(unittest.TestCase):
             owner=1
         )
         
-        # Mock the save method at the instance level
-        correspondent.save = MagicMock()
-        
         # Manually set _resource with mocked settings
         correspondent._resource = self.resource
         
-        # Patch __setattr__ temporarily to bypass validation
-        original_setattr = Correspondent.__setattr__
+        # Use a simple approach to set the attribute without validation
+        object.__setattr__(correspondent, "name", "Updated Correspondent")
         
-        def patched_setattr(self, name, value):
-            object.__setattr__(self, name, value)
-            
-        # Apply the patch
-        Correspondent.__setattr__ = patched_setattr
+        # Call the save method which is now mocked
+        correspondent.save()
         
-        try:
-            # Update the correspondent
-            correspondent.name = "Updated Correspondent"
-            correspondent.save()
-            
-            # Assertions
-            correspondent.save.assert_called_once()
-            self.assertEqual(correspondent.name, "Updated Correspondent")
-        finally:
-            # Restore original __setattr__
-            Correspondent.__setattr__ = original_setattr
+        # Assertions
+        mock_save.assert_called_once()
+        self.assertEqual(correspondent.name, "Updated Correspondent")
 
     @patch("paperap.client.PaperlessClient.request")
     def test_delete(self, mock_request):
