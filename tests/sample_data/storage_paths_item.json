@@ -1,11 +1,11 @@
 {
-    "id": 1509,
-    "slug": "any-32",
-    "name": "any 32",
-    "path": "/central/wish.tiff",
-    "match": "spend",
-    "matching_algorithm": 2,
-    "is_insensitive": false,
+    "id": 1564,
+    "slug": "add-11",
+    "name": "add 11",
+    "path": "/knowledge/management.flac",
+    "match": "gas",
+    "matching_algorithm": 3,
+    "is_insensitive": true,
     "document_count": 0,
     "owner": 1,
     "user_can_change": true

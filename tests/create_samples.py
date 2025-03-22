@@ -3,6 +3,8 @@ Paperless-ngx API Sample Data Collector.
 
 This tool collects sample data from a Paperless-ngx instance for testing and development.
 
+Typically called from first_run.py, not directly.
+
  ----------------------------------------------------------------------------
 
     METADATA:
@@ -41,21 +43,8 @@ from faker import Faker
 from pydantic import BaseModel, Field, HttpUrl, validator
 from requests import Response
 
-# Parse command line arguments
-parser = argparse.ArgumentParser(description="Collect sample data from Paperless-ngx API")
-parser.add_argument("-v", "--verbose", action="count", default=0,
-                    help="Increase verbosity (can be used multiple times: -v, -vv)")
-args = parser.parse_args()
-
-# Configure logging based on verbosity level
-if args.verbose == 0:
-    log_level = logging.WARNING
-elif args.verbose == 1:
-    log_level = logging.INFO
-else:
-    log_level = logging.DEBUG
-
-logging.basicConfig(level=log_level, format="%(asctime)s - %(levelname)s - %(message)s")
+# Initialize logger with default level
+logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 # Load environment variables
@@ -75,7 +64,7 @@ class ApiConfig(BaseModel):
     base_url: str = Field(default_factory=lambda: os.getenv("PAPERLESS_BASE_URL", "").rstrip("/") + "/api/")
     token: str = Field(default_factory=lambda: os.getenv("PAPERLESS_TOKEN", ""))
     save_dir: Path = Field(default_factory=lambda: Path("tests/sample_data"))
-    verbose: bool = Field(default_factory=lambda: args.verbose)
+    verbose: bool = False
 
     @property
     def headers(self) -> Dict[str, str]:
@@ -486,7 +475,25 @@ class SampleDataCollector:
 def main() -> None:
     """Entry point for the script."""
     try:
+        # Parse command line arguments
+        parser = argparse.ArgumentParser(description="Collect sample data from Paperless-ngx API")
+        parser.add_argument("-v", "--verbose", action="count", default=0,
+                            help="Increase verbosity (can be used multiple times: -v, -vv)")
+        args = parser.parse_args()
+
+        # Configure logging based on verbosity level
+        if args.verbose == 0:
+            log_level = logging.WARNING
+        elif args.verbose == 1:
+            log_level = logging.INFO
+        else:
+            log_level = logging.DEBUG
+            
+        logger.setLevel(log_level)
+        
+        # Create and initialize collector with verbosity setting
         collector = SampleDataCollector()
+        collector.config.verbose = args.verbose > 0
         collector.run()
     except Exception as e:
         logger.exception(f"Error in sample data collection: {e}")

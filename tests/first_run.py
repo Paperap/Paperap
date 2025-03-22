@@ -1,6 +1,6 @@
 """
 
-
+Usage: python -m tests.first_run
 
 
  ----------------------------------------------------------------------------
@@ -39,7 +39,7 @@ from paperap.client import PaperlessClient
 from paperap.models import *
 from paperap.resources import *
 from paperap.exceptions import PaperapError
-from . import create_samples
+from .create_samples import SampleDataCollector
 from .lib import factories
 
 # Setup logger
@@ -150,7 +150,8 @@ def main() -> None:
     manager = PaperlessManager()
     manager.cleanup()
     manager.upload()
-    create_samples.main()
+    collector = SampleDataCollector()
+    collector.run()
 
 if __name__ == "__main__":
     main()
