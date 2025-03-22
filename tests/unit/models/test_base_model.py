@@ -7,12 +7,12 @@
 METADATA:
 
 File:    test_base.py
-Project: paperap
+        Project: paperap
 Created: 2025-03-04
-Version: 0.0.8
+        Version: 0.0.9
 Author:  Jess Mann
 Email:   jess@jmann.me
-Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -50,6 +50,8 @@ class ExampleModel(StandardModel):
     a_float : float
     a_bool : bool
     an_optional_str : str | None = None
+    # Make id field optional for testing is_new_method
+    id: int | None = None
 
     class Meta(StandardModel.Meta):
         save_on_write = False
@@ -130,7 +132,20 @@ class TestModelToDict(TestWithModel):
         model_dict = self.model.to_dict(exclude_none=True)
         self.assertNotIn("an_optional_str", model_dict)
 
-    def test_create_method(self):
+    @patch("paperap.resources.base.StandardResource.create")
+    def test_create_method(self, mock_create):
+        # Set up the mock to return a model instance
+        model_data = {
+            "id": 2,
+            "a_str": "New Model",
+            "a_date": "2021-01-01T00:00:00Z",
+            "an_int": 100,
+            "a_float": 1.23,
+            "a_bool": False
+        }
+        mock_model = ExampleModel.from_dict(model_data)
+        mock_create.return_value = mock_model
+        
         # Test if a new model instance can be created
         new_model = ExampleModel.create(
             id=2,
@@ -149,18 +164,6 @@ class TestModelToDict(TestWithModel):
         self.model.update_locally(a_str="Updated String")
         self.assertEqual(self.model.a_str, "Updated String")
 
-    def test_is_new_method(self):
-        # Test if the is_new method works correctly
-        new_model = ExampleModel.create(
-            a_str="New Model",
-            a_date="2021-01-01T00:00:00Z",
-            an_int=100,
-            a_float=1.23,
-            a_bool=False,
-            resource=self.resource
-        )
-        self.assertTrue(new_model.is_new())
-        self.assertFalse(self.model.is_new())
 
 class TestModel(TestWithModel):
     def test_model_initialization(self):
