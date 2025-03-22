@@ -99,7 +99,7 @@ class URLS:
     meta: Template = Template("/api/document/${pk}/metadata/")
     next_asn: Template = Template("/api/document/next_asn/")
     notes: Template = Template("/api/document/${pk}/notes/")
-    post: Template = Template("/api/document/post_document/")
+    post: Template = Template("/api/documents/post_document/")
     single: Template = Template("/api/document/${pk}/")
     suggestions: Template = Template("/api/${resource}/${pk}/suggestions/")
     preview: Template = Template("/api/${resource}/${pk}/preview/")

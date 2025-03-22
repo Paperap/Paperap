@@ -59,7 +59,7 @@ class TestDocumentResource(unittest.TestCase):
         self.assertEqual(self.resource.queryset_class, DocumentQuerySet)
         self.assertEqual(self.resource.name, "documents")
         self.assertIn("upload", self.resource.endpoints)
-        self.assertEqual(self.resource.get_endpoint("upload"), "/api/document/post_document/")
+        self.assertEqual(self.resource.get_endpoint("upload"), "/api/documents/post_document/")
 
     def test_download(self):
         """

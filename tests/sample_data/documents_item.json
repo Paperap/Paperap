@@ -1,85 +1,24 @@
 {
-  "id": 1,
-  "correspondent": 1,
-  "document_type": 8,
-  "storage_path": null,
-  "title": "example-title",
-  "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
-  "tags": [
-    38,
-    162,
-    160,
-    191
-  ],
-  "created": "2025-03-01T00:00:00-05:00",
-  "created_date": "2025-03-01",
-  "modified": "2025-03-01T09:36:19.777402-05:00",
-  "added": "2025-03-01T07:26:58.940005-05:00",
-  "deleted_at": null,
-  "archive_serial_number": null,
-  "original_file_name": "sample_filename.jpg",
-  "archived_file_name": "sample_archived_filename.pdf",
-  "owner": 10,
-  "user_can_change": true,
-  "is_shared_by_requester": false,
-  "notes": [],
-  "custom_fields": [
-    {
-      "value": null,
-      "field": 32
-    },
-    {
-      "value": null,
-      "field": 11
-    },
-    {
-      "value": null,
-      "field": 12
-    },
-    {
-      "value": null,
-      "field": 13
-    },
-    {
-      "value": null,
-      "field": 25
-    },
-    {
-      "value": null,
-      "field": 28
-    },
-    {
-      "value": null,
-      "field": 29
-    },
-    {
-      "value": null,
-      "field": 30
-    },
-    {
-      "value": null,
-      "field": 31
-    },
-    {
-      "value": null,
-      "field": 16
-    },
-    {
-      "value": "28",
-      "field": 3
-    },
-    {
-      "value": null,
-      "field": 19
-    },
-    {
-      "value": null,
-      "field": 14
-    },
-    {
-      "value": null,
-      "field": 15
-    }
-  ],
-  "page_count": null
+    "id": 8,
+    "correspondent": null,
+    "document_type": null,
+    "storage_path": null,
+    "title": "Sample PDF",
+    "content": "pANOUuLeYTS\n\u201819 e Naltid\noJ\u201c0*ajredy)1\u2018r\u2018UwuoOLnd[NusNs,94a]y}velWYAAPi[SWp]ITM90\"BpOMn\u201c4ISJjQ}BU;\nyarBUdYoiu)xsXOJgSPBjIW-\u201cleluowanp0}\npnounQojseUyMpeuaas0}UPOdYI0SlOAPAYyCfl}JqW)N|OZV1UYDT3NIWAg\nA|\u2018AeipTsaIj,4oany)%pjueJSapxoelowddWIYJNOs0}Sg'nTR3U04]J-310RO[UByH).",
+    "tags": [],
+    "created": "2025-03-22T05:17:01Z",
+    "created_date": "2025-03-22",
+    "modified": "2025-03-22T05:19:22.974833Z",
+    "added": "2025-03-22T05:19:22.794844Z",
+    "deleted_at": null,
+    "archive_serial_number": null,
+    "original_file_name": "Sample PDF.pdf",
+    "archived_file_name": "2025-03-22 Sample PDF.pdf",
+    "owner": 3,
+    "user_can_change": true,
+    "is_shared_by_requester": false,
+    "notes": [],
+    "custom_fields": [],
+    "page_count": 1,
+    "mime_type": "application/pdf"
 }

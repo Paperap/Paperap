@@ -21,6 +21,7 @@
 
 from __future__ import annotations
 
+import logging
 from datetime import datetime
 from pathlib import Path
 from string import Template
@@ -34,6 +35,7 @@ from paperap.models.document import Document, DocumentNote, DocumentNoteQuerySet
 from paperap.resources.base import BaseResource, StandardResource
 from paperap.signals import registry
 
+logger = logging.getLogger(__name__)
 
 class DocumentResource(StandardResource[Document, DocumentQuerySet]):
     """Resource for managing documents."""
@@ -51,8 +53,9 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         "preview": URLS.preview,
         "thumbnail": URLS.thumbnail,
         # The upload endpoint does not follow the standard pattern, so we define it explicitly.
-        "upload": Template("/api/document/post_document/"),
+        "upload": Template("/api/documents/post_document/"),
         "next_asn": URLS.next_asn,
+        "empty_trash": Template("/api/trash/empty/"),
     }
 
     def download(self, document_id: int, *, original: bool = False) -> bytes:
@@ -407,6 +410,25 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             params["owner"] = owner_id
 
         return self.bulk_action("set_permissions", ids, **params)
+
+    def empty_trash(self) -> dict[str, Any]:
+        """
+        Empty the trash.
+
+        Returns:
+            The API response.
+
+        Raises:
+            APIError: If the empty trash request fails.
+
+        """
+        endpoint = self.get_endpoint("empty_trash")
+        logger.debug("Emptying trash")
+        payload = {"action": "empty"}
+        response = self.client.request("POST", endpoint, data=payload, json_response=True)
+        if not response:
+            raise APIError("Empty trash failed")
+        return response # type: ignore # request should have returned correct response TODO
 
 class DocumentNoteResource(StandardResource[DocumentNote, DocumentNoteQuerySet]):
     """Resource for managing document notes."""

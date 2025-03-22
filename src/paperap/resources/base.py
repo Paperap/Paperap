@@ -163,10 +163,11 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
 
         if "resource" not in kwargs:
             kwargs["resource"] = self.name
+
         url = template.safe_substitute(**kwargs)
 
         if not url.startswith('http'):
-            url = f'{self.client.base_url}{url}'
+            url = f'{self.client.base_url}{url.lstrip("/")}'
 
         return HttpUrl(url)
 

@@ -138,16 +138,18 @@ class PydanticFactory[_StandardModel](factory.Factory[_StandardModel]):
     @classmethod
     def _omit_relationship_fields(cls, kwargs: dict[str, Any]) -> dict[str, Any]:
         """Omit all fields that represent a relationship to another model.
-        Subclasses should override the RELATIONSHIP_FIELDS attribute to specify which fields are relationships.
-        By default, if RELATIONSHIP_FIELDS is not defined, returns kwargs unchanged.
+        Subclasses should override the _RELATIONSHIPS attribute to specify which fields are relationships.
+        By default, if _RELATIONSHIPS is not defined, returns kwargs unchanged.
         """
-        relationship_fields = getattr(cls, "RELATIONSHIP_FIELDS", set())
+        relationship_fields = getattr(cls, "_RELATIONSHIPS", set())
         for field in relationship_fields:
             kwargs.pop(field, None)
         return kwargs
 
 
 class CorrespondentFactory(PydanticFactory[Correspondent]):
+    _RELATIONSHIPS = {"owner"}
+    
     class Meta: # type: ignore # pyright handles this wrong
         model = Correspondent
 
@@ -161,6 +163,8 @@ class CorrespondentFactory(PydanticFactory[Correspondent]):
     user_can_change = factory.Faker("boolean")
 
 class CustomFieldFactory(PydanticFactory[CustomField]):
+    _RELATIONSHIPS = {"extra_data"}
+    
     class Meta: # type: ignore # pyright handles this wrong
         model = CustomField
 
@@ -170,6 +174,8 @@ class CustomFieldFactory(PydanticFactory[CustomField]):
     document_count = factory.Faker("random_int", min=0, max=100)
 
 class DocumentNoteFactory(PydanticFactory[DocumentNote]):
+    _RELATIONSHIPS = {"document", "user", "transaction_id"}
+    
     class Meta: # type: ignore # pyright handles this wrong
         model = DocumentNote
 
@@ -182,6 +188,11 @@ class DocumentNoteFactory(PydanticFactory[DocumentNote]):
     user = factory.Faker("random_int", min=1, max=1000)
 
 class DocumentFactory(PydanticFactory[Document]):
+    _RELATIONSHIPS = {
+        "correspondent_id", "document_type_id", "owner", "storage_path_id", 
+        "tag_ids", "notes", "custom_field_dicts"
+    }
+    
     class Meta: # type: ignore # pyright handles this wrong
         model = Document
 
@@ -212,6 +223,8 @@ class DocumentFactory(PydanticFactory[Document]):
     notes = factory.LazyFunction(lambda: [DocumentNoteFactory.create() for _ in range(3)])
 
 class DocumentTypeFactory(PydanticFactory[DocumentType]):
+    _RELATIONSHIPS = {"owner"}
+    
     class Meta: # type: ignore # pyright handles this wrong
         model = DocumentType
 
@@ -225,6 +238,8 @@ class DocumentTypeFactory(PydanticFactory[DocumentType]):
     user_can_change = factory.Faker("boolean")
 
 class TagFactory(PydanticFactory[Tag]):
+    _RELATIONSHIPS = {"owner"}
+    
     class Meta: # type: ignore # pyright handles this wrong
         model = Tag
 
@@ -240,6 +255,8 @@ class TagFactory(PydanticFactory[Tag]):
     user_can_change = factory.Faker("boolean")
 
 class ProfileFactory(PydanticFactory[Profile]):
+    _RELATIONSHIPS = {"social_accounts"}
+    
     class Meta: # type: ignore # pyright handles this wrong
         model = Profile
 
@@ -252,6 +269,8 @@ class ProfileFactory(PydanticFactory[Profile]):
     has_usable_password = factory.Faker("boolean")
 
 class UserFactory(PydanticFactory[User]):
+    _RELATIONSHIPS = {"groups", "user_permissions", "inherited_permissions"}
+    
     class Meta: # type: ignore # pyright handles this wrong
         model = User
 
@@ -269,6 +288,8 @@ class UserFactory(PydanticFactory[User]):
     inherited_permissions = factory.List([factory.Faker("word") for _ in range(5)])
 
 class StoragePathFactory(PydanticFactory[StoragePath]):
+    _RELATIONSHIPS = {"owner"}
+    
     class Meta: # type: ignore # pyright handles this wrong
         model = StoragePath
 
@@ -283,6 +304,8 @@ class StoragePathFactory(PydanticFactory[StoragePath]):
     user_can_change = factory.Faker("boolean")
 
 class SavedViewFactory(PydanticFactory[SavedView]):
+    _RELATIONSHIPS = {"filter_rules", "owner", "display_fields"}
+    
     class Meta: # type: ignore # pyright handles this wrong
         model = SavedView
 
@@ -293,12 +316,14 @@ class SavedViewFactory(PydanticFactory[SavedView]):
     sort_reverse = factory.Faker("boolean")
     filter_rules = factory.List([factory.Dict({"rule_type": factory.Faker("random_int", min=1, max=3), "value": fake.word(), "saved_view": factory.Faker("random_int", min=1, max=100)}) for _ in range(3)])
     page_size = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=10, max=100), None)
-    display_mode = "smallCards"
+    display_mode = None
     display_fields = factory.List([factory.Faker("word") for _ in range(5)])
     owner = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
     user_can_change = factory.Faker("boolean")
 
 class ShareLinksFactory(PydanticFactory[ShareLinks]):
+    _RELATIONSHIPS = {"document"}
+    
     class Meta: # type: ignore # pyright handles this wrong
         model = ShareLinks
 
@@ -309,6 +334,8 @@ class ShareLinksFactory(PydanticFactory[ShareLinks]):
     file_version = "original"
 
 class TaskFactory(PydanticFactory[Task]):
+    _RELATIONSHIPS = {"related_document"}
+    
     class Meta: # type: ignore # pyright handles this wrong
         model = Task
 
@@ -322,6 +349,8 @@ class TaskFactory(PydanticFactory[Task]):
     related_document = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=1000), None)
 
 class UISettingsFactory(PydanticFactory[UISettings]):
+    _RELATIONSHIPS = {"user", "settings", "permissions"}
+    
     class Meta: # type: ignore # pyright handles this wrong
         model = UISettings
 
@@ -522,6 +551,8 @@ class UISettingsFactory(PydanticFactory[UISettings]):
     ]
 
 class MetadataElementFactory(PydanticFactory[MetadataElement]):
+    _RELATIONSHIPS = set()
+    
     class Meta: # type: ignore # pyright handles this wrong
         model = MetadataElement
 
@@ -529,6 +560,8 @@ class MetadataElementFactory(PydanticFactory[MetadataElement]):
     value = factory.Faker("sentence")
 
 class DocumentMetadataFactory(PydanticFactory[DocumentMetadata]):
+    _RELATIONSHIPS = {"original_metadata", "archive_metadata"}
+    
     class Meta: # type: ignore # pyright handles this wrong
         model = DocumentMetadata
 
@@ -546,6 +579,8 @@ class DocumentMetadataFactory(PydanticFactory[DocumentMetadata]):
     archive_metadata = factory.List([MetadataElementFactory.build() for _ in range(3)])
 
 class DocumentSuggestionsFactory(PydanticFactory[DocumentSuggestions]):
+    _RELATIONSHIPS = {"correspondents", "tags", "document_types", "storage_paths", "dates"}
+    
     class Meta: # type: ignore # pyright handles this wrong
         model = DocumentSuggestions
 
@@ -567,6 +602,8 @@ class DownloadedDocumentFactory(PydanticFactory[DownloadedDocument]):
     disposition_type = factory.Faker("random_element", elements=["inline", "attachment"])
 
 class GroupFactory(PydanticFactory[Group]):
+    _RELATIONSHIPS = {"permissions"}
+    
     class Meta: # type: ignore # pyright handles this wrong
         model = Group
 
@@ -574,6 +611,10 @@ class GroupFactory(PydanticFactory[Group]):
     permissions = factory.List([factory.Faker("word") for _ in range(5)])
 
 class WorkflowTriggerFactory(PydanticFactory[WorkflowTrigger]):
+    _RELATIONSHIPS = {
+        "sources", "filter_has_tags", "filter_has_correspondent", "filter_has_document_type"
+    }
+    
     class Meta: # type: ignore # pyright handles this wrong
         model = WorkflowTrigger
 
@@ -590,6 +631,12 @@ class WorkflowTriggerFactory(PydanticFactory[WorkflowTrigger]):
     filter_has_document_type = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
 
 class WorkflowActionFactory(PydanticFactory[WorkflowAction]):
+    _RELATIONSHIPS = {
+        "assign_tags", "assign_correspondent", "assign_document_type", 
+        "assign_storage_path", "assign_owner", "assign_view_users", 
+        "assign_view_groups"
+    }
+    
     class Meta: # type: ignore # pyright handles this wrong
         model = WorkflowAction
 
@@ -606,6 +653,8 @@ class WorkflowActionFactory(PydanticFactory[WorkflowAction]):
     remove_all_custom_fields = factory.Faker("boolean")
 
 class WorkflowFactory(PydanticFactory[Workflow]):
+    _RELATIONSHIPS = {"triggers", "actions"}
+    
     class Meta: # type: ignore # pyright handles this wrong
         model = Workflow
 

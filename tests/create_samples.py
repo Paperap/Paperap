@@ -170,7 +170,7 @@ def main() -> None:
 
     # Additional endpoints
     extra_endpoints = {
-        "users_me": f"{API_BASE_URL}users/me/",
+        #"users_me": f"{API_BASE_URL}users/me/",
         "profile": f"{API_BASE_URL}profile/",
         "saved_views": f"{API_BASE_URL}saved_views/",
         "share_links": f"{API_BASE_URL}share_links/",
@@ -183,7 +183,7 @@ def main() -> None:
     }
 
     for key, url in extra_endpoints.items():
-        logger.info(f"Fetching extra endpoint '{key}'...")
+        logger.debug(f"Fetching extra endpoint '{key}'...")
         fetch_endpoint_data(key, url, params={"page_size": 1})
         # Attempt to fetch an item if available.
         data = fetch_api_root_item(url)

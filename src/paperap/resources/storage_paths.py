@@ -6,7 +6,7 @@
        File:    storage_paths.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.8
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -22,10 +22,10 @@
 from __future__ import annotations
 
 from paperap.models.storage_path import StoragePath, StoragePathQuerySet
-from paperap.resources.base import BaseResource, StandardResource
+from paperap.resources.base import BaseResource, BulkEditing, StandardResource
 
 
-class StoragePathResource(StandardResource[StoragePath, StoragePathQuerySet]):
+class StoragePathResource(StandardResource[StoragePath, StoragePathQuerySet], BulkEditing):
     """Resource for managing storage paths."""
 
     model_class = StoragePath

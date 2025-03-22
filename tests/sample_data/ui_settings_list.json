@@ -7,6 +7,10 @@
         "groups": []
     },
     "settings": {
+        "dashboard_layout": "grid",
+        "notification_settings": {
+            "email": true
+        },
         "update_checking": {
             "backend_setting": "default"
         },

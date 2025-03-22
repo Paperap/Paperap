@@ -64,13 +64,12 @@ class PaperlessManager:
             "tags": (Tag, factories.TagFactory),
             "custom_fields": (CustomField, factories.CustomFieldFactory),
             "storage_paths": (StoragePath, factories.StoragePathFactory),
-            "saved_views": (SavedView, factories.SavedViewFactory),
-            "share_links": (ShareLinks, factories.ShareLinksFactory),
-            "groups": (Group, factories.GroupFactory),
-            "workflows": (Workflow, factories.WorkflowFactory),
-            "workflow_triggers": (WorkflowTrigger, factories.WorkflowTriggerFactory),
-            "workflow_actions": (WorkflowAction, factories.WorkflowActionFactory),
-            "ui_settings": (UISettings, factories.UISettingsFactory),
+            #"saved_views": (SavedView, factories.SavedViewFactory),
+            #"share_links": (ShareLinks, factories.ShareLinksFactory),
+            #"groups": (Group, factories.GroupFactory),
+            #"workflows": (Workflow, factories.WorkflowFactory),
+            #"workflow_triggers": (WorkflowTrigger, factories.WorkflowTriggerFactory),
+            #"workflow_actions": (WorkflowAction, factories.WorkflowActionFactory),
         }
 
     def cleanup(self) -> None:
@@ -103,7 +102,6 @@ class PaperlessManager:
             WorkflowResource,
             WorkflowTriggerResource,
             WorkflowActionResource,
-            # UISettingsResource, # Can't be deleted
         ]
         for resource_cls in resources:
             resource = resource_cls(client=self.client)
@@ -113,6 +111,8 @@ class PaperlessManager:
                     logger.debug(f"Deleted {model}")
                 except PaperapError as e:
                     logger.warning("Failed to delete %s: %s", model, e)
+
+        self.client.documents.empty_trash()
 
     def create_models(self, name: str, model_class: StandardModel, factory: factories.PydanticFactory, *, _number: int = 76, **kwargs: Any) -> None:
         for i in range(_number):
