@@ -11,6 +11,7 @@ from paperap.client import PaperlessClient
 
 class TestDocumentFiltering(UnitTestCase):
     """Test document filtering functionality."""
+    mock_env = False
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -381,7 +382,7 @@ class TestDocumentFiltering(UnitTestCase):
         
         # Calculate expected results locally for NULL
         expected_null = [doc for doc in self.all_documents 
-                        if not hasattr(doc, 'correspondent') or doc.correspondent is None]
+                        if not hasattr(doc, 'correspondent_id') or doc.correspondent_id is None]
         
         # Assert for NULL
         self.assertEqual(len(filtered_null), len(expected_null))
@@ -391,7 +392,7 @@ class TestDocumentFiltering(UnitTestCase):
         
         # Calculate expected results locally for NOT NULL
         expected_not_null = [doc for doc in self.all_documents 
-                            if hasattr(doc, 'correspondent') and doc.correspondent is not None]
+                            if hasattr(doc, 'correspondent_id') and doc.correspondent_id is not None]
         
         # Assert for NOT NULL
         self.assertEqual(len(filtered_not_null), len(expected_not_null))
@@ -400,12 +401,12 @@ class TestDocumentFiltering(UnitTestCase):
         """Test filtering by correspondent__id."""
         # Find a document with correspondent
         doc_with_correspondent = next((doc for doc in self.all_documents 
-                                   if hasattr(doc, 'correspondent') and doc.correspondent), None)
+                                   if hasattr(doc, 'correspondent_id') and doc.correspondent_id), None)
         if not doc_with_correspondent:
             self.skipTest("No documents with correspondent available for testing")
             
         # Get the correspondent id
-        correspondent_id = doc_with_correspondent.correspondent.id
+        correspondent_id = doc_with_correspondent.correspondent_id
         
         # Apply the filter
         filtered = list(self.client.documents().filter(correspondent__id=correspondent_id))
@@ -604,20 +605,20 @@ class TestDocumentFiltering(UnitTestCase):
         """Test filtering by tags__id."""
         # Find a document with tags
         doc_with_tags = next((doc for doc in self.all_documents 
-                          if hasattr(doc, 'tags') and doc.tags), None)
+                          if hasattr(doc, 'tag_ids') and doc.tag_ids), None)
         if not doc_with_tags:
             self.skipTest("No documents with tags available for testing")
             
         # Get a tag id
-        tag_id = doc_with_tags.tags[0].id
+        tag_id = doc_with_tags.tag_ids[0]
         
         # Apply the filter
         filtered = list(self.client.documents().filter(tags__id=tag_id))
         
         # Calculate expected results locally
         expected = [doc for doc in self.all_documents 
-                   if hasattr(doc, 'tags') and doc.tags and 
-                   any(tag.id == tag_id for tag in doc.tags)]
+                   if hasattr(doc, 'tag_ids') and doc.tag_ids and 
+                   any(tag == tag_id for tag in doc.tag_ids)]
         
         # Assert
         self.assertEqual(len(filtered), len(expected))
@@ -626,20 +627,20 @@ class TestDocumentFiltering(UnitTestCase):
         """Test filtering by tags__id__in."""
         # Find documents with tags
         docs_with_tags = [doc for doc in self.all_documents 
-                      if hasattr(doc, 'tags') and doc.tags]
+                      if hasattr(doc, 'tag_ids') and doc.tag_ids]
         if len(docs_with_tags) < 2:
             self.skipTest("Not enough documents with tags available for testing")
             
         # Get some tag ids
-        tag_ids = list(set([doc.tags[0].id for doc in docs_with_tags[:2]]))
+        tag_ids = list(set([doc.tag_ids[0] for doc in docs_with_tags[:2]]))
         
         # Apply the filter
         filtered = list(self.client.documents().filter(tags__id__in=tag_ids))
         
         # Calculate expected results locally
         expected = [doc for doc in self.all_documents 
-                   if hasattr(doc, 'tags') and doc.tags and 
-                   any(tag.id in tag_ids for tag in doc.tags)]
+                   if hasattr(doc, 'tag_ids') and doc.tag_ids and 
+                   any(tag in tag_ids for tag in doc.tag_ids)]
         
         # Assert
         self.assertEqual(len(filtered), len(expected))
@@ -651,7 +652,7 @@ class TestDocumentFiltering(UnitTestCase):
         
         # Calculate expected results locally for tagged
         expected_tagged = [doc for doc in self.all_documents 
-                          if hasattr(doc, 'tags') and doc.tags and len(doc.tags) > 0]
+                          if hasattr(doc, 'tag_ids') and doc.tag_ids and len(doc.tag_ids) > 0]
         
         # Assert for tagged
         self.assertEqual(len(filtered_tagged), len(expected_tagged))
@@ -661,7 +662,7 @@ class TestDocumentFiltering(UnitTestCase):
         
         # Calculate expected results locally for untagged
         expected_untagged = [doc for doc in self.all_documents 
-                            if not hasattr(doc, 'tags') or not doc.tags or len(doc.tags) == 0]
+                            if not hasattr(doc, 'tag_ids') or not doc.tag_ids or len(doc.tag_ids) == 0]
         
         # Assert for untagged
         self.assertEqual(len(filtered_untagged), len(expected_untagged))
