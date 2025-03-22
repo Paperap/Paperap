@@ -230,7 +230,7 @@ class TestClientRequests(UnitTestCase):
         self.mock_response.status_code = 204
         result = self.client.request("DELETE", "api/documents/1/")
         self.assertIsNone(result)
-        
+
     def test_http_methods(self):
         """Test all HTTP methods are properly passed to the session."""
         methods = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]
@@ -238,14 +238,14 @@ class TestClientRequests(UnitTestCase):
             self.client.request(method, "api/documents/")
             call_args = self.mock_session_request.call_args[1]
             self.assertEqual(call_args["method"], method)
-        
+
     def test_request_with_unusual_url_formats(self):
         """Test handling of unusual URL formats."""
         # With double slashes
         self.client.request("GET", "//api/documents/")
         call_args = self.mock_session_request.call_args[1]
         self.assertEqual(call_args["url"], "http://example.com/api/documents/")
-        
+
         # With query parameters in the endpoint
         self.client.request("GET", "api/documents/?query=test")
         call_args = self.mock_session_request.call_args[1]
@@ -278,7 +278,7 @@ class TestClientRequests(UnitTestCase):
         self.mock_session_request.side_effect = requests.exceptions.Timeout("Request timed out")
         with self.assertRaises(RequestError):
             self.client.request("GET", "api/documents/")
-            
+
     def test_request_other_exceptions(self):
         """Test handling of other request exceptions."""
         exceptions = [
@@ -286,7 +286,7 @@ class TestClientRequests(UnitTestCase):
             requests.exceptions.RequestException("Generic request exception"),
             requests.exceptions.HTTPError("HTTP error")
         ]
-        
+
         for exception in exceptions:
             self.mock_session_request.side_effect = exception
             with self.assertRaises(RequestError):
@@ -400,7 +400,7 @@ class TestClientErrorHandling(UnitTestCase):
         self.mock_response.status_code = 400
         message = self.client._extract_error_message(self.mock_response) # type: ignore
         self.assertEqual(message, "Not JSON")
-        
+
     def test_extract_error_message_complex_nested(self):
         """Test extracting error message with complex nested structure."""
         self.mock_response.json.return_value = {
@@ -413,13 +413,13 @@ class TestClientErrorHandling(UnitTestCase):
         }
         message = self.client._extract_error_message(self.mock_response) # type: ignore
         self.assertEqual(message, "errors: {'document': {'title': ['Too short', 'Contains invalid characters'], 'content': ['Empty content not allowed']}}")
-        
+
     def test_handle_400_error_with_relationship(self):
         """Test handling a 400 error with relationship error."""
         self.mock_response.status_code = 400
         self.mock_response.json.return_value = {"detail": "correspondent: Invalid pk \"999\" - object does not exist."}
         self.mock_response.text = "correspondent: Invalid pk \"999\" - object does not exist."
-        
+
         with self.assertRaises(RelationshipNotFoundError):
             self.client.request("POST", "api/documents/")
 
@@ -611,45 +611,45 @@ class TestTokenGeneration(UnitTestCase):
 
 class TestSignalIntegration(UnitTestCase):
     """Test the integration with the signal system."""
-    
+
     @patch("paperap.client.PaperlessClient.request_raw")
     @patch("paperap.signals.registry.emit")
     def test_request_emits_signals(self, mock_emit, mock_request_raw):
         """Test that request method emits the appropriate signals."""
         mock_request_raw.return_value = self.mock_response
-        
+
         self.client.request("GET", "api/documents/")
-        
+
         # Check that signals were emitted in the correct order
         self.assertEqual(mock_emit.call_count, 3)
-        
+
         # First call should be client.request:before
         self.assertEqual(mock_emit.call_args_list[0][0][0], "client.request:before")
-        
+
         # Second call should be client.request__response
         self.assertEqual(mock_emit.call_args_list[1][0][0], "client.request__response")
-        
+
         # Third call should be client.request:after
         self.assertEqual(mock_emit.call_args_list[2][0][0], "client.request:after")
-    
+
     @patch("paperap.client.PaperlessClient.request_raw")
     @patch("paperap.signals.registry.emit")
     def test_signal_can_modify_response(self, mock_emit, mock_request_raw):
         """Test that signals can modify the response."""
         mock_request_raw.return_value = self.mock_response
-        
+
         # Make the signal modify the response
         def modify_response(response, **kwargs):
             if isinstance(response, dict):
                 response["modified"] = True
             return response
-            
+
         mock_emit.side_effect = [None, None, modify_response({"key": "value"})]
-        
+
         result = self.client.request("GET", "api/documents/")
-        
+
         self.assertTrue(result["modified"])
-    
+
     @patch("paperap.client.registry.emit")
     def test_generate_token_emits_signals(self, mock_emit):
         """Test that generate_token emits the appropriate signals."""
@@ -658,46 +658,46 @@ class TestSignalIntegration(UnitTestCase):
             mock_response.status_code = 200
             mock_response.json.return_value = {"token": "40characterslong40characterslong40charac"}
             mock_post.return_value = mock_response
-            
+
             self.client.generate_token(
                 base_url="https://example.com",
                 username="testuser",
                 password="testpass"
             )
-            
+
             # Check that signals were emitted
             self.assertEqual(mock_emit.call_count, 2)
-            
+
             # First call should be client.generate_token__before
             self.assertEqual(mock_emit.call_args_list[0][0][0], "client.generate_token__before")
-            
+
             # Second call should be client.generate_token__after
             self.assertEqual(mock_emit.call_args_list[1][0][0], "client.generate_token__after")
 
 
 class TestPluginSystem(UnitTestCase):
     """Test the plugin system integration."""
-    
+
     @patch("paperap.plugins.manager.PluginManager.discover_plugins")
     @patch("paperap.plugins.manager.PluginManager.configure")
     @patch("paperap.plugins.manager.PluginManager.initialize_all_plugins")
     def test_plugin_initialization(self, mock_initialize, mock_configure, mock_discover):
         """Test that plugins are properly initialized during client creation."""
         mock_initialize.return_value = {"TestPlugin": MagicMock()}
-        
+
         client = PaperlessClient(Settings(
             base_url="https://example.com",
             token="40characterslong40characterslong40charac"
         ))
-        
+
         # Verify plugin system was initialized
         mock_discover.assert_called_once()
         mock_configure.assert_called_once()
         mock_initialize.assert_called_once()
-        
+
         # Verify plugins are accessible
         self.assertIsInstance(client.plugins, dict)
-    
+
     def test_custom_plugin_config(self):
         """Test initializing with custom plugin configuration."""
         custom_config = {
@@ -709,19 +709,19 @@ class TestPluginSystem(UnitTestCase):
                 }
             }
         }
-        
+
         with patch("paperap.plugins.manager.PluginManager.configure") as mock_configure:
             with patch("paperap.plugins.manager.PluginManager.initialize_all_plugins") as mock_initialize:
                 mock_initialize.return_value = {"CustomPlugin": MagicMock()}
-                
+
                 client = PaperlessClient(Settings(
                     base_url="https://example.com",
                     token="40characterslong40characterslong40charac"
                 ))
-                
+
                 # Initialize with custom config
                 client._initialize_plugins(custom_config)
-                
+
                 # Verify custom config was used
                 mock_configure.assert_called_with(custom_config)
 

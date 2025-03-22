@@ -293,7 +293,7 @@ class SavedViewFactory(PydanticFactory[SavedView]):
     sort_reverse = factory.Faker("boolean")
     filter_rules = factory.List([factory.Dict({"rule_type": factory.Faker("random_int", min=1, max=3), "value": fake.word(), "saved_view": factory.Faker("random_int", min=1, max=100)}) for _ in range(3)])
     page_size = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=10, max=100), None)
-    display_mode = factory.Faker("word")
+    display_mode = "smallCards"
     display_fields = factory.List([factory.Faker("word") for _ in range(5)])
     owner = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
     user_can_change = factory.Faker("boolean")
@@ -306,7 +306,7 @@ class ShareLinksFactory(PydanticFactory[ShareLinks]):
     slug = factory.Faker("slug")
     document = factory.Faker("random_int", min=1, max=1000)
     created = factory.LazyFunction(datetime.now)
-    file_version = factory.Faker("word")
+    file_version = "original"
 
 class TaskFactory(PydanticFactory[Task]):
     class Meta: # type: ignore # pyright handles this wrong
@@ -332,7 +332,7 @@ class UISettingsFactory(PydanticFactory[UISettings]):
         "is_superuser": True,
         "groups": []
     },
-    settings = {   
+    settings = {
         "update_checking": {
             "backend_setting": "default"
         },
@@ -524,14 +524,14 @@ class UISettingsFactory(PydanticFactory[UISettings]):
 class MetadataElementFactory(PydanticFactory[MetadataElement]):
     class Meta: # type: ignore # pyright handles this wrong
         model = MetadataElement
-    
+
     key = factory.Faker("word")
     value = factory.Faker("sentence")
 
 class DocumentMetadataFactory(PydanticFactory[DocumentMetadata]):
     class Meta: # type: ignore # pyright handles this wrong
         model = DocumentMetadata
-    
+
     original_checksum = factory.Faker("sha256")
     original_size = factory.Faker("random_int", min=1000, max=10000000)
     original_mime_type = factory.Faker("mime_type")
@@ -548,7 +548,7 @@ class DocumentMetadataFactory(PydanticFactory[DocumentMetadata]):
 class DocumentSuggestionsFactory(PydanticFactory[DocumentSuggestions]):
     class Meta: # type: ignore # pyright handles this wrong
         model = DocumentSuggestions
-    
+
     correspondents = factory.List([factory.Faker("random_int", min=1, max=100) for _ in range(3)])
     tags = factory.List([factory.Faker("random_int", min=1, max=50) for _ in range(5)])
     document_types = factory.List([factory.Faker("random_int", min=1, max=100) for _ in range(3)])
@@ -558,7 +558,7 @@ class DocumentSuggestionsFactory(PydanticFactory[DocumentSuggestions]):
 class DownloadedDocumentFactory(PydanticFactory[DownloadedDocument]):
     class Meta: # type: ignore # pyright handles this wrong
         model = DownloadedDocument
-    
+
     mode = factory.Faker("random_element", elements=["download", "preview", "thumbnail"])
     original = factory.Faker("boolean")
     content = factory.LazyFunction(lambda: bytes(fake.binary(length=1024)))

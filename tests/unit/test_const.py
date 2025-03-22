@@ -4,12 +4,12 @@
    METADATA:
 
        File:    test_const.py
-       Project: paperap
+        Project: paperap
        Created: 2025-03-21
-       Version: 0.0.9
+        Version: 0.0.9
        Author:  Claude
        Email:   jess@jmann.me
-       Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -68,14 +68,14 @@ from paperap.const import (
 class TestStrEnumWithUnknown(unittest.TestCase):
     """
     Test the StrEnumWithUnknown class.
-    
+
     Written By claude
     """
 
     def test_valid_enum_value(self):
         """
         Test that valid enum values are correctly returned.
-        
+
         Written By claude
         """
         self.assertEqual(StatusType.OK, "OK")
@@ -84,7 +84,7 @@ class TestStrEnumWithUnknown(unittest.TestCase):
     def test_invalid_enum_value(self):
         """
         Test that invalid enum values return UNKNOWN.
-        
+
         Written By claude
         """
         invalid_value = "INVALID_VALUE"
@@ -94,7 +94,7 @@ class TestStrEnumWithUnknown(unittest.TestCase):
     def test_enum_comparison(self):
         """
         Test enum value comparison.
-        
+
         Written By claude
         """
         self.assertEqual(StatusType.OK, "OK")
@@ -106,14 +106,14 @@ class TestStrEnumWithUnknown(unittest.TestCase):
 class TestIntEnumWithUnknown(unittest.TestCase):
     """
     Test the IntEnumWithUnknown class.
-    
+
     Written By claude
     """
 
     def test_valid_enum_value(self):
         """
         Test that valid enum values are correctly returned.
-        
+
         Written By claude
         """
         self.assertEqual(MatchingAlgorithmType.NONE, 0)
@@ -122,7 +122,7 @@ class TestIntEnumWithUnknown(unittest.TestCase):
     def test_invalid_enum_value(self):
         """
         Test that invalid enum values return UNKNOWN.
-        
+
         Written By claude
         """
         invalid_value = 999
@@ -132,7 +132,7 @@ class TestIntEnumWithUnknown(unittest.TestCase):
     def test_enum_comparison(self):
         """
         Test enum value comparison.
-        
+
         Written By claude
         """
         self.assertEqual(MatchingAlgorithmType.NONE, 0)
@@ -144,7 +144,7 @@ class TestIntEnumWithUnknown(unittest.TestCase):
 class TestConstModel(unittest.TestCase):
     """
     Test the ConstModel class.
-    
+
     Written By claude
     """
 
@@ -157,7 +157,7 @@ class TestConstModel(unittest.TestCase):
     def test_model_creation(self):
         """
         Test creating a model instance.
-        
+
         Written By claude
         """
         model = self.TestModel(name="test", value=42)
@@ -168,7 +168,7 @@ class TestConstModel(unittest.TestCase):
     def test_model_validation(self):
         """
         Test model validation.
-        
+
         Written By claude
         """
         # Missing required field
@@ -182,23 +182,23 @@ class TestConstModel(unittest.TestCase):
     def test_model_equality_with_dict(self):
         """
         Test model equality comparison with dict.
-        
+
         Written By claude
         """
         model = self.TestModel(name="test", value=42)
-        
+
         # Equal dict
         equal_dict = {"name": "test", "value": 42, "optional": None}
         self.assertEqual(model, equal_dict)
-        
+
         # Different value
         different_dict = {"name": "test", "value": 43, "optional": None}
         self.assertNotEqual(model, different_dict)
-        
+
         # Missing key
         incomplete_dict = {"name": "test", "value": 42}
         self.assertNotEqual(model, incomplete_dict)
-        
+
         # Extra key
         extra_dict = {"name": "test", "value": 42, "optional": None, "extra": "value"}
         self.assertNotEqual(model, extra_dict)
@@ -206,24 +206,24 @@ class TestConstModel(unittest.TestCase):
     def test_model_equality_with_model(self):
         """
         Test model equality comparison with another model.
-        
+
         Written By claude
         """
         model1 = self.TestModel(name="test", value=42)
         model2 = self.TestModel(name="test", value=42)
         model3 = self.TestModel(name="different", value=42)
-        
+
         self.assertEqual(model1, model2)
         self.assertNotEqual(model1, model3)
 
     def test_model_equality_with_other_types(self):
         """
         Test model equality comparison with other types.
-        
+
         Written By claude
         """
         model = self.TestModel(name="test", value=42)
-        
+
         self.assertNotEqual(model, "not a model")
         self.assertNotEqual(model, 42)
         self.assertNotEqual(model, None)
@@ -232,29 +232,29 @@ class TestConstModel(unittest.TestCase):
 class TestURLs(unittest.TestCase):
     """
     Test the URLS class.
-    
+
     Written By claude
     """
 
     def test_url_templates(self):
         """
         Test URL template substitution.
-        
+
         Written By claude
         """
         self.assertEqual(URLS.index.substitute(), "/api/")
         self.assertEqual(URLS.token.substitute(), "/api/token/")
-        
+
         self.assertEqual(
             URLS.list.substitute(resource="documents"),
             "/api/documents/"
         )
-        
+
         self.assertEqual(
             URLS.detail.substitute(resource="documents", pk=123),
             "/api/documents/123/"
         )
-        
+
         self.assertEqual(
             URLS.meta.substitute(pk=123),
             "/api/document/123/metadata/"
@@ -264,14 +264,14 @@ class TestURLs(unittest.TestCase):
 class TestFilteringStrategies(unittest.TestCase):
     """
     Test the FilteringStrategies enum.
-    
+
     Written By claude
     """
 
     def test_enum_values(self):
         """
         Test enum values.
-        
+
         Written By claude
         """
         self.assertEqual(FilteringStrategies.WHITELIST, "whitelist")
@@ -283,14 +283,14 @@ class TestFilteringStrategies(unittest.TestCase):
 class TestModelStatus(unittest.TestCase):
     """
     Test the ModelStatus enum.
-    
+
     Written By claude
     """
 
     def test_enum_values(self):
         """
         Test enum values.
-        
+
         Written By claude
         """
         self.assertEqual(ModelStatus.INITIALIZING, "initializing")
@@ -303,14 +303,14 @@ class TestModelStatus(unittest.TestCase):
 class TestCustomFieldTypes(unittest.TestCase):
     """
     Test the CustomFieldTypes enum.
-    
+
     Written By claude
     """
 
     def test_enum_values(self):
         """
         Test enum values.
-        
+
         Written By claude
         """
         self.assertEqual(CustomFieldTypes.STRING, "string")
@@ -326,7 +326,7 @@ class TestCustomFieldTypes(unittest.TestCase):
     def test_unknown_value(self):
         """
         Test handling of unknown values.
-        
+
         Written By claude
         """
         self.assertEqual(CustomFieldTypes("nonexistent"), CustomFieldTypes.UNKNOWN)
@@ -335,14 +335,14 @@ class TestCustomFieldTypes(unittest.TestCase):
 class TestCustomFieldValues(unittest.TestCase):
     """
     Test the CustomFieldValues model.
-    
+
     Written By claude
     """
 
     def test_model_creation(self):
         """
         Test creating a model instance.
-        
+
         Written By claude
         """
         model = CustomFieldValues(field=1, value="test")
@@ -352,7 +352,7 @@ class TestCustomFieldValues(unittest.TestCase):
     def test_model_validation(self):
         """
         Test model validation.
-        
+
         Written By claude
         """
         # Missing required field
@@ -363,14 +363,14 @@ class TestCustomFieldValues(unittest.TestCase):
 class TestDocumentMetadataType(unittest.TestCase):
     """
     Test the DocumentMetadataType model.
-    
+
     Written By claude
     """
 
     def test_model_creation(self):
         """
         Test creating a model instance.
-        
+
         Written By claude
         """
         # All fields are optional
@@ -396,14 +396,14 @@ class TestDocumentMetadataType(unittest.TestCase):
 class TestDocumentSearchHitType(unittest.TestCase):
     """
     Test the DocumentSearchHitType model.
-    
+
     Written By claude
     """
 
     def test_model_creation(self):
         """
         Test creating a model instance.
-        
+
         Written By claude
         """
         # All fields are optional
@@ -429,14 +429,14 @@ class TestDocumentSearchHitType(unittest.TestCase):
 class TestMatchingAlgorithmType(unittest.TestCase):
     """
     Test the MatchingAlgorithmType enum.
-    
+
     Written By claude
     """
 
     def test_enum_values(self):
         """
         Test enum values.
-        
+
         Written By claude
         """
         self.assertEqual(MatchingAlgorithmType.NONE, 0)
@@ -451,7 +451,7 @@ class TestMatchingAlgorithmType(unittest.TestCase):
     def test_unknown_value(self):
         """
         Test handling of unknown values.
-        
+
         Written By claude
         """
         self.assertEqual(MatchingAlgorithmType(999), MatchingAlgorithmType.UNKNOWN)
@@ -460,14 +460,14 @@ class TestMatchingAlgorithmType(unittest.TestCase):
 class TestPermissionSetType(unittest.TestCase):
     """
     Test the PermissionSetType model.
-    
+
     Written By claude
     """
 
     def test_model_creation(self):
         """
         Test creating a model instance.
-        
+
         Written By claude
         """
         # Default values
@@ -484,14 +484,14 @@ class TestPermissionSetType(unittest.TestCase):
 class TestPermissionTableType(unittest.TestCase):
     """
     Test the PermissionTableType model.
-    
+
     Written By claude
     """
 
     def test_model_creation(self):
         """
         Test creating a model instance.
-        
+
         Written By claude
         """
         # Default values
@@ -503,7 +503,7 @@ class TestPermissionTableType(unittest.TestCase):
         view_set = PermissionSetType(users=[1, 2], groups=[3, 4])
         change_set = PermissionSetType(users=[5, 6], groups=[7, 8])
         model = PermissionTableType(view=view_set, change=change_set)
-        
+
         self.assertEqual(model.view, view_set)
         self.assertEqual(model.change, change_set)
         self.assertEqual(model.view.users, [1, 2])
@@ -515,14 +515,14 @@ class TestPermissionTableType(unittest.TestCase):
 class TestRetrieveFileMode(unittest.TestCase):
     """
     Test the RetrieveFileMode enum.
-    
+
     Written By claude
     """
 
     def test_enum_values(self):
         """
         Test enum values.
-        
+
         Written By claude
         """
         self.assertEqual(RetrieveFileMode.DOWNLOAD, "download")
@@ -533,14 +533,14 @@ class TestRetrieveFileMode(unittest.TestCase):
 class TestSavedViewFilterRuleType(unittest.TestCase):
     """
     Test the SavedViewFilterRuleType model.
-    
+
     Written By claude
     """
 
     def test_model_creation(self):
         """
         Test creating a model instance.
-        
+
         Written By claude
         """
         # Only rule_type is required
@@ -558,7 +558,7 @@ class TestSavedViewFilterRuleType(unittest.TestCase):
     def test_model_validation(self):
         """
         Test model validation.
-        
+
         Written By claude
         """
         # Missing required field
@@ -569,14 +569,14 @@ class TestSavedViewFilterRuleType(unittest.TestCase):
 class TestShareLinkFileVersionType(unittest.TestCase):
     """
     Test the ShareLinkFileVersionType enum.
-    
+
     Written By claude
     """
 
     def test_enum_values(self):
         """
         Test enum values.
-        
+
         Written By claude
         """
         self.assertEqual(ShareLinkFileVersionType.ARCHIVE, "archive")
@@ -586,7 +586,7 @@ class TestShareLinkFileVersionType(unittest.TestCase):
     def test_unknown_value(self):
         """
         Test handling of unknown values.
-        
+
         Written By claude
         """
         self.assertEqual(
@@ -598,14 +598,14 @@ class TestShareLinkFileVersionType(unittest.TestCase):
 class TestStatusType(unittest.TestCase):
     """
     Test the StatusType enum.
-    
+
     Written By claude
     """
 
     def test_enum_values(self):
         """
         Test enum values.
-        
+
         Written By claude
         """
         self.assertEqual(StatusType.OK, "OK")
@@ -615,7 +615,7 @@ class TestStatusType(unittest.TestCase):
     def test_unknown_value(self):
         """
         Test handling of unknown values.
-        
+
         Written By claude
         """
         self.assertEqual(StatusType("nonexistent"), StatusType.UNKNOWN)
@@ -624,14 +624,14 @@ class TestStatusType(unittest.TestCase):
 class TestStatusDatabaseMigrationStatusType(unittest.TestCase):
     """
     Test the StatusDatabaseMigrationStatusType model.
-    
+
     Written By claude
     """
 
     def test_model_creation(self):
         """
         Test creating a model instance.
-        
+
         Written By claude
         """
         # Default values
@@ -651,14 +651,14 @@ class TestStatusDatabaseMigrationStatusType(unittest.TestCase):
 class TestStatusDatabaseType(unittest.TestCase):
     """
     Test the StatusDatabaseType model.
-    
+
     Written By claude
     """
 
     def test_model_creation(self):
         """
         Test creating a model instance.
-        
+
         Written By claude
         """
         # All fields are optional
@@ -691,14 +691,14 @@ class TestStatusDatabaseType(unittest.TestCase):
 class TestStatusStorageType(unittest.TestCase):
     """
     Test the StatusStorageType model.
-    
+
     Written By claude
     """
 
     def test_model_creation(self):
         """
         Test creating a model instance.
-        
+
         Written By claude
         """
         # All fields are optional
@@ -715,14 +715,14 @@ class TestStatusStorageType(unittest.TestCase):
 class TestStatusTasksType(unittest.TestCase):
     """
     Test the StatusTasksType model.
-    
+
     Written By claude
     """
 
     def test_model_creation(self):
         """
         Test creating a model instance.
-        
+
         Written By claude
         """
         # All fields are optional
@@ -767,14 +767,14 @@ class TestStatusTasksType(unittest.TestCase):
 class TestTaskStatusType(unittest.TestCase):
     """
     Test the TaskStatusType enum.
-    
+
     Written By claude
     """
 
     def test_enum_values(self):
         """
         Test enum values.
-        
+
         Written By claude
         """
         self.assertEqual(TaskStatusType.PENDING, "PENDING")
@@ -786,7 +786,7 @@ class TestTaskStatusType(unittest.TestCase):
     def test_unknown_value(self):
         """
         Test handling of unknown values.
-        
+
         Written By claude
         """
         self.assertEqual(TaskStatusType("nonexistent"), TaskStatusType.UNKNOWN)
@@ -795,14 +795,14 @@ class TestTaskStatusType(unittest.TestCase):
 class TestTaskTypeType(unittest.TestCase):
     """
     Test the TaskTypeType enum.
-    
+
     Written By claude
     """
 
     def test_enum_values(self):
         """
         Test enum values.
-        
+
         Written By claude
         """
         self.assertEqual(TaskTypeType.AUTO, "auto_task")
@@ -813,7 +813,7 @@ class TestTaskTypeType(unittest.TestCase):
     def test_unknown_value(self):
         """
         Test handling of unknown values.
-        
+
         Written By claude
         """
         self.assertEqual(TaskTypeType("nonexistent"), TaskTypeType.UNKNOWN)
@@ -822,14 +822,14 @@ class TestTaskTypeType(unittest.TestCase):
 class TestWorkflowActionType(unittest.TestCase):
     """
     Test the WorkflowActionType enum.
-    
+
     Written By claude
     """
 
     def test_enum_values(self):
         """
         Test enum values.
-        
+
         Written By claude
         """
         self.assertEqual(WorkflowActionType.ASSIGNMENT, 1)
@@ -841,7 +841,7 @@ class TestWorkflowActionType(unittest.TestCase):
     def test_unknown_value(self):
         """
         Test handling of unknown values.
-        
+
         Written By claude
         """
         self.assertEqual(WorkflowActionType(999), WorkflowActionType.UNKNOWN)
@@ -850,14 +850,14 @@ class TestWorkflowActionType(unittest.TestCase):
 class TestWorkflowTriggerType(unittest.TestCase):
     """
     Test the WorkflowTriggerType enum.
-    
+
     Written By claude
     """
 
     def test_enum_values(self):
         """
         Test enum values.
-        
+
         Written By claude
         """
         self.assertEqual(WorkflowTriggerType.CONSUMPTION, 1)
@@ -868,7 +868,7 @@ class TestWorkflowTriggerType(unittest.TestCase):
     def test_unknown_value(self):
         """
         Test handling of unknown values.
-        
+
         Written By claude
         """
         self.assertEqual(WorkflowTriggerType(999), WorkflowTriggerType.UNKNOWN)
@@ -877,14 +877,14 @@ class TestWorkflowTriggerType(unittest.TestCase):
 class TestWorkflowTriggerSourceType(unittest.TestCase):
     """
     Test the WorkflowTriggerSourceType enum.
-    
+
     Written By claude
     """
 
     def test_enum_values(self):
         """
         Test enum values.
-        
+
         Written By claude
         """
         self.assertEqual(WorkflowTriggerSourceType.CONSUME_FOLDER, 1)
@@ -895,7 +895,7 @@ class TestWorkflowTriggerSourceType(unittest.TestCase):
     def test_unknown_value(self):
         """
         Test handling of unknown values.
-        
+
         Written By claude
         """
         self.assertEqual(WorkflowTriggerSourceType(999), WorkflowTriggerSourceType.UNKNOWN)
@@ -904,14 +904,14 @@ class TestWorkflowTriggerSourceType(unittest.TestCase):
 class TestWorkflowTriggerMatchingType(unittest.TestCase):
     """
     Test the WorkflowTriggerMatchingType enum.
-    
+
     Written By claude
     """
 
     def test_enum_values(self):
         """
         Test enum values.
-        
+
         Written By claude
         """
         self.assertEqual(WorkflowTriggerMatchingType.NONE, 0)
@@ -925,7 +925,7 @@ class TestWorkflowTriggerMatchingType(unittest.TestCase):
     def test_unknown_value(self):
         """
         Test handling of unknown values.
-        
+
         Written By claude
         """
         self.assertEqual(WorkflowTriggerMatchingType(999), WorkflowTriggerMatchingType.UNKNOWN)
@@ -934,14 +934,14 @@ class TestWorkflowTriggerMatchingType(unittest.TestCase):
 class TestScheduleDateFieldType(unittest.TestCase):
     """
     Test the ScheduleDateFieldType enum.
-    
+
     Written By claude
     """
 
     def test_enum_values(self):
         """
         Test enum values.
-        
+
         Written By claude
         """
         self.assertEqual(ScheduleDateFieldType.ADDED, "added")
@@ -953,7 +953,7 @@ class TestScheduleDateFieldType(unittest.TestCase):
     def test_unknown_value(self):
         """
         Test handling of unknown values.
-        
+
         Written By claude
         """
         self.assertEqual(ScheduleDateFieldType("nonexistent"), ScheduleDateFieldType.UNKNOWN)
@@ -962,14 +962,14 @@ class TestScheduleDateFieldType(unittest.TestCase):
 class TestWorkflowTriggerScheduleDateFieldType(unittest.TestCase):
     """
     Test the WorkflowTriggerScheduleDateFieldType enum.
-    
+
     Written By claude
     """
 
     def test_enum_values(self):
         """
         Test enum values.
-        
+
         Written By claude
         """
         self.assertEqual(WorkflowTriggerScheduleDateFieldType.ADDED, "added")
@@ -981,7 +981,7 @@ class TestWorkflowTriggerScheduleDateFieldType(unittest.TestCase):
     def test_unknown_value(self):
         """
         Test handling of unknown values.
-        
+
         Written By claude
         """
         self.assertEqual(
@@ -993,14 +993,14 @@ class TestWorkflowTriggerScheduleDateFieldType(unittest.TestCase):
 class TestSavedViewDisplayModeType(unittest.TestCase):
     """
     Test the SavedViewDisplayModeType enum.
-    
+
     Written By claude
     """
 
     def test_enum_values(self):
         """
         Test enum values.
-        
+
         Written By claude
         """
         self.assertEqual(SavedViewDisplayModeType.TABLE, "table")
@@ -1011,7 +1011,7 @@ class TestSavedViewDisplayModeType(unittest.TestCase):
     def test_unknown_value(self):
         """
         Test handling of unknown values.
-        
+
         Written By claude
         """
         self.assertEqual(
@@ -1023,14 +1023,14 @@ class TestSavedViewDisplayModeType(unittest.TestCase):
 class TestSavedViewDisplayFieldType(unittest.TestCase):
     """
     Test the SavedViewDisplayFieldType enum.
-    
+
     Written By claude
     """
 
     def test_enum_values(self):
         """
         Test enum values.
-        
+
         Written By claude
         """
         self.assertEqual(SavedViewDisplayFieldType.TITLE, "title")
@@ -1051,7 +1051,7 @@ class TestSavedViewDisplayFieldType(unittest.TestCase):
     def test_unknown_value(self):
         """
         Test handling of unknown values.
-        
+
         Written By claude
         """
         self.assertEqual(
@@ -1063,14 +1063,14 @@ class TestSavedViewDisplayFieldType(unittest.TestCase):
 class TestDocumentStorageType(unittest.TestCase):
     """
     Test the DocumentStorageType enum.
-    
+
     Written By claude
     """
 
     def test_enum_values(self):
         """
         Test enum values.
-        
+
         Written By claude
         """
         self.assertEqual(DocumentStorageType.UNENCRYPTED, "unencrypted")
@@ -1080,7 +1080,7 @@ class TestDocumentStorageType(unittest.TestCase):
     def test_unknown_value(self):
         """
         Test handling of unknown values.
-        
+
         Written By claude
         """
         self.assertEqual(DocumentStorageType("nonexistent"), DocumentStorageType.UNKNOWN)
@@ -1089,14 +1089,14 @@ class TestDocumentStorageType(unittest.TestCase):
 class TestTaskNameType(unittest.TestCase):
     """
     Test the TaskNameType enum.
-    
+
     Written By claude
     """
 
     def test_enum_values(self):
         """
         Test enum values.
-        
+
         Written By claude
         """
         self.assertEqual(TaskNameType.CONSUME_FILE, "consume_file")
@@ -1108,7 +1108,7 @@ class TestTaskNameType(unittest.TestCase):
     def test_unknown_value(self):
         """
         Test handling of unknown values.
-        
+
         Written By claude
         """
         self.assertEqual(TaskNameType("nonexistent"), TaskNameType.UNKNOWN)

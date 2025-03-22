@@ -38,14 +38,14 @@ from paperap.exceptions import ObjectNotFoundError
 class TestCorrespondentResource(unittest.TestCase):
     """
     Test suite for the CorrespondentResource class.
-    
+
     Tests initialization, querying, filtering, and CRUD operations.
     """
 
     def setUp(self):
         """
         Written By claude
-        
+
         Set up test fixtures before each test method.
         Creates a mock client and initializes the resource.
         """
@@ -55,7 +55,7 @@ class TestCorrespondentResource(unittest.TestCase):
     def test_initialization(self):
         """
         Written By claude
-        
+
         Test that the resource initializes correctly with proper attributes.
         """
         self.assertEqual(self.resource.model_class, Correspondent)
@@ -66,7 +66,7 @@ class TestCorrespondentResource(unittest.TestCase):
     def test_all(self):
         """
         Written By claude
-        
+
         Test that the all() method returns a queryset of the correct type.
         """
         queryset = self.resource.all()
@@ -76,7 +76,7 @@ class TestCorrespondentResource(unittest.TestCase):
     def test_filter(self):
         """
         Written By claude
-        
+
         Test that the filter() method returns a filtered queryset.
         """
         queryset = self.resource.filter(name="Test Correspondent")
@@ -89,7 +89,7 @@ class TestCorrespondentResource(unittest.TestCase):
     def test_get_success(self, mock_request):
         """
         Written By claude
-        
+
         Test that the get() method returns a correspondent when found.
         """
         # Setup mock response
@@ -103,10 +103,10 @@ class TestCorrespondentResource(unittest.TestCase):
             "owner": 1
         }
         mock_request.return_value = mock_data
-        
+
         # Call the method
         correspondent = self.resource.get(1)
-        
+
         # Assertions
         self.assertIsInstance(correspondent, Correspondent)
         self.assertEqual(correspondent.id, 1)
@@ -117,7 +117,7 @@ class TestCorrespondentResource(unittest.TestCase):
     def test_get_not_found(self, mock_request):
         """
         Written By claude
-        
+
         Test that the get() method raises ObjectNotFoundError when correspondent is not found.
         """
         # Setup mock to raise exception
@@ -126,11 +126,11 @@ class TestCorrespondentResource(unittest.TestCase):
             resource_name="correspondents",
             model_id=999
         )
-        
+
         # Call the method and check for exception
         with self.assertRaises(ObjectNotFoundError) as context:
             self.resource.get(999)
-        
+
         # Verify exception details
         self.assertEqual(context.exception.resource_name, "correspondents")
         self.assertEqual(context.exception.model_id, 999)
@@ -139,7 +139,7 @@ class TestCorrespondentResource(unittest.TestCase):
     def test_create(self, mock_request):
         """
         Written By claude
-        
+
         Test that the create() method creates and returns a new correspondent.
         """
         # Setup mock response
@@ -153,7 +153,7 @@ class TestCorrespondentResource(unittest.TestCase):
             "owner": 1
         }
         mock_request.return_value = mock_data
-        
+
         # Call the method
         correspondent = self.resource.create(
             name="New Correspondent",
@@ -161,7 +161,7 @@ class TestCorrespondentResource(unittest.TestCase):
             matching_algorithm=1,
             is_insensitive=True
         )
-        
+
         # Assertions
         self.assertIsInstance(correspondent, Correspondent)
         self.assertEqual(correspondent.id, 1)
@@ -175,7 +175,7 @@ class TestCorrespondentResource(unittest.TestCase):
     def test_update(self, mock_save):
         """
         Written By claude
-        
+
         Test that a correspondent can be updated.
         """
         # Create a correspondent
@@ -188,11 +188,11 @@ class TestCorrespondentResource(unittest.TestCase):
             document_count=5,
             owner=1
         )
-        
+
         # Update the correspondent
         correspondent.name = "Updated Correspondent"
         correspondent.save()
-        
+
         # Assertions
         mock_save.assert_called_once()
 
@@ -200,12 +200,12 @@ class TestCorrespondentResource(unittest.TestCase):
     def test_delete(self, mock_request):
         """
         Written By claude
-        
+
         Test that a correspondent can be deleted.
         """
         # Setup mock response
         mock_request.return_value = None
-        
+
         # Create a correspondent with the resource
         correspondent = Correspondent(
             id=1,
@@ -217,10 +217,10 @@ class TestCorrespondentResource(unittest.TestCase):
             owner=1,
             _resource=self.resource
         )
-        
+
         # Delete the correspondent
         correspondent.delete()
-        
+
         # Assertions
         mock_request.assert_called_once_with("DELETE", "correspondents/1/")
 
@@ -228,15 +228,15 @@ class TestCorrespondentResource(unittest.TestCase):
     def test_bulk_action(self, mock_request):
         """
         Written By claude
-        
+
         Test that bulk actions can be performed on correspondents.
         """
         # Setup mock response
         mock_request.return_value = {"success": True}
-        
+
         # Call the method
         result = self.resource.bulk_action("delete", [1, 2, 3])
-        
+
         # Assertions
         self.assertEqual(result, {"success": True})
         mock_request.assert_called_once()
@@ -250,7 +250,7 @@ class TestCorrespondentResource(unittest.TestCase):
     def test_parse_to_model(self, mock_request, mock_parse):
         """
         Written By claude
-        
+
         Test that the parse_to_model method correctly converts API data to a model.
         """
         # Setup mock response
@@ -263,14 +263,14 @@ class TestCorrespondentResource(unittest.TestCase):
             "document_count": 5,
             "owner": 1
         }
-        
+
         # Create a correspondent instance for the mock to return
         correspondent = Correspondent(**mock_data)
         mock_parse.return_value = correspondent
-        
+
         # Call the method directly
         result = self.resource.parse_to_model(mock_data)
-        
+
         # Assertions
         self.assertEqual(result, correspondent)
         mock_parse.assert_called_once_with(mock_data)
@@ -278,7 +278,7 @@ class TestCorrespondentResource(unittest.TestCase):
     def test_endpoint_property(self):
         """
         Written By claude
-        
+
         Test that the endpoint property returns the correct API endpoint.
         """
         self.assertEqual(self.resource.endpoint, "correspondents/")

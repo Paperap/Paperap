@@ -36,14 +36,14 @@ from paperap.resources.documents import DocumentResource, DocumentNoteResource
 class TestDocumentResource(unittest.TestCase):
     """
     Test suite for DocumentResource class.
-    
+
     Written By claude
     """
 
     def setUp(self):
         """
         Set up test fixtures.
-        
+
         Written By claude
         """
         self.mock_client = mock.create_autospec(PaperlessClient)
@@ -52,7 +52,7 @@ class TestDocumentResource(unittest.TestCase):
     def test_init(self):
         """
         Test initialization of DocumentResource.
-        
+
         Written By claude
         """
         self.assertEqual(self.resource.model_class, Document)
@@ -64,7 +64,7 @@ class TestDocumentResource(unittest.TestCase):
     def test_download(self):
         """
         Test download method returns bytes when successful.
-        
+
         Written By claude
         """
         # Setup
@@ -77,9 +77,9 @@ class TestDocumentResource(unittest.TestCase):
 
         # Verify
         self.mock_client.request.assert_called_once_with(
-            "GET", 
-            self.resource.get_endpoint("download", pk=document_id), 
-            params={"original": "false"}, 
+            "GET",
+            self.resource.get_endpoint("download", pk=document_id),
+            params={"original": "false"},
             json_response=False
         )
         self.assertEqual(result, expected_bytes)
@@ -87,7 +87,7 @@ class TestDocumentResource(unittest.TestCase):
     def test_download_original(self):
         """
         Test download method with original=True parameter.
-        
+
         Written By claude
         """
         # Setup
@@ -100,9 +100,9 @@ class TestDocumentResource(unittest.TestCase):
 
         # Verify
         self.mock_client.request.assert_called_once_with(
-            "GET", 
-            self.resource.get_endpoint("download", pk=document_id), 
-            params={"original": "true"}, 
+            "GET",
+            self.resource.get_endpoint("download", pk=document_id),
+            params={"original": "true"},
             json_response=False
         )
         self.assertEqual(result, expected_bytes)
@@ -110,7 +110,7 @@ class TestDocumentResource(unittest.TestCase):
     def test_download_not_found(self):
         """
         Test download method raises ResourceNotFoundError when document not found.
-        
+
         Written By claude
         """
         # Setup
@@ -120,13 +120,13 @@ class TestDocumentResource(unittest.TestCase):
         # Execute and Verify
         with self.assertRaises(ResourceNotFoundError) as context:
             self.resource.download(document_id)
-        
+
         self.assertIn(f"Document {document_id} download failed", str(context.exception))
 
     def test_preview(self):
         """
         Test preview method returns bytes when successful.
-        
+
         Written By claude
         """
         # Setup
@@ -139,8 +139,8 @@ class TestDocumentResource(unittest.TestCase):
 
         # Verify
         self.mock_client.request.assert_called_once_with(
-            "GET", 
-            self.resource.get_endpoint("preview", pk=document_id), 
+            "GET",
+            self.resource.get_endpoint("preview", pk=document_id),
             json_response=False
         )
         self.assertEqual(result, expected_bytes)
@@ -148,7 +148,7 @@ class TestDocumentResource(unittest.TestCase):
     def test_preview_not_found(self):
         """
         Test preview method raises ResourceNotFoundError when document not found.
-        
+
         Written By claude
         """
         # Setup
@@ -158,13 +158,13 @@ class TestDocumentResource(unittest.TestCase):
         # Execute and Verify
         with self.assertRaises(ResourceNotFoundError) as context:
             self.resource.preview(document_id)
-        
+
         self.assertIn(f"Document {document_id} preview failed", str(context.exception))
 
     def test_thumbnail(self):
         """
         Test thumbnail method returns bytes when successful.
-        
+
         Written By claude
         """
         # Setup
@@ -177,8 +177,8 @@ class TestDocumentResource(unittest.TestCase):
 
         # Verify
         self.mock_client.request.assert_called_once_with(
-            "GET", 
-            self.resource.get_endpoint("thumbnail", pk=document_id), 
+            "GET",
+            self.resource.get_endpoint("thumbnail", pk=document_id),
             json_response=False
         )
         self.assertEqual(result, expected_bytes)
@@ -186,7 +186,7 @@ class TestDocumentResource(unittest.TestCase):
     def test_thumbnail_not_found(self):
         """
         Test thumbnail method raises ResourceNotFoundError when document not found.
-        
+
         Written By claude
         """
         # Setup
@@ -196,14 +196,14 @@ class TestDocumentResource(unittest.TestCase):
         # Execute and Verify
         with self.assertRaises(ResourceNotFoundError) as context:
             self.resource.thumbnail(document_id)
-        
+
         self.assertIn(f"Document {document_id} thumbnail failed", str(context.exception))
 
     @patch("pathlib.Path.open", new_callable=mock.mock_open, read_data=b"test file content")
     def test_upload(self, mock_open):
         """
         Test upload method with file path.
-        
+
         Written By claude
         """
         # Setup
@@ -230,7 +230,7 @@ class TestDocumentResource(unittest.TestCase):
     def test_upload_content(self):
         """
         Test upload_content method with binary content.
-        
+
         Written By claude
         """
         # Setup
@@ -258,7 +258,7 @@ class TestDocumentResource(unittest.TestCase):
     def test_upload_content_failure(self):
         """
         Test upload_content method raises ResourceNotFoundError on failure.
-        
+
         Written By claude
         """
         # Setup
@@ -269,13 +269,13 @@ class TestDocumentResource(unittest.TestCase):
         # Execute and Verify
         with self.assertRaises(ResourceNotFoundError) as context:
             self.resource.upload_content(file_content, filename)
-        
+
         self.assertIn("Document upload failed", str(context.exception))
 
     def test_next_asn(self):
         """
         Test next_asn method returns integer when successful.
-        
+
         Written By claude
         """
         # Setup
@@ -287,7 +287,7 @@ class TestDocumentResource(unittest.TestCase):
 
         # Verify
         self.mock_client.request.assert_called_once_with(
-            "GET", 
+            "GET",
             self.resource.get_endpoint("next_asn")
         )
         self.assertEqual(result, expected_asn)
@@ -295,7 +295,7 @@ class TestDocumentResource(unittest.TestCase):
     def test_next_asn_failure(self):
         """
         Test next_asn method raises APIError on failure.
-        
+
         Written By claude
         """
         # Setup
@@ -304,13 +304,13 @@ class TestDocumentResource(unittest.TestCase):
         # Execute and Verify
         with self.assertRaises(APIError) as context:
             self.resource.next_asn()
-        
+
         self.assertIn("Failed to retrieve next ASN", str(context.exception))
 
     def test_next_asn_missing_key(self):
         """
         Test next_asn method raises APIError when response is missing next_asn key.
-        
+
         Written By claude
         """
         # Setup
@@ -319,21 +319,21 @@ class TestDocumentResource(unittest.TestCase):
         # Execute and Verify
         with self.assertRaises(APIError) as context:
             self.resource.next_asn()
-        
+
         self.assertIn("Failed to retrieve next ASN", str(context.exception))
 
 
 class TestDocumentNoteResource(unittest.TestCase):
     """
     Test suite for DocumentNoteResource class.
-    
+
     Written By claude
     """
 
     def setUp(self):
         """
         Set up test fixtures.
-        
+
         Written By claude
         """
         self.mock_client = mock.create_autospec(PaperlessClient)
@@ -342,7 +342,7 @@ class TestDocumentNoteResource(unittest.TestCase):
     def test_init(self):
         """
         Test initialization of DocumentNoteResource.
-        
+
         Written By claude
         """
         self.assertEqual(self.resource.model_class, DocumentNote)

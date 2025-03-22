@@ -44,10 +44,10 @@ class TestAuthBase(unittest.TestCase):
         class ConcreteAuth(AuthBase):
             def get_auth_headers(self) -> dict[str, str]:
                 return {"X-Test": "value"}
-            
+
             def get_auth_params(self) -> dict[str, str]:
                 return {"param": "value"}
-        
+
         auth = ConcreteAuth()
         self.assertEqual(auth.get_auth_headers(), {"X-Test": "value"})
         self.assertEqual(auth.get_auth_params(), {"param": "value"})
@@ -68,7 +68,7 @@ class TestTokenAuth(unittest.TestCase):
     def test_get_auth_headers(self):
         """Test that auth headers are correctly formatted."""
         self.assertEqual(
-            self.auth.get_auth_headers(), 
+            self.auth.get_auth_headers(),
             {"Authorization": f"Token {self.valid_token}"}
         )
 
@@ -159,7 +159,7 @@ class TestBasicAuth(unittest.TestCase):
     def test_get_auth_params(self):
         """Test that auth params contain the correct credentials."""
         self.assertEqual(
-            self.auth.get_auth_params(), 
+            self.auth.get_auth_params(),
             {"auth": (self.username, self.password)}
         )
 

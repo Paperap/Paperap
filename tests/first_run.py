@@ -91,12 +91,12 @@ class PaperlessManager:
         """
 
         resources = [
-            DocumentResource, 
-            CorrespondentResource, 
+            DocumentResource,
+            CorrespondentResource,
             DocumentTypeResource,
-            TagResource, 
-            CustomFieldResource, 
-            StoragePathResource, 
+            TagResource,
+            CustomFieldResource,
+            StoragePathResource,
             SavedViewResource,
             ShareLinksResource,
             GroupResource,
