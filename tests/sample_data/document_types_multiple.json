@@ -3,39 +3,39 @@
     "next": null,
     "previous": null,
     "all": [
-        1972,
-        1973,
-        1993
+        2122,
+        2125,
+        2129
     ],
     "results": [
         {
-            "id": 1972,
-            "slug": "doctype-22-light-22",
-            "name": "DocType-22-light 22",
-            "match": "Congress",
+            "id": 2122,
+            "slug": "doctype-20-message-20",
+            "name": "DocType-20-message 20",
+            "match": "pass",
+            "matching_algorithm": 1,
+            "is_insensitive": false,
+            "document_count": 0,
+            "owner": 1,
+            "user_can_change": true
+        },
+        {
+            "id": 2125,
+            "slug": "doctype-23-now-23",
+            "name": "DocType-23-now 23",
+            "match": "hospital",
             "matching_algorithm": 3,
             "is_insensitive": true,
-            "document_count": 2,
+            "document_count": 0,
             "owner": 1,
             "user_can_change": true
         },
         {
-            "id": 1973,
-            "slug": "doctype-23-car-23",
-            "name": "DocType-23-car 23",
-            "match": "reason",
-            "matching_algorithm": 2,
-            "is_insensitive": false,
-            "document_count": 3,
-            "owner": 1,
-            "user_can_change": true
-        },
-        {
-            "id": 1993,
-            "slug": "doctype-43-history-43",
-            "name": "DocType-43-history 43",
-            "match": "really",
-            "matching_algorithm": 2,
+            "id": 2129,
+            "slug": "doctype-27-business-27",
+            "name": "DocType-27-business 27",
+            "match": "front",
+            "matching_algorithm": 0,
             "is_insensitive": false,
             "document_count": 0,
             "owner": 1,

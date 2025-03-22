@@ -1,14 +1,14 @@
 {
-    "id": 1901,
-    "slug": "tag-0-court-0",
-    "name": "Tag-0-court 0",
+    "id": 2053,
+    "slug": "tag-0-enter-0",
+    "name": "Tag-0-enter 0",
     "color": "#a6cee3",
     "text_color": "#000000",
-    "match": "mind",
-    "matching_algorithm": 2,
+    "match": "memory",
+    "matching_algorithm": 1,
     "is_insensitive": true,
     "is_inbox_tag": false,
-    "document_count": 12,
+    "document_count": 3,
     "owner": 1,
     "user_can_change": true
 }

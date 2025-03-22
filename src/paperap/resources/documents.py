@@ -235,7 +235,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         """
         return self.bulk_action("reprocess", ids)
 
-    def bulk_merge(self, ids: list[int], metadata_document_id: int | None = None, delete_originals: bool = False) -> dict[str, Any]:
+    def bulk_merge(self, ids: list[int], metadata_document_id: int | None = None, delete_originals: bool = False) -> bool:
         """
         Merge multiple documents.
 
@@ -245,7 +245,11 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             delete_originals: Whether to delete the original documents after merging
 
         Returns:
-            The API response
+            True if submitting the merge was successful
+
+        Raises:
+            BadResponseError: If the merge action returns an unexpected response
+            APIError: If the merge action fails
 
         """
         params = {}
@@ -254,7 +258,14 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if delete_originals:
             params["delete_originals"] = True
 
-        return self.bulk_action("merge", ids, **params)
+        result = self.bulk_action("merge", ids, **params)
+        # Expect {'result': 'OK'}
+        if not result or "result" not in result:
+            raise BadResponseError(f"Merge action returned unexpected response: {result}")
+
+        if result.get("result", None) != "OK":
+            raise APIError(f"Merge action failed: {result}")
+        return True
 
     def bulk_split(self, document_id: int, pages: list, delete_originals: bool = False) -> dict[str, Any]:
         """

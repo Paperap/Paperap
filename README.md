@@ -163,6 +163,7 @@ pre-commit run --all-files
 - [x] Empty trash
 - [ ] factories create unique names, and create relationships in db
 - [ ] publish sphinx docs (once stable)
+- [ ] Lazy Document Evaluation after upload async
 - [x] Compile sphinx documentation
 - [x] async model updates
 - [x] uploading documents

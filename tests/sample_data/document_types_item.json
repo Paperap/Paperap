@@ -1,11 +1,11 @@
 {
-    "id": 1950,
-    "slug": "doctype-0-consumer-0",
-    "name": "DocType-0-consumer 0",
-    "match": "paper",
-    "matching_algorithm": 2,
-    "is_insensitive": false,
-    "document_count": 9,
+    "id": 2102,
+    "slug": "doctype-0-himself-0",
+    "name": "DocType-0-himself 0",
+    "match": "arrive",
+    "matching_algorithm": 1,
+    "is_insensitive": true,
+    "document_count": 1,
     "owner": 1,
     "user_can_change": true
 }

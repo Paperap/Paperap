@@ -731,6 +731,7 @@ extend-exclude = [
   "config/",
   "__pycache__",
   "tests",
+  "__init__.py",
 ]
 
 [tool.ruff.lint]
@@ -753,6 +754,7 @@ ignore = [
   "D106", # Missing docstring in public nested class
   "D417",
   "C901", # too complex
+  "I001", # Ignore import sorting
 ]
 fixable = ["ALL"]
 unfixable = []

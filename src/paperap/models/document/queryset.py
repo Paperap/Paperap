@@ -26,11 +26,11 @@ from datetime import datetime
 from functools import singledispatchmethod
 from typing import TYPE_CHECKING, Any, NamedTuple, Self, Union, overload, override
 
-from paperap.client import ClientResponse
 from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models.mixins.queryset import HasOwner
 
 if TYPE_CHECKING:
+    from paperap.client import ClientResponse
     from paperap.models import Correspondent, Document, DocumentNote, DocumentType, StoragePath
 
 logger = logging.getLogger(__name__)
@@ -856,7 +856,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             return self.resource.bulk_reprocess(ids)
         return None
 
-    def merge(self, metadata_document_id: int | None = None, delete_originals: bool = False) -> ClientResponse:
+    def merge(self, metadata_document_id: int | None = None, delete_originals: bool = False) -> bool:
         """
         Merge all documents in the current queryset.
 
@@ -865,7 +865,11 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             delete_originals: Whether to delete the original documents after merging
 
         Returns:
-            The API response
+            True if submitting the merge succeeded, False if there are no ids to merge
+
+        Raises:
+            BadResponseError: If the merge action returns an unexpected response
+            APIError: If the merge action fails
 
         Examples:
             >>> # Merge all documents with tag "merge_me"
@@ -874,7 +878,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         if ids := self._get_ids():
             return self.resource.bulk_merge(ids, metadata_document_id, delete_originals)
-        return None
+        return False
 
     def rotate(self, degrees: int) -> ClientResponse:
         """

@@ -30,11 +30,11 @@ from typing import TYPE_CHECKING, Any, Final, Generic, Iterable, Iterator, Self,
 from pydantic import HttpUrl
 from typing_extensions import TypeVar
 
-from paperap.client import ClientResponse
 from paperap.exceptions import FilterDisabledError, MultipleObjectsFoundError, ObjectNotFoundError
 
 if TYPE_CHECKING:
     from paperap.models.abstract.model import BaseModel, StandardModel
+    from paperap.client import ClientResponse
     from paperap.resources.base import BaseResource, StandardResource
 
 logger = logging.getLogger(__name__)

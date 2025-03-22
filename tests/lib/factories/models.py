@@ -10,7 +10,7 @@
         File:    models.py
         Project: paperap
         Created: 2025-03-21
-        Version: 0.0.9
+        Version: 0.0.10
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -29,8 +29,12 @@ import logging
 import secrets
 from abc import ABC
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Generic, override
-
+import json
+import time
+import tempfile
+import uuid
 import factory
 from factory.base import StubObject
 from faker import Faker
@@ -61,6 +65,7 @@ from paperap.models import (
     WorkflowAction,
     WorkflowTrigger,
 )
+from paperap.client import PaperlessClient
 
 if TYPE_CHECKING:
     from paperap.resources import BaseResource
@@ -197,6 +202,90 @@ class DocumentFactory(PydanticFactory[Document]):
 
     class Meta: # type: ignore # pyright handles this wrong
         model = Document
+
+    @classmethod
+    def upload_sync(cls, client: "PaperlessClient", file_path: Path | None = None, wait: bool = True, **kwargs) -> Document:
+        """
+        Upload a document and wait for it to complete.
+
+        Args:
+            client: PaperlessClient instance
+            file_path: Path to the file to upload (optional - will generate a text file if None)
+            wait: Whether to wait for the upload to complete
+            **kwargs: Additional document attributes to set after upload
+
+        Returns:
+            The created Document instance
+
+        Raises:
+            ValueError: If the document upload fails
+        """
+        # Generate a temp file if none provided
+        if file_path is None:
+            with tempfile.TemporaryDirectory() as temp_dir:
+                unique_id = str(uuid.uuid4())
+                temp_file_path = Path(temp_dir) / f"generated_doc_{unique_id}.txt"
+                with open(temp_file_path, "w") as f:
+                    f.write(f"Generated test document {unique_id}\n\n")
+                    f.write(fake.paragraph(nb_sentences=5))
+                file_path = temp_file_path
+                return client.documents.upload_sync(file_path)
+
+        return client.documents.upload_sync(file_path)
+
+    @classmethod
+    def upload_async(cls, client: "PaperlessClient", file_path: Path | None = None, **kwargs) -> str:
+        """
+        Upload a document asynchronously and return the task ID.
+
+        Args:
+            client: PaperlessClient instance
+            file_path: Path to the file to upload (optional - will generate a text file if None)
+            **kwargs: Additional metadata for the document
+
+        Returns:
+            Task ID for the upload
+        """
+        import tempfile
+        import uuid
+
+        # Generate a temp file if none provided
+        temp_dir = None
+        if file_path is None:
+            temp_dir = tempfile.TemporaryDirectory()
+            unique_id = str(uuid.uuid4())
+            temp_file_path = Path(temp_dir.name) / f"generated_doc_{unique_id}.txt"
+            with open(temp_file_path, "w") as f:
+                f.write(f"Generated test document {unique_id}\n\n")
+                f.write(fake.paragraph(nb_sentences=5))
+            file_path = temp_file_path
+
+        try:
+            # Upload the document
+            task_id = client.documents.upload_async(file_path, **kwargs)
+            logger.debug(f"Started async upload of {file_path.name} with task ID {task_id}")
+            return task_id
+        finally:
+            # Clean up temporary directory if we created one
+            if temp_dir:
+                temp_dir.cleanup()
+
+    @classmethod
+    def upload(cls, client: Any, file_path: Path | None = None, wait: bool = True, **kwargs) -> Document:
+        """
+        Legacy method for compatibility - use upload_sync instead.
+
+        Args:
+            client: PaperlessClient instance
+            file_path: Path to the file to upload (optional - will generate a text file if None)
+            wait: Whether to wait for the upload to complete
+            **kwargs: Additional document attributes to set after upload
+
+        Returns:
+            The created Document instance if wait=True, otherwise a placeholder
+        """
+        logger.warning("DocumentFactory.upload() is deprecated. Use upload_sync() instead.")
+        return cls.upload_sync(client, file_path, wait, **kwargs)
 
     added = factory.LazyFunction(lambda: datetime.now(timezone.utc))
     archive_serial_number = factory.Faker("random_int", min=1, max=100000)
