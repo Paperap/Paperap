@@ -1,23 +1,28 @@
 """
+
+
+
+
 ----------------------------------------------------------------------------
 
-   METADATA:
+METADATA:
 
-       File:    base.py
+File:    base.py
         Project: paperap
-       Created: 2025-03-04
+Created: 2025-03-21
         Version: 0.0.9
-       Author:  Jess Mann
-       Email:   jess@jmann.me
+Author:  Jess Mann
+Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
-   LAST MODIFIED:
+LAST MODIFIED:
 
-       2025-03-04     By Jess Mann
+2025-03-21     By Jess Mann
 
 """
+
 
 from __future__ import annotations
 
@@ -152,8 +157,18 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         # We validated that converted matches endpoints above
         return converted
 
-    def get_endpoint(self, name: str, **kwargs: Any) -> str:
-        return self.endpoints[name].safe_substitute(resource=self.name, **kwargs)
+    def get_endpoint(self, name: str, **kwargs: Any) -> HttpUrl:
+        if not (template := self.endpoints.get(name, None)):
+            raise ConfigurationError(f"Endpoint {name} not defined for resource {self.name}")
+
+        if "resource" not in kwargs:
+            kwargs["resource"] = self.name
+        url = template.safe_substitute(**kwargs)
+
+        if not url.startswith('http'):
+            url = f'{self.client.base_url}{url}'
+
+        return HttpUrl(url)
 
     def all(self) -> _BaseQuerySet:
         """
@@ -208,10 +223,9 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         signal_params = {"resource": self.name, "data": kwargs}
         registry.emit("resource.create:before", "Emitted before creating a resource", kwargs=signal_params)
 
-        if not (template := self.endpoints.get("create")):
+        if not (url := self.get_endpoint("create", resource=self.name)):
             raise ConfigurationError(f"Create endpoint not defined for resource {self.name}")
 
-        url = template.safe_substitute(resource=self.name)
         if not (response := self.client.request("POST", url, data=kwargs)):
             raise ResourceNotFoundError("Resource {resource} not found after create.", resource_name=self.name)
 
@@ -360,9 +374,8 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             The JSON-decoded response from the API
 
         """
-        if not url:
-            if not (url := self.endpoints.get("list")):
-                raise ConfigurationError(f"List endpoint not defined for resource {self.name}")
+        if not url and not (url := self.get_endpoint("list", resource=self.name)):
+            raise ConfigurationError(f"List endpoint not defined for resource {self.name}")
 
         if isinstance(url, Template):
             url = url.safe_substitute(resource=self.name)
@@ -394,7 +407,23 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             kwargs={"response": {**response}, "resource": self.name, "results": results},
         )
 
-        yield from self.handle_results(results)
+        # If this is a single-item response (not a list), handle it differently
+        if isinstance(results, dict):
+            # For resources that return a single object directly
+            registry.emit(
+                "resource._handle_results:before",
+                "Emitted for direct object response",
+                args=[self],
+                kwargs={"resource": self.name, "item": {**results}},
+            )
+            yield self.parse_to_model(results)
+            return
+
+        if isinstance(results, list):
+            yield from self.handle_results(results)
+            return
+
+        raise ResponseParsingError(f"Expected {self.name} results to be list/dict, got {type(results)} -> {results}")
 
     def handle_results(self, results: list[dict[str, Any]]) -> Iterator[_BaseModel]:
         """
@@ -461,11 +490,8 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         signal_params = {"resource": self.name, "model_id": model_id}
         registry.emit("resource.get:before", "Emitted before getting a resource", args=[self], kwargs=signal_params)
 
-        if not (template := self.endpoints.get("detail")):
+        if not (url := self.get_endpoint("detail", resource=self.name, pk=model_id)):
             raise ConfigurationError(f"Get detail endpoint not defined for resource {self.name}")
-
-        # Provide template substitutions for endpoints
-        url = template.safe_substitute(resource=self.name, pk=model_id)
 
         if not (response := self.client.request("GET", url)):
             raise ObjectNotFoundError(resource_name=self.name, model_id=model_id)
@@ -523,14 +549,11 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         signal_params = {"resource": self.name, "action": action, "ids": ids, "kwargs": kwargs}
         registry.emit("resource.bulk_action:before", "Emitted before bulk action", args=[self], kwargs=signal_params)
 
-        # Use the bulk endpoint or fall back to the list endpoint
-        if not (template := self.endpoints.get("bulk", self.endpoints.get("list"))):
-            raise ConfigurationError(f"Bulk endpoint not defined for resource {self.name}")
-
-        url = template.safe_substitute(resource=self.name)
-
         # Prepare the data for the bulk action
         data = {"action": action, "documents": ids, **kwargs}
+
+        if not (url := self.get_endpoint("bulk_edit", resource=self.name)):
+            raise ConfigurationError(f"Bulk edit endpoint not defined for resource {self.name}")
 
         response = self.client.request("POST", f"{url}bulk_edit/", data=data)
 
@@ -663,10 +686,9 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         signal_params = {"resource": self.name, "model_id": model_id}
         registry.emit("resource.delete:before", "Emitted before deleting a resource", args=[self], kwargs=signal_params)
 
-        if not (template := self.endpoints.get("delete")):
+        if not (url := self.get_endpoint("delete", resource=self.name, pk=model_id)):
             raise ConfigurationError(f"Delete endpoint not defined for resource {self.name}")
 
-        url = template.safe_substitute(resource=self.name, pk=model_id)
         self.client.request("DELETE", url)
 
         # Signal after deleting resource
@@ -692,10 +714,9 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         signal_params = {"resource": self.name, "model_id": model_id, "data": data}
         registry.emit("resource.update:before", "Emitted before updating a resource", kwargs=signal_params)
 
-        if not (template := self.endpoints.get("update")):
+        if not (url := self.get_endpoint("update", resource=self.name, pk=model_id)):
             raise ConfigurationError(f"Update endpoint not defined for resource {self.name}")
 
-        url = template.safe_substitute(resource=self.name, pk=model_id)
         if not (response := self.client.request("PUT", url, data=data)):
             raise ResourceNotFoundError("Resource ${resource} not found after update.", resource_name=self.name)
 

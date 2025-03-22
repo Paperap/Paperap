@@ -278,7 +278,13 @@ class SignalRegistry:
         for handler in self._queue["enable"].pop(signal.name, set()):
             signal.enable(handler)
 
-    def queue_action(self, action: ActionType, name: str, handler: Callable[..., Any], priority: int | None = None) -> None:
+    def queue_action(
+        self,
+        action: ActionType,
+        name: str,
+        handler: Callable[..., Any],
+        priority: int | None = None
+    ) -> None:
         """
         Queue any signal-related action to be processed when the signal is registered.
 

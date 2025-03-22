@@ -24,7 +24,6 @@ from __future__ import annotations
 import logging
 import re
 from pathlib import Path
-from string import Template
 from typing import TYPE_CHECKING, Any, Literal, Unpack, overload
 
 import requests
@@ -254,7 +253,7 @@ class PaperlessClient:
     def request_raw(
         self,
         method: str,
-        endpoint: str | HttpUrl | Template,
+        endpoint: str | HttpUrl,
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
@@ -281,14 +280,9 @@ class PaperlessClient:
             PaperapError: For other errors.
 
         """
-        # Handle different endpoint types
-        if isinstance(endpoint, Template):
-            # Convert Template to string representation
-            url = f"{self.base_url}{endpoint.template.lstrip('/')}"
-        elif isinstance(endpoint, HttpUrl):
+        if isinstance(endpoint, HttpUrl):
             # Use URL object directly
             url = str(endpoint)
-
         elif isinstance(endpoint, str):
             if endpoint.startswith("http"):
                 url = endpoint
@@ -440,7 +434,7 @@ class PaperlessClient:
     def request(
         self,
         method: str,
-        endpoint: str | HttpUrl | Template,
+        endpoint: str | HttpUrl,
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
@@ -451,7 +445,7 @@ class PaperlessClient:
     def request(
         self,
         method: str,
-        endpoint: str | HttpUrl | Template,
+        endpoint: str | HttpUrl,
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
@@ -463,7 +457,7 @@ class PaperlessClient:
     def request(
         self,
         method: str,
-        endpoint: str | HttpUrl | Template,
+        endpoint: str | HttpUrl,
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
@@ -474,7 +468,7 @@ class PaperlessClient:
     def request(
         self,
         method: str,
-        endpoint: str | HttpUrl | Template,
+        endpoint: str | HttpUrl,
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,

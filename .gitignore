@@ -11,3 +11,4 @@ dist/
 paperless-ngx
 *.out
 .stubs
+.aider*

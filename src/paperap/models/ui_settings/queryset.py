@@ -1,28 +1,33 @@
 """
+
+
+
+
 ----------------------------------------------------------------------------
 
-   METADATA:
+METADATA:
 
-       File:    queryset.py
+File:    queryset.py
         Project: paperap
-       Created: 2025-03-04
-        Version: 0.0.5
-       Author:  Jess Mann
-       Email:   jess@jmann.me
+Created: 2025-03-21
+        Version: 0.0.9
+Author:  Jess Mann
+Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
-   LAST MODIFIED:
+LAST MODIFIED:
 
-       2025-03-04     By Jess Mann
+2025-03-21     By Jess Mann
 
 """
+
 
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, Self
+from typing import TYPE_CHECKING, Any, Literal, Self, override
 
 from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 
@@ -39,6 +44,19 @@ class UISettingsQuerySet(StandardQuerySet["UISettings"]):
     BaseQuerySet provides pagination, filtering, and caching functionality similar to Django's BaseQuerySet.
     It's designed to be lazy - only fetching data when it's actually needed.
     """
+
+    @override
+    def count(self) -> Literal[1]:
+        """
+        Count the number of UI settings.
+
+        UISettings only ever returns one element.
+
+        Returns:
+            int: The number of UI settings
+
+        """
+        return 1
 
     def has_permission(self, value: str) -> Self:
         """

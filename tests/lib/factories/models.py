@@ -2,25 +2,27 @@
 
 
 
-----------------------------------------------------------------------------
 
-METADATA:
+ ----------------------------------------------------------------------------
 
-File:    models.py
+    METADATA:
+
+        File:    models.py
         Project: paperap
-Created: 2025-03-07
+        Created: 2025-03-21
         Version: 0.0.9
-Author:  Jess Mann
-Email:   jess@jmann.me
+        Author:  Jess Mann
+        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
 
-----------------------------------------------------------------------------
+ ----------------------------------------------------------------------------
 
-LAST MODIFIED:
+    LAST MODIFIED:
 
-2025-03-07     By Jess Mann
+        2025-03-21     By Jess Mann
 
 """
+
 from __future__ import annotations
 
 import secrets
@@ -32,7 +34,7 @@ import factory
 from factory.base import StubObject
 from faker import Faker
 from typing_extensions import TypeVar
-
+from paperap.const import CustomFieldTypes
 from paperap.models import (
     Correspondent,
     CustomField,
@@ -121,37 +123,28 @@ class PydanticFactory[_StandardModel](factory.Factory[_StandardModel]):
         Create a model with the given attributes.
 
         Args:
-            _relationships: If False, all relationship fields will be set to None or empty collections.
+            _relationships: If False, all relationship fields will be omitted.
             **kwargs: Arbitrary keyword arguments to pass to the model creation.
 
         Returns:
             A model instance.
         """
-        # Check if _relationships is set to False
-        if _relationships:
-            # Get all factory declarations
-            declarations = {
-                name: declaration for name, declaration in cls._meta.declarations.items()
-                if not name.startswith('_')
-            }
-
-            # Identify relationship fields and set them to None or empty collections
-            for name, declaration in declarations.items():
-                # Handle different types of fields
-                if isinstance(declaration, factory.List) and name in [
-                    'tag_ids', 'tags', 'notes', 'groups','triggers', 'actions'
-                ]:
-                    kwargs[name] = []
-                elif name in [
-                    'correspondent', 'document_type', 'storage_path',
-                    'related_document', 'document',
-                ]:
-                    kwargs[name] = None
-                elif name == "owner":
-                    kwargs[name] = 1
+        if not _relationships:
+            kwargs = cls._omit_relationship_fields(kwargs)
 
         # Call the parent create method with the updated kwargs
         return super().create(**kwargs)
+
+    @classmethod
+    def _omit_relationship_fields(cls, kwargs: dict[str, Any]) -> dict[str, Any]:
+        """Omit all fields that represent a relationship to another model.
+        Subclasses should override the RELATIONSHIP_FIELDS attribute to specify which fields are relationships.
+        By default, if RELATIONSHIP_FIELDS is not defined, returns kwargs unchanged.
+        """
+        relationship_fields = getattr(cls, "RELATIONSHIP_FIELDS", set())
+        for field in relationship_fields:
+            kwargs.pop(field, None)
+        return kwargs
 
 
 class CorrespondentFactory(PydanticFactory[Correspondent]):
@@ -172,7 +165,7 @@ class CustomFieldFactory(PydanticFactory[CustomField]):
         model = CustomField
 
     name = factory.Faker("word")
-    data_type = factory.Faker("word")
+    data_type = "string"
     extra_data = factory.Dict({"key": fake.word(), "value": fake.word()})
     document_count = factory.Faker("random_int", min=0, max=100)
 
@@ -298,7 +291,7 @@ class SavedViewFactory(PydanticFactory[SavedView]):
     show_in_sidebar = factory.Faker("boolean")
     sort_field = factory.Faker("word")
     sort_reverse = factory.Faker("boolean")
-    filter_rules = factory.List([{"key": fake.word(), "value": fake.word()} for _ in range(3)])
+    filter_rules = factory.List([factory.Dict({"rule_type": factory.Faker("random_int", min=1, max=3), "value": fake.word(), "saved_view": factory.Faker("random_int", min=1, max=100)}) for _ in range(3)])
     page_size = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=10, max=100), None)
     display_mode = factory.Faker("word")
     display_fields = factory.List([factory.Faker("word") for _ in range(5)])
@@ -332,9 +325,201 @@ class UISettingsFactory(PydanticFactory[UISettings]):
     class Meta: # type: ignore # pyright handles this wrong
         model = UISettings
 
-    user = factory.Dict({"theme": "dark", "language": "en"})
-    settings = factory.Dict({"dashboard_layout": "grid", "notification_settings": {"email": True}})
-    permissions = factory.List([factory.Faker("word") for _ in range(5)])
+    user = {
+        "id": 3,
+        "username": "Jess",
+        "is_staff": True,
+        "is_superuser": True,
+        "groups": []
+    },
+    settings = {   
+        "update_checking": {
+            "backend_setting": "default"
+        },
+        "trash_delay": 30,
+        "app_title": None,
+        "app_logo": None,
+        "auditlog_enabled": True,
+        "email_enabled": False
+    }
+    permissions = [
+        "delete_logentry",
+        "delete_paperlesstask",
+        "delete_note",
+        "add_group",
+        "change_mailrule",
+        "view_authenticator",
+        "add_taskresult",
+        "add_savedviewfilterrule",
+        "change_chordcounter",
+        "view_taskresult",
+        "add_tag",
+        "add_processedmail",
+        "delete_group",
+        "change_storagepath",
+        "delete_socialapp",
+        "view_group",
+        "change_workflowactionwebhook",
+        "add_workflowrun",
+        "delete_savedviewfilterrule",
+        "delete_chordcounter",
+        "change_groupobjectpermission",
+        "view_processedmail",
+        "change_groupresult",
+        "change_tokenproxy",
+        "delete_contenttype",
+        "change_workflowactionemail",
+        "view_customfield",
+        "view_emailaddress",
+        "delete_token",
+        "add_emailconfirmation",
+        "change_workflowaction",
+        "add_note",
+        "delete_processedmail",
+        "delete_emailconfirmation",
+        "delete_socialtoken",
+        "add_savedview",
+        "view_socialapp",
+        "delete_emailaddress",
+        "view_paperlesstask",
+        "delete_correspondent",
+        "change_mailaccount",
+        "add_uisettings",
+        "view_customfieldinstance",
+        "add_logentry",
+        "delete_customfield",
+        "change_emailconfirmation",
+        "add_workflow",
+        "view_savedview",
+        "add_contenttype",
+        "change_documenttype",
+        "change_note",
+        "change_workflowtrigger",
+        "view_tag",
+        "change_socialaccount",
+        "change_tag",
+        "view_workflowtrigger",
+        "change_applicationconfiguration",
+        "view_groupobjectpermission",
+        "add_customfield",
+        "add_socialaccount",
+        "change_logentry",
+        "delete_tokenproxy",
+        "change_user",
+        "delete_permission",
+        "delete_storagepath",
+        "view_mailrule",
+        "view_workflowaction",
+        "delete_taskresult",
+        "change_emailaddress",
+        "delete_groupresult",
+        "add_sharelink",
+        "view_permission",
+        "delete_mailaccount",
+        "view_userobjectpermission",
+        "add_tokenproxy",
+        "view_log",
+        "delete_log",
+        "change_userobjectpermission",
+        "change_correspondent",
+        "add_permission",
+        "add_socialapp",
+        "delete_workflow",
+        "view_chordcounter",
+        "view_workflowactionwebhook",
+        "add_applicationconfiguration",
+        "change_token",
+        "delete_sharelink",
+        "change_session",
+        "delete_mailrule",
+        "view_groupresult",
+        "delete_session",
+        "add_user",
+        "view_tokenproxy",
+        "add_workflowtrigger",
+        "add_chordcounter",
+        "delete_applicationconfiguration",
+        "add_token",
+        "add_paperlesstask",
+        "view_logentry",
+        "view_storagepath",
+        "add_session",
+        "delete_workflowaction",
+        "view_user",
+        "view_document",
+        "view_workflow",
+        "change_workflow",
+        "delete_tag",
+        "add_mailaccount",
+        "view_socialaccount",
+        "change_authenticator",
+        "change_socialtoken",
+        "view_logentry",
+        "add_document",
+        "delete_authenticator",
+        "change_uisettings",
+        "delete_document",
+        "add_mailrule",
+        "add_customfieldinstance",
+        "add_workflowactionemail",
+        "delete_groupobjectpermission",
+        "change_permission",
+        "delete_workflowtrigger",
+        "change_savedviewfilterrule",
+        "view_correspondent",
+        "change_socialapp",
+        "view_savedviewfilterrule",
+        "delete_workflowrun",
+        "view_contenttype",
+        "delete_uisettings",
+        "change_customfield",
+        "view_workflowactionemail",
+        "delete_workflowactionwebhook",
+        "delete_workflowactionemail",
+        "change_workflowrun",
+        "view_session",
+        "add_groupresult",
+        "delete_logentry",
+        "delete_socialaccount",
+        "view_documenttype",
+        "add_storagepath",
+        "view_note",
+        "add_workflowaction",
+        "add_log",
+        "view_sharelink",
+        "view_workflowrun",
+        "delete_userobjectpermission",
+        "add_authenticator",
+        "change_sharelink",
+        "view_mailaccount",
+        "view_applicationconfiguration",
+        "change_log",
+        "add_logentry",
+        "change_taskresult",
+        "add_groupobjectpermission",
+        "view_uisettings",
+        "add_userobjectpermission",
+        "change_savedview",
+        "change_paperlesstask",
+        "delete_documenttype",
+        "delete_savedview",
+        "view_emailconfirmation",
+        "change_logentry",
+        "change_customfieldinstance",
+        "add_workflowactionwebhook",
+        "view_socialtoken",
+        "change_group",
+        "add_socialtoken",
+        "change_contenttype",
+        "change_document",
+        "delete_user",
+        "add_documenttype",
+        "add_emailaddress",
+        "delete_customfieldinstance",
+        "add_correspondent",
+        "view_token",
+        "change_processedmail"
+    ]
 
 class MetadataElementFactory(PydanticFactory[MetadataElement]):
     class Meta: # type: ignore # pyright handles this wrong

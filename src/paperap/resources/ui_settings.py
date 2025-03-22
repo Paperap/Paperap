@@ -1,27 +1,32 @@
 """
-----------------------------------------------------------------------------
 
-   METADATA:
 
-       File:    ui_settings.py
-        Project: paperap
-       Created: 2025-03-04
-        Version: 0.0.8
-       Author:  Jess Mann
-       Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
+
 
 ----------------------------------------------------------------------------
 
-   LAST MODIFIED:
+METADATA:
 
-       2025-03-04     By Jess Mann
+File:    ui_settings.py
+Project: paperap
+Created: 2025-03-21
+Version: 0.0.9
+Author:  Jess Mann
+Email:   jess@jmann.me
+Copyright (c) 2025 Jess Mann
+
+----------------------------------------------------------------------------
+
+LAST MODIFIED:
+
+2025-03-21     By Jess Mann
 
 """
 
+
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Iterator, override
 
 from paperap.models.ui_settings import UISettings, UISettingsQuerySet
 from paperap.resources.base import BaseResource, StandardResource
@@ -46,7 +51,7 @@ class UISettingsResource(StandardResource[UISettings, UISettingsQuerySet]):
             return None
 
         if response:
-            return UISettings.from_dict(response)
+            return self.parse_to_model(response)
         return None
 
     def update_current(self, settings: dict[str, Any]) -> UISettings:
@@ -67,3 +72,7 @@ class UISettingsResource(StandardResource[UISettings, UISettingsQuerySet]):
 
         # Create new settings
         return self.create(**{"settings": settings})
+
+    @override
+    def delete(self, model_id: int | UISettings) -> None:
+        raise NotImplementedError("Cannot delete UI settings, per Paperless NGX REST Api")

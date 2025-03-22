@@ -9,7 +9,7 @@
 
         File:    first_run.py
         Project: paperap
-        Created: 2025-03-20
+        Created: 2025-03-21
         Version: 0.0.9
         Author:  Jess Mann
         Email:   jess@jmann.me
@@ -19,9 +19,10 @@
 
     LAST MODIFIED:
 
-        2025-03-20     By Jess Mann
+        2025-03-21     By Jess Mann
 
 """
+
 from __future__ import annotations
 
 import json
@@ -102,14 +103,14 @@ class PaperlessManager:
             WorkflowResource,
             WorkflowTriggerResource,
             WorkflowActionResource,
-            UISettingsResource,
+            # UISettingsResource, # Can't be deleted
         ]
         for resource_cls in resources:
             resource = resource_cls(client=self.client)
             for model in list(resource.all()):
                 try:
                     model.delete()
-                    logger.info(f"Deleted {model}")
+                    logger.debug(f"Deleted {model}")
                 except PaperapError as e:
                     logger.warning("Failed to delete %s: %s", model, e)
 
@@ -117,6 +118,9 @@ class PaperlessManager:
         for i in range(_number):
             try:
                 data = factory.create_api_data(**kwargs)
+                # If data includes a name, append something to it to ensure it is unique
+                if "name" in data:
+                    data["name"] = f"{data['name']} {i}"
                 model = model_class.create(_relationships=False, **data)
                 logger.debug("Created %s with ID %s", name, model.id)
             except PaperapError as e:
