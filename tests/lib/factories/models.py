@@ -2,45 +2,51 @@
 
 
 
-----------------------------------------------------------------------------
 
-METADATA:
+ ----------------------------------------------------------------------------
 
-File:    models.py
-Project: paperap
-Created: 2025-03-07
-Version: 0.0.8
-Author:  Jess Mann
-Email:   jess@jmann.me
-Copyright (c) 2025 Jess Mann
+    METADATA:
 
-----------------------------------------------------------------------------
+        File:    models.py
+        Project: paperap
+        Created: 2025-03-21
+        Version: 0.0.9
+        Author:  Jess Mann
+        Email:   jess@jmann.me
+        Copyright (c) 2025 Jess Mann
 
-LAST MODIFIED:
+ ----------------------------------------------------------------------------
 
-2025-03-07     By Jess Mann
+    LAST MODIFIED:
+
+        2025-03-21     By Jess Mann
 
 """
+
 from __future__ import annotations
 
 import secrets
 from abc import ABC
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any, Generic, override
-
+import logging
 import factory
 from factory.base import StubObject
 from faker import Faker
 from typing_extensions import TypeVar
-
+from paperap.const import CustomFieldTypes
 from paperap.models import (
     Correspondent,
     CustomField,
     Document,
+    DocumentMetadata,
     DocumentNote,
+    DocumentSuggestions,
     DocumentType,
+    DownloadedDocument,
     Group,
     Profile,
+    MetadataElement,
     SavedView,
     ShareLinks,
     StandardModel,
@@ -59,9 +65,11 @@ if TYPE_CHECKING:
 
 fake = Faker()
 
-class PydanticFactory[_StandardModel](factory.Factory[_StandardModel]):
+logger = logging.getLogger(__name__)
 
+class PydanticFactory[_StandardModel](factory.Factory[_StandardModel]):
     """Base factory for Pydantic models."""
+    id : int = factory.Faker("random_int", min=1, max=1000)
 
     class Meta: # type: ignore # pyright handles this wrong
         abstract = True
@@ -89,7 +97,7 @@ class PydanticFactory[_StandardModel](factory.Factory[_StandardModel]):
             dict: A dictionary of the model's fields.
 
         """
-        _instance = cls.create(**kwargs)
+        _instance = cls.build(**kwargs)
         return cls.get_resource().transform_data_output(_instance, exclude_unset = exclude_unset)
 
     @classmethod
@@ -108,7 +116,40 @@ class PydanticFactory[_StandardModel](factory.Factory[_StandardModel]):
         _instance = cls.create(**kwargs)
         return _instance.to_dict(exclude_unset=exclude_unset)
 
+    @classmethod
+    @override
+    def create(cls, _relationships : bool = True, **kwargs: Any) -> _StandardModel:
+        """
+        Create a model with the given attributes.
+
+        Args:
+            _relationships: If False, all relationship fields will be omitted.
+            **kwargs: Arbitrary keyword arguments to pass to the model creation.
+
+        Returns:
+            A model instance.
+        """
+        if not _relationships:
+            kwargs = cls._omit_relationship_fields(kwargs)
+
+        # Call the parent create method with the updated kwargs
+        return super().create(**kwargs)
+
+    @classmethod
+    def _omit_relationship_fields(cls, kwargs: dict[str, Any]) -> dict[str, Any]:
+        """Omit all fields that represent a relationship to another model.
+        Subclasses should override the _RELATIONSHIPS attribute to specify which fields are relationships.
+        By default, if _RELATIONSHIPS is not defined, returns kwargs unchanged.
+        """
+        relationship_fields = getattr(cls, "_RELATIONSHIPS", set())
+        for field in relationship_fields:
+            kwargs.pop(field, None)
+        return kwargs
+
+
 class CorrespondentFactory(PydanticFactory[Correspondent]):
+    _RELATIONSHIPS = {"owner"}
+
     class Meta: # type: ignore # pyright handles this wrong
         model = Correspondent
 
@@ -122,20 +163,24 @@ class CorrespondentFactory(PydanticFactory[Correspondent]):
     user_can_change = factory.Faker("boolean")
 
 class CustomFieldFactory(PydanticFactory[CustomField]):
+    _RELATIONSHIPS = {"extra_data"}
+
     class Meta: # type: ignore # pyright handles this wrong
         model = CustomField
 
     name = factory.Faker("word")
-    data_type = factory.Faker("word")
+    data_type = "string"
     extra_data = factory.Dict({"key": fake.word(), "value": fake.word()})
     document_count = factory.Faker("random_int", min=0, max=100)
 
 class DocumentNoteFactory(PydanticFactory[DocumentNote]):
+    _RELATIONSHIPS = {"document", "user", "transaction_id"}
+
     class Meta: # type: ignore # pyright handles this wrong
         model = DocumentNote
 
     note = factory.Faker("sentence")
-    created = factory.LazyFunction(datetime.now)
+    created = factory.LazyFunction(lambda: datetime.now(timezone.utc))
     deleted_at = None
     restored_at = None
     transaction_id = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
@@ -143,24 +188,34 @@ class DocumentNoteFactory(PydanticFactory[DocumentNote]):
     user = factory.Faker("random_int", min=1, max=1000)
 
 class DocumentFactory(PydanticFactory[Document]):
+    _RELATIONSHIPS = {
+        "correspondent_id", "document_type_id", "owner", "storage_path_id",
+        "tag_ids", "notes", "custom_field_dicts"
+    }
+
     class Meta: # type: ignore # pyright handles this wrong
         model = Document
 
-    added = factory.LazyFunction(datetime.now)
+    added = factory.LazyFunction(lambda: datetime.now(timezone.utc))
     archive_serial_number = factory.Faker("random_int", min=1, max=100000)
+    archive_checksum = factory.Faker("sha256")
+    archive_filename = factory.Faker("file_name")
     archived_file_name = factory.Faker("file_name")
+    checksum = factory.Faker("sha256")
     content = factory.Faker("text")
-    correspondent = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
-    created = factory.LazyFunction(datetime.now)
+    correspondent_id = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
+    created = factory.LazyFunction(lambda: datetime.now(timezone.utc))
     created_date = factory.Maybe(factory.Faker("boolean"), factory.Faker("date"), None)
-    updated = factory.LazyFunction(datetime.now)
+    custom_field_dicts = factory.List([{"field": fake.random_int(min=1, max=50), "value": fake.word()} for _ in range(3)])
     deleted_at = None
-    document_type = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
+    document_type_id = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
+    filename = factory.Faker("file_name")
     is_shared_by_requester = factory.Faker("boolean")
-    original_file_name = factory.Faker("file_name")
+    original_filename = factory.Faker("file_name")
     owner = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
     page_count = factory.Faker("random_int", min=1, max=500)
-    storage_path = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
+    storage_path_id = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
+    storage_type = factory.Faker("random_element", elements=["pdf", "image", "text"])
     tag_ids = factory.List([factory.Faker("random_int", min=1, max=50) for _ in range(5)])
     title = factory.Faker("sentence")
     user_can_change = factory.Faker("boolean")
@@ -168,6 +223,8 @@ class DocumentFactory(PydanticFactory[Document]):
     notes = factory.LazyFunction(lambda: [DocumentNoteFactory.create() for _ in range(3)])
 
 class DocumentTypeFactory(PydanticFactory[DocumentType]):
+    _RELATIONSHIPS = {"owner"}
+
     class Meta: # type: ignore # pyright handles this wrong
         model = DocumentType
 
@@ -181,6 +238,8 @@ class DocumentTypeFactory(PydanticFactory[DocumentType]):
     user_can_change = factory.Faker("boolean")
 
 class TagFactory(PydanticFactory[Tag]):
+    _RELATIONSHIPS = {"owner"}
+
     class Meta: # type: ignore # pyright handles this wrong
         model = Tag
 
@@ -196,6 +255,8 @@ class TagFactory(PydanticFactory[Tag]):
     user_can_change = factory.Faker("boolean")
 
 class ProfileFactory(PydanticFactory[Profile]):
+    _RELATIONSHIPS = {"social_accounts"}
+
     class Meta: # type: ignore # pyright handles this wrong
         model = Profile
 
@@ -208,6 +269,8 @@ class ProfileFactory(PydanticFactory[Profile]):
     has_usable_password = factory.Faker("boolean")
 
 class UserFactory(PydanticFactory[User]):
+    _RELATIONSHIPS = {"groups", "user_permissions", "inherited_permissions"}
+
     class Meta: # type: ignore # pyright handles this wrong
         model = User
 
@@ -225,6 +288,8 @@ class UserFactory(PydanticFactory[User]):
     inherited_permissions = factory.List([factory.Faker("word") for _ in range(5)])
 
 class StoragePathFactory(PydanticFactory[StoragePath]):
+    _RELATIONSHIPS = {"owner"}
+
     class Meta: # type: ignore # pyright handles this wrong
         model = StoragePath
 
@@ -239,6 +304,8 @@ class StoragePathFactory(PydanticFactory[StoragePath]):
     user_can_change = factory.Faker("boolean")
 
 class SavedViewFactory(PydanticFactory[SavedView]):
+    _RELATIONSHIPS = {"filter_rules", "owner", "display_fields"}
+
     class Meta: # type: ignore # pyright handles this wrong
         model = SavedView
 
@@ -247,14 +314,16 @@ class SavedViewFactory(PydanticFactory[SavedView]):
     show_in_sidebar = factory.Faker("boolean")
     sort_field = factory.Faker("word")
     sort_reverse = factory.Faker("boolean")
-    filter_rules = factory.List([{"key": fake.word(), "value": fake.word()} for _ in range(3)])
+    filter_rules = factory.List([factory.Dict({"rule_type": factory.Faker("random_int", min=1, max=3), "value": fake.word(), "saved_view": factory.Faker("random_int", min=1, max=100)}) for _ in range(3)])
     page_size = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=10, max=100), None)
-    display_mode = factory.Faker("word")
+    display_mode = None
     display_fields = factory.List([factory.Faker("word") for _ in range(5)])
     owner = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
     user_can_change = factory.Faker("boolean")
 
 class ShareLinksFactory(PydanticFactory[ShareLinks]):
+    _RELATIONSHIPS = {"document"}
+
     class Meta: # type: ignore # pyright handles this wrong
         model = ShareLinks
 
@@ -262,9 +331,11 @@ class ShareLinksFactory(PydanticFactory[ShareLinks]):
     slug = factory.Faker("slug")
     document = factory.Faker("random_int", min=1, max=1000)
     created = factory.LazyFunction(datetime.now)
-    file_version = factory.Faker("word")
+    file_version = "original"
 
 class TaskFactory(PydanticFactory[Task]):
+    _RELATIONSHIPS = {"related_document"}
+
     class Meta: # type: ignore # pyright handles this wrong
         model = Task
 
@@ -278,14 +349,261 @@ class TaskFactory(PydanticFactory[Task]):
     related_document = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=1000), None)
 
 class UISettingsFactory(PydanticFactory[UISettings]):
+    _RELATIONSHIPS = {"user", "settings", "permissions"}
+
     class Meta: # type: ignore # pyright handles this wrong
         model = UISettings
 
-    user = factory.Dict({"theme": "dark", "language": "en"})
-    settings = factory.Dict({"dashboard_layout": "grid", "notification_settings": {"email": True}})
-    permissions = factory.List([factory.Faker("word") for _ in range(5)])
+    user = {
+        "id": 3,
+        "username": "Jess",
+        "is_staff": True,
+        "is_superuser": True,
+        "groups": []
+    },
+    settings = {
+        "update_checking": {
+            "backend_setting": "default"
+        },
+        "trash_delay": 30,
+        "app_title": None,
+        "app_logo": None,
+        "auditlog_enabled": True,
+        "email_enabled": False
+    }
+    permissions = [
+        "delete_logentry",
+        "delete_paperlesstask",
+        "delete_note",
+        "add_group",
+        "change_mailrule",
+        "view_authenticator",
+        "add_taskresult",
+        "add_savedviewfilterrule",
+        "change_chordcounter",
+        "view_taskresult",
+        "add_tag",
+        "add_processedmail",
+        "delete_group",
+        "change_storagepath",
+        "delete_socialapp",
+        "view_group",
+        "change_workflowactionwebhook",
+        "add_workflowrun",
+        "delete_savedviewfilterrule",
+        "delete_chordcounter",
+        "change_groupobjectpermission",
+        "view_processedmail",
+        "change_groupresult",
+        "change_tokenproxy",
+        "delete_contenttype",
+        "change_workflowactionemail",
+        "view_customfield",
+        "view_emailaddress",
+        "delete_token",
+        "add_emailconfirmation",
+        "change_workflowaction",
+        "add_note",
+        "delete_processedmail",
+        "delete_emailconfirmation",
+        "delete_socialtoken",
+        "add_savedview",
+        "view_socialapp",
+        "delete_emailaddress",
+        "view_paperlesstask",
+        "delete_correspondent",
+        "change_mailaccount",
+        "add_uisettings",
+        "view_customfieldinstance",
+        "add_logentry",
+        "delete_customfield",
+        "change_emailconfirmation",
+        "add_workflow",
+        "view_savedview",
+        "add_contenttype",
+        "change_documenttype",
+        "change_note",
+        "change_workflowtrigger",
+        "view_tag",
+        "change_socialaccount",
+        "change_tag",
+        "view_workflowtrigger",
+        "change_applicationconfiguration",
+        "view_groupobjectpermission",
+        "add_customfield",
+        "add_socialaccount",
+        "change_logentry",
+        "delete_tokenproxy",
+        "change_user",
+        "delete_permission",
+        "delete_storagepath",
+        "view_mailrule",
+        "view_workflowaction",
+        "delete_taskresult",
+        "change_emailaddress",
+        "delete_groupresult",
+        "add_sharelink",
+        "view_permission",
+        "delete_mailaccount",
+        "view_userobjectpermission",
+        "add_tokenproxy",
+        "view_log",
+        "delete_log",
+        "change_userobjectpermission",
+        "change_correspondent",
+        "add_permission",
+        "add_socialapp",
+        "delete_workflow",
+        "view_chordcounter",
+        "view_workflowactionwebhook",
+        "add_applicationconfiguration",
+        "change_token",
+        "delete_sharelink",
+        "change_session",
+        "delete_mailrule",
+        "view_groupresult",
+        "delete_session",
+        "add_user",
+        "view_tokenproxy",
+        "add_workflowtrigger",
+        "add_chordcounter",
+        "delete_applicationconfiguration",
+        "add_token",
+        "add_paperlesstask",
+        "view_logentry",
+        "view_storagepath",
+        "add_session",
+        "delete_workflowaction",
+        "view_user",
+        "view_document",
+        "view_workflow",
+        "change_workflow",
+        "delete_tag",
+        "add_mailaccount",
+        "view_socialaccount",
+        "change_authenticator",
+        "change_socialtoken",
+        "view_logentry",
+        "add_document",
+        "delete_authenticator",
+        "change_uisettings",
+        "delete_document",
+        "add_mailrule",
+        "add_customfieldinstance",
+        "add_workflowactionemail",
+        "delete_groupobjectpermission",
+        "change_permission",
+        "delete_workflowtrigger",
+        "change_savedviewfilterrule",
+        "view_correspondent",
+        "change_socialapp",
+        "view_savedviewfilterrule",
+        "delete_workflowrun",
+        "view_contenttype",
+        "delete_uisettings",
+        "change_customfield",
+        "view_workflowactionemail",
+        "delete_workflowactionwebhook",
+        "delete_workflowactionemail",
+        "change_workflowrun",
+        "view_session",
+        "add_groupresult",
+        "delete_logentry",
+        "delete_socialaccount",
+        "view_documenttype",
+        "add_storagepath",
+        "view_note",
+        "add_workflowaction",
+        "add_log",
+        "view_sharelink",
+        "view_workflowrun",
+        "delete_userobjectpermission",
+        "add_authenticator",
+        "change_sharelink",
+        "view_mailaccount",
+        "view_applicationconfiguration",
+        "change_log",
+        "add_logentry",
+        "change_taskresult",
+        "add_groupobjectpermission",
+        "view_uisettings",
+        "add_userobjectpermission",
+        "change_savedview",
+        "change_paperlesstask",
+        "delete_documenttype",
+        "delete_savedview",
+        "view_emailconfirmation",
+        "change_logentry",
+        "change_customfieldinstance",
+        "add_workflowactionwebhook",
+        "view_socialtoken",
+        "change_group",
+        "add_socialtoken",
+        "change_contenttype",
+        "change_document",
+        "delete_user",
+        "add_documenttype",
+        "add_emailaddress",
+        "delete_customfieldinstance",
+        "add_correspondent",
+        "view_token",
+        "change_processedmail"
+    ]
+
+class MetadataElementFactory(PydanticFactory[MetadataElement]):
+    _RELATIONSHIPS = set()
+
+    class Meta: # type: ignore # pyright handles this wrong
+        model = MetadataElement
+
+    key = factory.Faker("word")
+    value = factory.Faker("sentence")
+
+class DocumentMetadataFactory(PydanticFactory[DocumentMetadata]):
+    _RELATIONSHIPS = {"original_metadata", "archive_metadata"}
+
+    class Meta: # type: ignore # pyright handles this wrong
+        model = DocumentMetadata
+
+    original_checksum = factory.Faker("sha256")
+    original_size = factory.Faker("random_int", min=1000, max=10000000)
+    original_mime_type = factory.Faker("mime_type")
+    media_filename = factory.Faker("file_name")
+    has_archive_version = factory.Faker("boolean")
+    original_metadata = factory.List([MetadataElementFactory.build() for _ in range(3)])
+    archive_checksum = factory.Faker("sha256")
+    archive_media_filename = factory.Faker("file_name")
+    original_filename = factory.Faker("file_name")
+    lang = factory.Faker("language_code")
+    archive_size = factory.Faker("random_int", min=1000, max=10000000)
+    archive_metadata = factory.List([MetadataElementFactory.build() for _ in range(3)])
+
+class DocumentSuggestionsFactory(PydanticFactory[DocumentSuggestions]):
+    _RELATIONSHIPS = {"correspondents", "tags", "document_types", "storage_paths", "dates"}
+
+    class Meta: # type: ignore # pyright handles this wrong
+        model = DocumentSuggestions
+
+    correspondents = factory.List([factory.Faker("random_int", min=1, max=100) for _ in range(3)])
+    tags = factory.List([factory.Faker("random_int", min=1, max=50) for _ in range(5)])
+    document_types = factory.List([factory.Faker("random_int", min=1, max=100) for _ in range(3)])
+    storage_paths = factory.List([factory.Faker("random_int", min=1, max=100) for _ in range(3)])
+    dates = factory.List([factory.Faker("date_object") for _ in range(3)])
+
+class DownloadedDocumentFactory(PydanticFactory[DownloadedDocument]):
+    class Meta: # type: ignore # pyright handles this wrong
+        model = DownloadedDocument
+
+    mode = factory.Faker("random_element", elements=["download", "preview", "thumbnail"])
+    original = factory.Faker("boolean")
+    content = factory.LazyFunction(lambda: bytes(fake.binary(length=1024)))
+    content_type = factory.Faker("mime_type")
+    disposition_filename = factory.Faker("file_name")
+    disposition_type = factory.Faker("random_element", elements=["inline", "attachment"])
 
 class GroupFactory(PydanticFactory[Group]):
+    _RELATIONSHIPS = {"permissions"}
+
     class Meta: # type: ignore # pyright handles this wrong
         model = Group
 
@@ -293,6 +611,10 @@ class GroupFactory(PydanticFactory[Group]):
     permissions = factory.List([factory.Faker("word") for _ in range(5)])
 
 class WorkflowTriggerFactory(PydanticFactory[WorkflowTrigger]):
+    _RELATIONSHIPS = {
+        "sources", "filter_has_tags", "filter_has_correspondent", "filter_has_document_type"
+    }
+
     class Meta: # type: ignore # pyright handles this wrong
         model = WorkflowTrigger
 
@@ -309,6 +631,12 @@ class WorkflowTriggerFactory(PydanticFactory[WorkflowTrigger]):
     filter_has_document_type = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
 
 class WorkflowActionFactory(PydanticFactory[WorkflowAction]):
+    _RELATIONSHIPS = {
+        "assign_tags", "assign_correspondent", "assign_document_type",
+        "assign_storage_path", "assign_owner", "assign_view_users",
+        "assign_view_groups"
+    }
+
     class Meta: # type: ignore # pyright handles this wrong
         model = WorkflowAction
 
@@ -325,6 +653,8 @@ class WorkflowActionFactory(PydanticFactory[WorkflowAction]):
     remove_all_custom_fields = factory.Faker("boolean")
 
 class WorkflowFactory(PydanticFactory[Workflow]):
+    _RELATIONSHIPS = {"triggers", "actions"}
+
     class Meta: # type: ignore # pyright handles this wrong
         model = Workflow
 

@@ -9,7 +9,7 @@ METADATA:
 File:    test_document_queryset.py
         Project: paperap
 Created: 2025-03-05
-        Version: 0.0.8
+        Version: 0.0.9
 Author:  Jess Mann
 Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -96,7 +96,6 @@ class TestMeta(BaseTest):
         disabled_filters = [
             'page_count',
             'deleted_at',
-            'updated',
             'is_shared_by_requester'
         ]
         suffixes = [
@@ -137,7 +136,6 @@ class TestMeta(BaseTest):
         expected_fields = [
             'page_count',
             'deleted_at',
-            'updated',
             'is_shared_by_requester',
         ]
         for field_name in expected_fields:

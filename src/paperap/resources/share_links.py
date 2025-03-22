@@ -30,4 +30,4 @@ class ShareLinksResource(StandardResource[ShareLinks, ShareLinksQuerySet]):
 
     model_class = ShareLinks
     queryset_class = ShareLinksQuerySet
-    name = "share_links"
+    name: str = "share_links"

@@ -1,11 +1,11 @@
 {
-	"id": 10,
-	"slug": "example-slug",
-	"name": "example-name",
-	"match": "",
-	"matching_algorithm": 6,
-	"is_insensitive": true,
-	"document_count": 6,
-	"owner": null,
-	"user_can_change": true
+    "id": 1738,
+    "slug": "ability-16",
+    "name": "ability 16",
+    "match": "possible",
+    "matching_algorithm": 2,
+    "is_insensitive": false,
+    "document_count": 0,
+    "owner": 1,
+    "user_can_change": true
 }

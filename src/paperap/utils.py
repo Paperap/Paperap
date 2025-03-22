@@ -6,7 +6,7 @@
        File:    utils.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.8
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -24,7 +24,7 @@ from __future__ import annotations
 import json
 import os
 from datetime import datetime
-from typing import Any, BinaryIO, Optional
+from typing import Any, BinaryIO
 
 
 def datetime_to_str(dt: datetime | None) -> str | None:

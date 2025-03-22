@@ -1,6 +1,6 @@
 [project]
 name = "paperap"
-version = "0.0.8"
+version = "0.0.9"
 description = "Python library for interacting with the Paperless NGX REST API"
 readme = "README.md"
 authors = [{ name = "Jess Mann", email = "jess@jmann.me" }]
@@ -330,7 +330,7 @@ indent-after-paren = 1
 indent-string = "    "
 
 # Maximum number of characters on a single line.
-max-line-length = 120
+max-line-length = 150
 
 # Maximum number of lines in a module.
 max-module-lines = 1000
@@ -650,7 +650,7 @@ redefining-builtins-modules = [
 
 [tool.yapf]
 based_on_style = "google"
-column_limit = 120
+column_limit = 150
 align_closing_bracket_with_visual_indent = true
 blank_line_before_nested_class_or_def = true
 each_dict_entry_on_separate_line = true
@@ -714,7 +714,7 @@ subprocess = [
 ]
 
 [tool.ruff]
-line-length = 120
+line-length = 150
 target-version = "py312"
 
 # Excludes in addition to ruff's defaults
@@ -765,101 +765,12 @@ unfixable = []
 "docs/*" = ["E402", "F401"]
 "tests/**" = ["D", "E402", "F401", "F403", "F405", "E501", "F841", "N802"]
 
-[tool.pytype]
-exclude = [
-  '__*',
-  '.*',
-  '*_cache',
-  '*.pyc',
-  '.venv/',
-  'node_modules/',
-  'tests/',
-  'docs/',
-  'config/',
-  'logs/',
-]
-
-# Space-separated list of files or directories to process.
-inputs = ['.']
-
-# Keep going past errors to analyze as many files as possible.
-keep_going = false
-
-# Run N jobs in parallel. When 'auto' is used, this will be equivalent to the
-# number of CPUs on the host system.
-jobs = 4
-
-# All pytype output goes here.
-output = '.pytype'
-
-# Platform (e.g., "linux", "win32") that the target code runs on.
-platform = 'linux'
-
-# Paths to source code directories, separated by ':'.
-pythonpath = '.:src'
-
-# Python version (major.minor) of the target code.
-python_version = '3.12'
-
-# Bind 'self' in methods with non-transparent decorators. This flag is temporary
-# and will be removed once this behavior is enabled by default.
-bind_decorated_methods = false
-
-# Don't allow None to match bool. This flag is temporary and will be removed
-# once this behavior is enabled by default.
-none_is_not_bool = true
-
-# Enable parameter count checks for overriding methods with renamed arguments.
-# This flag is temporary and will be removed once this behavior is enabled by
-# default.
-overriding_renamed_parameter_count_checks = false
-
-# Variables initialized as None retain their None binding. This flag is
-# temporary and will be removed once this behavior is enabled by default.
-strict_none_binding = false
-
-# Support the third-party fiddle library. This flag is temporary and will be
-# removed once this behavior is enabled by default.
-use_fiddle_overlay = false
-
-# Opt-in: Do not allow Any as a return type.
-no_return_any = false
-
-# Opt-in: Require decoration with @typing.override when overriding a method or
-# nested class attribute of a parent class.
-require_override_decorator = false
-
-# Experimental: Infer precise return types even for invalid function calls.
-precise_return = false
-
-# Experimental: Solve unknown types to label with structural types.
-protocols = false
-
-# Experimental: Only load submodules that are explicitly imported.
-strict_import = false
-
-# Experimental: Enable exhaustive checking of function parameter types.
-strict_parameter_checks = false
-
-# Experimental: Emit errors for comparisons between incompatible primitive
-# types.
-strict_primitive_comparisons = false
-
-# Experimental: Check that variables are defined in all possible code paths.
-strict_undefined_checks = true
-
-# Space-separated list of error names to ignore.
-disable = ['pyi-error', 'import-error']
-
-# Don't report errors.
-report_errors = true
-
 [tool.pyright]
 include = ["."]
 exclude = ["**/.*", "**/_*", "node_modules", "logs"]
 ignore = ["docs", "tests"]
 defineConstant = { DEBUG = true }
-stubPath = "../.pyright/stubs"
+stubPath = ".pyright/stubs"
 pythonVersion = "3.12"
 pythonPlatform = "Linux"
 
@@ -1006,13 +917,10 @@ disable_error_code = [
   "type-arg",
   "attr-defined",
   "explicit-any",
-  "decorated-any",
-  "any",
   "ignore-without-code",
   "func-returns-value",  # due to pydantic PrivateAttr with basedmypy
   "redundant-expr",      # basedmypy complaining about typeguards / future proofing
   "unreachable",         # same as above
-  "no-untyped-usage",    # until we have defaults
 ]
 
 # The Factory Boy type stubs don't play well with mypy, and this is used exclusively for tests.
@@ -1049,7 +957,6 @@ dev = [
   "pyright>=1.1.396",
   "pytest>=8.3.5",
   "pytest-cov>=6.0.0",
-  "pytype>=2024.10.11",
   "ruff>=0.9.9",
   "sphinx>=7.2.6",
   "sphinx-rtd-theme>=2.0.0",
@@ -1059,6 +966,6 @@ dev = [
   "types-factory-boy>=0.4.1",
   "types-pyyaml>=6.0.12.20241230",
   "types-requests>=2.32.0.20241016",
-  "basedmypy>=2.10.0",
   "pydantic-basedtyping>=0.1.0",
+  "mypy>=1.15.0",
 ]

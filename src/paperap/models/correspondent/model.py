@@ -6,7 +6,7 @@
        File:    correspondent.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -22,10 +22,11 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from pydantic import Field
 
+from paperap.const import MatchingAlgorithmType
 from paperap.models.abstract.model import StandardModel
 from paperap.models.correspondent.queryset import CorrespondentQuerySet
 from paperap.models.mixins.models import MatcherMixin

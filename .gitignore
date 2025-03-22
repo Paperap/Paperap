@@ -8,3 +8,7 @@ node_modules/
 dist/
 .vscode/settings.json
 .hypothesis
+paperless-ngx
+*.out
+.stubs
+.aider*

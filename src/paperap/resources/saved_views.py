@@ -30,4 +30,4 @@ class SavedViewResource(StandardResource[SavedView, SavedViewQuerySet]):
 
     model_class = SavedView
     queryset_class = SavedViewQuerySet
-    name = "saved_views"
+    name: str = "saved_views"

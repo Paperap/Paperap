@@ -146,32 +146,40 @@ pre-commit run --all-files
 ```
 
 ## TODO
-- [ ] Replace yarl with pydantic urls
-- [ ] unit tests to 100% coverage (currently 86%)
-- [ ] Make integration tests easier to setup for other users
-- [ ] Compile sphinx documentation
-- [ ] Deleting tags, custom fields, etc
-- [ ] devcontainer
+- [ ] unit tests to 100% coverage (currently around 85%)
+- [ ] Make integration tests easier to setup for other users (wip)
+- [ ] Deleting tags, custom fields, etc via document.tags = None
+- [ ] devcontainer (wip)
 - [ ] git action to distribute to pypi
 - [ ] Remove validators that pydantic handles natively
 - [ ] cli tools
-- [ ] batch editing
-- [x] async model updates
-- [ ] uploading documents
+- [ ] batch editing (done? needs integration tests)
 - [ ] updating permissions, ownership, sharing, etc
 - [ ] changing settings
-- [ ] local queryset filtering not supported by api
+- [ ] local queryset filtering on fields not supported by api
+- [ ] unit tests for additional edge cases
+- [ ] immutability (resources, response dicts, (optionally) for models)
+- [ ] hypothesis testing (additional models)
+- [ ] Empty trash
+- [ ] factories create unique names, and create relationships in db
+- [ ] publish sphinx docs (once stable)
+- [x] Compile sphinx documentation
+- [x] async model updates
+- [x] uploading documents
 - [x] raise errors for intuitive features unsupported by api (partially done)
 - [x] enforce read-only fields
-- [ ] unit tests for additional edge cases
 - [x] migrate to pytest
-- [ ] immutability (resources, response dicts, (optionally) for models)
-- [ ] hypothesis testing (in progress)
+- [x] Replace yarl with pydantic urls
 - [x] fetch each model synchronously and validate data types
 - [x] lazy loading querysets
 - [x] relationships between models using querysets
 - [x] saving data to paperless
 - [x] vscode tasks
+
+## Known Bugs
+- Looping over a queryset and deleting items will not modify the next page of the queryset
+- Running unit tests and integration tests together causes errors, meaning something is not being cleaned up properly
+
 
 ## License
 

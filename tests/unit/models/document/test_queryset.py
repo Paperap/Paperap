@@ -7,12 +7,12 @@
 METADATA:
 
 File:    test_queryset.py
-Project: paperap
+        Project: paperap
 Created: 2025-03-13
-Version: 0.0.8
+        Version: 0.0.9
 Author:  Jess Mann
 Email:   jess@jmann.me
-Copyright (c) 2025 Jess Mann
+        Copyright (c) 2025 Jess Mann
 
 ----------------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import unittest
 from datetime import datetime
-from typing import Any, Dict, List, Optional, override
+from typing import Any, Dict, List, override
 from unittest.mock import MagicMock, Mock, patch
 
 from paperap.exceptions import FilterDisabledError
@@ -572,11 +572,11 @@ class TestMiscFilters(DocumentQuerySetTestCase):
         self.mock_filter_field.assert_called_once_with("asn", "123456", exact=True, case_insensitive=True)
         self.assertIsInstance(result, DocumentQuerySet)
 
-    def test_original_file_name(self):
+    def test_original_filename(self):
         """Test filtering by original file name."""
-        result = self.queryset.original_file_name("invoice.pdf")
+        result = self.queryset.original_filename("invoice.pdf")
         self.mock_filter_field.assert_called_once_with(
-            "original_file_name", "invoice.pdf", exact=True, case_insensitive=True
+            "original_filename", "invoice.pdf", exact=True, case_insensitive=True
         )
         self.assertIsInstance(result, DocumentQuerySet)
 

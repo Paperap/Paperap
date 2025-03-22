@@ -6,7 +6,7 @@
        File:    documents.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.8
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -51,7 +51,7 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
         and updates the model with the response data.
         """
         mode = downloaded_document.mode or RetrieveFileMode.DOWNLOAD
-        endpoint = self.endpoints[mode]
+        endpoint = self.get_endpoint(mode)
 
         params = {
             "original": "true" if downloaded_document.original else "false",

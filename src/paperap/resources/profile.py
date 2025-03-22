@@ -30,4 +30,4 @@ class ProfileResource(StandardResource[Profile, ProfileQuerySet]):
 
     model_class = Profile
     queryset_class = ProfileQuerySet
-    name = "profile"
+    name: str = "profile"

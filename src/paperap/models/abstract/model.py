@@ -6,7 +6,7 @@
        File:    base.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.8
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -30,7 +30,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from decimal import Decimal
 from enum import StrEnum
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, Literal, Optional, Self, TypedDict, cast, override
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, Literal, Self, TypedDict, cast, override
 
 import pydantic
 from pydantic import Field, PrivateAttr
@@ -46,8 +46,6 @@ if TYPE_CHECKING:
     from paperap.resources.base import BaseResource, StandardResource
 
 logger = logging.getLogger(__name__)
-
-_Self = TypeVar("_Self", bound="BaseModel")
 
 
 class ModelConfigType(TypedDict):
@@ -86,9 +84,9 @@ class BaseModel(pydantic.BaseModel, ABC):
 
     """
 
-    _meta: "ClassVar[Meta[Self]]"  # type: ignore
+    _meta: ClassVar["Meta[Self]"]
     _save_lock: threading.RLock = PrivateAttr(default_factory=threading.RLock)
-    _pending_save: concurrent.futures.Future | None = PrivateAttr(default=None)
+    _pending_save: concurrent.futures.Future[Any] | None = PrivateAttr(default=None)
     _save_executor: concurrent.futures.ThreadPoolExecutor | None = None
     # Updating attributes will not trigger save()
     _status: ModelStatus = ModelStatus.INITIALIZING  # The last data we retrieved from the db
@@ -99,7 +97,7 @@ class BaseModel(pydantic.BaseModel, ABC):
     _saved_data: dict[str, Any] = {}
     _resource: "BaseResource[Self]"
 
-    class Meta[_Self]:
+    class Meta[_Self: "BaseModel"]:
         """
         Metadata for the Model.
 
@@ -132,7 +130,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         filtering_fields: ClassVar[set[str]] = set()
         # If set, only these params will be allowed during queryset filtering. (e.g. {"content__icontains", "id__gt"})
         # These will be appended to supported_filtering_params for all parent classes.
-        supported_filtering_params: ClassVar[set[str]] = set()
+        supported_filtering_params: ClassVar[set[str]] = {"limit"}
         # If set, these params will be disallowed during queryset filtering (e.g. {"content__icontains", "id__gt"})
         # These will be appended to blacklist_filtering_params for all parent classes.
         blacklist_filtering_params: ClassVar[set[str]] = set()
@@ -155,9 +153,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             self.model = model
 
             # Validate filtering strategies
-            if all(
-                x in self.filtering_strategies for x in (FilteringStrategies.ALLOW_ALL, FilteringStrategies.ALLOW_NONE)
-            ):
+            if all(x in self.filtering_strategies for x in (FilteringStrategies.ALLOW_ALL, FilteringStrategies.ALLOW_NONE)):
                 raise ValueError(f"Cannot have ALLOW_ALL and ALLOW_NONE filtering strategies in {self.model.__name__}")
 
             super().__init__()
@@ -223,7 +219,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             # Iterate over ancestors to get the top-most explicitly defined Meta.
             for base in cls.__mro__[1:]:
                 if "Meta" in base.__dict__:
-                    top_meta = cast(type[BaseModel.Meta[Self]], base.Meta)
+                    top_meta = cast("type[BaseModel.Meta[Self]]", base.Meta)
                     break
             if top_meta is None:
                 # This should never happen.
@@ -301,9 +297,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         super().__init__(**data)
 
         if not hasattr(self, "_resource"):
-            raise ValueError(
-                f"Resource required. Initialize resource for {self.__class__.__name__} before instantiating models."
-            )
+            raise ValueError(f"Resource required. Initialize resource for {self.__class__.__name__} before instantiating models.")
 
     @property
     def _client(self) -> "PaperlessClient":
@@ -323,9 +317,7 @@ class BaseModel(pydantic.BaseModel, ABC):
     @property
     def save_executor(self) -> concurrent.futures.ThreadPoolExecutor:
         if not self._save_executor:
-            self._save_executor = concurrent.futures.ThreadPoolExecutor(
-                max_workers=5, thread_name_prefix="model_save_worker"
-            )
+            self._save_executor = concurrent.futures.ThreadPoolExecutor(max_workers=5, thread_name_prefix="model_save_worker")
         return self._save_executor
 
     def cleanup(self) -> None:
@@ -335,7 +327,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             self._save_executor = None
 
     @override
-    def model_post_init(self, __context) -> None:
+    def model_post_init(self, __context: Any) -> None:
         super().model_post_init(__context)
 
         # Save original_data to support dirty fields
@@ -411,6 +403,7 @@ class BaseModel(pydantic.BaseModel, ABC):
 
         """
         current_data = self.model_dump()
+        current_data.pop("id", None)
 
         if comparison == "saved":
             compare_dict = self._saved_data
@@ -421,13 +414,17 @@ class BaseModel(pydantic.BaseModel, ABC):
             # A field is dirty if it differs from either original or saved data
             compare_dict = {}
             for field in set(list(self._original_data.keys()) + list(self._saved_data.keys())):
+                # ID cannot change, and is not set before first save sometimes
+                if field == "id":
+                    continue
+
                 # Prefer original data (from DB) over saved data when both exist
                 compare_dict[field] = self._original_data.get(field, self._saved_data.get(field))
 
         return {
-            field: (compare_dict[field], current_data[field])
+            field: (compare_dict.get(field, None), current_data.get(field, None))
             for field in current_data
-            if field in compare_dict and compare_dict[field] != current_data[field]
+            if compare_dict.get(field, None) != current_data.get(field, None)
         }
 
     def is_dirty(self, comparison: Literal["saved", "db", "both"] = "both") -> bool:
@@ -444,6 +441,8 @@ class BaseModel(pydantic.BaseModel, ABC):
             True if any field has changed.
 
         """
+        if self.is_new():
+            return True
         return bool(self.dirty_fields(comparison=comparison))
 
     @classmethod
@@ -462,8 +461,10 @@ class BaseModel(pydantic.BaseModel, ABC):
             doc = Document.create(filename="example.pdf", contents=b"PDF data")
 
         """
-        # TODO save
-        return cls(**kwargs)
+        return cls._resource.create(**kwargs)
+
+    def delete(self) -> None:
+        return self._resource.delete(self)
 
     def update_locally(self, *, from_db: bool | None = None, skip_changed_fields: bool = False, **kwargs: Any) -> None:
         """
@@ -607,6 +608,10 @@ class StandardModel(BaseModel, ABC):
         read_only_fields: ClassVar[set[str]] = {"id"}
         supported_filtering_params = {"id__in", "id"}
 
+    @property
+    def resource(self) -> "StandardResource[Self]":  # type: ignore
+        return self._resource
+
     @override
     def update(self, **kwargs: Any) -> None:
         """
@@ -646,15 +651,18 @@ class StandardModel(BaseModel, ABC):
         self.update_locally(from_db=True, **new_model.to_dict())
         return True
 
-    def save(self, *, force: bool = False):
+    def save(self, *, force: bool = False) -> bool:
         return self.save_sync(force=force)
 
-    def save_sync(self, *, force: bool = False) -> None:
+    def save_sync(self, *, force: bool = False) -> bool:
         """
         Save this model instance synchronously.
 
         Changes are sent to the server immediately, and the model is updated
         when the server responds.
+
+        Returns:
+            True if the save was successful, False otherwise.
 
         Raises:
             ResourceNotFoundError: If the resource doesn't exist on the server
@@ -662,13 +670,20 @@ class StandardModel(BaseModel, ABC):
             PermissionError: If the user doesn't have permission to update the resource
 
         """
+        if self.is_new():
+            model = self.create(**self.to_dict())
+            self.update_locally(from_db=True, **model.to_dict())
+            return True
+
         if not force:
             if self._status == ModelStatus.SAVING:
-                return
+                logger.warning("Model is already saving, skipping save")
+                return False
 
             # Only start a save if there are changes
             if not self.is_dirty():
-                return
+                logger.warning("Model is not dirty, skipping save")
+                return False
 
         with StatusContext(self, ModelStatus.SAVING):
             # Prepare and send the update to the server
@@ -685,12 +700,12 @@ class StandardModel(BaseModel, ABC):
 
             if not new_model:
                 logger.warning(f"Result of save was none for model id {self.id}")
-                return
+                return False
 
             if not isinstance(new_model, StandardModel):
                 # This should never happen
                 logger.error("Result of save was not a StandardModel instance")
-                return
+                return False
 
             try:
                 # Update the model with the server response
@@ -722,26 +737,32 @@ class StandardModel(BaseModel, ABC):
                 # Re-raise so the executor can handle it properly
                 raise
 
-    def save_async(self, *, force: bool = False) -> None:
+        return True
+
+    def save_async(self, *, force: bool = False) -> bool:
         """
         Save this model instance asynchronously.
 
         Changes are sent to the server in a background thread, and the model
         is updated when the server responds.
+
+        Returns:
+            True if the save was successfully submitted async, False otherwise.
+
         """
         if not force:
             if self._status == ModelStatus.SAVING:
-                return
+                return False
 
             # Only start a save if there are changes
             if not self.is_dirty():
                 if hasattr(self, "_save_lock") and self._save_lock._is_owned():  # type: ignore # temporary TODO
                     self._save_lock.release()
-                return
+                return False
 
             # If there's a pending save, skip saving until it finishes
             if self._pending_save is not None and not self._pending_save.done():
-                return
+                return False
 
         self._status = ModelStatus.SAVING
         self._save_lock.acquire(timeout=30)
@@ -751,6 +772,7 @@ class StandardModel(BaseModel, ABC):
         future = executor.submit(self._perform_save_async)
         self._pending_save = future
         future.add_done_callback(self._handle_save_result_async)
+        return True
 
     def _perform_save_async(self) -> Self | None:
         """
@@ -777,7 +799,7 @@ class StandardModel(BaseModel, ABC):
 
         return self._resource.update(self)
 
-    def _handle_save_result_async(self, future: concurrent.futures.Future) -> None:
+    def _handle_save_result_async(self, future: concurrent.futures.Future[Any]) -> bool:
         """
         Handle the result of an asynchronous save operation.
 
@@ -791,12 +813,12 @@ class StandardModel(BaseModel, ABC):
 
             if not new_model:
                 logger.warning(f"Result of save was none for model id {self.id}")
-                return
+                return False
 
             if not isinstance(new_model, StandardModel):
                 # This should never happen
                 logger.error("Result of save was not a StandardModel instance")
-                return
+                return False
 
             # Update the model with the server response
             new_data = new_model.to_dict()
@@ -857,6 +879,8 @@ class StandardModel(BaseModel, ABC):
                 time.sleep(0.1)
                 # Save, and reset unsaved data
                 self.save()
+
+        return True
 
     @override
     def is_new(self) -> bool:

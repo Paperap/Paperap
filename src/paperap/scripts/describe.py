@@ -10,7 +10,7 @@ METADATA:
 File:    describe.py
         Project: paperap
 Created: 2025-03-18
-        Version: 0.0.8
+        Version: 0.0.9
 Author:  Jess Mann
 Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -37,7 +37,7 @@ from enum import StrEnum
 from functools import singledispatchmethod
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Collection, Dict, Iterator, List, Optional, TypeVar, Union, cast
+from typing import Any, Collection, Dict, Iterator, List, TypeVar, Union, cast
 
 import dateparser
 import fitz  # type: ignore
@@ -102,7 +102,7 @@ class DescribePhotos(BaseModel):
     @property
     def progress_bar(self) -> ProgressBar:
         if not self._progress_bar:
-            self._progress_bar = alive_bar(title="Running", unknown="waves")  # type: ignore
+            self._progress_bar = alive_bar(title="Running", unknown="waves")  # pyright: ignore[reportAttributeAccessIssue]
         return self._progress_bar  # type: ignore # pyright not handling the protocol correctly, not sure why
 
     @property
@@ -130,7 +130,7 @@ class DescribePhotos(BaseModel):
 
     @field_validator("max_threads", mode="before")
     @classmethod
-    def validate_max_threads(cls, value) -> int:
+    def validate_max_threads(cls, value: Any) -> int:
         # Sensible default
         if not value:
             # default is between 1-4 threads. More than 4 presumptively stresses the HDD non-optimally.
@@ -140,7 +140,7 @@ class DescribePhotos(BaseModel):
 
         if value < 1:
             raise ValueError("max_threads must be a positive integer.")
-        return value
+        return int(value)
 
     @property
     def jinja_env(self) -> Environment:
@@ -331,7 +331,7 @@ class DescribePhotos(BaseModel):
             if not images:
                 raise NoImagesError("No images found to describe.")
 
-            message_contents: List[Dict[str, Any]] = [
+            message_contents: list[dict[str, Any]] = [
                 {
                     "type": "text",
                     "text": self.get_prompt(document),
@@ -360,7 +360,7 @@ class DescribePhotos(BaseModel):
             logger.error(
                 "Failed to generate description due to error reading file #%s: %s -> %s",
                 document.id,
-                document.original_file_name,
+                document.original_filename,
                 fde,
             )
 
@@ -368,7 +368,7 @@ class DescribePhotos(BaseModel):
             logger.warning(
                 "Failed to generate description for document #%s: %s. Continuing with next image -> %s",
                 document.id,
-                document.original_file_name,
+                document.original_filename,
                 ve,
             )
 
@@ -376,7 +376,7 @@ class DescribePhotos(BaseModel):
             logger.warning(
                 "Failed to identify image format for document #%s: %s. Continuing with next image -> %s",
                 document.id,
-                document.original_file_name,
+                document.original_filename,
                 uii,
             )
 
@@ -434,9 +434,9 @@ class DescribePhotos(BaseModel):
                 return False
 
             # Ensure accepted format
-            original_file_name = (document.original_file_name or "").lower()
-            if not any(original_file_name.endswith(ext) for ext in DESCRIBE_ACCEPTED_FORMATS):
-                logger.error(f"Document {document.id} has unsupported extension: {original_file_name}")
+            original_filename = (document.original_filename or "").lower()
+            if not any(original_filename.endswith(ext) for ext in DESCRIBE_ACCEPTED_FORMATS):
+                logger.error(f"Document {document.id} has unsupported extension: {original_filename}")
                 return False
 
             try:
@@ -456,12 +456,12 @@ class DescribePhotos(BaseModel):
                     logger.error(
                         "Failed to generate description for document #%s: %s -> %s",
                         document.id,
-                        document.original_file_name,
+                        document.original_filename,
                         e,
                     )
                     return False
 
-                logger.debug("Bad format for document #%s: %s -> %s", document.id, document.original_file_name, e)
+                logger.debug("Bad format for document #%s: %s -> %s", document.id, document.original_filename, e)
                 return False
 
             # Process the response
@@ -498,7 +498,7 @@ class DescribePhotos(BaseModel):
             logger.error(
                 "Parsed response not a dictionary. Saving response raw to document.content. Document #%s: %s",
                 document.id,
-                document.original_file_name,
+                document.original_filename,
             )
             document.append_content(response)
             return document
@@ -538,7 +538,7 @@ class DescribePhotos(BaseModel):
                 logger.error(
                     "Failed to update document title. Document #%s: %s -> %s",
                     document.id,
-                    document.original_file_name,
+                    document.original_filename,
                     e,
                 )
 
@@ -550,7 +550,7 @@ class DescribePhotos(BaseModel):
                 logger.error(
                     "Failed to update document date. Document #%s: %s -> %s",
                     document.id,
-                    document.original_file_name,
+                    document.original_filename,
                     e,
                 )
 
@@ -603,7 +603,7 @@ class ArgNamespace(argparse.Namespace):
     verbose: bool = False
 
 
-def main():
+def main() -> None:
     """
     Run the script.
     """

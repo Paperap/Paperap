@@ -6,7 +6,7 @@
        File:    client.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.8
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -22,8 +22,8 @@
 from __future__ import annotations
 
 import logging
+import re
 from pathlib import Path
-from string import Template
 from typing import TYPE_CHECKING, Any, Literal, Unpack, overload
 
 import requests
@@ -36,6 +36,7 @@ from paperap.exceptions import (
     BadResponseError,
     ConfigurationError,
     InsufficientPermissionError,
+    RelationshipNotFoundError,
     RequestError,
     ResourceNotFoundError,
     ResponseParsingError,
@@ -155,7 +156,8 @@ class PaperlessClient:
         self.session.headers.update(
             {
                 "Accept": "application/json; version=2",
-                "Content-Type": "application/json",
+                # Don't set Content-Type here as it will be set appropriately per request
+                # "Content-Type": "application/json",
             }
         )
 
@@ -172,7 +174,7 @@ class PaperlessClient:
     def __enter__(self) -> PaperlessClient:
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         self.close()
 
     def _init_resources(self) -> None:
@@ -207,7 +209,7 @@ class PaperlessClient:
             plugin_config: Optional configuration dictionary for plugins.
 
         """
-        from paperap.plugins.manager import PluginManager  # type: ignore # pylint: disable=import-outside-toplevel
+        from paperap.plugins.manager import PluginManager  # pylint: disable=import-outside-toplevel
 
         PluginManager.model_rebuild()
 
@@ -251,7 +253,7 @@ class PaperlessClient:
     def request_raw(
         self,
         method: str,
-        endpoint: str | HttpUrl | Template,
+        endpoint: str | HttpUrl,
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
@@ -278,14 +280,9 @@ class PaperlessClient:
             PaperapError: For other errors.
 
         """
-        # Handle different endpoint types
-        if isinstance(endpoint, Template):
-            # Convert Template to string representation
-            url = f"{self.base_url}{endpoint.template.lstrip('/')}"
-        elif isinstance(endpoint, HttpUrl):
+        if isinstance(endpoint, HttpUrl):
             # Use URL object directly
             url = str(endpoint)
-
         elif isinstance(endpoint, str):
             if endpoint.startswith("http"):
                 url = endpoint
@@ -299,36 +296,60 @@ class PaperlessClient:
         # Add headers from authentication and session defaults
         headers = {**self.session.headers, **self.get_headers()}
 
-        # If we're uploading files, don't set Content-Type
+        # Set the appropriate Content-Type header based on the request type
         if files:
+            # For file uploads, let requests set the multipart/form-data Content-Type with boundary
             headers.pop("Content-Type", None)
+        elif "Content-Type" not in headers:
+            # For JSON requests, explicitly set the Content-Type
+            headers["Content-Type"] = "application/json"
 
         try:
             # TODO: Temporary hack
             params = params.get("params", params) if params else params
 
-            # logger.critical("Request (%s) url %s, params %s, data %s, files %s", method, url, params, data, files)
-            response = self.session.request(
-                method=method,
-                url=url,
-                headers=headers,
-                params=params,
-                json=data if not files and data else None,
-                data=data if files else None,
-                files=files,
-                timeout=self.settings.timeout,
-                **self._get_auth_params(),
+            logger.debug(
+                "Request (%s) url %s, params %s, data %s, files %s, headers %s",
+                method,
+                url,
+                params,
+                data,
+                files,
+                headers,
             )
+            # When uploading files, we need to pass data as form data, not JSON
+            # The key difference is that with files, we MUST use data parameter, not json
+            if files:
+                # For file uploads, use data parameter (not json) to ensure proper multipart/form-data encoding
+                response = self.session.request(
+                    method=method,
+                    url=url,
+                    headers=headers,
+                    params=params,
+                    data=data,  # Use data for form fields with files
+                    files=files,
+                    timeout=self.settings.timeout,
+                    **self._get_auth_params(),
+                )
+            else:
+                # For regular JSON requests
+                response = self.session.request(
+                    method=method,
+                    url=url,
+                    headers=headers,
+                    params=params,
+                    json=data,  # Use json for regular requests
+                    timeout=self.settings.timeout,
+                    **self._get_auth_params(),
+                )
 
             # Handle HTTP errors
             if response.status_code >= 400:
-                self._handle_request_errors(response, url, params=params, data=data, files=files)
+                return self._handle_request_errors(response, url, params=params, data=data, files=files)
 
             # No content
             if response.status_code == 204:
                 return None
-
-            return response
 
         except requests.exceptions.ConnectionError as ce:
             logger.error(
@@ -342,6 +363,8 @@ class PaperlessClient:
             raise RequestError(f"Connection error: {str(ce)}") from ce
         except requests.exceptions.RequestException as re:
             raise RequestError(f"Request failed: {str(re)}") from re
+
+        return response
 
     def _handle_request_errors(
         self,
@@ -357,6 +380,8 @@ class PaperlessClient:
         if response.status_code == 400:
             if "This field is required" in error_message:
                 raise ValueError(f"Required field missing: {error_message}")
+            if matches := re.match(r"([a-zA-Z_-]+): Invalid pk", error_message):
+                raise RelationshipNotFoundError(f"Invalid relationship {matches.group(1)}: {error_message}")
         if response.status_code == 401:
             raise AuthenticationError(f"Authentication failed: {error_message}")
         if response.status_code == 403:
@@ -370,34 +395,26 @@ class PaperlessClient:
         raise BadResponseError(error_message, response.status_code)
 
     @overload
-    def _handle_response(
-        self, response: requests.Response, *, json_response: Literal[True] = True
-    ) -> dict[str, Any]: ...
+    def _handle_response(self, response: requests.Response, *, json_response: Literal[True] = True) -> dict[str, Any]: ...
 
     @overload
     def _handle_response(self, response: None, *, json_response: bool = True) -> None: ...
 
     @overload
-    def _handle_response(
-        self, response: requests.Response | None, *, json_response: Literal[False]
-    ) -> bytes | None: ...
+    def _handle_response(self, response: requests.Response | None, *, json_response: Literal[False]) -> bytes | None: ...
 
     @overload
-    def _handle_response(
-        self, response: requests.Response | None, *, json_response: bool = True
-    ) -> dict[str, Any] | bytes | None: ...
+    def _handle_response(self, response: requests.Response | None, *, json_response: bool = True) -> dict[str, Any] | bytes | None: ...
 
-    def _handle_response(
-        self, response: requests.Response | None, *, json_response: bool = True
-    ) -> dict[str, Any] | bytes | None:
+    def _handle_response(self, response: requests.Response | None, *, json_response: bool = True) -> dict[str, Any] | bytes | None:
         """Handle the response based on the content type."""
-        if not response:
+        if response is None:
             return None
 
         # Try to parse as JSON if requested
         if json_response:
             try:
-                return response.json()
+                return response.json()  # type: ignore # mypy can't infer the return type correctly
             except ValueError as e:
                 url = getattr(response, "url", "unknown URL")
                 logger.error("Failed to parse JSON response: %s -> url %s -> content: %s", e, url, response.content)
@@ -409,7 +426,7 @@ class PaperlessClient:
     def request(
         self,
         method: str,
-        endpoint: str | HttpUrl | Template,
+        endpoint: str | HttpUrl,
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
@@ -420,7 +437,7 @@ class PaperlessClient:
     def request(
         self,
         method: str,
-        endpoint: str | HttpUrl | Template,
+        endpoint: str | HttpUrl,
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
@@ -432,7 +449,7 @@ class PaperlessClient:
     def request(
         self,
         method: str,
-        endpoint: str | HttpUrl | Template,
+        endpoint: str | HttpUrl,
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
@@ -443,7 +460,7 @@ class PaperlessClient:
     def request(
         self,
         method: str,
-        endpoint: str | HttpUrl | Template,
+        endpoint: str | HttpUrl,
         *,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
@@ -477,9 +494,7 @@ class PaperlessClient:
             "json_response": json_response,
         }
 
-        registry.emit(
-            "client.request:before", "Before a request is sent to the Paperless server", args=[self], kwargs=kwargs
-        )
+        registry.emit("client.request:before", "Before a request is sent to the Paperless server", args=[self], kwargs=kwargs)
 
         if not (response := self.request_raw(method, endpoint, params=params, data=data, files=files)):
             return None
@@ -508,9 +523,9 @@ class PaperlessClient:
             if isinstance(error_data, dict):
                 # Try different possible error formats
                 if "detail" in error_data:
-                    return error_data["detail"]
+                    return str(error_data["detail"])
                 if "error" in error_data:
-                    return error_data["error"]
+                    return str(error_data["error"])
                 if "non_field_errors" in error_data:
                     return ", ".join(error_data["non_field_errors"])
 
@@ -585,7 +600,7 @@ class PaperlessClient:
             if "token" not in data:
                 raise ResponseParsingError("Token not found in response")
 
-            return data["token"]
+            return str(data["token"])
         except requests.exceptions.HTTPError as he:
             if he.response.status_code == 401:
                 raise AuthenticationError("Invalid username or password") from he

@@ -1,14 +1,14 @@
-
 {
-    "id": 74,
-    "slug": "example-slug",
-    "name": "Example Tag Name",
-    "colour": 1,
-    "match": "",
-    "matching_algorithm": 6,
+    "id": 1715,
+    "slug": "across-42",
+    "name": "across 42",
+    "color": "#a6cee3",
+    "text_color": "#000000",
+    "match": "respond",
+    "matching_algorithm": 0,
     "is_insensitive": true,
-    "is_inbox_tag": false,
-    "document_count": 4,
-    "owner": 3,
+    "is_inbox_tag": true,
+    "document_count": 2,
+    "owner": 1,
     "user_can_change": true
 }

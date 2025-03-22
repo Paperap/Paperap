@@ -85,11 +85,11 @@ class Plugin(pydantic.BaseModel, ABC):
         return self.manager.client
 
     @abstractmethod
-    def setup(self):
+    def setup(self) -> None:
         """Register signal handlers and perform other initialization tasks."""
 
     @abstractmethod
-    def teardown(self):
+    def teardown(self) -> None:
         """Clean up resources when the plugin is disabled or the application exits."""
 
     @classmethod

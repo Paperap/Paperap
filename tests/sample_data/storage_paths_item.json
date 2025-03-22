@@ -1,1 +1,12 @@
-{"id": 1, "slug": "yearcorrespondenttitle", "name": "Year/Correspondent/Title", "path": "{{ created_year }}/{{ correspondent }}/{{ title }}", "match": ".*", "matching_algorithm": 0, "is_insensitive": true, "document_count": 22, "owner": 3, "user_can_change": true}
+{
+    "id": 1509,
+    "slug": "any-32",
+    "name": "any 32",
+    "path": "/central/wish.tiff",
+    "match": "spend",
+    "matching_algorithm": 2,
+    "is_insensitive": false,
+    "document_count": 0,
+    "owner": 1,
+    "user_can_change": true
+}

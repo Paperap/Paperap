@@ -6,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.8
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -24,13 +24,13 @@ from __future__ import annotations
 import logging
 from datetime import datetime
 from functools import singledispatchmethod
-from typing import TYPE_CHECKING, Any, NamedTuple, Optional, Self, Union, overload
+from typing import TYPE_CHECKING, Any, NamedTuple, Self, Union, overload
 
 from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models.mixins.queryset import HasOwner
 
 if TYPE_CHECKING:
-    from paperap.models.correspondent import Correspondent
+    from paperap.models.correspondent.model import Correspondent
     from paperap.models.document.model import Document, DocumentNote
 
 logger = logging.getLogger(__name__)
@@ -145,9 +145,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter(more_like_id=document_id)
 
-    def correspondent(
-        self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs
-    ) -> Self:
+    def correspondent(self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs: Any) -> Self:
         """
         Filter documents by correspondent.
 
@@ -257,9 +255,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter_field_by_str("correspondent__slug", slug, exact=exact, case_insensitive=case_insensitive)
 
-    def document_type(
-        self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs
-    ) -> Self:
+    def document_type(self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs: Any) -> Self:
         """
         Filter documents by document type.
 
@@ -349,9 +345,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter_field_by_str("document_type__name", name, exact=exact, case_insensitive=case_insensitive)
 
-    def storage_path(
-        self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs
-    ) -> Self:
+    def storage_path(self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs: Any) -> Self:
         """
         Filter documents by storage path.
 
@@ -494,7 +488,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter_field_by_str("asn", value, exact=exact, case_insensitive=case_insensitive)
 
-    def original_file_name(self, name: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def original_filename(self, name: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
         Filter documents by original file name.
 
@@ -506,7 +500,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             Filtered DocumentQuerySet
 
         """
-        return self.filter_field_by_str("original_file_name", name, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str("original_filename", name, exact=exact, case_insensitive=case_insensitive)
 
     def user_can_change(self, value: bool) -> Self:
         """
@@ -636,7 +630,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         ...
 
     @singledispatchmethod  # type: ignore # mypy does not handle singledispatchmethod with overloads correctly
-    def custom_field_query(self, *args, **kwargs: Any) -> Self:
+    def custom_field_query(self, *args: Any, **kwargs: Any) -> Self:
         """
         Filter documents by custom field query.
         """

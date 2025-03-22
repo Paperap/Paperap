@@ -6,7 +6,7 @@ METADATA:
 File:    settings.py
         Project: paperap
 Created: 2025-03-09
-        Version: 0.0.8
+        Version: 0.0.9
 Author:  Jess Mann
 Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -21,7 +21,7 @@ LAST MODIFIED:
 
 from __future__ import annotations
 
-from typing import Annotated, Any, Optional, Self, TypedDict, override
+from typing import Annotated, Any, Self, TypedDict, override
 
 from pydantic import Field, HttpUrl, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -90,7 +90,7 @@ class Settings(BaseSettings):
         return value
 
     @override
-    def model_post_init(self, __context: Any):
+    def model_post_init(self, __context: Any) -> None:
         """
         Validate the settings after they have been initialized.
         """

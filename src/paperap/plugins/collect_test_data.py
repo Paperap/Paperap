@@ -7,7 +7,7 @@
        File:    collect_test_data.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.8
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -31,7 +31,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, override
 
 from faker import Faker
-from pydantic import field_validator
+from pydantic import HttpUrl, field_validator
 
 from paperap.exceptions import ModelValidationError
 from paperap.models import StandardModel
@@ -53,11 +53,13 @@ SANITIZE_KEYS = [
     "filename",
     "title",
     "slug",
-    "original_file_name",
+    "original_filename",
     "archived_file_name",
     "task_file_name",
     "filename",
 ]
+
+type ClientResponse = dict[str, Any] | list[dict[str, Any]]
 
 
 class SampleDataCollector(Plugin):
@@ -126,11 +128,21 @@ class SampleDataCollector(Plugin):
             return obj.decode("utf-8")
         raise TypeError(f"Type {type(obj).__name__} is not JSON serializable")
 
-    def _sanitize_response(self, **response: dict[str, Any]) -> dict[str, Any]:
+    def _sanitize_list_response[R: list[dict[str, Any]]](self, response: R) -> R:
         """
         Sanitize the response data to replace any strings with potentially personal information with dummy data
         """
-        sanitized = {}
+        sanitized_list: R = []  # type: ignore
+        for item in response:
+            sanitized_item = self._sanitize_value_recursive("", item)
+            sanitized_list.append(sanitized_item)  # type: ignore
+        return sanitized_list
+
+    def _sanitize_dict_response[R: dict[str, Any]](self, **response: R) -> R:
+        """
+        Sanitize the response data to replace any strings with potentially personal information with dummy data
+        """
+        sanitized: dict[str, Any] = {}
         for key, value in response.items():
             sanitized[key] = self._sanitize_value_recursive(key, value)
 
@@ -138,7 +150,7 @@ class SampleDataCollector(Plugin):
         if (next_page := response.get("next", None)) and isinstance(next_page, str):
             sanitized["next"] = re.sub(r"https?://.*?/", "https://example.com/", next_page)
 
-        return sanitized
+        return sanitized  # type: ignore
 
     def _sanitize_value_recursive(self, key: str, value: Any) -> Any:
         """
@@ -155,15 +167,18 @@ class SampleDataCollector(Plugin):
 
         return value
 
-    def save_response(self, filepath: Path, response: dict[str, Any], **kwargs: Any) -> None:
+    def save_response(self, filepath: Path, response: ClientResponse | None, **kwargs: Any) -> None:
         """
         Save the response to a JSON file.
         """
-        if filepath.exists():
+        if not response or filepath.exists():
             return
 
         try:
-            response = self._sanitize_response(**response)
+            if isinstance(response, list):
+                response = self._sanitize_list_response(response)
+            else:
+                response = self._sanitize_dict_response(**response)
             filepath.parent.mkdir(parents=True, exist_ok=True)
             with filepath.open("w") as f:
                 json.dump(response, f, indent=4, sort_keys=True, ensure_ascii=False, default=self._json_serializer)
@@ -171,7 +186,7 @@ class SampleDataCollector(Plugin):
             # Don't allow the plugin to interfere with normal operations in the event of failure
             logger.error("Error saving response to file (%s): %s", filepath.absolute(), e)
 
-    def save_list_response(self, sender: Any, response: dict[str, Any] | None, **kwargs: Any) -> dict[str, Any] | None:
+    def save_list_response[R: ClientResponse | None](self, sender: Any, response: R, **kwargs: Any) -> R:
         """Save the list response to a JSON file."""
         if not response or not (resource_name := kwargs.get("resource")):
             return response
@@ -181,7 +196,7 @@ class SampleDataCollector(Plugin):
 
         return response
 
-    def save_first_item(self, sender: Any, item: dict[str, Any], **kwargs: Any) -> dict[str, Any]:
+    def save_first_item[R: dict[str, Any]](self, sender: Any, item: R, **kwargs: Any) -> R:
         """Save the first item from a list to a JSON file."""
         resource_name = kwargs.get("resource")
         if not resource_name:
@@ -201,7 +216,7 @@ class SampleDataCollector(Plugin):
         method: str,
         params: dict[str, Any] | None,
         json_response: bool,
-        endpoint: str,
+        endpoint: str | HttpUrl,
         **kwargs: Any,
     ) -> dict[str, Any]:
         """
@@ -209,6 +224,11 @@ class SampleDataCollector(Plugin):
 
         Connects to client.request:after signal.
         """
+        if not endpoint:
+            raise ValueError("Endpoint is required to save parsed response")
+
+        endpoint = str(endpoint)
+
         # If endpoint contains "example.com", we're testing, so skip it
         if "example.com" in str(endpoint):
             return parsed_response

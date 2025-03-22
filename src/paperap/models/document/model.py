@@ -9,7 +9,7 @@ METADATA:
 File:    model.py
         Project: paperap
 Created: 2025-03-09
-        Version: 0.0.8
+        Version: 0.0.9
 Author:  Jess Mann
 Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -26,27 +26,33 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
-from typing import TYPE_CHECKING, Annotated, Any, Iterable, Iterator, Optional, TypedDict, cast, override
+from typing import TYPE_CHECKING, Annotated, Any, Iterable, Iterator, TypedDict, cast, override
 
 import pydantic
 from pydantic import Field, field_serializer, field_validator, model_serializer
 from typing_extensions import TypeVar
 
-from paperap.const import CustomFieldTypedDict, CustomFieldValues
+from paperap.const import (
+    CustomFieldTypedDict,
+    CustomFieldTypes,
+    CustomFieldValues,
+    DocumentStorageType,
+    FilteringStrategies,
+)
 from paperap.exceptions import ResourceNotFoundError
-from paperap.models.abstract import FilteringStrategies, StandardModel
+from paperap.models.abstract.model import StandardModel
 from paperap.models.document.queryset import DocumentQuerySet
 
 if TYPE_CHECKING:
-    from paperap.models.correspondent import Correspondent
+    from paperap.models.correspondent.model import Correspondent
     from paperap.models.custom_field import CustomField, CustomFieldQuerySet
-    from paperap.models.document.download import DownloadedDocument
-    from paperap.models.document.metadata import DocumentMetadata
-    from paperap.models.document.suggestions import DocumentSuggestions
-    from paperap.models.document_type import DocumentType
-    from paperap.models.storage_path import StoragePath
+    from paperap.models.document.download.model import DownloadedDocument
+    from paperap.models.document.metadata.model import DocumentMetadata
+    from paperap.models.document.suggestions.model import DocumentSuggestions
+    from paperap.models.document_type.model import DocumentType
+    from paperap.models.storage_path.model import StoragePath
     from paperap.models.tag import Tag, TagQuerySet
-    from paperap.models.user import User
+    from paperap.models.user.model import User
 
 logger = logging.getLogger(__name__)
 
@@ -120,7 +126,7 @@ class Document(StandardModel):
         document_type: The document type associated with the document.
         is_shared_by_requester: Whether the document is shared by the requester.
         notes: Notes associated with the document.
-        original_file_name: The original file name of the document.
+        original_filename: The original file name of the document.
         owner: The owner of the document.
         page_count: The number of pages in the document.
         storage_path: The storage path of the document.
@@ -151,40 +157,41 @@ class Document(StandardModel):
 
     """
 
+    # where did this come from? It's not in sample data?
     added: datetime | None = None
+    archive_checksum: str | None = None
+    archive_filename: str | None = None
     archive_serial_number: int | None = None
     archived_file_name: str | None = None
-    content: str = ""
-    is_shared_by_requester: bool = False
-    notes: "list[DocumentNote]" = Field(default_factory=list)
-    original_file_name: str | None = None
-    owner: int | None = None
-    page_count: int | None = None
-    title: str = ""
-    user_can_change: bool | None = None
     checksum: str | None = None
-
+    content: str = ""
+    correspondent_id: int | None = None
     created: datetime | None = Field(description="Creation timestamp", default=None)
     created_date: str | None = None
-    # where did this come from? It's not in sample data?
-    updated: datetime | None = Field(description="Last update timestamp", default=None)
-    deleted_at: datetime | None = None
-
     custom_field_dicts: Annotated[list[CustomFieldValues], Field(default_factory=list)]
-    correspondent_id: int | None = None
+    deleted_at: datetime | None = None
     document_type_id: int | None = None
+    filename: str | None = None
+    is_shared_by_requester: bool = False
+    notes: "list[DocumentNote]" = Field(default_factory=list)
+    original_filename: str | None = None
+    owner: int | None = None
+    page_count: int | None = None
     storage_path_id: int | None = None
+    storage_type: DocumentStorageType | None = None
     tag_ids: Annotated[list[int], Field(default_factory=list)]
+    title: str = ""
+    user_can_change: bool | None = None
 
     _correspondent: tuple[int, Correspondent] | None = None
     _document_type: tuple[int, DocumentType] | None = None
     _storage_path: tuple[int, StoragePath] | None = None
-    __search_hit__: Optional[dict[str, Any]] = None
+    __search_hit__: dict[str, Any] | None = None
 
     class Meta(StandardModel.Meta):
         # NOTE: Filtering appears to be disabled by paperless on page_count
-        read_only_fields = {"page_count", "deleted_at", "updated", "is_shared_by_requester", "archived_file_name"}
-        filtering_disabled = {"page_count", "deleted_at", "updated", "is_shared_by_requester"}
+        read_only_fields = {"page_count", "deleted_at", "is_shared_by_requester", "archived_file_name"}
+        filtering_disabled = {"page_count", "deleted_at", "is_shared_by_requester"}
         filtering_strategies = {FilteringStrategies.WHITELIST}
         field_map = {
             "tags": "tag_ids",
@@ -233,13 +240,6 @@ class Document(StandardModel):
             "added__gt",
             "added__date__lt",
             "added__lt",
-            "modified__year",
-            "modified__month",
-            "modified__day",
-            "modified__date__gt",
-            "modified__gt",
-            "modified__date__lt",
-            "modified__lt",
             "original_filename__istartswith",
             "original_filename__iendswith",
             "original_filename__icontains",
@@ -290,7 +290,7 @@ class Document(StandardModel):
             "shared_by__id__in",
         }
 
-    @field_serializer("added", "created", "updated", "deleted_at")
+    @field_serializer("added", "created", "deleted_at")
     def serialize_datetime(self, value: datetime | None) -> str | None:
         """
         Serialize datetime fields to ISO format.
@@ -750,7 +750,7 @@ class Document(StandardModel):
         return self.__search_hit__ is not None
 
     @property
-    def search_hit(self) -> Optional[dict[str, Any]]:
+    def search_hit(self) -> dict[str, Any] | None:
         return self.__search_hit__
 
     def custom_field_value(self, field_id: int, default: Any = None, *, raise_errors: bool = False) -> Any:
@@ -907,7 +907,7 @@ class Document(StandardModel):
         """
         raise NotImplementedError()
 
-    def append_content(self, value: str):
+    def append_content(self, value: str) -> None:
         """
         Append content to the document.
 
@@ -918,7 +918,7 @@ class Document(StandardModel):
         self.content = f"{self.content}\n{value}"
 
     @override
-    def update_locally(self, from_db: bool | None = None, **kwargs: Any):
+    def update_locally(self, from_db: bool | None = None, **kwargs: Any) -> None:
         """
         Update the document locally with the provided data.
 

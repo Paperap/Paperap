@@ -6,7 +6,7 @@
        File:    workflow.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.5
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -21,10 +21,18 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional, Self
+from datetime import datetime
+from typing import Any, Self
 
 from pydantic import Field
 
+from paperap.const import (
+    ScheduleDateFieldType,
+    WorkflowActionType,
+    WorkflowTriggerMatchingType,
+    WorkflowTriggerSourceType,
+    WorkflowTriggerType,
+)
 from paperap.models.abstract.model import StandardModel
 from paperap.models.mixins.models import MatcherMixin
 from paperap.models.workflow.queryset import WorkflowActionQuerySet, WorkflowQuerySet, WorkflowTriggerQuerySet
@@ -35,14 +43,19 @@ class WorkflowTrigger(StandardModel, MatcherMixin):
     Represents a workflow trigger in Paperless-NgX.
     """
 
-    sources: list[Any] = Field(default_factory=list)  # TODO unknown subtype
-    type: int | None = None
+    sources: list[WorkflowTriggerSourceType] = Field(default_factory=list)
+    type: WorkflowTriggerType | None = None
     filter_path: str | None = None
     filter_filename: str | None = None
     filter_mailrule: str | None = None
     filter_has_tags: list[int] = Field(default_factory=list)
     filter_has_correspondent: int | None = None
     filter_has_document_type: int | None = None
+    schedule_date_field: ScheduleDateFieldType | None = None
+    schedule_date_custom_field: int | None = None
+    schedule_offset_days: int = 0
+    schedule_is_recurring: bool = False
+    schedule_recurring_interval_days: int = 1
 
     class Meta(StandardModel.Meta):
         queryset = WorkflowTriggerQuerySet
@@ -53,7 +66,9 @@ class WorkflowAction(StandardModel):
     Represents a workflow action in Paperless-NgX.
     """
 
-    type: str | None = None
+    type: WorkflowActionType | None = None
+
+    # Assignment actions
     assign_title: str | None = None
     assign_tags: list[int] = Field(default_factory=list)
     assign_correspondent: int | None = None
@@ -65,6 +80,9 @@ class WorkflowAction(StandardModel):
     assign_change_users: list[int] = Field(default_factory=list)
     assign_change_groups: list[int] = Field(default_factory=list)
     assign_custom_fields: list[int] = Field(default_factory=list)
+    assign_custom_fields_values: dict[str, Any] = Field(default_factory=dict)
+
+    # Removal actions
     remove_all_tags: bool | None = None
     remove_tags: list[int] = Field(default_factory=list)
     remove_all_correspondents: bool | None = None
@@ -82,6 +100,12 @@ class WorkflowAction(StandardModel):
     remove_view_groups: list[int] = Field(default_factory=list)
     remove_change_users: list[int] = Field(default_factory=list)
     remove_change_groups: list[int] = Field(default_factory=list)
+
+    # Email action
+    email: dict[str, Any] | None = None
+
+    # Webhook action
+    webhook: dict[str, Any] | None = None
 
     class Meta(StandardModel.Meta):
         queryset = WorkflowActionQuerySet
@@ -104,3 +128,18 @@ class Workflow(StandardModel):
         """
 
         queryset = WorkflowQuerySet
+
+
+class WorkflowRun(StandardModel):
+    """
+    Represents a workflow run in Paperless-NgX.
+    """
+
+    workflow: int | None = None
+    document: int | None = None
+    type: WorkflowTriggerType | None = None
+    run_at: datetime
+    started: datetime | None = None
+    finished: datetime | None = None
+    status: str | None = None
+    error: str | None = None

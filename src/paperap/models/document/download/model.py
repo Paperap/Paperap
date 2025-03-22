@@ -6,7 +6,7 @@ METADATA:
 File:    download.py
         Project: paperap
 Created: 2025-03-18
-        Version: 0.0.8
+        Version: 0.0.9
 Author:  Jess Mann
 Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -22,7 +22,7 @@ LAST MODIFIED:
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from paperap.const import URLS
 from paperap.models.abstract import StandardModel

@@ -6,7 +6,7 @@
        File:    const.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.8
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -45,6 +45,22 @@ from pydantic import ConfigDict, Field
 logger = logging.getLogger(__name__)
 
 
+class StrEnumWithUnknown(StrEnum):
+    @override
+    @classmethod
+    def _missing_(cls, value: object) -> str:
+        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
+        return cls.UNKNOWN  # type: ignore # subclasses will define unknown
+
+
+class IntEnumWithUnknown(IntEnum):
+    @override
+    @classmethod
+    def _missing_(cls, value: object) -> int:
+        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
+        return cls.UNKNOWN  # type: ignore # subclasses will define unknown
+
+
 class ConstModel(pydantic.BaseModel):
     model_config = ConfigDict(
         from_attributes=True,
@@ -72,6 +88,7 @@ class ConstModel(pydantic.BaseModel):
 
 
 class URLS:
+    # May be deprecated in the future. Used for reference currently.
     index: Template = Template("/api/")
     token: Template = Template("/api/token/")
     list: Template = Template("/api/${resource}/")
@@ -82,7 +99,7 @@ class URLS:
     meta: Template = Template("/api/document/${pk}/metadata/")
     next_asn: Template = Template("/api/document/next_asn/")
     notes: Template = Template("/api/document/${pk}/notes/")
-    post: Template = Template("/api/document/post_document/")
+    post: Template = Template("/api/documents/post_document/")
     single: Template = Template("/api/document/${pk}/")
     suggestions: Template = Template("/api/${resource}/${pk}/suggestions/")
     preview: Template = Template("/api/${resource}/${pk}/preview/")
@@ -109,7 +126,7 @@ class ModelStatus(StrEnum):
     ERROR = "error"
 
 
-class CustomFieldTypes(StrEnum):
+class CustomFieldTypes(StrEnumWithUnknown):
     STRING = "string"
     BOOLEAN = "boolean"
     INTEGER = "integer"
@@ -119,12 +136,6 @@ class CustomFieldTypes(StrEnum):
     URL = "url"
     DOCUMENT_LINK = "documentlink"
     UNKNOWN = "unknown"
-
-    @override
-    @classmethod
-    def _missing_(cls, value: object) -> "Literal[CustomFieldTypes.UNKNOWN]":
-        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
-        return cls.UNKNOWN
 
 
 class CustomFieldValues(ConstModel):
@@ -137,6 +148,7 @@ class CustomFieldTypedDict(TypedDict):
     value: Any
 
 
+# Possibly not used after refactoring
 class DocumentMetadataType(ConstModel):
     namespace: str | None = None
     prefix: str | None = None
@@ -151,7 +163,7 @@ class DocumentSearchHitType(ConstModel):
     rank: int | None = None
 
 
-class MatchingAlgorithmType(IntEnum):
+class MatchingAlgorithmType(IntEnumWithUnknown):
     NONE = 0
     ANY = 1
     ALL = 2
@@ -185,11 +197,12 @@ class RetrieveFileMode(StrEnum):
 
 
 class SavedViewFilterRuleType(ConstModel):
-    rule_type: int | None = None
+    rule_type: int
     value: str | None = None
+    saved_view: int | None = None
 
 
-class ShareLinkFileVersionType(StrEnum):
+class ShareLinkFileVersionType(StrEnumWithUnknown):
     ARCHIVE = "archive"
     ORIGINAL = "original"
     UNKNOWN = "unknown"
@@ -201,7 +214,7 @@ class ShareLinkFileVersionType(StrEnum):
         return cls.UNKNOWN
 
 
-class StatusType(StrEnum):
+class StatusType(StrEnumWithUnknown):
     OK = "OK"
     ERROR = "ERROR"
     UNKNOWN = "UNKNOWN"
@@ -244,52 +257,102 @@ class StatusTasksType(ConstModel):
     classifier_error: str | None = None
 
 
-class TaskStatusType(StrEnum):
+class TaskStatusType(StrEnumWithUnknown):
     PENDING = "PENDING"
     STARTED = "STARTED"
     SUCCESS = "SUCCESS"
     FAILURE = "FAILURE"
     UNKNOWN = "UNKNOWN"
 
-    @override
-    @classmethod
-    def _missing_(cls, value: object) -> "Literal[TaskStatusType.UNKNOWN]":
-        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
-        return cls.UNKNOWN
+
+class TaskTypeType(StrEnumWithUnknown):
+    AUTO = "auto_task"
+    SCHEDULED_TASK = "scheduled_task"
+    MANUAL_TASK = "manual_task"
+    UNKNOWN = "unknown"
 
 
-class WorkflowActionType(IntEnum):
+class WorkflowActionType(IntEnumWithUnknown):
     ASSIGNMENT = 1
+    REMOVAL = 2
+    EMAIL = 3
+    WEBHOOK = 4
     UNKNOWN = -1
 
-    @override
-    @classmethod
-    def _missing_(cls, value: object) -> "Literal[WorkflowActionType.UNKNOWN]":
-        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
-        return cls.UNKNOWN
 
-
-class WorkflowTriggerType(IntEnum):
+class WorkflowTriggerType(IntEnumWithUnknown):
     CONSUMPTION = 1
     DOCUMENT_ADDED = 2
     DOCUMENT_UPDATED = 3
     UNKNOWN = -1
 
-    @override
-    @classmethod
-    def _missing_(cls, value: object) -> "Literal[WorkflowTriggerType.UNKNOWN]":
-        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
-        return cls.UNKNOWN
 
-
-class WorkflowTriggerSourceType(IntEnum):
+class WorkflowTriggerSourceType(IntEnumWithUnknown):
     CONSUME_FOLDER = 1
     API_UPLOAD = 2
     MAIL_FETCH = 3
     UNKNOWN = -1
 
-    @override
-    @classmethod
-    def _missing_(cls, value: object) -> "Literal[WorkflowTriggerSourceType.UNKNOWN]":
-        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
-        return cls.UNKNOWN
+
+class WorkflowTriggerMatchingType(IntEnumWithUnknown):
+    NONE = 0
+    ANY = 1
+    ALL = 2
+    LITERAL = 3
+    REGEX = 4
+    FUZZY = 5
+    UNKNOWN = -1
+
+
+class ScheduleDateFieldType(StrEnumWithUnknown):
+    ADDED = "added"
+    CREATED = "created"
+    MODIFIED = "modified"
+    CUSTOM_FIELD = "custom_field"
+    UNKNOWN = "unknown"
+
+
+class WorkflowTriggerScheduleDateFieldType(StrEnumWithUnknown):
+    ADDED = "added"
+    CREATED = "created"
+    MODIFIED = "modified"
+    CUSTOM_FIELD = "custom_field"
+    UNKNOWN = "unknown"
+
+
+class SavedViewDisplayModeType(StrEnumWithUnknown):
+    TABLE = "table"
+    SMALL_CARDS = "smallCards"
+    LARGE_CARDS = "largeCards"
+    UNKNOWN = "unknown"
+
+
+class SavedViewDisplayFieldType(StrEnumWithUnknown):
+    TITLE = "title"
+    CREATED = "created"
+    ADDED = "added"
+    TAGS = "tag"
+    CORRESPONDENT = "correspondent"
+    DOCUMENT_TYPE = "documenttype"
+    STORAGE_PATH = "storagepath"
+    NOTES = "note"
+    OWNER = "owner"
+    SHARED = "shared"
+    ASN = "asn"
+    PAGE_COUNT = "pagecount"
+    CUSTOM_FIELD = "custom_field_%d"
+    UNKNOWN = "unknown"
+
+
+class DocumentStorageType(StrEnumWithUnknown):
+    UNENCRYPTED = "unencrypted"
+    GPG = "gpg"
+    UNKNOWN = "unknown"
+
+
+class TaskNameType(StrEnumWithUnknown):
+    CONSUME_FILE = "consume_file"
+    TRAIN_CLASSIFIER = "train_classifier"
+    CHECK_SANITY = "check_sanity"
+    INDEX_OPTIMIZE = "index_optimize"
+    UNKNOWN = "unknown"

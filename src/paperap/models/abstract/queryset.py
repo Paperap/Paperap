@@ -6,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.8
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -25,7 +25,7 @@ import copy
 import logging
 from datetime import datetime
 from string import Template
-from typing import TYPE_CHECKING, Any, Final, Generic, Iterable, Iterator, Optional, Self, TypeAlias, Union, override
+from typing import TYPE_CHECKING, Any, Final, Generic, Iterable, Iterator, Self, TypeAlias, Union, override
 
 from pydantic import HttpUrl
 from typing_extensions import TypeVar
@@ -39,6 +39,8 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # _BaseResource = TypeVar("_BaseResource", bound="BaseResource", default="BaseResource")
+
+type ClientResponse = dict[str, Any] | list[dict[str, Any]] | None
 
 
 class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
@@ -73,7 +75,7 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
 
     resource: "BaseResource[_Model, Self]"
     filters: dict[str, Any]
-    _last_response: dict[str, Any] | None = None
+    _last_response: ClientResponse | None = None
     _result_cache: list[_Model] = []
     _fetch_all: bool = False
     _next_url: str | None = None
@@ -83,13 +85,13 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
     def __init__(
         self,
         resource: "BaseResource[_Model, Self]",
-        filters: Optional[dict[str, Any]] = None,
-        _cache: Optional[list[_Model]] = None,
+        filters: dict[str, Any] | None = None,
+        _cache: list[_Model] | None = None,
         _fetch_all: bool = False,
         _next_url: str | None = None,
-        _last_response: Optional[dict[str, Any]] = None,
-        _iter: Optional[Iterator[_Model]] = None,
-        _urls_fetched: Optional[list[str]] = None,
+        _last_response: ClientResponse = None,
+        _iter: Iterator[_Model] | None = None,
+        _urls_fetched: list[str] | None = None,
     ) -> None:
         self.resource = resource
         self.filters = filters or {}
@@ -118,7 +120,7 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         return self.resource.model_class
 
     @property
-    def _meta(self) -> "BaseModel.Meta":
+    def _meta(self) -> "BaseModel.Meta[Any]":
         """
         Return the model's metadata.
 
@@ -169,9 +171,7 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         for key, _value in values.items():
             if not self._meta.filter_allowed(key):
-                raise FilterDisabledError(
-                    f"Filtering by {key} for {self.resource.name} does not appear to be supported by the API."
-                )
+                raise FilterDisabledError(f"Filtering by {key} for {self.resource.name} does not appear to be supported by the API.")
 
         if values:
             # Reset the cache if filters change
@@ -273,6 +273,13 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         raise NotImplementedError("Getting a single resource is not defined by BaseModels without an id.")
 
+    def _get_last_count(self) -> int | None:
+        if self._last_response is None:
+            return None
+        if isinstance(self._last_response, list):
+            return len(self._last_response)
+        return self._last_response.get("count")
+
     def count(self) -> int:
         """
         Return the total number of objects in the queryset.
@@ -285,10 +292,8 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
 
         """
         # If we have a last response, we can use the "count" field
-        if self._last_response:
-            if (count := self._last_response.get("count")) is not None:
-                return count
-            raise NotImplementedError("Response does not have a count attribute.")
+        if (count := self._get_last_count()) is not None:
+            return count
 
         # Get one page of results, to populate last response
         _iter = self._request_iter(params=self.filters)
@@ -301,13 +306,11 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
             # I don't think this should ever occur, but just in case.
             raise NotImplementedError("Requested iter, but no last response")
 
-        if (count := self._last_response.get("count")) is not None:
+        if (count := self._get_last_count()) is not None:
             return count
 
         # I don't think this should ever occur, but just in case.
-        raise NotImplementedError(
-            f"Unexpected Error: Could not determine count of objects. Last response: {self._last_response}"
-        )
+        raise NotImplementedError(f"Unexpected Error: Could not determine count of objects. Last response: {self._last_response}")
 
     def count_this_page(self) -> int:
         """
@@ -322,6 +325,8 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         # If we have a last response, we can count it without a new request
         if self._last_response:
+            if isinstance(self._last_response, list):
+                return len(self._last_response)
             results = self._last_response.get("results", [])
             return len(results)
 
@@ -336,6 +341,8 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
             # I don't think this should ever occur, but just in case.
             raise NotImplementedError("Requested iter, but no last response")
 
+        if isinstance(self._last_response, list):
+            return len(self._last_response)
         results = self._last_response.get("results", [])
         return len(results)
 
@@ -499,9 +506,7 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
 
         self._fetch_all = True
 
-    def _request_iter(
-        self, url: str | HttpUrl | Template | None = None, params: Optional[dict[str, Any]] = None
-    ) -> Iterator[_Model]:
+    def _request_iter(self, url: str | HttpUrl | Template | None = None, params: dict[str, Any] | None = None) -> Iterator[_Model]:
         """
         Get an iterator of resources.
 
@@ -527,15 +532,18 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
 
         self._last_response = response
 
-        yield from self.resource.handle_response(**response)
+        yield from self.resource.handle_response(response)
 
-    def _get_next(self, response: dict[str, Any] | None = None) -> str | None:
+    def _get_next(self, response: ClientResponse | None = None) -> str | None:
         """
         Get the next url, and adjust our references accordingly.
         """
         # Allow passing a different response
         if response is None:
             response = self._last_response
+
+        if isinstance(response, list):
+            return None
 
         # Last response is not set
         if not response or not (next_url := response.get("next")):
@@ -839,7 +847,7 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
         # For any other type, it's not in the queryset
         return False
 
-    def bulk_action(self, action: str, **kwargs: Any) -> dict[str, Any]:
+    def bulk_action(self, action: str, **kwargs: Any) -> ClientResponse:
         """
         Perform a bulk action on all objects in the queryset.
 
@@ -856,7 +864,7 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
             NotImplementedError: If the resource doesn't support bulk actions
 
         """
-        if not hasattr(self.resource, "bulk_action"):
+        if not (fn := getattr(self.resource, "bulk_action", None)):
             raise NotImplementedError(f"Resource {self.resource.name} does not support bulk actions")
 
         # Fetch all IDs in the queryset
@@ -866,9 +874,9 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
         if not ids:
             return {"success": True, "count": 0}
 
-        return self.resource.bulk_action(action, ids, **kwargs)
+        return fn(action, ids, **kwargs)
 
-    def bulk_delete(self) -> dict[str, Any]:
+    def bulk_delete(self) -> ClientResponse:
         """
         Delete all objects in the queryset.
 
@@ -878,7 +886,7 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
         """
         return self.bulk_action("delete")
 
-    def bulk_update(self, **kwargs: Any) -> dict[str, Any]:
+    def bulk_update(self, **kwargs: Any) -> ClientResponse:
         """
         Update all objects in the queryset with the given values.
 
@@ -889,7 +897,7 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
             The API response
 
         """
-        if not hasattr(self.resource, "bulk_update"):
+        if not (fn := getattr(self.resource, "bulk_update", None)):
             raise NotImplementedError(f"Resource {self.resource.name} does not support bulk updates")
 
         # Fetch all IDs in the queryset
@@ -898,9 +906,9 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
         if not ids:
             return {"success": True, "count": 0}
 
-        return self.resource.bulk_update(ids, **kwargs)
+        return fn(ids, **kwargs)
 
-    def bulk_assign_tags(self, tag_ids: list[int], remove_existing: bool = False) -> dict[str, Any]:
+    def bulk_assign_tags(self, tag_ids: list[int], remove_existing: bool = False) -> ClientResponse:
         """
         Assign tags to all objects in the queryset.
 
@@ -912,7 +920,7 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
             The API response
 
         """
-        if not hasattr(self.resource, "bulk_assign_tags"):
+        if not (fn := getattr(self.resource, "bulk_assign_tags", None)):
             raise NotImplementedError(f"Resource {self.resource.name} does not support bulk tag assignment")
 
         # Fetch all IDs in the queryset
@@ -921,9 +929,9 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
         if not ids:
             return {"success": True, "count": 0}
 
-        return self.resource.bulk_assign_tags(ids, tag_ids, remove_existing)
+        return fn(ids, tag_ids, remove_existing)
 
-    def bulk_assign_correspondent(self, correspondent_id: int) -> dict[str, Any]:
+    def bulk_assign_correspondent(self, correspondent_id: int) -> ClientResponse:
         """
         Assign a correspondent to all objects in the queryset.
 
@@ -934,7 +942,7 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
             The API response
 
         """
-        if not hasattr(self.resource, "bulk_assign_correspondent"):
+        if not (fn := getattr(self.resource, "bulk_assign_correspondent", None)):
             raise NotImplementedError(f"Resource {self.resource.name} does not support bulk correspondent assignment")
 
         # Fetch all IDs in the queryset
@@ -943,9 +951,9 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
         if not ids:
             return {"success": True, "count": 0}
 
-        return self.resource.bulk_assign_correspondent(ids, correspondent_id)
+        return fn(ids, correspondent_id)
 
-    def bulk_assign_document_type(self, document_type_id: int) -> dict[str, Any]:
+    def bulk_assign_document_type(self, document_type_id: int) -> ClientResponse:
         """
         Assign a document type to all objects in the queryset.
 
@@ -956,7 +964,7 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
             The API response
 
         """
-        if not hasattr(self.resource, "bulk_assign_document_type"):
+        if not (fn := getattr(self.resource, "bulk_assign_document_type", None)):
             raise NotImplementedError(f"Resource {self.resource.name} does not support bulk document type assignment")
 
         # Fetch all IDs in the queryset
@@ -965,9 +973,9 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
         if not ids:
             return {"success": True, "count": 0}
 
-        return self.resource.bulk_assign_document_type(ids, document_type_id)
+        return fn(ids, document_type_id)
 
-    def bulk_assign_storage_path(self, storage_path_id: int) -> dict[str, Any]:
+    def bulk_assign_storage_path(self, storage_path_id: int) -> ClientResponse:
         """
         Assign a storage path to all objects in the queryset.
 
@@ -978,7 +986,7 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
             The API response
 
         """
-        if not hasattr(self.resource, "bulk_assign_storage_path"):
+        if not (fn := getattr(self.resource, "bulk_assign_storage_path", None)):
             raise NotImplementedError(f"Resource {self.resource.name} does not support bulk storage path assignment")
 
         # Fetch all IDs in the queryset
@@ -987,9 +995,9 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
         if not ids:
             return {"success": True, "count": 0}
 
-        return self.resource.bulk_assign_storage_path(ids, storage_path_id)
+        return fn(ids, storage_path_id)
 
-    def bulk_assign_owner(self, owner_id: int) -> dict[str, Any]:
+    def bulk_assign_owner(self, owner_id: int) -> ClientResponse:
         """
         Assign an owner to all objects in the queryset.
 
@@ -1000,7 +1008,7 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
             The API response
 
         """
-        if not hasattr(self.resource, "bulk_assign_owner"):
+        if not (fn := getattr(self.resource, "bulk_assign_owner", None)):
             raise NotImplementedError(f"Resource {self.resource.name} does not support bulk owner assignment")
 
         # Fetch all IDs in the queryset
@@ -1009,4 +1017,4 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
         if not ids:
             return {"success": True, "count": 0}
 
-        return self.resource.bulk_assign_owner(ids, owner_id)
+        return fn(ids, owner_id)

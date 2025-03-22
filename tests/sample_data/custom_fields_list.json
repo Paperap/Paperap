@@ -1,285 +1,95 @@
 {
-  "count": 23,
-  "next": null,
-  "previous": null,
-  "all": [
-		32,
-		31,
-		30,
-		29,
-		28,
-		27,
-		26,
-		25,
-		24,
-		23,
-		22,
-		21,
-		20,
-		19,
-		18,
-		17,
-		16,
-		15,
-		14,
-		13,
-		12,
-		11,
-		3
-  ],
-  "results": [
-    {
-      "id": 32,
-      "name": "example-name",
-      "data_type": "string",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 6442
-    },
-    {
-      "id": 31,
-      "name": "example-name",
-      "data_type": "url",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 6443
-    },
-    {
-      "id": 30,
-      "name": "example-name",
-      "data_type": "select",
-      "extra_data": {
-        "select_options": [
-          "None – Default copyright. Cannot be used unless the author is asked and gives explicit permission.",
-          "Public Domain (No Copyright) – Explicitly marked as free from copyright, either via expiration or declaration. CC0 1.0 Universal.",
-          "MIT License – Permissive license allowing modification and redistribution with attribution.",
-          "GPL (General Public License) v3 – Allows modification and redistribution, but derivative works must be GPL-licensed.",
-          "GNU Free Documentation License (GFDL) – Allows modification and redistribution, often used for manuals and textbooks.",
-          "Open Government License (OGL) – Used for public sector data (varies by country).",
-          "CC0 1.0 (Public Domain Dedication) – No rights reserved; anyone can use it freely. Creative Commons.",
-          "CC BY 4.0 (Attribution) – Can be used, modified, and shared with attribution. Creative Commons.",
-          "CC BY-SA 4.0 (Attribution-ShareAlike) – Can be used and modified with attribution, but derivative works must be licensed under the same terms. Creative Commons.",
-          "CC BY-NC 4.0 (Attribution-NonCommercial) – Can be used and modified for non-commercial purposes only, with attribution. Creative Commons.",
-          "CC BY-NC-SA 4.0 (Attribution-NonCommercial-ShareAlike) – Like CC BY-NC, but derivative works must use the same license. Creative Commons.",
-          "CC BY-ND 4.0 (Attribution-NoDerivatives) – Can be shared with attribution but not modified. Creative Commons.",
-          "CC BY-NC-ND 4.0 (Attribution-NonCommercial-NoDerivatives) – Can be shared with attribution for non-commercial purposes but not modified. Creative Commons.",
-          "Educational Use Only – Can be used in educational settings but not commercially.",
-          "Personal Use Only – Can be used privately but not redistributed.",
-          "Non-Commercial Use Only – Can be used freely but not for commercial purposes.",
-          "Apache 2.0 – Similar to MIT but includes explicit patent rights.",
-          "AGPL v3 (Affero GPL) – Like GPL but requires cloud-based applications to share source code.",
-          "BSD 3-Clause License – Permissive open-source license with minimal restrictions.",
-          "Orphan Work (Unknown Copyright Holder) – Copyright status unclear; efforts made to find the owner.",
-          "Editorial Use Only – Cannot be used for commercial purposes, only for news, commentary, or education.",
-          "Other - A different license than one of the above options."
-        ],
-        "default_currency": null
-      },
-      "document_count": 6443
-    },
-    {
-      "id": 29,
-      "name": "example-name",
-      "data_type": "date",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 6443
-    },
-    {
-      "id": 28,
-      "name": "example-name",
-      "data_type": "date",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 6443
-    },
-    {
-      "id": 27,
-      "name": "example-name",
-      "data_type": "string",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 5
-    },
-    {
-      "id": 26,
-      "name": "example-name",
-      "data_type": "string",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 67
-    },
-    {
-      "id": 25,
-      "name": "example-name",
-      "data_type": "string",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 6443
-    },
-    {
-      "id": 24,
-      "name": "example-name",
-      "data_type": "string",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 67
-    },
-    {
-      "id": 23,
-      "name": "example-name",
-      "data_type": "string",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 120
-    },
-    {
-      "id": 22,
-      "name": "example-name",
-      "data_type": "string",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 280
-    },
-    {
-      "id": 21,
-      "name": "example-name",
-      "data_type": "string",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 280
-    },
-    {
-      "id": 20,
-      "name": "example-name",
-      "data_type": "string",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 76
-    },
-    {
-      "id": 19,
-      "name": "example-name",
-      "data_type": "string",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 3755
-    },
-    {
-      "id": 18,
-      "name": "example-name",
-      "data_type": "date",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 114
-    },
-    {
-      "id": 17,
-      "name": "example-name",
-      "data_type": "date",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 114
-    },
-    {
-      "id": 16,
-      "name": "example-name",
-      "data_type": "string",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 5363
-    },
-    {
-      "id": 15,
-      "name": "example-name",
-      "data_type": "string",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 2693
-    },
-    {
-      "id": 14,
-      "name": "example-name",
-      "data_type": "string",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 2741
-    },
-    {
-      "id": 13,
-      "name": "example-name",
-      "data_type": "string",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 6443
-    },
-    {
-      "id": 12,
-      "name": "example-name",
-      "data_type": "url",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 6443
-    },
-    {
-      "id": 11,
-      "name": "example-name",
-      "data_type": "string",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 6443
-    },
-    {
-      "id": 3,
-      "name": "example-name",
-      "data_type": "string",
-      "extra_data": {
-        "select_options": [null],
-        "default_currency": null
-      },
-      "document_count": 4291
-    }
-  ]
+    "count": 76,
+    "next": "http://192.168.11.222:64001/api/custom_fields/?page=2&page_size=1",
+    "previous": null,
+    "all": [
+        1216,
+        1215,
+        1214,
+        1213,
+        1212,
+        1211,
+        1210,
+        1209,
+        1208,
+        1207,
+        1206,
+        1205,
+        1204,
+        1203,
+        1202,
+        1201,
+        1200,
+        1199,
+        1198,
+        1197,
+        1196,
+        1195,
+        1194,
+        1193,
+        1192,
+        1191,
+        1190,
+        1189,
+        1188,
+        1187,
+        1186,
+        1185,
+        1184,
+        1183,
+        1182,
+        1181,
+        1180,
+        1179,
+        1178,
+        1177,
+        1176,
+        1175,
+        1174,
+        1173,
+        1172,
+        1171,
+        1170,
+        1169,
+        1168,
+        1167,
+        1166,
+        1165,
+        1164,
+        1163,
+        1162,
+        1161,
+        1160,
+        1159,
+        1158,
+        1157,
+        1156,
+        1155,
+        1154,
+        1153,
+        1152,
+        1151,
+        1150,
+        1149,
+        1148,
+        1147,
+        1146,
+        1145,
+        1144,
+        1143,
+        1142,
+        1141
+    ],
+    "results": [
+        {
+            "id": 1216,
+            "name": "people 75",
+            "data_type": "string",
+            "extra_data": {
+                "key": "traditional",
+                "value": "talk"
+            },
+            "document_count": 0
+        }
+    ]
 }

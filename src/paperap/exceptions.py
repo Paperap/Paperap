@@ -106,14 +106,16 @@ class ResourceNotFoundError(APIError):
         super().__init__(message, 404)
 
 
+class RelationshipNotFoundError(ResourceNotFoundError):
+    """Raised when a requested relationship is not found."""
+
+
 class ObjectNotFoundError(ResourceNotFoundError):
     """Raised when a requested object is not found."""
 
     model_id: int | None = None
 
-    def __init__(
-        self, message: str | None = None, resource_name: str | None = None, model_id: int | None = None
-    ) -> None:
+    def __init__(self, message: str | None = None, resource_name: str | None = None, model_id: int | None = None) -> None:
         self.model_id = model_id
         if not message:
             message = "Resource ${resource} (#${pk}) not found."
