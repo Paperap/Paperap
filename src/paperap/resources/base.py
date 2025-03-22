@@ -598,7 +598,7 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         # Transform the data before sending
         data = self.transform_data_output(**kwargs)
         return self.bulk_action("update", ids, **data)
-        
+
     def bulk_reprocess(self, ids: list[int]) -> dict[str, Any]:
         """
         Reprocess multiple documents.
@@ -608,11 +608,12 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
 
         Returns:
             The API response
+
         """
         return self.bulk_action("reprocess", ids)
-        
+
     def bulk_merge(
-        self, ids: list[int], metadata_document_id: int = None, delete_originals: bool = False
+        self, ids: list[int], metadata_document_id: int | None = None, delete_originals: bool = False
     ) -> dict[str, Any]:
         """
         Merge multiple documents.
@@ -631,9 +632,9 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
             params["metadata_document_id"] = metadata_document_id
         if delete_originals:
             params["delete_originals"] = True
-            
+
         return self.bulk_action("merge", ids, **params)
-        
+
     def bulk_split(self, document_id: int, pages: list[int], delete_originals: bool = False) -> dict[str, Any]:
         """
         Split a document.
@@ -650,9 +651,9 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         params = {"pages": pages}
         if delete_originals:
             params["delete_originals"] = True
-            
+
         return self.bulk_action("split", [document_id], **params)
-        
+
     def bulk_rotate(self, ids: list[int], degrees: int) -> dict[str, Any]:
         """
         Rotate documents.
@@ -667,9 +668,9 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         """
         if degrees not in (90, 180, 270):
             raise ValueError("Degrees must be 90, 180, or 270")
-            
+
         return self.bulk_action("rotate", ids, degrees=degrees)
-        
+
     def bulk_delete_pages(self, document_id: int, pages: list[int]) -> dict[str, Any]:
         """
         Delete pages from a document.
@@ -683,9 +684,9 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
 
         """
         return self.bulk_action("delete_pages", [document_id], pages=pages)
-        
+
     def bulk_modify_custom_fields(
-        self, ids: list[int], add_custom_fields: dict[int, Any] = None, remove_custom_fields: list[int] = None
+        self, ids: list[int], add_custom_fields: dict[int, Any] | None = None, remove_custom_fields: list[int] | None = None
     ) -> dict[str, Any]:
         """
         Modify custom fields on multiple documents.
@@ -704,7 +705,7 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
             params["add_custom_fields"] = add_custom_fields
         if remove_custom_fields:
             params["remove_custom_fields"] = remove_custom_fields
-            
+
         return self.bulk_action("modify_custom_fields", ids, **params)
 
     def bulk_modify_tags(self, ids: list[int], add_tags: list[int] = None, remove_tags: list[int] = None) -> dict[str, Any]:
@@ -725,7 +726,7 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
             params["add_tags"] = add_tags
         if remove_tags:
             params["remove_tags"] = remove_tags
-        
+
         return self.bulk_action("modify_tags", ids, **params)
 
     def bulk_add_tag(self, ids: list[int], tag_id: int) -> dict[str, Any]:
@@ -819,7 +820,7 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
             params["set_permissions"] = permissions
         if owner_id is not None:
             params["owner"] = owner_id
-        
+
         return self.bulk_action("set_permissions", ids, **params)
 
     @override
@@ -849,12 +850,12 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         registry.emit("resource.delete:after", "Emitted after deleting a resource", args=[self], kwargs=signal_params)
 
     def bulk_edit_objects(
-        self, 
-        object_type: str, 
-        ids: list[int], 
-        operation: str, 
-        permissions: dict[str, Any] = None, 
-        owner_id: int = None, 
+        self,
+        object_type: str,
+        ids: list[int],
+        operation: str,
+        permissions: dict[str, Any] = None,
+        owner_id: int = None,
         merge: bool = False
     ) -> dict[str, Any]:
         """
@@ -874,27 +875,28 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         Raises:
             ValueError: If operation is not valid
             ConfigurationError: If the bulk edit endpoint is not defined
+
         """
         if operation not in ('set_permissions', 'delete'):
             raise ValueError(f"Invalid operation '{operation}'. Must be 'set_permissions' or 'delete'")
-            
+
         data = {
             "objects": ids,
             "object_type": object_type,
             "operation": operation,
             "merge": merge
         }
-        
+
         if permissions:
             data["permissions"] = permissions
         if owner_id is not None:
             data["owner"] = owner_id
-            
+
         # Use the special endpoint for bulk editing objects
         url = HttpUrl(f"{self.client.base_url}/api/bulk_edit_objects/")
-        
+
         response = self.client.request("POST", url, data=data)
-        
+
         return response or {}
 
     @override
