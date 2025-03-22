@@ -42,6 +42,10 @@ from paperap.plugins.manager import PluginManager, PluginConfig
 class MockPlugin(Plugin):
     """Mock plugin for testing."""
 
+    name = "MockPlugin"
+
+    name = "AnotherMockPlugin"
+
     def __init__(self, manager: PluginManager, **kwargs: Any) -> None:
         """Initialize the mock plugin."""
         super().__init__(**kwargs)

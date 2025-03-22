@@ -93,6 +93,7 @@ class BaseTest(UnitTestCase[ExampleModel, ExampleResource]):
 
         # Create model instance
         self.model_data_unparsed = {
+            'id': 1,  # Ensure 'id' is included
             'id': 1,
             'name': 'Original Name',
             'value': 42,
