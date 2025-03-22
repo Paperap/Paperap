@@ -6,7 +6,7 @@
        File:    auth.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.7
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -28,7 +28,7 @@ import pydantic
 from pydantic import ConfigDict, Field
 
 
-class AuthBase(pydantic.BaseModel):
+class AuthBase(pydantic.BaseModel, ABC):
     """Base authentication class."""
 
     model_config = ConfigDict(

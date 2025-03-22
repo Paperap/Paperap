@@ -849,7 +849,7 @@ strict_primitive_comparisons = false
 strict_undefined_checks = true
 
 # Space-separated list of error names to ignore.
-disable = ['pyi-error', 'import-error']
+disable = ['pyi-error', 'import-error', 'override-error']
 
 # Don't report errors.
 report_errors = true
@@ -1006,13 +1006,10 @@ disable_error_code = [
   "type-arg",
   "attr-defined",
   "explicit-any",
-  "decorated-any",
-  "any",
   "ignore-without-code",
   "func-returns-value",  # due to pydantic PrivateAttr with basedmypy
   "redundant-expr",      # basedmypy complaining about typeguards / future proofing
   "unreachable",         # same as above
-  "no-untyped-usage",    # until we have defaults
 ]
 
 # The Factory Boy type stubs don't play well with mypy, and this is used exclusively for tests.

@@ -102,7 +102,7 @@ class DescribePhotos(BaseModel):
     @property
     def progress_bar(self) -> ProgressBar:
         if not self._progress_bar:
-            self._progress_bar = alive_bar(title="Running", unknown="waves")  # type: ignore
+            self._progress_bar = alive_bar(title="Running", unknown="waves") # pyright: ignore[reportAttributeAccessIssue]
         return self._progress_bar  # type: ignore # pyright not handling the protocol correctly, not sure why
 
     @property
@@ -140,7 +140,7 @@ class DescribePhotos(BaseModel):
 
         if value < 1:
             raise ValueError("max_threads must be a positive integer.")
-        return value
+        return int(value)
 
     @property
     def jinja_env(self) -> Environment:
@@ -544,7 +544,7 @@ class DescribePhotos(BaseModel):
 
         if date and "ScriptDefaults.NEEDS_DATE" in document.tag_names:
             try:
-                document.created = date  # pydantic will handle casting
+                document.created = date  # type: ignore # pydantic will handle casting
                 document.remove_tag("ScriptDefaults.NEEDS_DATE")
             except Exception as e:
                 logger.error(
