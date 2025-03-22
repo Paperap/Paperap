@@ -160,7 +160,7 @@ pre-commit run --all-files
 - [ ] unit tests for additional edge cases
 - [ ] immutability (resources, response dicts, (optionally) for models)
 - [ ] hypothesis testing (additional models)
-- [ ] Empty trash
+- [x] Empty trash
 - [ ] factories create unique names, and create relationships in db
 - [ ] publish sphinx docs (once stable)
 - [x] Compile sphinx documentation

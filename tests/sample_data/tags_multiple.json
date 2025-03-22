@@ -1,0 +1,54 @@
+{
+    "count": 3,
+    "next": null,
+    "previous": null,
+    "all": [
+        1678,
+        1724,
+        1680
+    ],
+    "results": [
+        {
+            "id": 1678,
+            "slug": "cover-5",
+            "name": "cover 5",
+            "color": "#a6cee3",
+            "text_color": "#000000",
+            "match": "fact",
+            "matching_algorithm": 0,
+            "is_insensitive": false,
+            "is_inbox_tag": false,
+            "document_count": 0,
+            "owner": 1,
+            "user_can_change": true
+        },
+        {
+            "id": 1724,
+            "slug": "describe-51",
+            "name": "describe 51",
+            "color": "#a6cee3",
+            "text_color": "#000000",
+            "match": "oil",
+            "matching_algorithm": 0,
+            "is_insensitive": false,
+            "is_inbox_tag": false,
+            "document_count": 0,
+            "owner": 1,
+            "user_can_change": true
+        },
+        {
+            "id": 1680,
+            "slug": "measure-7",
+            "name": "measure 7",
+            "color": "#a6cee3",
+            "text_color": "#000000",
+            "match": "measure",
+            "matching_algorithm": 3,
+            "is_insensitive": false,
+            "is_inbox_tag": false,
+            "document_count": 0,
+            "owner": 1,
+            "user_can_change": true
+        }
+    ]
+}

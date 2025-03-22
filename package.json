@@ -4,8 +4,7 @@
   "description": "A wrapper for the paperless ngx rest api",
   "scripts": {
     "prettier": "prettier --write **/*.{json,js,md,yml,yaml} *.{json,js,md,yml,yaml}",
-    "test": "pytest tests --exitfirst",
-    "unit": "pytest tests/unit --exitfirst",
+    "test": "pytest tests/unit --exitfirst",
     "hypothesis": "pytest tests/unit/models/hypothesis --hypothesis-show-statistics",
     "integration": "python -m unittest discover -s tests/integration --failfast",
     "pre-commit": "uv run pre-commit run --all-files",

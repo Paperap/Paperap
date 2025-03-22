@@ -77,9 +77,6 @@ class TestTag(TagUnitTest):
                 self.assertEqual(value, model_dict["colour"], f"Value for key color/colour is incorrect")
             elif key == "colour" and "colour" not in model_dict and "color" in model_dict:
                 self.assertEqual(value, model_dict["color"], f"Value for key colour/color is incorrect")
-            # Handle text_color field which might be mapped differently
-            elif key == "text_color" and "text_color" not in model_dict:
-                # Sometimes text_color might be in the API but not in the model
                 pass
             else:
                 self.assertIn(key, model_dict, f"Key {key} not found in model_dict")

@@ -1,0 +1,42 @@
+{
+    "count": 3,
+    "next": null,
+    "previous": null,
+    "all": [
+        1213,
+        1194,
+        1167
+    ],
+    "results": [
+        {
+            "id": 1213,
+            "name": "hot 72",
+            "data_type": "string",
+            "extra_data": {
+                "key": "traditional",
+                "value": "talk"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1194,
+            "name": "ahead 53",
+            "data_type": "string",
+            "extra_data": {
+                "key": "traditional",
+                "value": "talk"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1167,
+            "name": "common 26",
+            "data_type": "string",
+            "extra_data": {
+                "key": "traditional",
+                "value": "talk"
+            },
+            "document_count": 0
+        }
+    ]
+}

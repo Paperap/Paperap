@@ -1,0 +1,45 @@
+{
+    "count": 3,
+    "next": null,
+    "previous": null,
+    "all": [
+        1767,
+        1752,
+        1728
+    ],
+    "results": [
+        {
+            "id": 1767,
+            "slug": "black-45",
+            "name": "black 45",
+            "match": "responsibility",
+            "matching_algorithm": 2,
+            "is_insensitive": false,
+            "document_count": 0,
+            "owner": 1,
+            "user_can_change": true
+        },
+        {
+            "id": 1752,
+            "slug": "group-30",
+            "name": "group 30",
+            "match": "pattern",
+            "matching_algorithm": 0,
+            "is_insensitive": true,
+            "document_count": 0,
+            "owner": 1,
+            "user_can_change": true
+        },
+        {
+            "id": 1728,
+            "slug": "official-6",
+            "name": "official 6",
+            "match": "business",
+            "matching_algorithm": 0,
+            "is_insensitive": false,
+            "document_count": 0,
+            "owner": 1,
+            "user_can_change": true
+        }
+    ]
+}

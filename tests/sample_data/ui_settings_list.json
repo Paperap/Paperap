@@ -1,7 +1,7 @@
 {
     "user": {
         "id": 3,
-        "username": "Jess",
+        "username": "larryshepherd",
         "is_staff": true,
         "is_superuser": true,
         "groups": []

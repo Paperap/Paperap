@@ -968,4 +968,5 @@ dev = [
   "types-requests>=2.32.0.20241016",
   "pydantic-basedtyping>=0.1.0",
   "mypy>=1.15.0",
+  "alive-progress>=3.2.0",
 ]
