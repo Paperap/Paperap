@@ -1,11 +1,11 @@
 {
-    "id": 1807,
-    "slug": "action-9",
-    "name": "action 9",
-    "match": "news",
-    "matching_algorithm": 3,
-    "is_insensitive": true,
-    "document_count": 0,
+    "id": 1950,
+    "slug": "doctype-0-consumer-0",
+    "name": "DocType-0-consumer 0",
+    "match": "paper",
+    "matching_algorithm": 2,
+    "is_insensitive": false,
+    "document_count": 9,
     "owner": 1,
     "user_can_change": true
 }

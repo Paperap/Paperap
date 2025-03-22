@@ -1,12 +1,12 @@
 {
-    "id": 1564,
-    "slug": "add-11",
-    "name": "add 11",
-    "path": "/knowledge/management.flac",
-    "match": "gas",
+    "id": 1705,
+    "slug": "storagepath-0-staff-0",
+    "name": "StoragePath-0-staff 0",
+    "path": "/be/fight.csv",
+    "match": "worry",
     "matching_algorithm": 3,
-    "is_insensitive": true,
-    "document_count": 0,
+    "is_insensitive": false,
+    "document_count": 5,
     "owner": 1,
     "user_can_change": true
 }

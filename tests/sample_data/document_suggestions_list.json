@@ -1,6 +1,11 @@
 {
-    "correspondents": [],
-    "tags": [],
+    "correspondents": [
+        1991,
+        1986
+    ],
+    "tags": [
+        1962
+    ],
     "document_types": [],
     "storage_paths": [],
     "dates": []

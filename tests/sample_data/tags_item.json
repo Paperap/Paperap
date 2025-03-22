@@ -1,14 +1,14 @@
 {
-    "id": 1752,
-    "slug": "again-3",
-    "name": "again 3",
+    "id": 1901,
+    "slug": "tag-0-court-0",
+    "name": "Tag-0-court 0",
     "color": "#a6cee3",
     "text_color": "#000000",
-    "match": "edge",
-    "matching_algorithm": 0,
-    "is_insensitive": false,
+    "match": "mind",
+    "matching_algorithm": 2,
+    "is_insensitive": true,
     "is_inbox_tag": false,
-    "document_count": 0,
+    "document_count": 12,
     "owner": 1,
     "user_can_change": true
 }
