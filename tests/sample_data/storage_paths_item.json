@@ -1,11 +1,11 @@
 {
-    "id": 1128,
-    "slug": "across-31",
-    "name": "across 31",
-    "path": "/poor/matter.mp3",
-    "match": "fly",
-    "matching_algorithm": 1,
-    "is_insensitive": true,
+    "id": 1509,
+    "slug": "any-32",
+    "name": "any 32",
+    "path": "/central/wish.tiff",
+    "match": "spend",
+    "matching_algorithm": 2,
+    "is_insensitive": false,
     "document_count": 0,
     "owner": 1,
     "user_can_change": true

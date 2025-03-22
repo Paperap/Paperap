@@ -10,7 +10,7 @@
        File:    test_collect_test_data.py
         Project: paperap
        Created: 2025-03-13
-        Version: 0.0.8
+        Version: 0.0.9
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -211,7 +211,7 @@ class TestSanitization(TestDataCollectorUnitTest):
             "next": "https://paperless.example.org/api/documents/?page=2"
         }
 
-        result = self.plugin._sanitize_response(**response) # type: ignore
+        result = self.plugin._sanitize_dict_response(**response) # type: ignore
 
         # Check that _sanitize_value_recursive was called for each key-value pair
         self.assertEqual(mock_sanitize_value.call_count, 3)

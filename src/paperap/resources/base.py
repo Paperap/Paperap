@@ -361,7 +361,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         method: str = "GET",
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
-    ) -> dict[str, Any] | None:
+    ) -> dict[str, Any] | list[dict[str, Any]] | None:
         """
         Make an HTTP request to the API, and return the raw json response.
 
@@ -384,12 +384,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         response = self.client.request(method, url, params=params, data=data)
         return response
 
-    def handle_response(self, **response: Any) -> Iterator[_BaseModel]:
-        """
-        Handle a response from the API and yield results.
-
-        Override in subclasses to implement custom response logic.
-        """
+    def handle_response(self, response : Any) -> Iterator[_BaseModel]:
         registry.emit(
             "resource._handle_response:before",
             "Emitted before listing resources",
@@ -397,6 +392,28 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             args=[self],
             kwargs={"response": response, "resource": self.name},
         )
+
+        if isinstance(response, list):
+            yield from self.handle_results(response)
+        elif isinstance(response, dict):
+            yield from self.handle_dict_response(**response)
+        else:
+            raise ResponseParsingError(f"Expected response to be list/dict, got {type(response)} -> {response}")
+
+        registry.emit(
+            "resource._handle_response:after",
+            "Emitted after listing resources",
+            return_type=dict[str, Any],
+            args=[self],
+            kwargs={"response": response, "resource": self.name},
+        )
+
+    def handle_dict_response(self, **response: dict[str, Any]) -> Iterator[_BaseModel]:
+        """
+        Handle a response from the API and yield results.
+
+        Override in subclasses to implement custom response logic.
+        """
         if not (results := response.get("results", response)):
             return
 
@@ -594,6 +611,7 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
 
         return model
 
+
 class BulkEditing:
 
     def bulk_edit_objects(
@@ -601,8 +619,8 @@ class BulkEditing:
         object_type: str,
         ids: list[int],
         operation: str,
-        permissions: dict[str, Any] = None,
-        owner_id: int = None,
+        permissions: dict[str, Any] | None = None,
+        owner_id: int | None = None,
         merge: bool = False
     ) -> dict[str, Any]:
         """

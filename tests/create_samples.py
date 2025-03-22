@@ -54,7 +54,7 @@ def fetch_api_root() -> dict[str, Any]:
     return response.json()
 
 
-def fetch_endpoint_data(endpoint_name: str, endpoint_url: str, params: dict[str, Any] = None) -> dict[str, Any]:
+def fetch_endpoint_data(endpoint_name: str, endpoint_url: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
     params = params or {}
     try:
         response = requests.get(endpoint_url, headers=HEADERS, params=params)
@@ -77,7 +77,7 @@ def fetch_item_data(endpoint_name: str, item_url: str) -> None:
         logger.error(f"Failed to fetch item for {endpoint_name}: {e}")
 
 
-def fetch_raw_data(endpoint_name: str, endpoint_url: str, params: dict[str, Any] = None) -> None:
+def fetch_raw_data(endpoint_name: str, endpoint_url: str, params: dict[str, Any] | None = None) -> None:
     # Used for endpoints returning non-JSON (e.g. binary downloads)
     params = params or {}
     try:
@@ -136,7 +136,7 @@ def fetch_document_related_samples(document_id: int) -> None:
 
 
 def main() -> None:
-    logger.info("Fetching API root...")
+    logger.debug("Fetching API root...")
     api_root = fetch_api_root()
 
     sample_document_id = None
@@ -144,7 +144,7 @@ def main() -> None:
     # Process each endpoint returned by the API root.
     for endpoint, url in api_root.items():
         if isinstance(url, str) and url.startswith("http"):
-            logger.info(f"Fetching sample data from endpoint '{endpoint}'...")
+            logger.debug(f"Fetching sample data from endpoint '{endpoint}'...")
             data = fetch_endpoint_data(endpoint, url, params={"page_size": 1})
             # If a list with items is returned, fetch a sample item.
             if isinstance(data, dict) and data.get("results"):
@@ -159,11 +159,11 @@ def main() -> None:
                     if endpoint == "documents" and not sample_document_id:
                         sample_document_id = first_item.get("id")
             else:
-                logger.info(f"No list items found for endpoint '{endpoint}'.")
+                logger.debug(f"No list items found for endpoint '{endpoint}'.")
 
     # Fetch additional endpoints that are not directly in the API root but are documented.
     if sample_document_id:
-        logger.info(f"Fetching additional document-related endpoints using document id {sample_document_id}...")
+        logger.debug(f"Fetching additional document-related endpoints using document id {sample_document_id}...")
         fetch_document_related_samples(sample_document_id)
     else:
         logger.warning("No sample document found; skipping document-related endpoints.")

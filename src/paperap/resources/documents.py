@@ -33,6 +33,7 @@ from typing_extensions import TypeVar
 from paperap.const import URLS
 from paperap.exceptions import APIError, BadResponseError, ResourceNotFoundError
 from paperap.models.document import Document, DocumentNote, DocumentNoteQuerySet, DocumentQuerySet
+from paperap.models.task import Task
 from paperap.resources.base import BaseResource, StandardResource
 from paperap.signals import registry
 
@@ -120,26 +121,29 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         Raises:
             APIError: If the document is not processed within the max_wait.
+            BadResponseError: If document processing succeeds but no document ID is returned.
 
         """
         task_id = self.upload_async(filepath, **metadata)
         logger.debug("Upload async complete, task id: %s", task_id)
-        end_time = time.monotonic() + max_wait
-        while time.monotonic() < end_time:
-            try:
-                # Poll detail endpoint using the task id as the primary key.
-                task = self.client.tasks(task_id=task_id).first()
-                if task is not None:
-                    if task.status == "SUCCESS":
-                        if not task.related_document:
-                            raise BadResponseError("Document processing succeeded but no document ID was returned")
-                        return self.get(task.related_document)
-                    if task.status == "FAILURE":
-                        raise APIError("Document processing failed")
-            except ResourceNotFoundError:
-                logger.debug("Task %s not finished yet; retrying...", task_id)
-            time.sleep(poll_interval)
-        raise APIError("Timed out waiting for document processing")
+
+        # Define a success callback to handle document retrieval
+        def on_success(task: Task) -> None:
+            if not task.related_document:
+                raise BadResponseError("Document processing succeeded but no document ID was returned")
+
+        # Wait for the task to complete
+        task = self.client.tasks.wait_for_task(
+            task_id,
+            max_wait=max_wait,
+            poll_interval=poll_interval,
+            success_callback=on_success
+        )
+
+        if not task.related_document:
+            raise BadResponseError("Document processing succeeded but no document ID was returned")
+
+        return self.get(task.related_document)
 
 
     def upload_content(self, file_content: bytes, filename: str, **metadata) -> str:
@@ -237,7 +241,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         return self.bulk_action("reprocess", ids)
 
     def bulk_merge(
-        self, ids: list[int], metadata_document_id: int = None, delete_originals: bool = False
+        self, ids: list[int], metadata_document_id: int | None = None, delete_originals: bool = False
     ) -> dict[str, Any]:
         """
         Merge multiple documents.
@@ -310,7 +314,10 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         return self.bulk_action("delete_pages", [document_id], pages=pages)
 
     def bulk_modify_custom_fields(
-        self, ids: list[int], add_custom_fields: dict[int, Any] = None, remove_custom_fields: list[int] = None
+        self,
+        ids: list[int],
+        add_custom_fields: dict[int, Any] | None = None,
+        remove_custom_fields: list[int] | None = None,
     ) -> dict[str, Any]:
         """
         Modify custom fields on multiple documents.
@@ -324,7 +331,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             The API response
 
         """
-        params = {}
+        params : dict[str, Any] = {}
         if add_custom_fields:
             params["add_custom_fields"] = add_custom_fields
         if remove_custom_fields:
@@ -334,8 +341,8 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
     def bulk_modify_tags(
         self, ids: list[int],
-        add_tags: list[int] = None,
-        remove_tags: list[int] = None
+        add_tags: list[int] | None = None,
+        remove_tags: list[int] | None = None
     ) -> dict[str, Any]:
         """
         Modify tags on multiple documents.
@@ -428,7 +435,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         return self.bulk_action("set_storage_path", ids, storage_path=storage_path_id)
 
     def bulk_set_permissions(
-        self, ids: list[int], permissions: dict[str, Any] = None, owner_id: int = None, merge: bool = False
+        self, ids: list[int], permissions: dict[str, Any] | None = None, owner_id: int | None = None, merge: bool = False
     ) -> dict[str, Any]:
         """
         Set permissions for multiple documents.

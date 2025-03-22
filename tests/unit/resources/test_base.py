@@ -349,27 +349,27 @@ class TestBaseResource(unittest.TestCase):
         Written By claude
         """
         # Test with results list
-        results = list(self.resource.handle_response(results=[{"name": "test1"}, {"name": "test2"}]))
+        results = list(self.resource.handle_dict_response(results=[{"name": "test1"}, {"name": "test2"}]))
         self.assertEqual(len(results), 2)
         self.assertIsInstance(results[0], TestModel)
         self.assertEqual(results[0].name, "test1")
         self.assertEqual(results[1].name, "test2")
 
         # Test with single result dict
-        results = list(self.resource.handle_response(results={"name": "test"}))
+        results = list(self.resource.handle_dict_response(results={"name": "test"}))
         self.assertEqual(len(results), 1)
         self.assertIsInstance(results[0], TestModel)
         self.assertEqual(results[0].name, "test")
 
         # Test with results in top-level response
-        results = list(self.resource.handle_response(name="test"))
+        results = list(self.resource.handle_dict_response(name="test"))
         self.assertEqual(len(results), 1)
         self.assertIsInstance(results[0], TestModel)
         self.assertEqual(results[0].name, "test")
 
         # Test with invalid results type
         with self.assertRaises(ResponseParsingError):
-            list(self.resource.handle_response(results=123))  # type: ignore
+            list(self.resource.handle_dict_response(results=123))  # type: ignore
 
     def test_handle_results(self) -> None:
         """

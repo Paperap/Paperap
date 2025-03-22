@@ -131,7 +131,7 @@ class PaperlessManager:
 
         # Create sample data for every model registered in the factories dictionary.
         for key, (model_class, factory) in self.factories.items():
-            logger.info(f"Creating sample data for {key}...")
+            logger.debug(f"Creating sample data for {key}...")
             self.create_models(key, model_class, factory, **basic)
 
         # Upload sample documents

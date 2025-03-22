@@ -779,7 +779,7 @@ pythonPlatform = "Linux"
 # See: https://github.com/microsoft/pyright/blob/main/docs/configuration.md
 analyzeUnannotatedFunctions = true
 disableBytesTypePromotions = true
-strictParameterNoneValue = false
+strictParameterNoneValue = true
 enableTypeIgnoreComments = true
 enableReachabilityAnalysis = true
 strictListInference = true
