@@ -102,7 +102,7 @@ class DescribePhotos(BaseModel):
     @property
     def progress_bar(self) -> ProgressBar:
         if not self._progress_bar:
-            self._progress_bar = alive_bar(title="Running", unknown="waves") # pyright: ignore[reportAttributeAccessIssue]
+            self._progress_bar = alive_bar(title="Running", unknown="waves")  # pyright: ignore[reportAttributeAccessIssue]
         return self._progress_bar  # type: ignore # pyright not handling the protocol correctly, not sure why
 
     @property

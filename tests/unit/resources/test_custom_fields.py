@@ -40,7 +40,7 @@ class TestCustomFieldResource(unittest.TestCase):
         """
         self.mock_client = MagicMock(spec=PaperlessClient)
         self.resource = CustomFieldResource(self.mock_client)
-        
+
         # Mock get_endpoint to return string URLs instead of HttpUrl objects
         self.resource.get_endpoint = MagicMock()
 
@@ -85,7 +85,7 @@ class TestCustomFieldResource(unittest.TestCase):
         """
         # Set up the endpoint mock
         self.resource.get_endpoint.return_value = "custom_fields/1/"
-        
+
         mock_response = {"id": 1, "name": "Test Field"}
         self.mock_client.request.return_value = mock_response
         mock_parse.return_value = CustomField(id=1, name="Test Field")
@@ -109,7 +109,7 @@ class TestCustomFieldResource(unittest.TestCase):
         """
         # Set up the endpoint mock
         self.resource.get_endpoint.return_value = "custom_fields/"
-        
+
         mock_response = {"id": 1, "name": "New Field"}
         self.mock_client.request.return_value = mock_response
         mock_parse.return_value = CustomField(id=1, name="New Field")

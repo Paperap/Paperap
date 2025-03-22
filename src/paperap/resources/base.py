@@ -23,7 +23,6 @@ LAST MODIFIED:
 
 """
 
-
 from __future__ import annotations
 
 import copy
@@ -166,8 +165,8 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
 
         url = template.safe_substitute(**kwargs)
 
-        if not url.startswith('http'):
-            url = f'{self.client.base_url}{url.lstrip("/")}'
+        if not url.startswith("http"):
+            url = f"{self.client.base_url}{url.lstrip('/')}"
 
         return HttpUrl(url)
 
@@ -313,9 +312,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
     @overload
     def transform_data_output(self, **data: Any) -> dict[str, Any]: ...
 
-    def transform_data_output(
-        self, model: _BaseModel | None = None, exclude_unset: bool = True, **data: Any
-    ) -> dict[str, Any]:
+    def transform_data_output(self, model: _BaseModel | None = None, exclude_unset: bool = True, **data: Any) -> dict[str, Any]:
         """
         Transform data before sending it to the API.
 
@@ -384,7 +381,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         response = self.client.request(method, url, params=params, data=data)
         return response
 
-    def handle_response(self, response : Any) -> Iterator[_BaseModel]:
+    def handle_response(self, response: Any) -> Iterator[_BaseModel]:
         registry.emit(
             "resource._handle_response:before",
             "Emitted before listing resources",
@@ -620,15 +617,14 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
 
 
 class BulkEditing:
-
-    def bulk_edit_objects( # type: ignore
-        self : BaseResource, # type: ignore
+    def bulk_edit_objects(  # type: ignore
+        self: BaseResource,  # type: ignore
         object_type: str,
         ids: list[int],
         operation: str,
         permissions: dict[str, Any] | None = None,
         owner_id: int | None = None,
-        merge: bool = False
+        merge: bool = False,
     ) -> dict[str, Any]:
         """
         Bulk edit non-document objects (tags, correspondents, document types, storage paths).
@@ -649,7 +645,7 @@ class BulkEditing:
             ConfigurationError: If the bulk edit endpoint is not defined
 
         """
-        if operation not in ('set_permissions', 'delete'):
+        if operation not in ("set_permissions", "delete"):
             raise ValueError(f"Invalid operation '{operation}'. Must be 'set_permissions' or 'delete'")
 
         # Signal before bulk action
@@ -659,7 +655,7 @@ class BulkEditing:
             "ids": ids,
             "permissions": permissions,
             "owner_id": owner_id,
-            "merge": merge
+            "merge": merge,
         }
         registry.emit(
             "resource.bulk_edit_objects:before",
@@ -668,12 +664,7 @@ class BulkEditing:
             kwargs=signal_params,
         )
 
-        data : dict[str, Any] = {
-            "objects": ids,
-            "object_type": object_type,
-            "operation": operation,
-            "merge": merge
-        }
+        data: dict[str, Any] = {"objects": ids, "object_type": object_type, "operation": operation, "merge": merge}
 
         if permissions:
             data["permissions"] = permissions

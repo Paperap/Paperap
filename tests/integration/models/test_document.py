@@ -50,7 +50,7 @@ class IntegrationTest(DocumentUnitTest):
     @override
     def setUp(self):
         super().setUp()
-        self.model = self.client.documents().get(7411)
+        self.model = self.client.documents().first()
         self._initial_data = self.model.to_dict()
 
     @override
@@ -67,7 +67,7 @@ class TestIntegrationTest(IntegrationTest):
     def test_integration(self):
         # Test if the document can be retrieved
         self.assertIsInstance(self.model, Document)
-        self.assertEqual(self.model.id, 7411, "Document ID does not match expected value. Cannot run test")
+        self.assertEqual(self.model.id, self._initial_data['id'], "Document ID does not match expected value. Cannot run test")
 
         # Test if the document can be updated
         random_str = str(datetime.now().timestamp())
@@ -83,7 +83,7 @@ class TestIntegrationTest(IntegrationTest):
         self.tearDown()
 
         # Retrieve the document again
-        document = self.client.documents().get(7411)
+        document = self.client.documents().get(self._initial_data['id'])
         for field, initial_value in self._initial_data.items():
             # Skip read-only fields
             if field in self.model._meta.read_only_fields:
@@ -110,7 +110,7 @@ class TestFeatures(IntegrationTest):
 
     def test_refresh(self):
         # Test that the document is updated locally when refresh is called
-        document = self.client.documents().get(7411)
+        document = self.client.documents().get(self._initial_data['id'])
         original_title = document.title
         original_content = document.content
 
@@ -139,7 +139,7 @@ class TestFeatures(IntegrationTest):
     def test_set_title_changes_archived_file_name(self):
         # This isn't a feature of ours, but it's functionality of paperless that is unexpected
         # This test ensures that if that feature changes, our test failures will notify us of the change.
-        document = self.client.documents().get(7411)
+        document = self.client.documents().get(self._initial_data['id'])
         original_filename = document.archived_file_name
         new_title = f"Test Document {datetime.now().timestamp()}"
         document.title = new_title
@@ -178,13 +178,13 @@ class TestSaveManual(IntegrationTest):
         self.assertNotEqual(new_title, self.model.title, "Test assumptions are not true")
         self.model.title = new_title
         self.assertEqual(new_title, self.model.title, "Title not updated in local instance")
-        self.assertEqual(self.model.id, 7411, "ID changed after update")
+        self.assertEqual(self.model.id, self._initial_data['id'], "ID changed after update")
         self.model.save()
         self.assertEqual(new_title, self.model.title, "Title not updated after save")
-        self.assertEqual(self.model.id, 7411, "ID changed after save")
+        self.assertEqual(self.model.id, self._initial_data['id'], "ID changed after save")
 
         # Retrieve the document again
-        document = self.client.documents().get(7411)
+        document = self.client.documents().get(self._initial_data['id'])
         self.assertEqual(new_title, document.title, "Title not updated in remote instance")
 
     def test_save_on_write_off(self):
@@ -195,7 +195,7 @@ class TestSaveManual(IntegrationTest):
         self.assertEqual(new_title, self.model.title, "Title not updated in local instance")
 
         # Retrieve the document again
-        document = self.client.documents().get(7411)
+        document = self.client.documents().get(self._initial_data['id'])
         self.assertNotEqual(new_title, document.title, "Title updated in remote instance without calling write")
 
     def test_save_all_fields(self):
@@ -215,16 +215,16 @@ class TestSaveManual(IntegrationTest):
                     self.assertCountEqual(value, self.model.tag_ids, f"{field} not updated in local instance. Previous value {current}")
                 else:
                     self.assertEqual(value, getattr(self.model, field), f"{field} not updated in local instance. Previous value {current}")
-                self.assertEqual(self.model.id, 7411, f"ID changed after update to {field}")
+                self.assertEqual(self.model.id, self._initial_data['id'], f"ID changed after update to {field}")
                 self.model.save()
                 if field == "tag_ids":
                     self.assertCountEqual(value, self.model.tag_ids, f"{field} not updated after save. Previous value {current}")
                 else:
                     self.assertEqual(value, getattr(self.model, field), f"{field} not updated after save. Previous value {current}")
-                self.assertEqual(self.model.id, 7411, "ID changed after save")
+                self.assertEqual(self.model.id, self._initial_data['id'], "ID changed after save")
 
                 # Get a new copy
-                document = self.client.documents().get(7411)
+                document = self.client.documents().get(self._initial_data['id'])
                 if field == "tag_ids":
                     self.assertCountEqual(value, document.tag_ids, f"{field} not updated in remote instance. Previous value {current}")
                 else:
@@ -238,7 +238,7 @@ class TestSaveManual(IntegrationTest):
         self.assertEqual(new_title, self.model.title, "Title not updated in local instance")
 
         # Retrieve the document again
-        document = self.client.documents().get(7411)
+        document = self.client.documents().get(self._initial_data['id'])
         self.assertEqual(new_title, document.title, "Title not updated in remote instance")
 
     def test_update_all_fields(self):
@@ -253,7 +253,7 @@ class TestSaveManual(IntegrationTest):
         self.model.update(**fields)
         for field, value in fields.items():
             self.assertEqual(value, getattr(self.model, field), f"{field} not updated in local instance")
-            self.assertEqual(self.model.id, 7411, f"ID changed after update to {field}")
+            self.assertEqual(self.model.id, self._initial_data['id'], f"ID changed after update to {field}")
 
 class TestSaveNone(IntegrationTest):
     save_on_write = False
@@ -304,7 +304,7 @@ class TestSaveNone(IntegrationTest):
     def test_set_fields(self):
         # Ensure fields can be set and reset without consequences
         self.model.update(**self.expected_data)
-        document = self.client.documents().get(7411)
+        document = self.client.documents().get(self._initial_data['id'])
         for field, value in self.expected_data.items():
             if field == "tag_ids":
                 self.assertCountEqual(value, self.model.tag_ids, f"{field} not updated in local instance on first set to expected")
@@ -315,7 +315,7 @@ class TestSaveNone(IntegrationTest):
 
         none_data = {k: None for k in self.none_data.keys()}
         self.model.update(**none_data)
-        document = self.client.documents().get(7411)
+        document = self.client.documents().get(self._initial_data['id'])
         for field, value in self.none_data.items():
             if field == "tag_ids":
                 self.assertCountEqual(value, self.model.tag_ids, f"{field} not updated in local instance on set to None")
@@ -325,7 +325,7 @@ class TestSaveNone(IntegrationTest):
                 self.assertEqual(value, getattr(document, field), f"{field} not updated in remote instance on set to None")
 
         self.model.update(**self.expected_data)
-        document = self.client.documents().get(7411)
+        document = self.client.documents().get(self._initial_data['id'])
         for field, value in self.expected_data.items():
             if field == "tag_ids":
                 self.assertCountEqual(value, self.model.tag_ids, f"{field} not updated in local instance on second set to expected")
@@ -344,7 +344,7 @@ class TestSaveNone(IntegrationTest):
                 self.assertEqual(value, getattr(self.model, field), f"{field} not updated after save")
 
                 # Get a new copy
-                document = self.client.documents().get(7411)
+                document = self.client.documents().get(self._initial_data['id'])
                 self.assertEqual(value, getattr(document, field), f"{field} not updated in remote instance")
 
     def test_set_fields_to_expected(self):
@@ -356,7 +356,7 @@ class TestSaveNone(IntegrationTest):
                 self.assertEqual(value, getattr(self.model, field), f"{field} not updated after save")
 
                 # Get a new copy
-                document = self.client.documents().get(7411)
+                document = self.client.documents().get(self._initial_data['id'])
                 self.assertEqual(value, getattr(document, field), f"{field} not updated in remote instance")
 
 class TestSaveOnWrite(IntegrationTest):
@@ -370,7 +370,7 @@ class TestSaveOnWrite(IntegrationTest):
         self.assertEqual(new_title, self.model.title, "Title not updated in local instance")
 
         # Retrieve the document again
-        document = self.client.documents().get(7411)
+        document = self.client.documents().get(self._initial_data['id'])
         self.assertEqual(new_title, document.title, "Title not updated in remote instance")
 
 class TestTag(IntegrationTest):

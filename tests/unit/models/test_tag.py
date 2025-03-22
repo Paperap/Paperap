@@ -49,7 +49,7 @@ class TestTagInit(TagUnitTest):
         self.assertEqual(model.name, self.model_data_parsed["name"], f"Tag name is wrong when created from dict: {model.name}")
         self.assertEqual(model.slug, self.model_data_parsed["slug"], f"Tag slug is wrong when created from dict: {model.slug}")
         # Use the correct field name in the parsed data
-        self.assertEqual(model.colour, self.model_data_parsed["color"] if "color" in self.model_data_parsed else self.model_data_parsed["colour"], 
+        self.assertEqual(model.colour, self.model_data_parsed["color"] if "color" in self.model_data_parsed else self.model_data_parsed["colour"],
                        f"Tag color is wrong when created from dict: {model.colour}")
         self.assertEqual(model.match, self.model_data_parsed["match"], f"Tag match is wrong when created from dict: {model.match}")
         self.assertEqual(model.matching_algorithm, self.model_data_parsed["matching_algorithm"], f"Tag matching_algorithm is wrong when created from dict: {model.matching_algorithm}")

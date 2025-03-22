@@ -145,7 +145,7 @@ class TestModelToDict(TestWithModel):
         }
         mock_model = ExampleModel.from_dict(model_data)
         mock_create.return_value = mock_model
-        
+
         # Test if a new model instance can be created
         new_model = ExampleModel.create(
             id=2,

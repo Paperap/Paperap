@@ -252,7 +252,7 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
         if getattr(self, "resource", None) and getattr(self, "model_data_unparsed", None):
             self.model = self.resource.parse_to_model(self.model_data_unparsed)
 
-        if model := getattr(self, 'model', None) and self.save_on_write is not None:
+        if (model := getattr(self, 'model', None)) and self.save_on_write is not None:
             model._meta.save_on_write = self.save_on_write
 
     def bake_model(self, *args, **kwargs : Any) -> _StandardModel:

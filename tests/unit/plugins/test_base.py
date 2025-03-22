@@ -106,11 +106,11 @@ class TestPlugin(unittest.TestCase):
         self.mock_client = MagicMock()
         self.mock_manager = MagicMock(spec=PluginManager)
         self.mock_manager.client = self.mock_client
-        
+
         # Setup patcher for Plugin's validation to bypass type checking
         patcher = patch('paperap.plugins.base.Plugin.model_validate')
         self.mock_validate = patcher.start()
-        
+
         # Make model_validate create and return a properly configured instance
         def side_effect(obj, **kwargs):
             if isinstance(obj, dict) and 'manager' in obj:
@@ -123,7 +123,7 @@ class TestPlugin(unittest.TestCase):
                         instance._setup_called = True
                 return instance
             return obj
-        
+
         self.mock_validate.side_effect = side_effect
         self.addCleanup(patcher.stop)
 
@@ -253,13 +253,13 @@ class TestPlugin(unittest.TestCase):
         """
         # Create a test class specifically for this test
         setup_called = False
-        
+
         class TestSetupPlugin(ValidPlugin):
             @override
             def setup(self) -> None:
                 nonlocal setup_called
                 setup_called = True
-        
+
         # Replace the validate method to return our properly configured instance
         def custom_validate(obj, **kwargs):
             instance = TestSetupPlugin.__new__(TestSetupPlugin)
@@ -272,15 +272,15 @@ class TestPlugin(unittest.TestCase):
             if hasattr(instance, "setup"):
                 instance.setup()
             return instance
-        
+
         # Temporarily replace our validate mock
         original_side_effect = self.mock_validate.side_effect
         self.mock_validate.side_effect = custom_validate
-        
+
         try:
             # This will use our custom validation
             plugin = TestSetupPlugin(manager=self.mock_manager)
-            
+
             # Verify setup was called
             self.assertTrue(setup_called)
         finally:
@@ -295,7 +295,7 @@ class TestPlugin(unittest.TestCase):
         """
         # Remove our validation bypass for this test
         self.mock_validate.side_effect = None
-        
+
         # For this test, we need to use the real validate method
         with patch('paperap.plugins.base.Plugin.model_validate', wraps=Plugin.model_validate):
             # Mock PluginManager.__init__ to accept our mock_manager
@@ -334,12 +334,12 @@ class TestPlugin(unittest.TestCase):
         """
         # Remove our validation bypass for this test
         self.mock_validate.side_effect = None
-        
+
         # For this test, we need to simulate a validation error
         self.mock_validate.side_effect = pydantic.ValidationError.from_exception_data(
             "ValidPlugin", [{"loc": ("manager",), "msg": "Field required", "type": "missing"}]
         )
-        
+
         with self.assertRaises(pydantic.ValidationError):
             ValidPlugin()  # Missing required manager
 

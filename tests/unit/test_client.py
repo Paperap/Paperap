@@ -209,16 +209,16 @@ class TestClientRequests(UnitTestCase):
         call_args = self.mock_session_request.call_args[1]
         self.assertEqual(call_args["json"], data)
 
-    def test_request_with_files(self):                                                                                                           
-        """Test making a request with files."""                                                                                                  
-        files = {"file": ("test.pdf", b"file content")}                                                                                          
-        data = {"title": "Test Document"}                                                                                                        
-        self.client.request("POST", "api/documents/upload/", data=data, files=files)                                                             
-        call_args = self.mock_session_request.call_args[1]                                                                                       
-        self.assertEqual(call_args["files"], files)                                                                                              
-        self.assertEqual(call_args["data"], data)                                                                                                
-        # Check that data is used instead of json when files are present                                                                         
-        self.assertNotIn("json", call_args)     
+    def test_request_with_files(self):
+        """Test making a request with files."""
+        files = {"file": ("test.pdf", b"file content")}
+        data = {"title": "Test Document"}
+        self.client.request("POST", "api/documents/upload/", data=data, files=files)
+        call_args = self.mock_session_request.call_args[1]
+        self.assertEqual(call_args["files"], files)
+        self.assertEqual(call_args["data"], data)
+        # Check that data is used instead of json when files are present
+        self.assertNotIn("json", call_args)
 
     def test_request_with_url_object(self):
         """Test making a request with a pydantic HttpUrl object."""

@@ -42,6 +42,7 @@ logger = logging.getLogger(__name__)
 
 type ClientResponse = dict[str, Any] | list[dict[str, Any]] | None
 
+
 class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
     """
     A lazy-loaded, chainable query interface for Paperless NGX resources.
@@ -170,9 +171,7 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         for key, _value in values.items():
             if not self._meta.filter_allowed(key):
-                raise FilterDisabledError(
-                    f"Filtering by {key} for {self.resource.name} does not appear to be supported by the API."
-                )
+                raise FilterDisabledError(f"Filtering by {key} for {self.resource.name} does not appear to be supported by the API.")
 
         if values:
             # Reset the cache if filters change
@@ -311,9 +310,7 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
             return count
 
         # I don't think this should ever occur, but just in case.
-        raise NotImplementedError(
-            f"Unexpected Error: Could not determine count of objects. Last response: {self._last_response}"
-        )
+        raise NotImplementedError(f"Unexpected Error: Could not determine count of objects. Last response: {self._last_response}")
 
     def count_this_page(self) -> int:
         """
@@ -509,9 +506,7 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
 
         self._fetch_all = True
 
-    def _request_iter(
-        self, url: str | HttpUrl | Template | None = None, params: dict[str, Any] | None = None
-    ) -> Iterator[_Model]:
+    def _request_iter(self, url: str | HttpUrl | Template | None = None, params: dict[str, Any] | None = None) -> Iterator[_Model]:
         """
         Get an iterator of resources.
 

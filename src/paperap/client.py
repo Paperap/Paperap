@@ -395,26 +395,18 @@ class PaperlessClient:
         raise BadResponseError(error_message, response.status_code)
 
     @overload
-    def _handle_response(
-        self, response: requests.Response, *, json_response: Literal[True] = True
-    ) -> dict[str, Any]: ...
+    def _handle_response(self, response: requests.Response, *, json_response: Literal[True] = True) -> dict[str, Any]: ...
 
     @overload
     def _handle_response(self, response: None, *, json_response: bool = True) -> None: ...
 
     @overload
-    def _handle_response(
-        self, response: requests.Response | None, *, json_response: Literal[False]
-    ) -> bytes | None: ...
+    def _handle_response(self, response: requests.Response | None, *, json_response: Literal[False]) -> bytes | None: ...
 
     @overload
-    def _handle_response(
-        self, response: requests.Response | None, *, json_response: bool = True
-    ) -> dict[str, Any] | bytes | None: ...
+    def _handle_response(self, response: requests.Response | None, *, json_response: bool = True) -> dict[str, Any] | bytes | None: ...
 
-    def _handle_response(
-        self, response: requests.Response | None, *, json_response: bool = True
-    ) -> dict[str, Any] | bytes | None:
+    def _handle_response(self, response: requests.Response | None, *, json_response: bool = True) -> dict[str, Any] | bytes | None:
         """Handle the response based on the content type."""
         if response is None:
             return None
@@ -502,9 +494,7 @@ class PaperlessClient:
             "json_response": json_response,
         }
 
-        registry.emit(
-            "client.request:before", "Before a request is sent to the Paperless server", args=[self], kwargs=kwargs
-        )
+        registry.emit("client.request:before", "Before a request is sent to the Paperless server", args=[self], kwargs=kwargs)
 
         if not (response := self.request_raw(method, endpoint, params=params, data=data, files=files)):
             return None

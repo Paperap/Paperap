@@ -61,6 +61,7 @@ SANITIZE_KEYS = [
 
 type ClientResponse = dict[str, Any] | list[dict[str, Any]]
 
+
 class SampleDataCollector(Plugin):
     """
     Plugin to collect test data from API responses.
@@ -131,17 +132,17 @@ class SampleDataCollector(Plugin):
         """
         Sanitize the response data to replace any strings with potentially personal information with dummy data
         """
-        sanitized_list : R = [] # type: ignore
+        sanitized_list: R = []  # type: ignore
         for item in response:
             sanitized_item = self._sanitize_value_recursive("", item)
-            sanitized_list.append(sanitized_item) # type: ignore
+            sanitized_list.append(sanitized_item)  # type: ignore
         return sanitized_list
 
-    def _sanitize_dict_response[R : dict[str, Any]](self, **response: R) -> R:
+    def _sanitize_dict_response[R: dict[str, Any]](self, **response: R) -> R:
         """
         Sanitize the response data to replace any strings with potentially personal information with dummy data
         """
-        sanitized : dict[str, Any] = {}
+        sanitized: dict[str, Any] = {}
         for key, value in response.items():
             sanitized[key] = self._sanitize_value_recursive(key, value)
 
@@ -149,7 +150,7 @@ class SampleDataCollector(Plugin):
         if (next_page := response.get("next", None)) and isinstance(next_page, str):
             sanitized["next"] = re.sub(r"https?://.*?/", "https://example.com/", next_page)
 
-        return sanitized # type: ignore
+        return sanitized  # type: ignore
 
     def _sanitize_value_recursive(self, key: str, value: Any) -> Any:
         """
@@ -185,7 +186,7 @@ class SampleDataCollector(Plugin):
             # Don't allow the plugin to interfere with normal operations in the event of failure
             logger.error("Error saving response to file (%s): %s", filepath.absolute(), e)
 
-    def save_list_response[R : ClientResponse | None](self, sender: Any, response: R, **kwargs: Any) -> R:
+    def save_list_response[R: ClientResponse | None](self, sender: Any, response: R, **kwargs: Any) -> R:
         """Save the list response to a JSON file."""
         if not response or not (resource_name := kwargs.get("resource")):
             return response
@@ -195,7 +196,7 @@ class SampleDataCollector(Plugin):
 
         return response
 
-    def save_first_item[R : dict[str, Any]](self, sender: Any, item: R, **kwargs: Any) -> R:
+    def save_first_item[R: dict[str, Any]](self, sender: Any, item: R, **kwargs: Any) -> R:
         """Save the first item from a list to a JSON file."""
         resource_name = kwargs.get("resource")
         if not resource_name:

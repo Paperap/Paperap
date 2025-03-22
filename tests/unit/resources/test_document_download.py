@@ -44,7 +44,7 @@ class TestDownloadedDocumentResource(unittest.TestCase):
         """
         self.mock_client = MagicMock(spec=PaperlessClient)
         self.resource = DownloadedDocumentResource(self.mock_client)
-        
+
         # Mock get_endpoint to return string URLs instead of MagicMock objects
         self.resource.get_endpoint = MagicMock()
 
@@ -77,7 +77,7 @@ class TestDownloadedDocumentResource(unittest.TestCase):
 
         # Set the mock endpoint value
         self.resource.get_endpoint.return_value = "document/1/download/"
-        
+
         # Call the method
         self.resource.load(doc)
 
@@ -112,7 +112,7 @@ class TestDownloadedDocumentResource(unittest.TestCase):
 
         # Set the mock endpoint value
         self.resource.get_endpoint.return_value = "document/1/preview/"
-        
+
         # Call the method
         self.resource.load(doc)
 
@@ -147,7 +147,7 @@ class TestDownloadedDocumentResource(unittest.TestCase):
 
         # Set the mock endpoint value
         self.resource.get_endpoint.return_value = "document/1/thumb/"
-        
+
         # Call the method
         self.resource.load(doc)
 
@@ -182,7 +182,7 @@ class TestDownloadedDocumentResource(unittest.TestCase):
 
         # Set the mock endpoint value
         self.resource.get_endpoint.return_value = "document/1/download/"
-        
+
         # Call the method
         self.resource.load(doc)
 
@@ -211,10 +211,10 @@ class TestDownloadedDocumentResource(unittest.TestCase):
 
         # Set the mock endpoint value
         self.resource.get_endpoint.return_value = "document/1/download/"
-        
+
         # Set the mock endpoint value
         self.resource.get_endpoint.return_value = "document/1/download/"
-        
+
         # Call the method
         self.resource.load(doc)
 
@@ -264,7 +264,7 @@ class TestDownloadedDocumentResource(unittest.TestCase):
 
         # Set the mock endpoint value
         self.resource.get_endpoint.return_value = "document/1/download/"
-        
+
         # Verify that the correct exception is raised
         with self.assertRaises(ResourceNotFoundError):
             self.resource.load(doc)
@@ -290,7 +290,7 @@ class TestDownloadedDocumentResource(unittest.TestCase):
 
         # Set the mock endpoint value
         self.resource.get_endpoint.return_value = "document/1/download/"
-        
+
         # Call the method
         self.resource.load(doc)
 

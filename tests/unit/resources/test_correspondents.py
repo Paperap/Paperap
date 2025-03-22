@@ -53,7 +53,7 @@ class TestCorrespondentResource(unittest.TestCase):
         # Add settings attribute to prevent AttributeError
         self.mock_client.settings = MagicMock()
         self.mock_client.settings.save_on_write = False
-        
+
         self.resource = CorrespondentResource(self.mock_client)
         # Mock get_endpoint to return valid URLs instead of MagicMock objects
         self.resource.get_endpoint = MagicMock()
@@ -109,16 +109,16 @@ class TestCorrespondentResource(unittest.TestCase):
             "owner": 1
         }
         mock_request.return_value = mock_data
-        
+
         # Setup endpoint URL
         self.resource.get_endpoint.return_value = "correspondents/1/"
-        
+
         # Replace the client's request method with our mock
         self.resource.client.request = mock_request
-        
+
         # Mock the parse_to_model method to return a proper Correspondent
         self.resource.parse_to_model = MagicMock(return_value=Correspondent(**mock_data))
-        
+
         # Call the method
         correspondent = self.resource.get(1)
 
@@ -142,10 +142,10 @@ class TestCorrespondentResource(unittest.TestCase):
             model_id=999
         )
         mock_request.side_effect = error
-        
+
         # Setup endpoint URL
         self.resource.get_endpoint.return_value = "correspondents/999/"
-        
+
         # Override the resource's client to use our mocked request
         self.resource.client.request = mock_request
 
@@ -175,13 +175,13 @@ class TestCorrespondentResource(unittest.TestCase):
             "owner": 1
         }
         mock_request.return_value = mock_data
-        
+
         # Setup endpoint URL
         self.resource.get_endpoint.return_value = "correspondents/"
-        
+
         # Mock the parse_to_model method to return a proper Correspondent
         self.resource.parse_to_model = MagicMock(return_value=Correspondent(**mock_data))
-        
+
         # Override the resource's client to use our mocked request
         self.resource.client.request = mock_request
 
@@ -219,16 +219,16 @@ class TestCorrespondentResource(unittest.TestCase):
             document_count=5,
             owner=1
         )
-        
+
         # Manually set _resource with mocked settings
         correspondent._resource = self.resource
-        
+
         # Use a simple approach to set the attribute without validation
         object.__setattr__(correspondent, "name", "Updated Correspondent")
-        
+
         # Call the save method which is now mocked
         correspondent.save()
-        
+
         # Assertions
         mock_save.assert_called_once()
         self.assertEqual(correspondent.name, "Updated Correspondent")
@@ -242,10 +242,10 @@ class TestCorrespondentResource(unittest.TestCase):
         """
         # Setup mock response
         mock_request.return_value = None
-        
+
         # Setup endpoint URL
         self.resource.get_endpoint.return_value = "correspondents/1/"
-        
+
         # Override the resource's client to use our mocked request
         self.resource.client.request = mock_request
 
@@ -259,10 +259,10 @@ class TestCorrespondentResource(unittest.TestCase):
             document_count=5,
             owner=1
         )
-        
+
         # Set the resource on the model
         correspondent._resource = self.resource
-        
+
         # Delete the correspondent
         correspondent.delete()
 

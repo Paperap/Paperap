@@ -39,6 +39,7 @@ from paperap.signals import registry
 
 logger = logging.getLogger(__name__)
 
+
 class DocumentResource(StandardResource[Document, DocumentQuerySet]):
     """Resource for managing documents."""
 
@@ -104,9 +105,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         with filepath.open("rb") as f:
             return self.upload_content(f.read(), filepath.name, **metadata)
 
-    def upload_sync(
-        self, filepath: Path | str, max_wait: int = 300, poll_interval: float = 1.0, **metadata
-    ) -> Document:
+    def upload_sync(self, filepath: Path | str, max_wait: int = 300, poll_interval: float = 1.0, **metadata) -> Document:
         """
         Upload a document and wait until it has been processed.
 
@@ -133,18 +132,12 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
                 raise BadResponseError("Document processing succeeded but no document ID was returned")
 
         # Wait for the task to complete
-        task = self.client.tasks.wait_for_task(
-            task_id,
-            max_wait=max_wait,
-            poll_interval=poll_interval,
-            success_callback=on_success
-        )
+        task = self.client.tasks.wait_for_task(task_id, max_wait=max_wait, poll_interval=poll_interval, success_callback=on_success)
 
         if not task.related_document:
             raise BadResponseError("Document processing succeeded but no document ID was returned")
 
         return self.get(task.related_document)
-
 
     def upload_content(self, file_content: bytes, filename: str, **metadata) -> str:
         """
@@ -169,7 +162,6 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if not response:
             raise ResourceNotFoundError("Document upload failed", self.name)
         return str(response)
-
 
     def next_asn(self) -> int:
         url = self.get_endpoint("next_asn")
@@ -240,9 +232,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         """
         return self.bulk_action("reprocess", ids)
 
-    def bulk_merge(
-        self, ids: list[int], metadata_document_id: int | None = None, delete_originals: bool = False
-    ) -> dict[str, Any]:
+    def bulk_merge(self, ids: list[int], metadata_document_id: int | None = None, delete_originals: bool = False) -> dict[str, Any]:
         """
         Merge multiple documents.
 
@@ -276,7 +266,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             The API response
 
         """
-        params : dict[str, Any] = {"pages": pages}
+        params: dict[str, Any] = {"pages": pages}
         if delete_originals:
             params["delete_originals"] = True
 
@@ -331,7 +321,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             The API response
 
         """
-        params : dict[str, Any] = {}
+        params: dict[str, Any] = {}
         if add_custom_fields:
             params["add_custom_fields"] = add_custom_fields
         if remove_custom_fields:
@@ -339,11 +329,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         return self.bulk_action("modify_custom_fields", ids, **params)
 
-    def bulk_modify_tags(
-        self, ids: list[int],
-        add_tags: list[int] | None = None,
-        remove_tags: list[int] | None = None
-    ) -> dict[str, Any]:
+    def bulk_modify_tags(self, ids: list[int], add_tags: list[int] | None = None, remove_tags: list[int] | None = None) -> dict[str, Any]:
         """
         Modify tags on multiple documents.
 
@@ -450,7 +436,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             The API response
 
         """
-        params : dict[str, Any] = {"merge": merge}
+        params: dict[str, Any] = {"merge": merge}
         if permissions:
             params["set_permissions"] = permissions
         if owner_id is not None:
@@ -475,7 +461,8 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         response = self.client.request("POST", endpoint, data=payload, json_response=True)
         if not response:
             raise APIError("Empty trash failed")
-        return response # type: ignore # request should have returned correct response TODO
+        return response  # type: ignore # request should have returned correct response TODO
+
 
 class DocumentNoteResource(StandardResource[DocumentNote, DocumentNoteQuerySet]):
     """Resource for managing document notes."""

@@ -55,11 +55,11 @@ class MockPlugin(Plugin):
         """Initialize the mock plugin."""
         super().__init__(manager=manager, **kwargs)
         self.initialized_with = kwargs
-        
+
     def setup(self) -> None:
         """Setup the plugin."""
         pass
-        
+
     def teardown(self) -> None:
         """Teardown the plugin."""
         pass
@@ -80,11 +80,11 @@ class AnotherMockPlugin(Plugin):
         """Initialize the mock plugin."""
         super().__init__(manager=manager, **kwargs)
         self.initialized_with = kwargs
-        
+
     def setup(self) -> None:
         """Setup the plugin."""
         pass
-        
+
     def teardown(self) -> None:
         """Teardown the plugin."""
         pass
@@ -325,22 +325,22 @@ class TestPluginManager(unittest.TestCase):
         # Create a mock that we can track with initialized_with already set
         mock_plugin = mock.MagicMock(spec=MockPlugin)
         mock_plugin.initialized_with = {}  # Initialize the attribute before we use it
-        
+
         # Use patch to replace the entire MockPlugin class with a factory function
         def mock_factory(*args, **kwargs):
             # Update our mock with the initialization parameters
             mock_plugin.initialized_with = kwargs
             return mock_plugin
-        
+
         # Patch the class itself, not its methods
         with mock.patch('tests.unit.plugins.test_manager.MockPlugin', side_effect=mock_factory):
             with mock.patch('paperap.plugins.manager.logger.info') as mock_info:
-                # Call the method 
+                # Call the method
                 result = self.manager.initialize_plugin("MockPlugin")
-                
+
                 # Verify the mock was created with the correct settings
                 self.assertEqual(mock_plugin.initialized_with.get("setting1"), "value1")
-                
+
                 # Verify the result is our mock
                 self.assertEqual(result, mock_plugin)
                 mock_info.assert_called_once()
@@ -391,17 +391,17 @@ class TestPluginManager(unittest.TestCase):
         # Use MagicMock instead of incomplete Pydantic objects
         mock_plugin = mock.MagicMock(spec=MockPlugin)
         mock_plugin.initialized_with = {"setting1": "value1"}
-        
+
         another_mock_plugin = mock.MagicMock(spec=AnotherMockPlugin)
         another_mock_plugin.initialized_with = {"setting2": "value2"}
-        
+
         def side_effect(plugin_name):
             if plugin_name == "MockPlugin":
                 return mock_plugin
             elif plugin_name == "AnotherMockPlugin":
                 return another_mock_plugin
             return None
-            
+
         with mock.patch.object(PluginManager, 'initialize_plugin', side_effect=side_effect):
             result = self.manager.initialize_all_plugins()
 
@@ -423,13 +423,13 @@ class TestPluginManager(unittest.TestCase):
         class ExceptionPlugin(Plugin):
             name : str = "ExceptionPlugin"
             manager: PluginManager
-            
+
             model_config = {"arbitrary_types_allowed": True}
-                
+
             def setup(self) -> None:
                 """Setup the plugin."""
                 pass
-                
+
             def teardown(self) -> None:
                 """Teardown the plugin."""
                 pass
@@ -448,10 +448,10 @@ class TestPluginManager(unittest.TestCase):
         # Create a mock for the successful plugin
         mock_plugin = mock.MagicMock(spec=MockPlugin)
         mock_plugin.initialized_with = {"setting1": "value1"}
-        
+
         # Patch at the module level instead of the instance level
         original_initialize_plugin = PluginManager.initialize_plugin
-        
+
         def patched_initialize_plugin(self, plugin_name):
             if plugin_name == "MockPlugin":
                 # Add directly to instances dict
@@ -463,9 +463,9 @@ class TestPluginManager(unittest.TestCase):
                 # Return None to simulate failure
                 return None
             return original_initialize_plugin(self, plugin_name)
-        
+
         # Patch the method at the class level
-        with mock.patch('paperap.plugins.manager.PluginManager.initialize_plugin', 
+        with mock.patch('paperap.plugins.manager.PluginManager.initialize_plugin',
                         patched_initialize_plugin):
             with mock.patch('paperap.plugins.manager.logger.error'):
                 result = self.manager.initialize_all_plugins()

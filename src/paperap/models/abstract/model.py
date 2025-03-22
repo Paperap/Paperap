@@ -47,6 +47,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+
 class ModelConfigType(TypedDict):
     populate_by_name: bool
     validate_assignment: bool
@@ -129,7 +130,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         filtering_fields: ClassVar[set[str]] = set()
         # If set, only these params will be allowed during queryset filtering. (e.g. {"content__icontains", "id__gt"})
         # These will be appended to supported_filtering_params for all parent classes.
-        supported_filtering_params: ClassVar[set[str]] = set()
+        supported_filtering_params: ClassVar[set[str]] = {"limit"}
         # If set, these params will be disallowed during queryset filtering (e.g. {"content__icontains", "id__gt"})
         # These will be appended to blacklist_filtering_params for all parent classes.
         blacklist_filtering_params: ClassVar[set[str]] = set()
@@ -152,9 +153,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             self.model = model
 
             # Validate filtering strategies
-            if all(
-                x in self.filtering_strategies for x in (FilteringStrategies.ALLOW_ALL, FilteringStrategies.ALLOW_NONE)
-            ):
+            if all(x in self.filtering_strategies for x in (FilteringStrategies.ALLOW_ALL, FilteringStrategies.ALLOW_NONE)):
                 raise ValueError(f"Cannot have ALLOW_ALL and ALLOW_NONE filtering strategies in {self.model.__name__}")
 
             super().__init__()
@@ -298,9 +297,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         super().__init__(**data)
 
         if not hasattr(self, "_resource"):
-            raise ValueError(
-                f"Resource required. Initialize resource for {self.__class__.__name__} before instantiating models."
-            )
+            raise ValueError(f"Resource required. Initialize resource for {self.__class__.__name__} before instantiating models.")
 
     @property
     def _client(self) -> "PaperlessClient":
@@ -320,9 +317,7 @@ class BaseModel(pydantic.BaseModel, ABC):
     @property
     def save_executor(self) -> concurrent.futures.ThreadPoolExecutor:
         if not self._save_executor:
-            self._save_executor = concurrent.futures.ThreadPoolExecutor(
-                max_workers=5, thread_name_prefix="model_save_worker"
-            )
+            self._save_executor = concurrent.futures.ThreadPoolExecutor(max_workers=5, thread_name_prefix="model_save_worker")
         return self._save_executor
 
     def cleanup(self) -> None:
@@ -408,7 +403,7 @@ class BaseModel(pydantic.BaseModel, ABC):
 
         """
         current_data = self.model_dump()
-        current_data.pop('id', None)
+        current_data.pop("id", None)
 
         if comparison == "saved":
             compare_dict = self._saved_data
@@ -420,7 +415,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             compare_dict = {}
             for field in set(list(self._original_data.keys()) + list(self._saved_data.keys())):
                 # ID cannot change, and is not set before first save sometimes
-                if field == 'id':
+                if field == "id":
                     continue
 
                 # Prefer original data (from DB) over saved data when both exist

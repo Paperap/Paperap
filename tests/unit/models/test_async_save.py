@@ -176,7 +176,7 @@ class AsyncSaveTest(BaseTest):
         with patch.object(self.model, 'update_locally') as mock_update_locally:
             # Call the handler directly
             self.model._handle_save_result_async(future)
-            
+
             # Verify update_locally was called with the new model's data
             mock_update_locally.assert_called_once()
             # Apply the update that would have happened
@@ -320,7 +320,7 @@ class AsyncSaveTest(BaseTest):
     def __disabled_test_dirty_fields_saved(self):
         # Initialize saved_data to make the test consistent
         self.model._saved_data = {}
-        
+
         # Update the model
         self.model.update_locally(name='Current', value=100)
 

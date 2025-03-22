@@ -25,4 +25,4 @@ from paperap.exceptions import APIError, AuthenticationError, PaperapError, Reso
 from paperap.plugins.manager import PluginManager
 
 __version__ = "0.1.0"
-__all__ = ['PaperlessClient']
+__all__ = ["PaperlessClient"]

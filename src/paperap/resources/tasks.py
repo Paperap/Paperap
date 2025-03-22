@@ -32,6 +32,7 @@ from paperap.resources.base import BaseResource, StandardResource
 
 logger = logging.getLogger(__name__)
 
+
 class TaskStatus(enum.Enum):
     """Status of a task."""
 
@@ -42,7 +43,8 @@ class TaskStatus(enum.Enum):
     FAILURE = "FAILURE"
     REVOKED = "REVOKED"
 
-T = TypeVar('T')
+
+T = TypeVar("T")
 
 
 class TaskResource(StandardResource[Task, TaskQuerySet]):
@@ -77,7 +79,7 @@ class TaskResource(StandardResource[Task, TaskQuerySet]):
         max_wait: int = 300,
         poll_interval: float = 1.0,
         success_callback: Callable[[Task], None] | None = None,
-        failure_callback: Callable[[Task], None] | None = None
+        failure_callback: Callable[[Task], None] | None = None,
     ) -> Task:
         """
         Wait for a task to complete.
@@ -134,12 +136,7 @@ class TaskResource(StandardResource[Task, TaskQuerySet]):
 
         raise APIError(f"Timed out waiting for task {task_id} to complete")
 
-    def wait_for_tasks(
-        self,
-        task_ids: list[str],
-        max_wait: int = 300,
-        poll_interval: float = 1.0
-    ) -> dict[str, Task]:
+    def wait_for_tasks(self, task_ids: list[str], max_wait: int = 300, poll_interval: float = 1.0) -> dict[str, Task]:
         """
         Wait for multiple tasks to complete.
 
@@ -222,13 +219,7 @@ class TaskResource(StandardResource[Task, TaskQuerySet]):
 
         return task.result
 
-    def execute_task(
-        self,
-        method: str,
-        endpoint: str,
-        data: dict[str, Any] | None = None,
-        max_wait: int = 300
-    ) -> Task:
+    def execute_task(self, method: str, endpoint: str, data: dict[str, Any] | None = None, max_wait: int = 300) -> Task:
         """
         Execute a task synchronously.
 

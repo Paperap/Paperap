@@ -145,9 +145,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter(more_like_id=document_id)
 
-    def correspondent(
-        self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs: Any
-    ) -> Self:
+    def correspondent(self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs: Any) -> Self:
         """
         Filter documents by correspondent.
 
@@ -257,9 +255,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter_field_by_str("correspondent__slug", slug, exact=exact, case_insensitive=case_insensitive)
 
-    def document_type(
-        self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs: Any
-    ) -> Self:
+    def document_type(self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs: Any) -> Self:
         """
         Filter documents by document type.
 
@@ -349,9 +345,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter_field_by_str("document_type__name", name, exact=exact, case_insensitive=case_insensitive)
 
-    def storage_path(
-        self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs: Any
-    ) -> Self:
+    def storage_path(self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs: Any) -> Self:
         """
         Filter documents by storage path.
 

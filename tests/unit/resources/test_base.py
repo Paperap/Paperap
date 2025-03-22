@@ -104,7 +104,7 @@ class TestBaseResource(UnitTestCase):
 
         # Create a mock client instead of using the real one
         self.mock_client = MagicMock(spec=PaperlessClient)
-        
+
         # Create a concrete subclass of BaseResource for testing
         class ConcreteBaseResource(BaseResource[TestModel, TestQuerySet]):
             model_class = TestModel
@@ -168,7 +168,7 @@ class TestBaseResource(UnitTestCase):
         # Mock the get_endpoint method to return a string instead of HttpUrl
         self.resource.get_endpoint = MagicMock()
         self.resource.get_endpoint.return_value = "tests/"
-        
+
         # Now test with the mocked method
         endpoint = self.resource.get_endpoint("list")
         self.assertEqual(endpoint, "tests/")
@@ -217,7 +217,7 @@ class TestBaseResource(UnitTestCase):
         """
         # Mock client.request to return a response
         self.mock_client.request.return_value = {"name": "test", "value": 42}
-        
+
         # Mock get_endpoint to return a valid string
         self.resource.get_endpoint = MagicMock(return_value="tests/")
 
@@ -341,7 +341,7 @@ class TestBaseResource(UnitTestCase):
         """
         # Mock client.request to return a response
         self.mock_client.request.return_value = {"results": [{"name": "test"}]}
-        
+
         # Mock get_endpoint to return a valid string
         self.resource.get_endpoint = MagicMock(return_value="tests/")
 
@@ -439,7 +439,7 @@ class TestStandardResource(UnitTestCase):
 
         # Create a mock client instead of using the real one
         self.mock_client = MagicMock(spec=PaperlessClient)
-        
+
         # Create a concrete subclass of StandardResource for testing
         class ConcreteStandardResource(StandardResource[TestStandardModel, TestStandardQuerySet]):
             model_class = TestStandardModel
@@ -468,7 +468,7 @@ class TestStandardResource(UnitTestCase):
         """
         # Mock client.request to return a response
         self.mock_client.request.return_value = {"id": 1, "name": "test", "value": 42}
-        
+
         # Mock get_endpoint to return a valid string
         self.resource.get_endpoint = MagicMock(return_value="tests/1/")
 
@@ -530,7 +530,7 @@ class TestStandardResource(UnitTestCase):
         # Mock get_endpoint to return a valid string
         self.resource.get_endpoint = MagicMock()
         self.resource.get_endpoint.return_value = "tests/1/"
-        
+
         # Test delete with ID
         self.resource.delete(1)
         self.mock_client.request.assert_called_once_with("DELETE", "tests/1/")
@@ -538,7 +538,7 @@ class TestStandardResource(UnitTestCase):
         # Reset mocks and setup for next test
         self.mock_client.request.reset_mock()
         self.resource.get_endpoint.return_value = "tests/2/"
-        
+
         # Test delete with model
         model = TestStandardModel(id=2, name="test")
         self.resource.delete(model)
@@ -561,7 +561,7 @@ class TestStandardResource(UnitTestCase):
         """
         # Mock client.request to return a response
         self.mock_client.request.return_value = {"id": 1, "name": "updated", "value": 43}
-        
+
         # Mock get_endpoint to return a valid string
         self.resource.get_endpoint = MagicMock(return_value="tests/1/")
 

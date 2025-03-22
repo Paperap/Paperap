@@ -50,7 +50,7 @@ class StrEnumWithUnknown(StrEnum):
     @classmethod
     def _missing_(cls, value: object) -> str:
         logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
-        return cls.UNKNOWN # type: ignore # subclasses will define unknown
+        return cls.UNKNOWN  # type: ignore # subclasses will define unknown
 
 
 class IntEnumWithUnknown(IntEnum):
@@ -58,7 +58,7 @@ class IntEnumWithUnknown(IntEnum):
     @classmethod
     def _missing_(cls, value: object) -> int:
         logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
-        return cls.UNKNOWN # type: ignore # subclasses will define unknown
+        return cls.UNKNOWN  # type: ignore # subclasses will define unknown
 
 
 class ConstModel(pydantic.BaseModel):
