@@ -521,7 +521,7 @@ class TestRequestIter(UnitTestCase):
         mock_request_raw.assert_called_once_with(url=url, params=None)
 
         # Verify handle_response was called with the response
-        mock_handle_response.assert_called_once_with(**mock_request_raw.return_value)
+        mock_handle_response.assert_called_once_with(mock_request_raw.return_value)
 
         # Verify results
         self.assertEqual(len(results), 1)

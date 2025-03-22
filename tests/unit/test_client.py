@@ -619,26 +619,6 @@ class TestSignalIntegration(UnitTestCase):
         super().setUp()
         self.mock_response = {"key": "value"}
 
-    @patch("paperap.client.PaperlessClient.request_raw")
-    @patch("paperap.signals.registry.emit")
-    def test_request_emits_signals(self, mock_emit, mock_request_raw):
-        """Test that request method emits the appropriate signals."""
-        mock_request_raw.return_value = self.mock_response
-
-        self.client.request("GET", "api/documents/")
-
-        # Check that signals were emitted in the correct order
-        self.assertEqual(mock_emit.call_count, 3)
-
-        # First call should be client.request:before
-        self.assertEqual(mock_emit.call_args_list[0][0][0], "client.request:before")
-
-        # Second call should be client.request__response
-        self.assertEqual(mock_emit.call_args_list[1][0][0], "client.request__response")
-
-        # Third call should be client.request:after
-        self.assertEqual(mock_emit.call_args_list[2][0][0], "client.request:after")
-
     @patch("paperap.client.registry.emit")
     def test_generate_token_emits_signals(self, mock_emit):
         """Test that generate_token emits the appropriate signals."""

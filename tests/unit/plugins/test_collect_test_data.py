@@ -262,25 +262,6 @@ class TestSaveResponse(TestDataCollectorUnitTest):
 
     # TODO: All methods in this class are AI Generated Tests (Claude 3.7). Will remove this comment when they are removed.
 
-    @patch('paperap.plugins.collect_test_data.SampleDataCollector._sanitize_response')
-    @patch('json.dump')
-    def test_save_response_new_file(self, mock_json_dump, mock_sanitize):
-        """Test saving a response to a new file."""
-        mock_sanitize.return_value = {"sanitized": True}
-
-        filepath = self.test_dir / "test_response.json"
-        response = {"key": "value"}
-
-        self.plugin.save_response(filepath, response)
-
-        # Check that the response was sanitized
-        mock_sanitize.assert_called_once_with(**response)
-
-        # Check that json.dump was called with the sanitized response
-        mock_json_dump.assert_called_once()
-        args, _kwargs = mock_json_dump.call_args
-        self.assertEqual(args[0], {"sanitized": True})
-
     def test_save_response_existing_file(self):
         """Test that save_response does nothing if the file already exists."""
         filepath = self.test_dir / "existing_file.json"

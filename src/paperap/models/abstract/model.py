@@ -418,6 +418,10 @@ class BaseModel(pydantic.BaseModel, ABC):
             # A field is dirty if it differs from either original or saved data
             compare_dict = {}
             for field in set(list(self._original_data.keys()) + list(self._saved_data.keys())):
+                # ID cannot change, and is not set before first save sometimes
+                if field == 'id':
+                    continue
+
                 # Prefer original data (from DB) over saved data when both exist
                 compare_dict[field] = self._original_data.get(field, self._saved_data.get(field))
 
