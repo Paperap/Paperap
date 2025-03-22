@@ -284,8 +284,9 @@ class TestBaseResource(UnitTestCase):
         self.assertEqual(model.value, 42)
 
         # Test with invalid data
-        with self.assertRaises(Exception):
-            self.resource.parse_to_model({"invalid": "data"})
+        with self.assertLogs(level="ERROR"):
+            with self.assertRaises(Exception):
+                self.resource.parse_to_model({"invalid": "data"})
 
     def test_transform_data_input(self) -> None:
         """
