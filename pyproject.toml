@@ -330,7 +330,7 @@ indent-after-paren = 1
 indent-string = "    "
 
 # Maximum number of characters on a single line.
-max-line-length = 120
+max-line-length = 150
 
 # Maximum number of lines in a module.
 max-module-lines = 1000
@@ -650,7 +650,7 @@ redefining-builtins-modules = [
 
 [tool.yapf]
 based_on_style = "google"
-column_limit = 120
+column_limit = 150
 align_closing_bracket_with_visual_indent = true
 blank_line_before_nested_class_or_def = true
 each_dict_entry_on_separate_line = true
@@ -714,7 +714,7 @@ subprocess = [
 ]
 
 [tool.ruff]
-line-length = 120
+line-length = 150
 target-version = "py312"
 
 # Excludes in addition to ruff's defaults

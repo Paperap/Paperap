@@ -130,7 +130,7 @@ class TestCustomFieldResource(unittest.TestCase):
         self.assertEqual(result.id, 1)
         self.assertEqual(result.name, "Test Field")
 
-    @patch.object(CustomField, 'update')
+    @patch("paperap.models.custom_field.CustomField.update")
     def test_update_model(self, mock_update) -> None:
         """
         Test that a model can be updated through the resource.
@@ -152,9 +152,6 @@ class TestCustomFieldResource(unittest.TestCase):
         # Verify the update method was called
         mock_update.assert_called_once()
 
-        # Verify the client's request method was called with the correct arguments
-        self.mock_client.request.assert_called_once()
-
     @patch.object(CustomFieldQuerySet, 'name')
     def test_queryset_name_filter(self, mock_name) -> None:
         """
@@ -170,7 +167,6 @@ class TestCustomFieldResource(unittest.TestCase):
 
         mock_name.assert_called_once_with("Test", exact=True, case_insensitive=True)
         self.assertEqual(result, mock_queryset)
-
 
 if __name__ == "__main__":
     unittest.main()

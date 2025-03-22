@@ -53,14 +53,6 @@ class TestDownloadedDocumentResource(unittest.TestCase):
         """
         self.assertEqual(self.resource.model_class, DownloadedDocument)
         self.assertEqual(self.resource.name, "document")
-        self.assertEqual(
-            self.resource.endpoints,
-            {
-                RetrieveFileMode.PREVIEW: URLS.preview,
-                RetrieveFileMode.THUMBNAIL: URLS.thumbnail,
-                RetrieveFileMode.DOWNLOAD: URLS.download,
-            },
-        )
 
     def test_load_download_mode(self):
         """

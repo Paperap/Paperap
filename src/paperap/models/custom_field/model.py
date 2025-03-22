@@ -60,7 +60,10 @@ class CustomField(StandardModel):
         if v is None:
             return v
 
-        if isinstance(v, str) and v not in CustomFieldTypes.__members__:
+        if isinstance(v, CustomFieldTypes):
+            return v
+
+        if isinstance(v, str):
             try:
                 # Try to convert string to enum
                 return CustomFieldTypes(v)

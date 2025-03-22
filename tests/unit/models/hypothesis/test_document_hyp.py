@@ -122,7 +122,6 @@ def test_fuzz_Document(**kwargs) -> None:
     assert document.original_filename == kwargs.get("original_filename", None)
     #assert document.created_date == kwargs.get("created_date", None)
     #assert document.created == kwargs.get("created", None)
-    #assert document.updated == kwargs.get("updated", None)
     #assert document.deleted_at == kwargs.get("deleted_at", None)
     #assert document.added == kwargs.get("added", None)
     #assert document.custom_field_dicts == kwargs.get("custom_field_dicts", [])

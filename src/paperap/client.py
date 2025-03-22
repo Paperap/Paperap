@@ -345,13 +345,11 @@ class PaperlessClient:
 
             # Handle HTTP errors
             if response.status_code >= 400:
-                self._handle_request_errors(response, url, params=params, data=data, files=files)
+                return self._handle_request_errors(response, url, params=params, data=data, files=files)
 
             # No content
             if response.status_code == 204:
                 return None
-
-            return response
 
         except requests.exceptions.ConnectionError as ce:
             logger.error(
@@ -365,6 +363,8 @@ class PaperlessClient:
             raise RequestError(f"Connection error: {str(ce)}") from ce
         except requests.exceptions.RequestException as re:
             raise RequestError(f"Request failed: {str(re)}") from re
+
+        return response
 
     def _handle_request_errors(
         self,
