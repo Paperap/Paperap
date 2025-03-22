@@ -25,15 +25,17 @@
 
 from __future__ import annotations
 
+import logging
 import secrets
 from abc import ABC
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any, Generic, override
-import logging
+
 import factory
 from factory.base import StubObject
 from faker import Faker
 from typing_extensions import TypeVar
+
 from paperap.const import CustomFieldTypes
 from paperap.models import (
     Correspondent,
@@ -45,8 +47,8 @@ from paperap.models import (
     DocumentType,
     DownloadedDocument,
     Group,
-    Profile,
     MetadataElement,
+    Profile,
     SavedView,
     ShareLinks,
     StandardModel,

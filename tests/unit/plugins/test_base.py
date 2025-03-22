@@ -32,8 +32,8 @@ from unittest.mock import MagicMock, patch
 
 import pydantic
 
-from paperap.plugins.base import ConfigType, Plugin
 from paperap.exceptions import ModelValidationError
+from paperap.plugins.base import ConfigType, Plugin
 from paperap.plugins.manager import PluginManager
 
 

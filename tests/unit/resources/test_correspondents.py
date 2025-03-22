@@ -30,9 +30,9 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from paperap.client import PaperlessClient
+from paperap.exceptions import ObjectNotFoundError
 from paperap.models.correspondent import Correspondent, CorrespondentQuerySet
 from paperap.resources.correspondents import CorrespondentResource
-from paperap.exceptions import ObjectNotFoundError
 
 
 class TestCorrespondentResource(unittest.TestCase):

@@ -6,7 +6,7 @@
        File:    documents.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.9
+        Version: 0.0.10
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -26,7 +26,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 from string import Template
-from typing import Any, Iterator, override
+from typing import TYPE_CHECKING, Any, Iterator, override
 
 from typing_extensions import TypeVar
 
@@ -36,6 +36,9 @@ from paperap.models.document import Document, DocumentNote, DocumentNoteQuerySet
 from paperap.models.task import Task
 from paperap.resources.base import BaseResource, StandardResource
 from paperap.signals import registry
+
+if TYPE_CHECKING:
+    from paperap.models import Correspondent, DocumentType, StoragePath
 
 logger = logging.getLogger(__name__)
 
@@ -378,21 +381,23 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         """
         return self.bulk_action("remove_tag", ids, tag=tag_id)
 
-    def bulk_set_correspondent(self, ids: list[int], correspondent_id: int) -> dict[str, Any]:
+    def bulk_set_correspondent(self, ids: list[int], correspondent: "Correspondent | int") -> dict[str, Any]:
         """
         Set correspondent for multiple documents.
 
         Args:
             ids: List of document IDs to update
-            correspondent_id: Correspondent ID to assign
+            correspondent: Correspondent ID to assign
 
         Returns:
             The API response
 
         """
-        return self.bulk_action("set_correspondent", ids, correspondent=correspondent_id)
+        if not isinstance(correspondent, int):
+            correspondent = correspondent.id
+        return self.bulk_action("set_correspondent", ids, correspondent=correspondent)
 
-    def bulk_set_document_type(self, ids: list[int], document_type_id: int) -> dict[str, Any]:
+    def bulk_set_document_type(self, ids: list[int], document_type: "DocumentType | int") -> dict[str, Any]:
         """
         Set document type for multiple documents.
 
@@ -404,9 +409,11 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             The API response
 
         """
-        return self.bulk_action("set_document_type", ids, document_type=document_type_id)
+        if not isinstance(document_type, int):
+            document_type = document_type.id
+        return self.bulk_action("set_document_type", ids, document_type=document_type)
 
-    def bulk_set_storage_path(self, ids: list[int], storage_path_id: int) -> dict[str, Any]:
+    def bulk_set_storage_path(self, ids: list[int], storage_path: "StoragePath | int") -> dict[str, Any]:
         """
         Set storage path for multiple documents.
 
@@ -418,7 +425,9 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             The API response
 
         """
-        return self.bulk_action("set_storage_path", ids, storage_path=storage_path_id)
+        if not isinstance(storage_path, int):
+            storage_path = storage_path.id
+        return self.bulk_action("set_storage_path", ids, storage_path=storage_path)
 
     def bulk_set_permissions(
         self, ids: list[int], permissions: dict[str, Any] | None = None, owner_id: int | None = None, merge: bool = False

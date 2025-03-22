@@ -26,17 +26,17 @@
 
 from __future__ import annotations
 
-import unittest
-from unittest import mock
 import importlib
 import sys
+import unittest
 from typing import Any, Dict, List, Type
+from unittest import mock
 
 import pydantic
 
 from paperap.client import PaperlessClient
 from paperap.plugins.base import Plugin
-from paperap.plugins.manager import PluginManager, PluginConfig
+from paperap.plugins.manager import PluginConfig, PluginManager
 
 
 class MockPlugin(Plugin):

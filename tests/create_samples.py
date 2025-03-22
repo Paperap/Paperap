@@ -12,7 +12,7 @@ Typically called from first_run.py, not directly.
         File:    create_samples.py
         Project: paperap
         Created: 2025-03-11
-        Version: 0.0.9
+        Version: 0.0.10
         Author:  Jess Mann
         Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -37,7 +37,6 @@ from pathlib import Path
 from typing import Any, ClassVar, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
 
 import requests
-from faker import Faker
 from alive_progress import alive_bar
 from dotenv import load_dotenv
 from faker import Faker
@@ -473,7 +472,7 @@ class SampleDataCollector:
 
         # Collect data from extra endpoints
         self.collect_extra_endpoints()
-        
+
 
         logger.info("Sample data collection complete.")
 
@@ -494,13 +493,13 @@ def main() -> None:
             log_level = logging.INFO
         else:
             log_level = logging.DEBUG
-            
+
         logger.setLevel(log_level)
-        
+
         # Create and initialize collector with verbosity setting
         collector = SampleDataCollector()
         collector.config.verbose = args.verbose > 0
-        
+
         # Run the collection process
         collector.run()
     except Exception as e:

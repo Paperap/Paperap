@@ -74,9 +74,9 @@ class TestTag(TagUnitTest):
         for key, value in self.model_data_parsed.items():
             # Handle the color/colour field name difference
             if key == "color" and "color" not in model_dict and "colour" in model_dict:
-                self.assertEqual(value, model_dict["colour"], f"Value for key color/colour is incorrect")
+                self.assertEqual(value, model_dict["colour"], "Value for key color/colour is incorrect")
             elif key == "colour" and "colour" not in model_dict and "color" in model_dict:
-                self.assertEqual(value, model_dict["color"], f"Value for key colour/color is incorrect")
+                self.assertEqual(value, model_dict["color"], "Value for key colour/color is incorrect")
                 pass
             else:
                 self.assertIn(key, model_dict, f"Key {key} not found in model_dict")

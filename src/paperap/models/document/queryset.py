@@ -31,8 +31,7 @@ from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models.mixins.queryset import HasOwner
 
 if TYPE_CHECKING:
-    from paperap.models.correspondent.model import Correspondent
-    from paperap.models.document.model import Document, DocumentNote
+    from paperap.models import Correspondent, Document, DocumentNote, DocumentType, StoragePath
 
 logger = logging.getLogger(__name__)
 
@@ -831,7 +830,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Examples:
             >>> # Delete all documents with "invoice" in title
-            >>> client.documents().title("invoice", exact=False).bulk_delete()
+            >>> client.documents().title("invoice", exact=False).delete()
 
         """
         if ids := self._get_ids():
@@ -849,7 +848,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             >>> # Reprocess documents added in the last week
             >>> from datetime import datetime, timedelta
             >>> week_ago = datetime.now() - timedelta(days=7)
-            >>> client.documents().added_after(week_ago.strftime("%Y-%m-%d")).bulk_reprocess()
+            >>> client.documents().added_after(week_ago.strftime("%Y-%m-%d")).reprocess()
 
         """
         if ids := self._get_ids():
@@ -869,7 +868,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Examples:
             >>> # Merge all documents with tag "merge_me"
-            >>> client.documents().tag_name("merge_me").bulk_merge(delete_originals=True)
+            >>> client.documents().tag_name("merge_me").merge(delete_originals=True)
 
         """
         if ids := self._get_ids():
@@ -888,12 +887,53 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Examples:
             >>> # Rotate all documents with "sideways" in title by 90 degrees
-            >>> client.documents().title("sideways", exact=False).bulk_rotate(90)
+            >>> client.documents().title("sideways", exact=False).rotate(90)
 
         """
         if ids := self._get_ids():
             return self.resource.bulk_rotate(ids, degrees)
         return None
+
+    def update(
+        self,
+        *,
+        # Document metadata
+        correspondent: "Correspondent | int | None" = None,
+        document_type: "DocumentType | int | None" = None,
+        storage_path: "StoragePath | int | None" = None,
+        owner: int | None = None,
+    ) -> Self:
+        """
+        Perform bulk updates on all documents in the current queryset.
+
+        This method allows for multiple update operations in a single call.
+
+        Args:
+            correspondent: Set correspondent for all documents
+            document_type: Set document type for all documents
+            storage_path: Set storage path for all documents
+            owner: Owner ID to assign
+
+        Returns:
+            Self for method chaining
+
+        """
+        if not (ids := self._get_ids()):
+            return self
+
+        # Handle correspondent update
+        if correspondent is not None:
+            self.resource.bulk_set_correspondent(ids, correspondent)
+
+        # Handle document type update
+        if document_type is not None:
+            self.resource.bulk_set_document_type(ids, document_type)
+
+        # Handle storage path update
+        if storage_path is not None:
+            self.resource.bulk_set_storage_path(ids, storage_path)
+
+        return self._chain()
 
     def modify_custom_fields(
         self,
@@ -912,7 +952,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Examples:
             >>> # Add a custom field to documents with "invoice" in title
-            >>> client.documents().title("invoice", exact=False).bulk_modify_custom_fields(
+            >>> client.documents().title("invoice", exact=False).modify_custom_fields(
             ...     add_custom_fields={5: "Processed"}
             ... )
 
@@ -935,7 +975,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Examples:
             >>> # Add tag 3 and remove tag 4 from all documents with "invoice" in title
-            >>> client.documents().title("invoice", exact=False).bulk_modify_tags(
+            >>> client.documents().title("invoice", exact=False).modify_tags(
             ...     add_tags=[3], remove_tags=[4]
             ... )
 
@@ -957,7 +997,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Examples:
             >>> # Add tag 3 to all documents with "invoice" in title
-            >>> client.documents().title("invoice", exact=False).bulk_add_tag(3)
+            >>> client.documents().title("invoice", exact=False).add_tag(3)
 
         """
         ids = self._get_ids()
@@ -977,72 +1017,12 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Examples:
             >>> # Remove tag 4 from all documents with "invoice" in title
-            >>> client.documents().title("invoice", exact=False).bulk_remove_tag(4)
+            >>> client.documents().title("invoice", exact=False).remove_tag(4)
 
         """
         ids = self._get_ids()
         if ids:
             self.resource.bulk_remove_tag(ids, tag_id)
-        return self
-
-    def set_correspondent(self, correspondent_id: int) -> Self:
-        """
-        Set correspondent for all documents in the current queryset.
-
-        Args:
-            correspondent_id: Correspondent ID to assign
-
-        Returns:
-            Self for method chaining
-
-        Examples:
-            >>> # Set correspondent 5 for all documents with "invoice" in title
-            >>> client.documents().title("invoice", exact=False).bulk_set_correspondent(5)
-
-        """
-        ids = self._get_ids()
-        if ids:
-            self.resource.bulk_set_correspondent(ids, correspondent_id)
-        return self
-
-    def set_document_type(self, document_type_id: int) -> Self:
-        """
-        Set document type for all documents in the current queryset.
-
-        Args:
-            document_type_id: Document type ID to assign
-
-        Returns:
-            Self for method chaining
-
-        Examples:
-            >>> # Set document type 2 for all documents with "invoice" in title
-            >>> client.documents().title("invoice", exact=False).bulk_set_document_type(2)
-
-        """
-        ids = self._get_ids()
-        if ids:
-            self.resource.bulk_set_document_type(ids, document_type_id)
-        return self
-
-    def set_storage_path(self, storage_path_id: int) -> Self:
-        """
-        Set storage path for all documents in the current queryset.
-
-        Args:
-            storage_path_id: Storage path ID to assign
-
-        Returns:
-            Self for method chaining
-
-        Examples:
-            >>> # Set storage path 3 for all documents with "invoice" in title
-            >>> client.documents().title("invoice", exact=False).bulk_set_storage_path(3)
-
-        """
-        ids = self._get_ids()
-        if ids:
-            self.resource.bulk_set_storage_path(ids, storage_path_id)
         return self
 
     def set_permissions(
@@ -1061,7 +1041,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         Examples:
             >>> # Set owner to user 2 for all documents with "invoice" in title
-            >>> client.documents().title("invoice", exact=False).bulk_set_permissions(owner_id=2)
+            >>> client.documents().title("invoice", exact=False).set_permissions(owner_id=2)
 
         """
         ids = self._get_ids()

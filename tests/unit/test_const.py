@@ -29,6 +29,7 @@ from typing import Any, Dict, List, Optional, Type
 import pydantic
 
 from paperap.const import (
+    URLS,
     ConstModel,
     CustomFieldTypes,
     CustomFieldValues,
@@ -36,6 +37,7 @@ from paperap.const import (
     DocumentSearchHitType,
     DocumentStorageType,
     FilteringStrategies,
+    IntEnumWithUnknown,
     MatchingAlgorithmType,
     ModelStatus,
     PermissionSetType,
@@ -52,11 +54,9 @@ from paperap.const import (
     StatusTasksType,
     StatusType,
     StrEnumWithUnknown,
-    IntEnumWithUnknown,
     TaskNameType,
     TaskStatusType,
     TaskTypeType,
-    URLS,
     WorkflowActionType,
     WorkflowTriggerMatchingType,
     WorkflowTriggerScheduleDateFieldType,
