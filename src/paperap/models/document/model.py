@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
-from typing import TYPE_CHECKING, Annotated, Any, Iterable, Iterator, TypedDict, cast, override
+from typing import TYPE_CHECKING, Annotated, Any, Iterable, Iterator, Self, TypedDict, cast, override
 
 import pydantic
 from pydantic import Field, field_serializer, field_validator, model_serializer
@@ -54,6 +54,7 @@ if TYPE_CHECKING:
     from paperap.models.storage_path.model import StoragePath
     from paperap.models.tag import Tag, TagQuerySet
     from paperap.models.user.model import User
+    from paperap.resources.documents import DocumentResource
 
 logger = logging.getLogger(__name__)
 
@@ -187,6 +188,7 @@ class Document(StandardModel):
     _correspondent: tuple[int, Correspondent] | None = None
     _document_type: tuple[int, DocumentType] | None = None
     _storage_path: tuple[int, StoragePath] | None = None
+    _resource : "DocumentResource" # type: ignore # nested generics not supported
     __search_hit__: dict[str, Any] | None = None
 
     class Meta(StandardModel.Meta):

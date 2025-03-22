@@ -6,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.9
+        Version: 0.0.10
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -30,6 +30,7 @@ from typing import TYPE_CHECKING, Any, Final, Generic, Iterable, Iterator, Self,
 from pydantic import HttpUrl
 from typing_extensions import TypeVar
 
+from paperap.client import ClientResponse
 from paperap.exceptions import FilterDisabledError, MultipleObjectsFoundError, ObjectNotFoundError
 
 if TYPE_CHECKING:
@@ -39,9 +40,6 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # _BaseResource = TypeVar("_BaseResource", bound="BaseResource", default="BaseResource")
-
-type ClientResponse = dict[str, Any] | list[dict[str, Any]] | None
-
 
 class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
     """
@@ -171,7 +169,9 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         for key, _value in values.items():
             if not self._meta.filter_allowed(key):
-                raise FilterDisabledError(f"Filtering by {key} for {self.resource.name} does not appear to be supported by the API.")
+                raise FilterDisabledError(
+                    f"Filtering by {key} for {self.resource.name} does not appear to be supported by the API."
+                )
 
         if values:
             # Reset the cache if filters change
@@ -310,7 +310,9 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
             return count
 
         # I don't think this should ever occur, but just in case.
-        raise NotImplementedError(f"Unexpected Error: Could not determine count of objects. Last response: {self._last_response}")
+        raise NotImplementedError(
+            f"Unexpected Error: Could not determine count of objects. Last response: {self._last_response}"
+        )
 
     def count_this_page(self) -> int:
         """
@@ -876,7 +878,7 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
 
         return fn(action, ids, **kwargs)
 
-    def bulk_delete(self) -> ClientResponse:
+    def delete(self) -> ClientResponse:
         """
         Delete all objects in the queryset.
 
