@@ -64,6 +64,23 @@ def main():
         "--force",
     ], check=True, text=True) # nosec B603 # args are trusted
 
+    # Create any missing module documentation files
+    for module_name in ["client", "models", "resources", "signals", "plugins", "exceptions"]:
+        module_path = docs_dir / "modules" / f"{module_name}.rst"
+        if not module_path.exists():
+            with open(module_path, "w") as f:
+                f.write(f"""
+{module_name.capitalize()}
+{'=' * len(module_name)}
+
+This section contains documentation for the {module_name} module.
+
+.. automodule:: paperap.{module_name}
+   :members:
+   :undoc-members:
+   :show-inheritance:
+""")
+    
     # Build the documentation
     sphinx_build_path = shutil.which("sphinx-build")
     if not sphinx_build_path:

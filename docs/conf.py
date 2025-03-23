@@ -61,10 +61,27 @@ html_theme = 'sphinx_rtd_theme'
 html_theme_options = {
     'navigation_depth': 4,
     'titles_only': False,
+    'display_version': True,
+    'prev_next_buttons_location': 'bottom',
+    'style_external_links': True,
+    'vcs_pageview_mode': 'edit',
+    'style_nav_header_background': '#2980B9',
+    # Read the Docs specific options
+    'logo_only': False,
+    'analytics_id': '',  # Provided by Read the Docs as needed
+    # Flyout menu config
+    'flyout_display': 'block',
+    'version_selector': True,
+    'language_selector': True,
 }
 
 # Add any paths that contain custom static files
 html_static_path = ['_static']
+
+# Add custom JavaScript files
+html_js_files = [
+    ("readthedocs.js", {"defer": "defer"}),
+]
 
 # Intersphinx mapping
 intersphinx_mapping = {
@@ -72,6 +89,9 @@ intersphinx_mapping = {
     'requests': ('https://requests.readthedocs.io/en/latest/', None),
     'pydantic': ('https://docs.pydantic.dev/latest/', None),
 }
+
+# Set the canonical URL to prevent duplicate content issues
+html_baseurl = os.environ.get("READTHEDOCS_CANONICAL_URL", "/")
 
 # Napoleon settings
 napoleon_google_docstring = True

@@ -5,9 +5,11 @@ Welcome to Paperap's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   introduction
    installation
    usage
-   api/modules
+   modules/index
+   api/index
    contributing
    changelog
 

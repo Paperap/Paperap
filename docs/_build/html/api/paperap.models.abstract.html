@@ -11,23 +11,23 @@
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/api/paperap.models.abstract.html" />
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../_static/readthedocs.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="paperap.models.abstract.meta module" href="paperap.models.abstract.meta.html" />
-    <link rel="prev" title="paperap.models package" href="paperap.models.html" /> 
+    <link rel="search" title="Search" href="../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -43,23 +43,9 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">paperap</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="paperap.html">paperap package</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="paperap.html#paperap.PaperlessClient"><code class="docutils literal notranslate"><span class="pre">PaperlessClient</span></code></a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="paperap.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l4 current"><a class="reference internal" href="paperap.models.html">paperap.models package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="paperap.plugins.html">paperap.plugins package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="paperap.resources.html">paperap.resources package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="paperap.scripts.html">paperap.scripts package</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="paperap.html#submodules">Submodules</a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 </ul>
 
@@ -67,19 +53,16 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">paperap</a></li>
-          <li class="breadcrumb-item"><a href="paperap.html">paperap package</a></li>
-          <li class="breadcrumb-item"><a href="paperap.models.html">paperap.models package</a></li>
       <li class="breadcrumb-item active">paperap.models.abstract package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/api/paperap.models.abstract.rst.txt" rel="nofollow"> View page source</a>
@@ -99,7 +82,7 @@
 <div><dl class="simple">
 <dt>File:    __init__.py</dt><dd><p>Project: paperap</p>
 </dd>
-<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.9</p>
+<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.10</p>
 </dd>
 </dl>
 <p>Author:  Jess Mann
@@ -793,7 +776,7 @@ method.</p>
 <dd class="field-even"><p>True if the model data changes, False on failure or if the data does not change.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the model is not found on Paperless. (e.g. it was deleted remotely)</p>
+<dd class="field-odd"><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the model is not found on Paperless. (e.g. it was deleted remotely)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -850,8 +833,8 @@ when the server responds.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the resource doesn’t exist on the server</p></li>
-<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.RequestError" title="paperap.exceptions.RequestError"><strong>RequestError</strong></a> – If there’s a communication error with the server</p></li>
+<li><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the resource doesn’t exist on the server</p></li>
+<li><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.RequestError" title="paperap.exceptions.RequestError"><strong>RequestError</strong></a> – If there’s a communication error with the server</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#PermissionError" title="(in Python v3.13)"><strong>PermissionError</strong></a> – If the user doesn’t have permission to update the resource</p></li>
 </ul>
 </dd>
@@ -1187,7 +1170,7 @@ docs = client.documents.filter(id__in=[1, 2, 3])</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found</p></li>
+<li><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.13)"><strong>NotImplementedError</strong></a> – If the method is not implemented by the subclass</p></li>
 </ul>
 </dd>
@@ -1293,7 +1276,7 @@ model = StandardModel(id=1)</p>
 <dd class="field-even"><p>A new instance of StandardQuerySet.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found.</p>
+<dd class="field-odd"><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found.</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
@@ -1445,20 +1428,6 @@ This is intentional, as the object may be outdated or not fully populated.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="paperap.models.abstract.StandardQuerySet.bulk_delete">
-<span class="sig-name descname"><span class="pre">bulk_delete</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#StandardQuerySet.bulk_delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.StandardQuerySet.bulk_delete" title="Link to this definition"></a></dt>
-<dd><p>Delete all objects in the queryset.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeAliasType</span></code></span></p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The API response</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.StandardQuerySet.bulk_update">
 <span class="sig-name descname"><span class="pre">bulk_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#StandardQuerySet.bulk_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.StandardQuerySet.bulk_update" title="Link to this definition"></a></dt>
 <dd><p>Update all objects in the queryset with the given values.</p>
@@ -1471,6 +1440,20 @@ This is intentional, as the object may be outdated or not fully populated.</p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The API response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.models.abstract.StandardQuerySet.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#StandardQuerySet.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.StandardQuerySet.delete" title="Link to this definition"></a></dt>
+<dd><p>Delete all objects in the queryset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeAliasType</span></code></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The API response</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1490,7 +1473,7 @@ This is intentional, as the object may be outdated or not fully populated.</p>
 <dd class="field-odd"><p>A single object matching the query</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found</p>
+<dd class="field-even"><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
@@ -1808,7 +1791,7 @@ doc = client.documents.get(123)</p>
 <li class="toctree-l3"><a class="reference internal" href="paperap.models.abstract.queryset.html#paperap.models.abstract.queryset.StandardQuerySet.__contains__"><code class="docutils literal notranslate"><span class="pre">StandardQuerySet.__contains__()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="paperap.models.abstract.queryset.html#paperap.models.abstract.queryset.StandardQuerySet.bulk_action"><code class="docutils literal notranslate"><span class="pre">StandardQuerySet.bulk_action()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="paperap.models.abstract.queryset.html#paperap.models.abstract.queryset.StandardQuerySet.filters"><code class="docutils literal notranslate"><span class="pre">StandardQuerySet.filters</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="paperap.models.abstract.queryset.html#paperap.models.abstract.queryset.StandardQuerySet.bulk_delete"><code class="docutils literal notranslate"><span class="pre">StandardQuerySet.bulk_delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="paperap.models.abstract.queryset.html#paperap.models.abstract.queryset.StandardQuerySet.delete"><code class="docutils literal notranslate"><span class="pre">StandardQuerySet.delete()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="paperap.models.abstract.queryset.html#paperap.models.abstract.queryset.StandardQuerySet.bulk_update"><code class="docutils literal notranslate"><span class="pre">StandardQuerySet.bulk_update()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="paperap.models.abstract.queryset.html#paperap.models.abstract.queryset.StandardQuerySet.bulk_assign_tags"><code class="docutils literal notranslate"><span class="pre">StandardQuerySet.bulk_assign_tags()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="paperap.models.abstract.queryset.html#paperap.models.abstract.queryset.StandardQuerySet.bulk_assign_correspondent"><code class="docutils literal notranslate"><span class="pre">StandardQuerySet.bulk_assign_correspondent()</span></code></a></li>
@@ -1827,10 +1810,7 @@ doc = client.documents.get(123)</p>
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="paperap.models.html" class="btn btn-neutral float-left" title="paperap.models package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="paperap.models.abstract.meta.html" class="btn btn-neutral float-right" title="paperap.models.abstract.meta module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

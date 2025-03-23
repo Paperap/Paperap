@@ -314,7 +314,7 @@ class TestDocumentQuerysetBulkOperations(DocumentUnitTest):
         queryset = self.client.documents().filter(id__in=doc_ids)
         queryset.rotate(90)
 
-        # Verification would require checking document content
+        # Verification would require checking document content TODO
 
     @pytest.mark.skip(reason="Destructive test that would delete documents")
     def test_delete(self) -> None:
@@ -356,7 +356,7 @@ class TestDocumentQuerysetBulkOperations(DocumentUnitTest):
         result = queryset.merge()
 
         # Check the result
-        self.assertTrue(result, "Merge operation should have succeeded")
+        self.assertTrue(result, "Merge operation should have submitted successfully")
 
     @pytest.mark.skip(reason="Reprocessing requires document content")
     def test_reprocess(self) -> None:
@@ -373,3 +373,5 @@ class TestDocumentQuerysetBulkOperations(DocumentUnitTest):
         # Apply the bulk operation using queryset
         queryset = self.client.documents().filter(id__in=doc_ids)
         queryset.reprocess()
+
+        # TODO

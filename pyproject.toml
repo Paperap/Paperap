@@ -971,4 +971,5 @@ dev = [
   "pydantic-basedtyping>=0.1.0",
   "mypy>=1.15.0",
   "alive-progress>=3.2.0",
+  "playwright>=1.51.0",
 ]

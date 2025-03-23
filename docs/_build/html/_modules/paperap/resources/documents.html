@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/resources/documents.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../_static/readthedocs.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,8 +43,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
 </ul>
 
@@ -50,13 +52,13 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -79,7 +81,7 @@
 <span class="sd">       File:    documents.py</span>
 <span class="sd">        Project: paperap</span>
 <span class="sd">       Created: 2025-03-04</span>
-<span class="sd">        Version: 0.0.9</span>
+<span class="sd">        Version: 0.0.10</span>
 <span class="sd">       Author:  Jess Mann</span>
 <span class="sd">       Email:   jess@jmann.me</span>
 <span class="sd">        Copyright (c) 2025 Jess Mann</span>
@@ -99,7 +101,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">string</span><span class="w"> </span><span class="kn">import</span> <span class="n">Template</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">override</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">override</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeVar</span>
 
@@ -110,11 +112,14 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.resources.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseResource</span><span class="p">,</span> <span class="n">StandardResource</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.signals</span><span class="w"> </span><span class="kn">import</span> <span class="n">registry</span>
 
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Correspondent</span><span class="p">,</span> <span class="n">DocumentType</span><span class="p">,</span> <span class="n">StoragePath</span>
+
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="DocumentResource">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource">[docs]</a>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DocumentResource</span><span class="p">(</span><span class="n">StandardResource</span><span class="p">[</span><span class="n">Document</span><span class="p">,</span> <span class="n">DocumentQuerySet</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Resource for managing documents.&quot;&quot;&quot;</span>
 
@@ -137,7 +142,7 @@
     <span class="p">}</span>
 
 <div class="viewcode-block" id="DocumentResource.download">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.download">[docs]</a>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.download">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">original</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_endpoint</span><span class="p">(</span><span class="s2">&quot;download&quot;</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">document_id</span><span class="p">)</span>
         <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;original&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">original</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()}</span>
@@ -149,7 +154,7 @@
 
 
 <div class="viewcode-block" id="DocumentResource.preview">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.preview">[docs]</a>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.preview">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">preview</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_endpoint</span><span class="p">(</span><span class="s2">&quot;preview&quot;</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">document_id</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">json_response</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -159,7 +164,7 @@
 
 
 <div class="viewcode-block" id="DocumentResource.thumbnail">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.thumbnail">[docs]</a>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.thumbnail">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">thumbnail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_endpoint</span><span class="p">(</span><span class="s2">&quot;thumbnail&quot;</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">document_id</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">json_response</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -169,7 +174,7 @@
 
 
 <div class="viewcode-block" id="DocumentResource.upload_async">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.upload_async">[docs]</a>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.upload_async">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">upload_async</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Upload a document from a file to paperless ngx.</span>
@@ -193,7 +198,7 @@
 
 
 <div class="viewcode-block" id="DocumentResource.upload_sync">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.upload_sync">[docs]</a>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.upload_sync">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">upload_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_wait</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span> <span class="n">poll_interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Upload a document and wait until it has been processed.</span>
@@ -230,7 +235,7 @@
 
 
 <div class="viewcode-block" id="DocumentResource.upload_content">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.upload_content">[docs]</a>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.upload_content">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">upload_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_content</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Upload a document with optional metadata.</span>
@@ -257,7 +262,7 @@
 
 
 <div class="viewcode-block" id="DocumentResource.next_asn">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.next_asn">[docs]</a>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.next_asn">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">next_asn</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_endpoint</span><span class="p">(</span><span class="s2">&quot;next_asn&quot;</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
@@ -267,7 +272,7 @@
 
 
 <div class="viewcode-block" id="DocumentResource.bulk_action">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.bulk_action">[docs]</a>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.bulk_action">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">bulk_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform a bulk action on multiple documents.</span>
@@ -306,7 +311,7 @@
 
 
 <div class="viewcode-block" id="DocumentResource.bulk_delete">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.bulk_delete">[docs]</a>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.bulk_delete">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">bulk_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delete multiple documents at once.</span>
@@ -322,7 +327,7 @@
 
 
 <div class="viewcode-block" id="DocumentResource.bulk_reprocess">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.bulk_reprocess">[docs]</a>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.bulk_reprocess">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">bulk_reprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reprocess multiple documents.</span>
@@ -338,8 +343,8 @@
 
 
 <div class="viewcode-block" id="DocumentResource.bulk_merge">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.bulk_merge">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">bulk_merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">metadata_document_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">delete_originals</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.bulk_merge">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bulk_merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">metadata_document_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">delete_originals</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Merge multiple documents.</span>
 
@@ -349,7 +354,11 @@
 <span class="sd">            delete_originals: Whether to delete the original documents after merging</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The API response</span>
+<span class="sd">            True if submitting the merge was successful</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            BadResponseError: If the merge action returns an unexpected response</span>
+<span class="sd">            APIError: If the merge action fails</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
@@ -358,11 +367,18 @@
         <span class="k">if</span> <span class="n">delete_originals</span><span class="p">:</span>
             <span class="n">params</span><span class="p">[</span><span class="s2">&quot;delete_originals&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_action</span><span class="p">(</span><span class="s2">&quot;merge&quot;</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span></div>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_action</span><span class="p">(</span><span class="s2">&quot;merge&quot;</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+        <span class="c1"># Expect {&#39;result&#39;: &#39;OK&#39;}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span> <span class="ow">or</span> <span class="s2">&quot;result&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">BadResponseError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Merge action returned unexpected response: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;result&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;OK&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">APIError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Merge action failed: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="DocumentResource.bulk_split">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.bulk_split">[docs]</a>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.bulk_split">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">bulk_split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pages</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">delete_originals</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Split a document.</span>
@@ -384,7 +400,7 @@
 
 
 <div class="viewcode-block" id="DocumentResource.bulk_rotate">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.bulk_rotate">[docs]</a>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.bulk_rotate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">bulk_rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">degrees</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Rotate documents.</span>
@@ -404,7 +420,7 @@
 
 
 <div class="viewcode-block" id="DocumentResource.bulk_delete_pages">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.bulk_delete_pages">[docs]</a>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.bulk_delete_pages">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">bulk_delete_pages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delete pages from a document.</span>
@@ -421,7 +437,7 @@
 
 
 <div class="viewcode-block" id="DocumentResource.bulk_modify_custom_fields">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.bulk_modify_custom_fields">[docs]</a>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.bulk_modify_custom_fields">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">bulk_modify_custom_fields</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
@@ -450,7 +466,7 @@
 
 
 <div class="viewcode-block" id="DocumentResource.bulk_modify_tags">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.bulk_modify_tags">[docs]</a>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.bulk_modify_tags">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">bulk_modify_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">add_tags</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">remove_tags</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Modify tags on multiple documents.</span>
@@ -474,7 +490,7 @@
 
 
 <div class="viewcode-block" id="DocumentResource.bulk_add_tag">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.bulk_add_tag">[docs]</a>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.bulk_add_tag">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">bulk_add_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">tag_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a tag to multiple documents.</span>
@@ -491,7 +507,7 @@
 
 
 <div class="viewcode-block" id="DocumentResource.bulk_remove_tag">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.bulk_remove_tag">[docs]</a>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.bulk_remove_tag">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">bulk_remove_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">tag_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove a tag from multiple documents.</span>
@@ -508,25 +524,27 @@
 
 
 <div class="viewcode-block" id="DocumentResource.bulk_set_correspondent">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.bulk_set_correspondent">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">bulk_set_correspondent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">correspondent_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.bulk_set_correspondent">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bulk_set_correspondent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">correspondent</span><span class="p">:</span> <span class="s2">&quot;Correspondent | int&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set correspondent for multiple documents.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            ids: List of document IDs to update</span>
-<span class="sd">            correspondent_id: Correspondent ID to assign</span>
+<span class="sd">            correspondent: Correspondent ID to assign</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The API response</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_action</span><span class="p">(</span><span class="s2">&quot;set_correspondent&quot;</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">correspondent</span><span class="o">=</span><span class="n">correspondent_id</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">correspondent</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">correspondent</span> <span class="o">=</span> <span class="n">correspondent</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_action</span><span class="p">(</span><span class="s2">&quot;set_correspondent&quot;</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">correspondent</span><span class="o">=</span><span class="n">correspondent</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DocumentResource.bulk_set_document_type">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.bulk_set_document_type">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">bulk_set_document_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">document_type_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.bulk_set_document_type">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bulk_set_document_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">document_type</span><span class="p">:</span> <span class="s2">&quot;DocumentType | int&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set document type for multiple documents.</span>
 
@@ -538,12 +556,14 @@
 <span class="sd">            The API response</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_action</span><span class="p">(</span><span class="s2">&quot;set_document_type&quot;</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">document_type</span><span class="o">=</span><span class="n">document_type_id</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">document_type</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">document_type</span> <span class="o">=</span> <span class="n">document_type</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_action</span><span class="p">(</span><span class="s2">&quot;set_document_type&quot;</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">document_type</span><span class="o">=</span><span class="n">document_type</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DocumentResource.bulk_set_storage_path">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.bulk_set_storage_path">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">bulk_set_storage_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">storage_path_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.bulk_set_storage_path">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bulk_set_storage_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">storage_path</span><span class="p">:</span> <span class="s2">&quot;StoragePath | int&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set storage path for multiple documents.</span>
 
@@ -555,11 +575,13 @@
 <span class="sd">            The API response</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_action</span><span class="p">(</span><span class="s2">&quot;set_storage_path&quot;</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">storage_path</span><span class="o">=</span><span class="n">storage_path_id</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">storage_path</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">storage_path</span> <span class="o">=</span> <span class="n">storage_path</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_action</span><span class="p">(</span><span class="s2">&quot;set_storage_path&quot;</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">storage_path</span><span class="o">=</span><span class="n">storage_path</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DocumentResource.bulk_set_permissions">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.bulk_set_permissions">[docs]</a>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.bulk_set_permissions">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">bulk_set_permissions</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">permissions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">owner_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">merge</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
@@ -586,7 +608,7 @@
 
 
 <div class="viewcode-block" id="DocumentResource.empty_trash">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentResource.empty_trash">[docs]</a>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentResource.empty_trash">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">empty_trash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Empty the trash.</span>
@@ -610,7 +632,7 @@
 
 
 <div class="viewcode-block" id="DocumentNoteResource">
-<a class="viewcode-back" href="../../../api/paperap.resources.documents.html#paperap.resources.DocumentNoteResource">[docs]</a>
+<a class="viewcode-back" href="../../../modules/resources.html#paperap.resources.DocumentNoteResource">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DocumentNoteResource</span><span class="p">(</span><span class="n">StandardResource</span><span class="p">[</span><span class="n">DocumentNote</span><span class="p">,</span> <span class="n">DocumentNoteQuerySet</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Resource for managing document notes.&quot;&quot;&quot;</span>
 

@@ -11,23 +11,23 @@
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/api/paperap.exceptions.html" />
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../_static/readthedocs.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="paperap.settings module" href="paperap.settings.html" />
-    <link rel="prev" title="paperap.const module" href="paperap.const.html" /> 
+    <link rel="search" title="Search" href="../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -43,26 +43,9 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">paperap</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="paperap.html">paperap package</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="paperap.html#paperap.PaperlessClient"><code class="docutils literal notranslate"><span class="pre">PaperlessClient</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="paperap.html#subpackages">Subpackages</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="paperap.html#submodules">Submodules</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="paperap.auth.html">paperap.auth module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="paperap.client.html">paperap.client module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="paperap.const.html">paperap.const module</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">paperap.exceptions module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="paperap.settings.html">paperap.settings module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="paperap.signals.html">paperap.signals module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="paperap.utils.html">paperap.utils module</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 </ul>
 
@@ -70,18 +53,16 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">paperap</a></li>
-          <li class="breadcrumb-item"><a href="paperap.html">paperap package</a></li>
       <li class="breadcrumb-item active">paperap.exceptions module</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/api/paperap.exceptions.rst.txt" rel="nofollow"> View page source</a>
@@ -128,7 +109,7 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="py exception">
 <dt class="sig sig-object py" id="paperap.exceptions.ModelValidationError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.exceptions.</span></span><span class="sig-name descname"><span class="pre">ModelValidationError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/exceptions.html#ModelValidationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.exceptions.ModelValidationError" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#paperap.exceptions.PaperapError" title="paperap.exceptions.PaperapError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PaperapError</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.PaperapError" title="paperap.exceptions.PaperapError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PaperapError</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
 <p>Raised when a model fails validation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -156,7 +137,7 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="py exception">
 <dt class="sig sig-object py" id="paperap.exceptions.ReadOnlyFieldError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.exceptions.</span></span><span class="sig-name descname"><span class="pre">ReadOnlyFieldError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/exceptions.html#ReadOnlyFieldError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.exceptions.ReadOnlyFieldError" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#paperap.exceptions.ModelValidationError" title="paperap.exceptions.ModelValidationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelValidationError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ModelValidationError" title="paperap.exceptions.ModelValidationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelValidationError</span></code></a></p>
 <p>Raised when a read-only field is set.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -171,21 +152,21 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="py exception">
 <dt class="sig sig-object py" id="paperap.exceptions.ConfigurationError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.exceptions.</span></span><span class="sig-name descname"><span class="pre">ConfigurationError</span></span><a class="reference internal" href="../_modules/paperap/exceptions.html#ConfigurationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.exceptions.ConfigurationError" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#paperap.exceptions.PaperapError" title="paperap.exceptions.PaperapError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PaperapError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.PaperapError" title="paperap.exceptions.PaperapError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PaperapError</span></code></a></p>
 <p>Raised when the configuration is invalid.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="paperap.exceptions.PaperlessError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.exceptions.</span></span><span class="sig-name descname"><span class="pre">PaperlessError</span></span><a class="reference internal" href="../_modules/paperap/exceptions.html#PaperlessError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.exceptions.PaperlessError" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#paperap.exceptions.PaperapError" title="paperap.exceptions.PaperapError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PaperapError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.PaperapError" title="paperap.exceptions.PaperapError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PaperapError</span></code></a></p>
 <p>Raised due to a feature or error of paperless ngx</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="paperap.exceptions.APIError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.exceptions.</span></span><span class="sig-name descname"><span class="pre">APIError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/exceptions.html#APIError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.exceptions.APIError" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#paperap.exceptions.PaperlessError" title="paperap.exceptions.PaperlessError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PaperlessError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.PaperlessError" title="paperap.exceptions.PaperlessError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PaperlessError</span></code></a></p>
 <p>Raised when the API returns an error.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -218,7 +199,7 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="py exception">
 <dt class="sig sig-object py" id="paperap.exceptions.AuthenticationError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.exceptions.</span></span><span class="sig-name descname"><span class="pre">AuthenticationError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/exceptions.html#AuthenticationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.exceptions.AuthenticationError" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">APIError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">APIError</span></code></a></p>
 <p>Raised when authentication fails.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -233,7 +214,7 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="py exception">
 <dt class="sig sig-object py" id="paperap.exceptions.InsufficientPermissionError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.exceptions.</span></span><span class="sig-name descname"><span class="pre">InsufficientPermissionError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/exceptions.html#InsufficientPermissionError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.exceptions.InsufficientPermissionError" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">APIError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">APIError</span></code></a></p>
 <p>Raised when a user does not have permission to perform an action.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -248,7 +229,7 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="py exception">
 <dt class="sig sig-object py" id="paperap.exceptions.FeatureNotAvailableError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.exceptions.</span></span><span class="sig-name descname"><span class="pre">FeatureNotAvailableError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/exceptions.html#FeatureNotAvailableError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.exceptions.FeatureNotAvailableError" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">APIError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">APIError</span></code></a></p>
 <p>Raised when a feature is not available.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -263,7 +244,7 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="py exception">
 <dt class="sig sig-object py" id="paperap.exceptions.FilterDisabledError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.exceptions.</span></span><span class="sig-name descname"><span class="pre">FilterDisabledError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/exceptions.html#FilterDisabledError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.exceptions.FilterDisabledError" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#paperap.exceptions.FeatureNotAvailableError" title="paperap.exceptions.FeatureNotAvailableError"><code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureNotAvailableError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.FeatureNotAvailableError" title="paperap.exceptions.FeatureNotAvailableError"><code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureNotAvailableError</span></code></a></p>
 <p>Raised when a filter is not available.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -278,7 +259,7 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="py exception">
 <dt class="sig sig-object py" id="paperap.exceptions.RequestError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.exceptions.</span></span><span class="sig-name descname"><span class="pre">RequestError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/exceptions.html#RequestError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.exceptions.RequestError" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">APIError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">APIError</span></code></a></p>
 <p>Raised when an error occurs while making a request.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -293,7 +274,7 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="py exception">
 <dt class="sig sig-object py" id="paperap.exceptions.BadResponseError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.exceptions.</span></span><span class="sig-name descname"><span class="pre">BadResponseError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/exceptions.html#BadResponseError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.exceptions.BadResponseError" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">APIError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">APIError</span></code></a></p>
 <p>Raised when a response is returned, but the status code is not 200.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -308,7 +289,7 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="py exception">
 <dt class="sig sig-object py" id="paperap.exceptions.ResponseParsingError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.exceptions.</span></span><span class="sig-name descname"><span class="pre">ResponseParsingError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/exceptions.html#ResponseParsingError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.exceptions.ResponseParsingError" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">APIError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">APIError</span></code></a></p>
 <p>Raised when the response can’t be parsed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -323,7 +304,7 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="py exception">
 <dt class="sig sig-object py" id="paperap.exceptions.ResourceNotFoundError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.exceptions.</span></span><span class="sig-name descname"><span class="pre">ResourceNotFoundError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/exceptions.html#ResourceNotFoundError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.exceptions.ResourceNotFoundError" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">APIError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">APIError</span></code></a></p>
 <p>Raised when a requested resource is not found.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -356,7 +337,7 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="py exception">
 <dt class="sig sig-object py" id="paperap.exceptions.RelationshipNotFoundError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.exceptions.</span></span><span class="sig-name descname"><span class="pre">RelationshipNotFoundError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/exceptions.html#RelationshipNotFoundError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.exceptions.RelationshipNotFoundError" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResourceNotFoundError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResourceNotFoundError</span></code></a></p>
 <p>Raised when a requested relationship is not found.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -371,7 +352,7 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="py exception">
 <dt class="sig sig-object py" id="paperap.exceptions.ObjectNotFoundError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.exceptions.</span></span><span class="sig-name descname"><span class="pre">ObjectNotFoundError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/exceptions.html#ObjectNotFoundError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.exceptions.ObjectNotFoundError" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResourceNotFoundError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResourceNotFoundError</span></code></a></p>
 <p>Raised when a requested object is not found.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -406,7 +387,7 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="py exception">
 <dt class="sig sig-object py" id="paperap.exceptions.MultipleObjectsFoundError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.exceptions.</span></span><span class="sig-name descname"><span class="pre">MultipleObjectsFoundError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/exceptions.html#MultipleObjectsFoundError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.exceptions.MultipleObjectsFoundError" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">APIError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">APIError</span></code></a></p>
 <p>Raised when multiple objects are found when only one was expected.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -421,21 +402,21 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="py exception">
 <dt class="sig sig-object py" id="paperap.exceptions.DocumentError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.exceptions.</span></span><span class="sig-name descname"><span class="pre">DocumentError</span></span><a class="reference internal" href="../_modules/paperap/exceptions.html#DocumentError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.exceptions.DocumentError" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#paperap.exceptions.PaperapError" title="paperap.exceptions.PaperapError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PaperapError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.PaperapError" title="paperap.exceptions.PaperapError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PaperapError</span></code></a></p>
 <p>Raised when an error occurs with a local document.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="paperap.exceptions.NoImagesError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.exceptions.</span></span><span class="sig-name descname"><span class="pre">NoImagesError</span></span><a class="reference internal" href="../_modules/paperap/exceptions.html#NoImagesError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.exceptions.NoImagesError" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#paperap.exceptions.DocumentError" title="paperap.exceptions.DocumentError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.DocumentError" title="paperap.exceptions.DocumentError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentError</span></code></a></p>
 <p>Raised when no images are found in a pdf.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="paperap.exceptions.DocumentParsingError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.exceptions.</span></span><span class="sig-name descname"><span class="pre">DocumentParsingError</span></span><a class="reference internal" href="../_modules/paperap/exceptions.html#DocumentParsingError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.exceptions.DocumentParsingError" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#paperap.exceptions.DocumentError" title="paperap.exceptions.DocumentError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.DocumentError" title="paperap.exceptions.DocumentError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentError</span></code></a></p>
 <p>Raised when a document cannot be parsed.</p>
 </dd></dl>
 
@@ -444,10 +425,7 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="paperap.const.html" class="btn btn-neutral float-left" title="paperap.const module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="paperap.settings.html" class="btn btn-neutral float-right" title="paperap.settings module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

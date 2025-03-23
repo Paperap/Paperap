@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/models/document/queryset.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../../_static/readthedocs.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,8 +43,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
 </ul>
 
@@ -50,13 +52,13 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -79,7 +81,7 @@
 <span class="sd">       File:    queryset.py</span>
 <span class="sd">        Project: paperap</span>
 <span class="sd">       Created: 2025-03-04</span>
-<span class="sd">        Version: 0.0.9</span>
+<span class="sd">        Version: 0.0.10</span>
 <span class="sd">       Author:  Jess Mann</span>
 <span class="sd">       Email:   jess@jmann.me</span>
 <span class="sd">        Copyright (c) 2025 Jess Mann</span>
@@ -97,19 +99,22 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">singledispatchmethod</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">NamedTuple</span><span class="p">,</span> <span class="n">Self</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">overload</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">NamedTuple</span><span class="p">,</span> <span class="n">Self</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">override</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.abstract.queryset</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseQuerySet</span><span class="p">,</span> <span class="n">StandardQuerySet</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.mixins.queryset</span><span class="w"> </span><span class="kn">import</span> <span class="n">HasOwner</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.const</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClientResponse</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.correspondent.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Correspondent</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.document.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentNote</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Correspondent</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentNote</span><span class="p">,</span> <span class="n">DocumentType</span><span class="p">,</span> <span class="n">StoragePath</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">_OperationType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;_QueryParam&quot;</span><span class="p">]</span>
 <span class="n">_QueryParam</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;CustomFieldQuery&quot;</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_OperationType</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.resources.documents</span><span class="w"> </span><span class="kn">import</span> <span class="n">DocumentResource</span>
 
 
 <div class="viewcode-block" id="CustomFieldQuery">
@@ -129,7 +134,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DocumentQuerySet</span><span class="p">(</span><span class="n">StandardQuerySet</span><span class="p">[</span><span class="s2">&quot;Document&quot;</span><span class="p">],</span> <span class="n">HasOwner</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    QuerySet for Paperless-ngx documents with specialized filtering methods.</span>
@@ -147,8 +152,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">resource</span><span class="p">:</span> <span class="s2">&quot;DocumentResource&quot;</span>  <span class="c1"># type: ignore # because nested generics are not allowed</span>
+
 <div class="viewcode-block" id="DocumentQuerySet.tag_id">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.tag_id">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.tag_id">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">tag_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents that have the specified tag ID(s).</span>
@@ -166,7 +173,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.tag_name">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.tag_name">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.tag_name">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">tag_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents that have a tag with the specified name.</span>
@@ -183,7 +190,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.title">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.title">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.title">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents by title.</span>
@@ -200,7 +207,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.search">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.search">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.search">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DocumentQuerySet&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Search for documents using a query string.</span>
@@ -221,7 +228,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.more_like">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.more_like">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.more_like">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">more_like</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DocumentQuerySet&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find documents similar to the specified document.</span>
@@ -242,7 +249,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.correspondent">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.correspondent">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.correspondent">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">correspondent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents by correspondent.</span>
@@ -314,7 +321,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.correspondent_id">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.correspondent_id">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.correspondent_id">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">correspondent_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">correspondent_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents by correspondent ID.</span>
@@ -330,7 +337,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.correspondent_name">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.correspondent_name">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.correspondent_name">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">correspondent_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents by correspondent name.</span>
@@ -347,7 +354,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.correspondent_slug">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.correspondent_slug">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.correspondent_slug">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">correspondent_slug</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slug</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents by correspondent slug.</span>
@@ -364,7 +371,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.document_type">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.document_type">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.document_type">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">document_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents by document type.</span>
@@ -430,7 +437,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.document_type_id">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.document_type_id">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.document_type_id">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">document_type_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document_type_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents by document type ID.</span>
@@ -446,7 +453,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.document_type_name">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.document_type_name">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.document_type_name">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">document_type_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents by document type name.</span>
@@ -463,7 +470,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.storage_path">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.storage_path">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.storage_path">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">storage_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents by storage path.</span>
@@ -529,7 +536,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.storage_path_id">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.storage_path_id">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.storage_path_id">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">storage_path_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage_path_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents by storage path ID.</span>
@@ -545,7 +552,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.storage_path_name">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.storage_path_name">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.storage_path_name">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">storage_path_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents by storage path name.</span>
@@ -562,7 +569,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.content">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.content">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.content">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents whose content contains the specified text.</span>
@@ -578,7 +585,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.added_after">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.added_after">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.added_after">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">added_after</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents added after the specified date.</span>
@@ -594,7 +601,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.added_before">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.added_before">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.added_before">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">added_before</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents added before the specified date.</span>
@@ -610,7 +617,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.asn">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.asn">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.asn">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">asn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents by archive serial number.</span>
@@ -627,7 +634,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.original_filename">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.original_filename">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.original_filename">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">original_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents by original file name.</span>
@@ -644,7 +651,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.user_can_change">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.user_can_change">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.user_can_change">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">user_can_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents by user change permission.</span>
@@ -660,7 +667,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.custom_field_fullsearch">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.custom_field_fullsearch">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.custom_field_fullsearch">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">custom_field_fullsearch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents by searching through both custom field name and value.</span>
@@ -678,7 +685,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.custom_field">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.custom_field">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.custom_field">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">custom_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents by custom field.</span>
@@ -702,7 +709,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.has_custom_field_id">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.has_custom_field_id">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.has_custom_field_id">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">has_custom_field_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents that have a custom field with the specified ID(s).</span>
@@ -783,7 +790,7 @@
         <span class="o">...</span>
 
 <div class="viewcode-block" id="DocumentQuerySet.custom_field_query">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.custom_field_query">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.custom_field_query">[docs]</a>
     <span class="nd">@singledispatchmethod</span>  <span class="c1"># type: ignore # mypy does not handle singledispatchmethod with overloads correctly</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">custom_field_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -804,7 +811,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">custom_field_query</span><span class="o">=</span><span class="n">query_str</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DocumentQuerySet.custom_field_range">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.custom_field_range">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.custom_field_range">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">custom_field_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents with a custom field value within a specified range.</span>
@@ -822,7 +829,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.custom_field_exact">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.custom_field_exact">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.custom_field_exact">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">custom_field_exact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents with a custom field value that matches exactly.</span>
@@ -839,7 +846,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.custom_field_in">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.custom_field_in">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.custom_field_in">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">custom_field_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents with a custom field value in a list of values.</span>
@@ -856,7 +863,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.custom_field_isnull">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.custom_field_isnull">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.custom_field_isnull">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">custom_field_isnull</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents with a custom field that is null or empty.</span>
@@ -872,7 +879,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.custom_field_exists">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.custom_field_exists">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.custom_field_exists">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">custom_field_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">exists</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents based on the existence of a custom field.</span>
@@ -889,7 +896,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.custom_field_contains">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.custom_field_contains">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.custom_field_contains">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">custom_field_contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents with a custom field that contains all specified values.</span>
@@ -906,7 +913,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.has_custom_fields">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.has_custom_fields">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.has_custom_fields">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">has_custom_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents that have custom fields.</span>
@@ -915,7 +922,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.no_custom_fields">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.no_custom_fields">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.no_custom_fields">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">no_custom_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents that do not have custom fields.</span>
@@ -924,7 +931,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.notes">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.notes">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.notes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">notes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter documents whose notes contain the specified text.</span>
@@ -940,7 +947,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.created_before">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.created_before">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.created_before">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">created_before</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter models created before a given date.</span>
@@ -958,7 +965,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.created_after">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.created_after">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.created_after">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">created_after</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter models created after a given date.</span>
@@ -976,7 +983,7 @@
 
 
 <div class="viewcode-block" id="DocumentQuerySet.created_between">
-<a class="viewcode-back" href="../../../../api/paperap.models.document.queryset.html#paperap.models.DocumentQuerySet.created_between">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.created_between">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">created_between</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter models created between two dates.</span>
@@ -995,6 +1002,278 @@
             <span class="n">end</span> <span class="o">=</span> <span class="n">end</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">created__range</span><span class="o">=</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">))</span></div>
+
+
+    <span class="c1"># Bulk operations</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the IDs of all documents in the current queryset.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of document IDs</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
+
+<div class="viewcode-block" id="DocumentQuerySet.delete">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.delete">[docs]</a>
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClientResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Delete all documents in the current queryset.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self for method chaining</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; # Delete all documents with &quot;invoice&quot; in title</span>
+<span class="sd">            &gt;&gt;&gt; client.documents().title(&quot;invoice&quot;, exact=False).delete()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ids</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ids</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">bulk_delete</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="DocumentQuerySet.reprocess">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.reprocess">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClientResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reprocess all documents in the current queryset.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self for method chaining</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; # Reprocess documents added in the last week</span>
+<span class="sd">            &gt;&gt;&gt; from datetime import datetime, timedelta</span>
+<span class="sd">            &gt;&gt;&gt; week_ago = datetime.now() - timedelta(days=7)</span>
+<span class="sd">            &gt;&gt;&gt; client.documents().added_after(week_ago.strftime(&quot;%Y-%m-%d&quot;)).reprocess()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ids</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ids</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">bulk_reprocess</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="DocumentQuerySet.merge">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.merge">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metadata_document_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">delete_originals</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Merge all documents in the current queryset.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            metadata_document_id: Apply metadata from this document to the merged document</span>
+<span class="sd">            delete_originals: Whether to delete the original documents after merging</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if submitting the merge succeeded, False if there are no ids to merge</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            BadResponseError: If the merge action returns an unexpected response</span>
+<span class="sd">            APIError: If the merge action fails</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; # Merge all documents with tag &quot;merge_me&quot;</span>
+<span class="sd">            &gt;&gt;&gt; client.documents().tag_name(&quot;merge_me&quot;).merge(delete_originals=True)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ids</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ids</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">bulk_merge</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">metadata_document_id</span><span class="p">,</span> <span class="n">delete_originals</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="DocumentQuerySet.rotate">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.rotate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">degrees</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClientResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rotate all documents in the current queryset.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            degrees: Degrees to rotate (must be 90, 180, or 270)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self for method chaining</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; # Rotate all documents with &quot;sideways&quot; in title by 90 degrees</span>
+<span class="sd">            &gt;&gt;&gt; client.documents().title(&quot;sideways&quot;, exact=False).rotate(90)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ids</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ids</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">bulk_rotate</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">degrees</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="DocumentQuerySet.update">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="c1"># Document metadata</span>
+        <span class="n">correspondent</span><span class="p">:</span> <span class="s2">&quot;Correspondent | int | None&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">document_type</span><span class="p">:</span> <span class="s2">&quot;DocumentType | int | None&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">storage_path</span><span class="p">:</span> <span class="s2">&quot;StoragePath | int | None&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">owner</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform bulk updates on all documents in the current queryset.</span>
+
+<span class="sd">        This method allows for multiple update operations in a single call.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            correspondent: Set correspondent for all documents</span>
+<span class="sd">            document_type: Set document type for all documents</span>
+<span class="sd">            storage_path: Set storage path for all documents</span>
+<span class="sd">            owner: Owner ID to assign</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self for method chaining</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">ids</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ids</span><span class="p">()):</span>
+            <span class="k">return</span> <span class="bp">self</span>
+
+        <span class="c1"># Handle correspondent update</span>
+        <span class="k">if</span> <span class="n">correspondent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">bulk_set_correspondent</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">correspondent</span><span class="p">)</span>
+
+        <span class="c1"># Handle document type update</span>
+        <span class="k">if</span> <span class="n">document_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">bulk_set_document_type</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">document_type</span><span class="p">)</span>
+
+        <span class="c1"># Handle storage path update</span>
+        <span class="k">if</span> <span class="n">storage_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">bulk_set_storage_path</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">storage_path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chain</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DocumentQuerySet.modify_custom_fields">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.modify_custom_fields">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">modify_custom_fields</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">add_custom_fields</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">remove_custom_fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Modify custom fields on all documents in the current queryset.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            add_custom_fields: Dictionary of custom field ID to value pairs to add</span>
+<span class="sd">            remove_custom_fields: List of custom field IDs to remove</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self for method chaining</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; # Add a custom field to documents with &quot;invoice&quot; in title</span>
+<span class="sd">            &gt;&gt;&gt; client.documents().title(&quot;invoice&quot;, exact=False).modify_custom_fields(</span>
+<span class="sd">            ...     add_custom_fields={5: &quot;Processed&quot;}</span>
+<span class="sd">            ... )</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ids</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ids</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">bulk_modify_custom_fields</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">add_custom_fields</span><span class="p">,</span> <span class="n">remove_custom_fields</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="DocumentQuerySet.modify_tags">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.modify_tags">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">modify_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">add_tags</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">remove_tags</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Modify tags on all documents in the current queryset.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            add_tags: List of tag IDs to add</span>
+<span class="sd">            remove_tags: List of tag IDs to remove</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self for method chaining</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; # Add tag 3 and remove tag 4 from all documents with &quot;invoice&quot; in title</span>
+<span class="sd">            &gt;&gt;&gt; client.documents().title(&quot;invoice&quot;, exact=False).modify_tags(</span>
+<span class="sd">            ...     add_tags=[3], remove_tags=[4]</span>
+<span class="sd">            ... )</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ids</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ids</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">bulk_modify_tags</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">add_tags</span><span class="p">,</span> <span class="n">remove_tags</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="DocumentQuerySet.add_tag">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.add_tag">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a tag to all documents in the current queryset.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tag_id: Tag ID to add</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self for method chaining</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; # Add tag 3 to all documents with &quot;invoice&quot; in title</span>
+<span class="sd">            &gt;&gt;&gt; client.documents().title(&quot;invoice&quot;, exact=False).add_tag(3)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ids</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ids</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">bulk_add_tag</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">tag_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="DocumentQuerySet.remove_tag">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.remove_tag">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a tag from all documents in the current queryset.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tag_id: Tag ID to remove</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self for method chaining</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; # Remove tag 4 from all documents with &quot;invoice&quot; in title</span>
+<span class="sd">            &gt;&gt;&gt; client.documents().title(&quot;invoice&quot;, exact=False).remove_tag(4)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ids</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ids</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">bulk_remove_tag</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">tag_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="DocumentQuerySet.set_permissions">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentQuerySet.set_permissions">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">permissions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">owner_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">merge</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set permissions for all documents in the current queryset.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            permissions: Permissions object</span>
+<span class="sd">            owner_id: Owner ID to assign</span>
+<span class="sd">            merge: Whether to merge with existing permissions (True) or replace them (False)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self for method chaining</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; # Set owner to user 2 for all documents with &quot;invoice&quot; in title</span>
+<span class="sd">            &gt;&gt;&gt; client.documents().title(&quot;invoice&quot;, exact=False).set_permissions(owner_id=2)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ids</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ids</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">bulk_set_permissions</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">permissions</span><span class="p">,</span> <span class="n">owner_id</span><span class="p">,</span> <span class="n">merge</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 </div>
 
 </pre></div>
