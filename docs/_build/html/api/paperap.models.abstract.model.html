@@ -46,7 +46,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
@@ -358,7 +360,7 @@ with minimal configuration needed.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.resource">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resource</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.BaseResource" title="paperap.resources.base.BaseResource"><span class="pre">BaseResource</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.13)"><span class="pre">Self</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../modules/models.html#paperap.models.BaseQuerySet" title="paperap.models.BaseQuerySet"><span class="pre">BaseQuerySet</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.resource" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resource</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.BaseResource" title="paperap.resources.base.BaseResource"><span class="pre">BaseResource</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.13)"><span class="pre">Self</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="paperap.models.html#paperap.models.BaseQuerySet" title="paperap.models.BaseQuerySet"><span class="pre">BaseQuerySet</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.resource" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
@@ -733,7 +735,7 @@ matches = doc.matches_dict(api_data)</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.StandardModel.resource">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resource</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.StandardResource" title="paperap.resources.base.StandardResource"><span class="pre">StandardResource</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.13)"><span class="pre">Self</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../modules/models.html#paperap.models.StandardQuerySet" title="paperap.models.StandardQuerySet"><span class="pre">StandardQuerySet</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#paperap.models.abstract.model.StandardModel.resource" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resource</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.StandardResource" title="paperap.resources.base.StandardResource"><span class="pre">StandardResource</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.13)"><span class="pre">Self</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="paperap.models.html#paperap.models.StandardQuerySet" title="paperap.models.StandardQuerySet"><span class="pre">StandardQuerySet</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#paperap.models.abstract.model.StandardModel.resource" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -764,7 +766,7 @@ matches = doc.matches_dict(api_data)</p>
 <dd class="field-even"><p>True if the model data changes, False on failure or if the data does not change.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the model is not found on Paperless. (e.g. it was deleted remotely)</p>
+<dd class="field-odd"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the model is not found on Paperless. (e.g. it was deleted remotely)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -797,8 +799,8 @@ when the server responds.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the resource doesn’t exist on the server</p></li>
-<li><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.RequestError" title="paperap.exceptions.RequestError"><strong>RequestError</strong></a> – If there’s a communication error with the server</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the resource doesn’t exist on the server</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.RequestError" title="paperap.exceptions.RequestError"><strong>RequestError</strong></a> – If there’s a communication error with the server</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#PermissionError" title="(in Python v3.13)"><strong>PermissionError</strong></a> – If the user doesn’t have permission to update the resource</p></li>
 </ul>
 </dd>

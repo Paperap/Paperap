@@ -8,3 +8,4 @@ This section contains documentation for the signals module.
    :members:
    :undoc-members:
    :show-inheritance:
+   :no-index:

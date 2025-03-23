@@ -46,7 +46,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
@@ -106,7 +108,7 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <p>Resource for managing documents.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>client</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../modules/client.html#paperap.client.PaperlessClient" title="paperap.client.PaperlessClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">PaperlessClient</span></code></a></span>)</p>
+<dd class="field-odd"><p><strong>client</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="paperap.client.html#paperap.client.PaperlessClient" title="paperap.client.PaperlessClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">PaperlessClient</span></code></a></span>)</p>
 </dd>
 </dl>
 <dl class="py attribute">
@@ -191,7 +193,7 @@ e.g. ca6a6dc8-b434-4fcd-8436-8b2546465622</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.13)"><strong>FileNotFoundError</strong></a> – If the file does not exist.</p></li>
-<li><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the upload fails.</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the upload fails.</p></li>
 </ul>
 </dd>
 </dl>
@@ -218,8 +220,8 @@ e.g. ca6a6dc8-b434-4fcd-8436-8b2546465622</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><strong>APIError</strong></a> – If the document is not processed within the max_wait.</p></li>
-<li><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.BadResponseError" title="paperap.exceptions.BadResponseError"><strong>BadResponseError</strong></a> – If document processing succeeds but no document ID is returned.</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><strong>APIError</strong></a> – If the document is not processed within the max_wait.</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.BadResponseError" title="paperap.exceptions.BadResponseError"><strong>BadResponseError</strong></a> – If document processing succeeds but no document ID is returned.</p></li>
 </ul>
 </dd>
 </dl>
@@ -245,7 +247,7 @@ This is likely a task id, or similar.</p>
 <dd class="field-odd"><p>A string that looks like this</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the upload fails</p>
+<dd class="field-even"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the upload fails</p>
 </dd>
 </dl>
 </dd></dl>
@@ -279,7 +281,7 @@ This is likely a task id, or similar.</p>
 <dd class="field-odd"><p>The API response</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ConfigurationError" title="paperap.exceptions.ConfigurationError"><strong>ConfigurationError</strong></a> – If the bulk edit endpoint is not defined</p>
+<dd class="field-even"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ConfigurationError" title="paperap.exceptions.ConfigurationError"><strong>ConfigurationError</strong></a> – If the bulk edit endpoint is not defined</p>
 </dd>
 </dl>
 </dd></dl>
@@ -338,8 +340,8 @@ This is likely a task id, or similar.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.BadResponseError" title="paperap.exceptions.BadResponseError"><strong>BadResponseError</strong></a> – If the merge action returns an unexpected response</p></li>
-<li><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><strong>APIError</strong></a> – If the merge action fails</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.BadResponseError" title="paperap.exceptions.BadResponseError"><strong>BadResponseError</strong></a> – If the merge action returns an unexpected response</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><strong>APIError</strong></a> – If the merge action fails</p></li>
 </ul>
 </dd>
 </dl>
@@ -584,7 +586,7 @@ This is likely a task id, or similar.</p>
 <dd class="field-even"><p>The API response.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><strong>APIError</strong></a> – If the empty trash request fails.</p>
+<dd class="field-odd"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><strong>APIError</strong></a> – If the empty trash request fails.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -603,7 +605,7 @@ This is likely a task id, or similar.</p>
 <p>Resource for managing document notes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>client</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../modules/client.html#paperap.client.PaperlessClient" title="paperap.client.PaperlessClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">PaperlessClient</span></code></a></span>)</p>
+<dd class="field-odd"><p><strong>client</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="paperap.client.html#paperap.client.PaperlessClient" title="paperap.client.PaperlessClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">PaperlessClient</span></code></a></span>)</p>
 </dd>
 </dl>
 <dl class="py attribute">

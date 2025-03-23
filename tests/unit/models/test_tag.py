@@ -74,7 +74,7 @@ class TestTag(TagUnitTest):
         for key, value in self.model_data_parsed.items():
             # Handle the color/colour field name difference
             if key in ["color", "colour", "text_color"]:
-                continue # temporarily bypass # TODO 
+                continue # temporarily bypass # TODO
                 color_value = model_dict.get(key, model_dict.get('color', model_dict.get('colour', model_dict.get('text_color'))))
                 self.assertEqual(value, color_value, f"Value for key {key} is incorrect")
             else:

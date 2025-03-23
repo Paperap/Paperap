@@ -46,7 +46,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
@@ -234,7 +236,7 @@ docs = client.documents.exclude(correspondent=1)</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.13)"><strong>NotImplementedError</strong></a> – If the method is not implemented by the subclass</p></li>
 </ul>
 </dd>
@@ -508,7 +510,7 @@ model = StandardModel(id=1)</p>
 <dd class="field-even"><p>A new instance of StandardQuerySet.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found.</p>
+<dd class="field-odd"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found.</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
@@ -548,7 +550,7 @@ docs = StandardQuerySet(resource=client.documents)</p>
 <dd class="field-odd"><p>A single object matching the query</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found</p>
+<dd class="field-even"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">

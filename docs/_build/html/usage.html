@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>&lt;no title&gt; &mdash; Paperap 0.0.8 documentation</title>
+  <title>Usage &mdash; Paperap 0.0.8 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -45,10 +45,17 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basic-usage">Basic Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-documents">Working with Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-other-resources">Working with Other Resources</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 </ul>
 
         </div>
@@ -65,9 +72,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">&lt;no title&gt;</li>
+      <li class="breadcrumb-item active">Usage</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/usage.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/usage.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -75,7 +82,77 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <p>Usage</p>
+  <section id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h1>
+<section id="basic-usage">
+<h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">paperap</span><span class="w"> </span><span class="kn">import</span> <span class="n">PaperlessClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Settings</span>
+
+<span class="c1"># Initialize the client with your Paperless-ngx instance settings</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">PaperlessClient</span><span class="p">(</span>
+    <span class="n">Settings</span><span class="p">(</span>
+        <span class="n">host</span><span class="o">=</span><span class="s2">&quot;http://localhost:8000&quot;</span><span class="p">,</span>
+        <span class="n">token</span><span class="o">=</span><span class="s2">&quot;your_api_token&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># Get all documents</span>
+<span class="n">documents</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Filter documents</span>
+<span class="n">pdf_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">mime_type</span><span class="o">=</span><span class="s2">&quot;application/pdf&quot;</span><span class="p">)</span>
+
+<span class="c1"># Get a specific document by ID</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Download a document</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s2">&quot;my_document.pdf&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="working-with-documents">
+<h2>Working with Documents<a class="headerlink" href="#working-with-documents" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a new document (upload a file)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;example.pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span>
+        <span class="n">file</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Example Document&quot;</span><span class="p">,</span>
+        <span class="n">correspondent</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># ID of correspondent</span>
+        <span class="n">document_type</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># ID of document type</span>
+    <span class="p">)</span>
+
+<span class="c1"># Update a document</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Updated Title&quot;</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="c1"># Delete a document</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="working-with-other-resources">
+<h2>Working with Other Resources<a class="headerlink" href="#working-with-other-resources" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get all correspondents</span>
+<span class="n">correspondents</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Create a new correspondent</span>
+<span class="n">new_correspondent</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Example Company&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Get all tags</span>
+<span class="n">tags</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Create a new tag</span>
+<span class="n">new_tag</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Important&quot;</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#ff0000&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
 
 
            </div>

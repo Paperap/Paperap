@@ -64,9 +64,13 @@ def main():
         "--force",
     ], check=True, text=True) # nosec B603 # args are trusted
 
+    # Create modules directory if it doesn't exist
+    modules_dir = docs_dir / "modules"
+    modules_dir.mkdir(exist_ok=True)
+
     # Create any missing module documentation files
     for module_name in ["client", "models", "resources", "signals", "plugins", "exceptions"]:
-        module_path = docs_dir / "modules" / f"{module_name}.rst"
+        module_path = modules_dir / f"{module_name}.rst"
         if not module_path.exists():
             with open(module_path, "w") as f:
                 f.write(f"""
@@ -81,7 +85,7 @@ This section contains documentation for the {module_name} module.
    :show-inheritance:
    :no-index:
 """)
-    
+
     # Build the documentation
     sphinx_build_path = shutil.which("sphinx-build")
     if not sphinx_build_path:

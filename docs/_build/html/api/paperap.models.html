@@ -46,7 +46,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
@@ -521,7 +523,7 @@ method.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="paperap.models.BaseModel.resource">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resource</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.BaseResource" title="paperap.resources.base.BaseResource"><span class="pre">BaseResource</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.13)"><span class="pre">Self</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../modules/models.html#paperap.models.BaseQuerySet" title="paperap.models.BaseQuerySet"><span class="pre">BaseQuerySet</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#paperap.models.BaseModel.resource" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resource</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.BaseResource" title="paperap.resources.base.BaseResource"><span class="pre">BaseResource</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.13)"><span class="pre">Self</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#paperap.models.BaseQuerySet" title="paperap.models.BaseQuerySet"><span class="pre">BaseQuerySet</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#paperap.models.BaseModel.resource" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
@@ -766,14 +768,14 @@ method.</p>
 <dd class="field-even"><p>True if the model data changes, False on failure or if the data does not change.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the model is not found on Paperless. (e.g. it was deleted remotely)</p>
+<dd class="field-odd"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the model is not found on Paperless. (e.g. it was deleted remotely)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="paperap.models.StandardModel.resource">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resource</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.StandardResource" title="paperap.resources.base.StandardResource"><span class="pre">StandardResource</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.13)"><span class="pre">Self</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../modules/models.html#paperap.models.StandardQuerySet" title="paperap.models.StandardQuerySet"><span class="pre">StandardQuerySet</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#paperap.models.StandardModel.resource" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resource</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.StandardResource" title="paperap.resources.base.StandardResource"><span class="pre">StandardResource</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.13)"><span class="pre">Self</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#paperap.models.StandardQuerySet" title="paperap.models.StandardQuerySet"><span class="pre">StandardQuerySet</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#paperap.models.StandardModel.resource" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -823,8 +825,8 @@ when the server responds.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the resource doesn’t exist on the server</p></li>
-<li><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.RequestError" title="paperap.exceptions.RequestError"><strong>RequestError</strong></a> – If there’s a communication error with the server</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the resource doesn’t exist on the server</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.RequestError" title="paperap.exceptions.RequestError"><strong>RequestError</strong></a> – If there’s a communication error with the server</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#PermissionError" title="(in Python v3.13)"><strong>PermissionError</strong></a> – If the user doesn’t have permission to update the resource</p></li>
 </ul>
 </dd>
@@ -1856,7 +1858,7 @@ method.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="paperap.models.Correspondent.documents">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">documents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../modules/models.html#paperap.models.DocumentQuerySet" title="paperap.models.DocumentQuerySet"><span class="pre">DocumentQuerySet</span></a></em><a class="headerlink" href="#paperap.models.Correspondent.documents" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">documents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#paperap.models.DocumentQuerySet" title="paperap.models.DocumentQuerySet"><span class="pre">DocumentQuerySet</span></a></em><a class="headerlink" href="#paperap.models.Correspondent.documents" title="Link to this definition"></a></dt>
 <dd><p>Get documents for this correspondent.</p>
 </dd></dl>
 
@@ -2177,7 +2179,7 @@ doc_type = DocumentType(name=”Invoice”, slug=”invoice”, match=”INV-<a 
 
 <dl class="py property">
 <dt class="sig sig-object py" id="paperap.models.DocumentType.documents">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">documents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../modules/models.html#paperap.models.DocumentQuerySet" title="paperap.models.DocumentQuerySet"><span class="pre">DocumentQuerySet</span></a></em><a class="headerlink" href="#paperap.models.DocumentType.documents" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">documents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#paperap.models.DocumentQuerySet" title="paperap.models.DocumentQuerySet"><span class="pre">DocumentQuerySet</span></a></em><a class="headerlink" href="#paperap.models.DocumentType.documents" title="Link to this definition"></a></dt>
 <dd><p>Get documents with this document type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2302,7 +2304,7 @@ method.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="paperap.models.StoragePath.documents">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">documents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../modules/models.html#paperap.models.DocumentQuerySet" title="paperap.models.DocumentQuerySet"><span class="pre">DocumentQuerySet</span></a></em><a class="headerlink" href="#paperap.models.StoragePath.documents" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">documents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#paperap.models.DocumentQuerySet" title="paperap.models.DocumentQuerySet"><span class="pre">DocumentQuerySet</span></a></em><a class="headerlink" href="#paperap.models.StoragePath.documents" title="Link to this definition"></a></dt>
 <dd><p>Get documents in this storage path.</p>
 </dd></dl>
 
@@ -2415,7 +2417,7 @@ method.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="paperap.models.CustomField.documents">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">documents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../modules/models.html#paperap.models.DocumentQuerySet" title="paperap.models.DocumentQuerySet"><span class="pre">DocumentQuerySet</span></a></em><a class="headerlink" href="#paperap.models.CustomField.documents" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">documents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#paperap.models.DocumentQuerySet" title="paperap.models.DocumentQuerySet"><span class="pre">DocumentQuerySet</span></a></em><a class="headerlink" href="#paperap.models.CustomField.documents" title="Link to this definition"></a></dt>
 <dd><p>Get documents with this custom field.</p>
 </dd></dl>
 
@@ -2551,7 +2553,7 @@ method.</p>
 <dd class="field-odd"><p>The groups this user is a member</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../modules/models.html#paperap.models.GroupQuerySet" title="paperap.models.GroupQuerySet">GroupQuerySet</a></p>
+<dd class="field-even"><p><a class="reference internal" href="#paperap.models.GroupQuerySet" title="paperap.models.GroupQuerySet">GroupQuerySet</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2732,7 +2734,7 @@ method.</p>
 <dd class="field-odd"><p>The users in this group</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../modules/models.html#paperap.models.UserQuerySet" title="paperap.models.UserQuerySet">UserQuerySet</a></p>
+<dd class="field-even"><p><a class="reference internal" href="#paperap.models.UserQuerySet" title="paperap.models.UserQuerySet">UserQuerySet</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -3855,7 +3857,7 @@ method.</p>
 <dd class="field-odd"><p>The document object</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../modules/models.html#paperap.models.Document" title="paperap.models.Document">Document</a></p>
+<dd class="field-even"><p><a class="reference internal" href="#paperap.models.Document" title="paperap.models.Document">Document</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -4236,7 +4238,7 @@ docs = client.documents.filter(id__in=[1, 2, 3])</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.13)"><strong>NotImplementedError</strong></a> – If the method is not implemented by the subclass</p></li>
 </ul>
 </dd>
@@ -4342,7 +4344,7 @@ model = StandardModel(id=1)</p>
 <dd class="field-even"><p>A new instance of StandardQuerySet.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found.</p>
+<dd class="field-odd"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found.</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
@@ -4539,7 +4541,7 @@ This is intentional, as the object may be outdated or not fully populated.</p>
 <dd class="field-odd"><p>A single object matching the query</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found</p>
+<dd class="field-even"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
@@ -5196,8 +5198,8 @@ client.documents().all().document_type(“Invoice”, id=1)</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.BadResponseError" title="paperap.exceptions.BadResponseError"><strong>BadResponseError</strong></a> – If the merge action returns an unexpected response</p></li>
-<li><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><strong>APIError</strong></a> – If the merge action fails</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.BadResponseError" title="paperap.exceptions.BadResponseError"><strong>BadResponseError</strong></a> – If the merge action returns an unexpected response</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><strong>APIError</strong></a> – If the merge action fails</p></li>
 </ul>
 </dd>
 </dl>
@@ -6575,7 +6577,7 @@ It’s designed to be lazy - only fetching data when it’s actually needed.</p>
 <dd class="field-even"><p>The filtered queryset</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../modules/models.html#paperap.models.TaskQuerySet" title="paperap.models.TaskQuerySet">TaskQuerySet</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#paperap.models.TaskQuerySet" title="paperap.models.TaskQuerySet">TaskQuerySet</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -6592,7 +6594,7 @@ It’s designed to be lazy - only fetching data when it’s actually needed.</p>
 <dd class="field-even"><p>The filtered queryset</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../modules/models.html#paperap.models.TaskQuerySet" title="paperap.models.TaskQuerySet">TaskQuerySet</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#paperap.models.TaskQuerySet" title="paperap.models.TaskQuerySet">TaskQuerySet</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -6609,7 +6611,7 @@ It’s designed to be lazy - only fetching data when it’s actually needed.</p>
 <dd class="field-even"><p>The filtered queryset</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../modules/models.html#paperap.models.TaskQuerySet" title="paperap.models.TaskQuerySet">TaskQuerySet</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#paperap.models.TaskQuerySet" title="paperap.models.TaskQuerySet">TaskQuerySet</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -6630,7 +6632,7 @@ It’s designed to be lazy - only fetching data when it’s actually needed.</p>
 <dd class="field-even"><p>The filtered queryset</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../modules/models.html#paperap.models.TaskQuerySet" title="paperap.models.TaskQuerySet">TaskQuerySet</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#paperap.models.TaskQuerySet" title="paperap.models.TaskQuerySet">TaskQuerySet</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -6651,7 +6653,7 @@ It’s designed to be lazy - only fetching data when it’s actually needed.</p>
 <dd class="field-even"><p>The filtered queryset</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../modules/models.html#paperap.models.TaskQuerySet" title="paperap.models.TaskQuerySet">TaskQuerySet</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#paperap.models.TaskQuerySet" title="paperap.models.TaskQuerySet">TaskQuerySet</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -6672,7 +6674,7 @@ It’s designed to be lazy - only fetching data when it’s actually needed.</p>
 <dd class="field-even"><p>The filtered queryset</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../modules/models.html#paperap.models.TaskQuerySet" title="paperap.models.TaskQuerySet">TaskQuerySet</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#paperap.models.TaskQuerySet" title="paperap.models.TaskQuerySet">TaskQuerySet</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -6689,7 +6691,7 @@ It’s designed to be lazy - only fetching data when it’s actually needed.</p>
 <dd class="field-even"><p>The filtered queryset</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../modules/models.html#paperap.models.TaskQuerySet" title="paperap.models.TaskQuerySet">TaskQuerySet</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#paperap.models.TaskQuerySet" title="paperap.models.TaskQuerySet">TaskQuerySet</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -6710,7 +6712,7 @@ It’s designed to be lazy - only fetching data when it’s actually needed.</p>
 <dd class="field-even"><p>The filtered queryset</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../modules/models.html#paperap.models.TaskQuerySet" title="paperap.models.TaskQuerySet">TaskQuerySet</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#paperap.models.TaskQuerySet" title="paperap.models.TaskQuerySet">TaskQuerySet</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -6985,7 +6987,7 @@ It’s designed to be lazy - only fetching data when it’s actually needed.</p>
 <dd class="field-even"><p>The filtered queryset</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../modules/models.html#paperap.models.UISettingsQuerySet" title="paperap.models.UISettingsQuerySet">UISettingsQuerySet</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#paperap.models.UISettingsQuerySet" title="paperap.models.UISettingsQuerySet">UISettingsQuerySet</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -7628,7 +7630,7 @@ It’s designed to be lazy - only fetching data when it’s actually needed.</p>
 <dd class="field-even"><p>The filtered queryset</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../modules/models.html#paperap.models.ShareLinksQuerySet" title="paperap.models.ShareLinksQuerySet">ShareLinksQuerySet</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#paperap.models.ShareLinksQuerySet" title="paperap.models.ShareLinksQuerySet">ShareLinksQuerySet</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -7645,7 +7647,7 @@ It’s designed to be lazy - only fetching data when it’s actually needed.</p>
 <dd class="field-even"><p>The filtered queryset</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../modules/models.html#paperap.models.ShareLinksQuerySet" title="paperap.models.ShareLinksQuerySet">ShareLinksQuerySet</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#paperap.models.ShareLinksQuerySet" title="paperap.models.ShareLinksQuerySet">ShareLinksQuerySet</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -7662,7 +7664,7 @@ It’s designed to be lazy - only fetching data when it’s actually needed.</p>
 <dd class="field-even"><p>The filtered queryset</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../modules/models.html#paperap.models.ShareLinksQuerySet" title="paperap.models.ShareLinksQuerySet">ShareLinksQuerySet</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#paperap.models.ShareLinksQuerySet" title="paperap.models.ShareLinksQuerySet">ShareLinksQuerySet</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -7679,7 +7681,7 @@ It’s designed to be lazy - only fetching data when it’s actually needed.</p>
 <dd class="field-even"><p>The filtered queryset</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../modules/models.html#paperap.models.ShareLinksQuerySet" title="paperap.models.ShareLinksQuerySet">ShareLinksQuerySet</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#paperap.models.ShareLinksQuerySet" title="paperap.models.ShareLinksQuerySet">ShareLinksQuerySet</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -7701,7 +7703,7 @@ It’s designed to be lazy - only fetching data when it’s actually needed.</p>
 <dd class="field-even"><p>The filtered queryset</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../modules/models.html#paperap.models.ShareLinksQuerySet" title="paperap.models.ShareLinksQuerySet">ShareLinksQuerySet</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#paperap.models.ShareLinksQuerySet" title="paperap.models.ShareLinksQuerySet">ShareLinksQuerySet</a></p>
 </dd>
 </dl>
 </dd></dl>

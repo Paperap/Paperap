@@ -46,7 +46,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
@@ -776,7 +778,7 @@ method.</p>
 <dd class="field-even"><p>True if the model data changes, False on failure or if the data does not change.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the model is not found on Paperless. (e.g. it was deleted remotely)</p>
+<dd class="field-odd"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the model is not found on Paperless. (e.g. it was deleted remotely)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -833,8 +835,8 @@ when the server responds.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the resource doesn’t exist on the server</p></li>
-<li><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.RequestError" title="paperap.exceptions.RequestError"><strong>RequestError</strong></a> – If there’s a communication error with the server</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the resource doesn’t exist on the server</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.RequestError" title="paperap.exceptions.RequestError"><strong>RequestError</strong></a> – If there’s a communication error with the server</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#PermissionError" title="(in Python v3.13)"><strong>PermissionError</strong></a> – If the user doesn’t have permission to update the resource</p></li>
 </ul>
 </dd>
@@ -1170,7 +1172,7 @@ docs = client.documents.filter(id__in=[1, 2, 3])</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.13)"><strong>NotImplementedError</strong></a> – If the method is not implemented by the subclass</p></li>
 </ul>
 </dd>
@@ -1276,7 +1278,7 @@ model = StandardModel(id=1)</p>
 <dd class="field-even"><p>A new instance of StandardQuerySet.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found.</p>
+<dd class="field-odd"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found.</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
@@ -1473,7 +1475,7 @@ This is intentional, as the object may be outdated or not fully populated.</p>
 <dd class="field-odd"><p>A single object matching the query</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../modules/exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found</p>
+<dd class="field-even"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
