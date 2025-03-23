@@ -79,6 +79,7 @@ This section contains documentation for the {module_name} module.
    :members:
    :undoc-members:
    :show-inheritance:
+   :no-index:
 """)
     
     # Build the documentation

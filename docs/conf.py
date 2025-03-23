@@ -61,18 +61,12 @@ html_theme = 'sphinx_rtd_theme'
 html_theme_options = {
     'navigation_depth': 4,
     'titles_only': False,
-    'display_version': True,
     'prev_next_buttons_location': 'bottom',
     'style_external_links': True,
-    'vcs_pageview_mode': 'edit',
     'style_nav_header_background': '#2980B9',
     # Read the Docs specific options
     'logo_only': False,
     'analytics_id': '',  # Provided by Read the Docs as needed
-    # Flyout menu config
-    'flyout_display': 'block',
-    'version_selector': True,
-    'language_selector': True,
 }
 
 # Add any paths that contain custom static files
