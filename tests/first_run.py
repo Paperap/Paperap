@@ -33,7 +33,7 @@ import re
 import tempfile
 from pathlib import Path
 from typing import Any, List
-
+import sys
 import requests
 from alive_progress import alive_bar, alive_it
 from dotenv import load_dotenv
@@ -136,14 +136,12 @@ class PaperlessManager:
             logger.error(f"Refusing to delete data from a non-local server: {self.client.base_url}")
             return
 
-        """
         print(f"This will delete all data in the {self.client.base_url} server. Do you want to continue? Type 'delete everything' to continue.")
 
         confirmation = input()
         if confirmation.lower() != 'delete everything':
             logger.info("Cleanup operation cancelled.")
-            return
-        """
+            sys.exit(1)
 
         resources = [
             DocumentResource,

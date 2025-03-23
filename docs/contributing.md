@@ -30,7 +30,7 @@ Most common actions are defined in package.json scripts. You can run them using 
 bun run test
 ```
 
-Integration tests are provided in the `tests/integration` directory. However, you may need to fiddle with them to get the data lined up with your Paperless-ngX instance. This will be improved in the future.
+Integration tests are provided in the `tests/integration` directory. However, you may need to fiddle with them to get the data lined up with your Paperless-ngX instance. This will be improved in the future. You will probably want to run tests/lib/first_run.py to get some data in your Paperless-ngX instance. Be aware that it will FULLY DELETE all data in that instance first.
 
 Hypothesis tests are located in `tests/unit/hypothesis`. These tests are run automatically with all unit tests. If you're not familiar with hypothesis, it is worth noting that it will run with slightly different parameters each time, and remember failures for future runs.
 

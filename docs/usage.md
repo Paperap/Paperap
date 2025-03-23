@@ -14,10 +14,10 @@ from paperap.settings import Settings
 # Set PAPERLESS_BASE_URL and PAPERLESS_TOKEN in your environment
 client = PaperlessClient()
 
-# Alternatively, use parameters
+# Alternatively, specify credentials directly
 client = PaperlessClient(
     base_url="http://paperless.local:8000",  # Your Paperless-NgX URL
-    token="your_api_token"               # API token from admin interface
+    token="your_api_token"                   # API token from admin interface
 )
 
 # Username and password authentication
@@ -25,6 +25,15 @@ client = PaperlessClient(
     base_url="http://paperless.local:8000",
     username="your_username",
     password="your_password"
+)
+
+# With custom options
+client = PaperlessClient(
+    base_url="https://paperless.example.com",
+    token="your_api_token",
+    timeout=30,                  # Request timeout in seconds
+    plugins=[MyCustomPlugin()],  # Custom plugins
+    save_on_write=False          # Require explicit save() calls
 )
 ```
 
@@ -120,7 +129,33 @@ important_tax_docs = tax_docs.filter(tags__name="important")
 
 ### Uploading Documents
 
-Documentation TODO
+```python
+# Basic document upload with a file path
+doc = client.documents.upload("path/to/document.pdf")
+
+# Upload with metadata
+doc = client.documents.upload(
+    "path/to/invoice.pdf",
+    title="Electric Bill March 2023",
+    correspondent=5,               # ID of correspondent 
+    document_type=3,               # ID of document type
+    tags=[1, 2],                   # List of tag IDs
+    created="2023-03-15",          # Custom created date
+    archive_serial_number="INV-123" # Custom reference number
+)
+
+# Upload with file object
+with open("document.pdf", "rb") as f:
+    doc = client.documents.upload(
+        file=f,
+        title="My Document"
+    )
+
+# Asynchronous upload (returns task_id instead of document)
+task_id = client.documents.upload_async("path/to/large_document.pdf")
+
+# Wait for the task to complete and get the document
+document = client.tasks.wait_for_task(task_id)
 
 ### Downloading Documents
 
@@ -175,6 +210,50 @@ doc.delete()
 
 # Bulk delete
 client.documents.filter(created__lt="2020-01-01").delete()
+```
+
+### Bulk Operations
+
+Perform operations on multiple documents efficiently:
+
+```python
+# Bulk add tags to documents
+tax_docs = client.documents.filter(title__icontains="tax")
+tax_docs.add_tag(5)  # Add tag with ID 5
+
+# Bulk remove tags
+old_docs = client.documents.filter(created_before="2020-01-01")
+old_docs.remove_tag(7)  # Remove tag with ID 7
+
+# Bulk update document metadata
+invoices = client.documents.filter(title__icontains="invoice")
+invoices.update(
+    correspondent=12,    # Set correspondent ID 
+    document_type=3      # Set document type ID
+)
+
+# Bulk modify custom fields
+docs = client.documents.filter(correspondent_id=5)
+docs.modify_custom_fields(
+    add_custom_fields={3: "High", 7: "2023-04-15"},
+    remove_custom_fields=[9]
+)
+
+# Bulk delete
+temp_docs = client.documents.filter(tags__name="temporary")
+temp_docs.delete()
+
+# Bulk reprocess documents
+client.documents.filter(content="").reprocess()
+
+# Merge multiple documents
+client.documents.filter(correspondent_id=5).merge(
+    metadata_document_id=123,  # Use metadata from this document
+    delete_originals=True      # Delete original documents after merging
+)
+
+# Bulk rotate documents
+client.documents.filter(title__contains="sideways").rotate(90)
 ```
 
 ## Working with Tags
@@ -371,15 +450,29 @@ tasks = client.tasks.all()
 task = client.tasks.get(5)
 print(f"Task status: {task.status}")
 
-# Wait for a task to complete, then retrieve the consumed document
-document = client.tasks.wait_for_task()
+# Wait for a task to complete and get the resulting document
+document = client.tasks.wait_for_task(task_id)
+print(f"Document {document.id} ready: {document.title}")
 
-# Upload a series of document asynchronously, then wait for all of them
+# Upload a series of documents asynchronously, then wait for all of them
 task_ids = []
 for i in range(10):
-    task_id = client.documents.upload_async(file=f"doc_{i}.pdf", title=f"Document {i}")
+    task_id = client.documents.upload_async(f"doc_{i}.pdf", title=f"Document {i}")
     task_ids.append(task_id)
 documents = client.tasks.wait_for_tasks(task_ids)
+
+# Monitor tasks with callbacks
+def on_task_success(task):
+    print(f"Task {task.id} completed successfully")
+
+def on_task_failure(task):
+    print(f"Task {task.id} failed: {task.status_str}")
+
+client.tasks.wait_for_task(
+    task_id,
+    success_callback=on_task_success,
+    failure_callback=on_task_failure
+)
 ```
 
 ## Advanced Features
@@ -401,6 +494,43 @@ SignalRegistry.connect("document.save:success", on_document_save)
 doc = client.documents.get(123)
 doc.title = "Updated Title"
 doc.save()  # Will trigger on_document_save
+```
+
+### Asynchronous Operations
+
+Paperap handles long-running operations asynchronously:
+
+```python
+# Start a document upload and get a task ID
+task_id = client.documents.upload_async(
+    "large_document.pdf",
+    title="Large Document"
+)
+
+# Do other work while upload happens in background
+print("Doing other work...")
+
+# Wait for the task to complete when needed
+document = client.tasks.wait_for_task(task_id)
+print(f"Uploaded document: {document.title} (ID: {document.id})")
+
+# Upload multiple documents in parallel
+from pathlib import Path
+import concurrent.futures
+
+def upload_document(filepath):
+    return client.documents.upload_async(filepath)
+
+documents_dir = Path("documents_to_upload")
+filepaths = list(documents_dir.glob("*.pdf"))
+
+# Upload all documents in parallel (up to 5 at a time)
+with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+    task_ids = list(executor.map(upload_document, filepaths))
+
+# Wait for all uploads to complete
+documents = client.tasks.wait_for_tasks(task_ids)
+print(f"Uploaded {len(documents)} documents")
 ```
 
 ### Using Plugins
@@ -436,21 +566,29 @@ See src/paperap/plugins/collect_test_data.py for an example plugin that intercep
 
 ## Error Handling
 
-Paperap provides detailed error information:
+Paperap provides detailed error information through a hierarchy of exception classes:
 
 ```python
-from paperap.exceptions import ResourceNotFoundError, APIError
+from paperap.exceptions import PaperapError, ResourceNotFoundError, APIError
 
 try:
-    doc = client.documents.get(99999)  # Non-existent document
+    # Non-existent document
+    doc = client.documents.get(99999)
 except ResourceNotFoundError:
     print("Document not found")
+except APIError as e:
+    print(f"API Error: {e.status_code} - {e.detail}")
+except PaperapError as e:
+    # Base exception for all Paperap errors
+    print(f"General error: {e}")
 
 try:
     # Invalid operation
     client.documents.create(title="Test")  # Missing required file
 except APIError as e:
-    print(f"API Error: {e.status_code} - {e.detail}")
+    print(f"API Error: {e.status_code}")
+    print(f"Error details: {e.detail}")
+    print(f"API response: {e.response.text}")
 ```
 
 ## Pagination and Performance
