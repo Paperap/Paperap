@@ -33,4 +33,12 @@ jobs:
       run: uv build
 
     - name: Publish to PyPI
-      run: uv publish
+      run: |
+        set +e
+        uv publish 2>&1 | tee publish.log
+        status=${PIPESTATUS[0]}
+        if grep -q "File already exists" publish.log; then
+          echo "Warning: Package version already exists. Skipping publish."
+          exit 0
+        fi
+        exit $status
