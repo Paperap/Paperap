@@ -1,0 +1,398 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>paperap.plugins.collect_test_data &mdash; Paperap 0.0.8 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="canonical" href="/_modules/paperap/plugins/collect_test_data.html" />
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=53b53b71"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../_static/readthedocs.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Paperap
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction to Paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Paperap</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">paperap.plugins.collect_test_data</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for paperap.plugins.collect_test_data</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">----------------------------------------------------------------------------</span>
+
+<span class="sd">   METADATA:</span>
+
+<span class="sd">       File:    collect_test_data.py</span>
+<span class="sd">        Project: paperap</span>
+<span class="sd">       Created: 2025-03-04</span>
+<span class="sd">        Version: 0.0.10</span>
+<span class="sd">       Author:  Jess Mann</span>
+<span class="sd">       Email:   jess@jmann.me</span>
+<span class="sd">        Copyright (c) 2025 Jess Mann</span>
+
+<span class="sd">----------------------------------------------------------------------------</span>
+
+<span class="sd">   LAST MODIFIED:</span>
+
+<span class="sd">       2025-03-04     By Jess Mann</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">override</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">faker</span><span class="w"> </span><span class="kn">import</span> <span class="n">Faker</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpUrl</span><span class="p">,</span> <span class="n">field_validator</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelValidationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandardModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.plugins.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plugin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.signals</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalPriority</span><span class="p">,</span> <span class="n">registry</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">sanitize_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^a-zA-Z0-9|.=_-]&quot;</span><span class="p">)</span>
+
+<span class="n">SANITIZE_KEYS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;email&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;first_name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;last_name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;phone&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;username&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;content&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;filename&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;title&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;slug&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;original_filename&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;archived_file_name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;task_file_name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;filename&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="nb">type</span> <span class="n">ClientResponse</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
+
+
+<div class="viewcode-block" id="SampleDataCollector">
+<a class="viewcode-back" href="../../../api/paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SampleDataCollector</span><span class="p">(</span><span class="n">Plugin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plugin to collect test data from API responses.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;test_data_collector&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Collects sample data from API responses for testing purposes&quot;</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;0.0.3&quot;</span>
+    <span class="n">fake</span><span class="p">:</span> <span class="n">Faker</span> <span class="o">=</span> <span class="n">Faker</span><span class="p">()</span>
+    <span class="n">test_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;tests/sample_data&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SampleDataCollector.validate_test_dir">
+<a class="viewcode-back" href="../../../api/paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.validate_test_dir">[docs]</a>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;test_dir&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_test_dir</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the test directory path.&quot;&quot;&quot;</span>
+        <span class="c1"># Convert string path to Path object if needed</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;tests/sample_data&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ModelValidationError</span><span class="p">(</span><span class="s2">&quot;Test directory must be a string or Path object&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">():</span>
+            <span class="c1"># Make it relative to project root</span>
+            <span class="n">project_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">project_root</span> <span class="o">/</span> <span class="n">value</span>
+
+        <span class="n">value</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="SampleDataCollector.setup">
+<a class="viewcode-back" href="../../../api/paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.setup">[docs]</a>
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register signal handlers.&quot;&quot;&quot;</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;resource._handle_response:after&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_list_response</span><span class="p">,</span> <span class="n">SignalPriority</span><span class="o">.</span><span class="n">LOW</span><span class="p">)</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;resource._handle_results:before&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_first_item</span><span class="p">,</span> <span class="n">SignalPriority</span><span class="o">.</span><span class="n">LOW</span><span class="p">)</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;client.request:after&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_parsed_response</span><span class="p">,</span> <span class="n">SignalPriority</span><span class="o">.</span><span class="n">LOW</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SampleDataCollector.teardown">
+<a class="viewcode-back" href="../../../api/paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.teardown">[docs]</a>
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Unregister signal handlers.&quot;&quot;&quot;</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="s2">&quot;resource._handle_response:after&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_list_response</span><span class="p">)</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="s2">&quot;resource._handle_results:before&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_first_item</span><span class="p">)</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="s2">&quot;client.request:after&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_parsed_response</span><span class="p">)</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_json_serializer</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serialize objects that are not natively serializable.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">StandardModel</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">StandardModel</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is not JSON serializable&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sanitize_list_response</span><span class="p">[</span><span class="n">R</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]](</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">R</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">R</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sanitize the response data to replace any strings with potentially personal information with dummy data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sanitized_list</span><span class="p">:</span> <span class="n">R</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: ignore</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">sanitized_item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sanitize_value_recursive</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+            <span class="n">sanitized_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sanitized_item</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="k">return</span> <span class="n">sanitized_list</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sanitize_dict_response</span><span class="p">[</span><span class="n">R</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]](</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">response</span><span class="p">:</span> <span class="n">R</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">R</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sanitize the response data to replace any strings with potentially personal information with dummy data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sanitized</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">sanitized</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sanitize_value_recursive</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="c1"># Replace &quot;next&quot; domain using regex</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">next_page</span> <span class="o">:=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">next_page</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">sanitized</span><span class="p">[</span><span class="s2">&quot;next&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;https?://.*?/&quot;</span><span class="p">,</span> <span class="s2">&quot;https://example.com/&quot;</span><span class="p">,</span> <span class="n">next_page</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">sanitized</span>  <span class="c1"># type: ignore</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sanitize_value_recursive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Recursively sanitize the value to replace any strings with potentially personal information with dummy data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sanitize_value_recursive</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">SANITIZE_KEYS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fake</span><span class="o">.</span><span class="n">word</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">fake</span><span class="o">.</span><span class="n">word</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">value</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">value</span>
+
+<div class="viewcode-block" id="SampleDataCollector.save_response">
+<a class="viewcode-back" href="../../../api/paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.save_response">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">ClientResponse</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save the response to a JSON file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span> <span class="ow">or</span> <span class="n">filepath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">return</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sanitize_list_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sanitize_dict_response</span><span class="p">(</span><span class="o">**</span><span class="n">response</span><span class="p">)</span>
+            <span class="n">filepath</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">filepath</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_json_serializer</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">OverflowError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># Don&#39;t allow the plugin to interfere with normal operations in the event of failure</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error saving response to file (</span><span class="si">%s</span><span class="s2">): </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">filepath</span><span class="o">.</span><span class="n">absolute</span><span class="p">(),</span> <span class="n">e</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SampleDataCollector.save_list_response">
+<a class="viewcode-back" href="../../../api/paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.save_list_response">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_list_response</span><span class="p">[</span><span class="n">R</span><span class="p">:</span> <span class="n">ClientResponse</span> <span class="o">|</span> <span class="kc">None</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="n">sender</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">R</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">R</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the list response to a JSON file.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">resource_name</span> <span class="o">:=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;resource&quot;</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">response</span>
+
+        <span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_list.json&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_response</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span></div>
+
+
+<div class="viewcode-block" id="SampleDataCollector.save_first_item">
+<a class="viewcode-back" href="../../../api/paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.save_first_item">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_first_item</span><span class="p">[</span><span class="n">R</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]](</span><span class="bp">self</span><span class="p">,</span> <span class="n">sender</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">R</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">R</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the first item from a list to a JSON file.&quot;&quot;&quot;</span>
+        <span class="n">resource_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;resource&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">resource_name</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">item</span>
+
+        <span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">_item.json&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_response</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+
+        <span class="c1"># Disable this handler after saving the first item</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="s2">&quot;resource._handle_results:before&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_first_item</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">item</span></div>
+
+
+<div class="viewcode-block" id="SampleDataCollector.save_parsed_response">
+<a class="viewcode-back" href="../../../api/paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.save_parsed_response">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_parsed_response</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">parsed_response</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">json_response</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">HttpUrl</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save the request data to a JSON file.</span>
+
+<span class="sd">        Connects to client.request:after signal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">endpoint</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Endpoint is required to save parsed response&quot;</span><span class="p">)</span>
+
+        <span class="n">endpoint</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">endpoint</span><span class="p">)</span>
+
+        <span class="c1"># If endpoint contains &quot;example.com&quot;, we&#39;re testing, so skip it</span>
+        <span class="k">if</span> <span class="s2">&quot;example.com&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">endpoint</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">parsed_response</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">json_response</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">params</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">parsed_response</span>
+
+        <span class="c1"># Strip url to final path segment</span>
+        <span class="n">resource_name</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">endpoint</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">:])</span>
+
+        <span class="n">combined_params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="n">params_str</span> <span class="o">=</span> <span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">combined_params</span><span class="p">)</span>
+        <span class="n">filename_prefix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;get&quot;</span><span class="p">:</span>
+            <span class="n">filename_prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">__&quot;</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename_prefix</span><span class="si">}{</span><span class="n">resource_name</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">params_str</span><span class="si">}</span><span class="s2">.json&quot;</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">sanitize_pattern</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span><span class="p">[:</span><span class="mi">100</span><span class="p">]</span>  <span class="c1"># Limit filename length</span>
+
+        <span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_dir</span> <span class="o">/</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_response</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">parsed_response</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">parsed_response</span></div>
+
+
+<div class="viewcode-block" id="SampleDataCollector.get_config_schema">
+<a class="viewcode-back" href="../../../api/paperap.plugins.collect_test_data.html#paperap.plugins.collect_test_data.SampleDataCollector.get_config_schema">[docs]</a>
+    <span class="nd">@override</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_config_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Define the configuration schema for this plugin.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;test_dir&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Directory to save test data files&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">}</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Jess Mann.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

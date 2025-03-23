@@ -1,9 +1,9 @@
 {
-    "email": "root@localhost",
-    "password": "**********",
+    "email": "cburns@example.net",
+    "password": "%$0Y8lfq)9jJ",
     "first_name": "",
     "last_name": "",
-    "auth_token": "4812ddf9fe00f669e6fcc904448b04d7502ecceb",
+    "auth_token": "fake-auth_token-d8527f02-8aa7-4396-aed0-2ba05180b347",
     "social_accounts": [],
     "has_usable_password": true,
     "is_mfa_enabled": false

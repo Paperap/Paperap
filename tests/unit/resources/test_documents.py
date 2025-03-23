@@ -29,8 +29,8 @@ from unittest.mock import MagicMock, Mock, patch
 
 from paperap.client import PaperlessClient
 from paperap.exceptions import APIError, ResourceNotFoundError
-from paperap.models.document import Document, DocumentNote, DocumentQuerySet, DocumentNoteQuerySet
-from paperap.resources.documents import DocumentResource, DocumentNoteResource
+from paperap.models.document import Document, DocumentNote, DocumentNoteQuerySet, DocumentQuerySet
+from paperap.resources.documents import DocumentNoteResource, DocumentResource
 
 
 class TestDocumentResource(unittest.TestCase):

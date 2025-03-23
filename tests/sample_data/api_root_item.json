@@ -1,0 +1,20 @@
+{
+    "correspondents": "http://example.com/api/correspondents/",
+    "document_types": "http://example.com/api/document_types/",
+    "documents": "http://example.com/api/documents/",
+    "logs": "http://example.com/api/logs/",
+    "tags": "http://example.com/api/tags/",
+    "saved_views": "http://example.com/api/saved_views/",
+    "storage_paths": "http://example.com/api/storage_paths/",
+    "tasks": "http://example.com/api/tasks/",
+    "users": "http://example.com/api/users/",
+    "groups": "http://example.com/api/groups/",
+    "mail_accounts": "http://example.com/api/mail_accounts/",
+    "mail_rules": "http://example.com/api/mail_rules/",
+    "share_links": "http://example.com/api/share_links/",
+    "workflow_triggers": "http://example.com/api/workflow_triggers/",
+    "workflow_actions": "http://example.com/api/workflow_actions/",
+    "workflows": "http://example.com/api/workflows/",
+    "custom_fields": "http://example.com/api/custom_fields/",
+    "config": "http://example.com/api/config/"
+}

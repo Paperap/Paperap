@@ -6,7 +6,7 @@
        File:    queryset.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.9
+        Version: 0.0.10
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -24,19 +24,22 @@ from __future__ import annotations
 import logging
 from datetime import datetime
 from functools import singledispatchmethod
-from typing import TYPE_CHECKING, Any, NamedTuple, Self, Union, overload
+from typing import TYPE_CHECKING, Any, NamedTuple, Self, Union, overload, override
 
 from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models.mixins.queryset import HasOwner
+from paperap.const import ClientResponse
 
 if TYPE_CHECKING:
-    from paperap.models.correspondent.model import Correspondent
-    from paperap.models.document.model import Document, DocumentNote
+    from paperap.models import Correspondent, Document, DocumentNote, DocumentType, StoragePath
 
 logger = logging.getLogger(__name__)
 
 _OperationType = Union[str, "_QueryParam"]
 _QueryParam = Union["CustomFieldQuery", tuple[str, _OperationType, Any]]
+
+if TYPE_CHECKING:
+    from paperap.resources.documents import DocumentResource
 
 
 class CustomFieldQuery(NamedTuple):
@@ -65,6 +68,8 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         ...     print(doc.title)
 
     """
+
+    resource: "DocumentResource"  # type: ignore # because nested generics are not allowed
 
     def tag_id(self, tag_id: int | list[int]) -> Self:
         """
@@ -804,3 +809,245 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             end = end.strftime("%Y-%m-%d")
 
         return self.filter(created__range=(start, end))
+
+    # Bulk operations
+    def _get_ids(self) -> list[int]:
+        """
+        Get the IDs of all documents in the current queryset.
+
+        Returns:
+            List of document IDs
+
+        """
+        return [doc.id for doc in self]
+
+    @override
+    def delete(self) -> ClientResponse:
+        """
+        Delete all documents in the current queryset.
+
+        Returns:
+            Self for method chaining
+
+        Examples:
+            >>> # Delete all documents with "invoice" in title
+            >>> client.documents().title("invoice", exact=False).delete()
+
+        """
+        if ids := self._get_ids():
+            return self.resource.bulk_delete(ids)
+        return None
+
+    def reprocess(self) -> ClientResponse:
+        """
+        Reprocess all documents in the current queryset.
+
+        Returns:
+            Self for method chaining
+
+        Examples:
+            >>> # Reprocess documents added in the last week
+            >>> from datetime import datetime, timedelta
+            >>> week_ago = datetime.now() - timedelta(days=7)
+            >>> client.documents().added_after(week_ago.strftime("%Y-%m-%d")).reprocess()
+
+        """
+        if ids := self._get_ids():
+            return self.resource.bulk_reprocess(ids)
+        return None
+
+    def merge(self, metadata_document_id: int | None = None, delete_originals: bool = False) -> bool:
+        """
+        Merge all documents in the current queryset.
+
+        Args:
+            metadata_document_id: Apply metadata from this document to the merged document
+            delete_originals: Whether to delete the original documents after merging
+
+        Returns:
+            True if submitting the merge succeeded, False if there are no ids to merge
+
+        Raises:
+            BadResponseError: If the merge action returns an unexpected response
+            APIError: If the merge action fails
+
+        Examples:
+            >>> # Merge all documents with tag "merge_me"
+            >>> client.documents().tag_name("merge_me").merge(delete_originals=True)
+
+        """
+        if ids := self._get_ids():
+            return self.resource.bulk_merge(ids, metadata_document_id, delete_originals)
+        return False
+
+    def rotate(self, degrees: int) -> ClientResponse:
+        """
+        Rotate all documents in the current queryset.
+
+        Args:
+            degrees: Degrees to rotate (must be 90, 180, or 270)
+
+        Returns:
+            Self for method chaining
+
+        Examples:
+            >>> # Rotate all documents with "sideways" in title by 90 degrees
+            >>> client.documents().title("sideways", exact=False).rotate(90)
+
+        """
+        if ids := self._get_ids():
+            return self.resource.bulk_rotate(ids, degrees)
+        return None
+
+    def update(
+        self,
+        *,
+        # Document metadata
+        correspondent: "Correspondent | int | None" = None,
+        document_type: "DocumentType | int | None" = None,
+        storage_path: "StoragePath | int | None" = None,
+        owner: int | None = None,
+    ) -> Self:
+        """
+        Perform bulk updates on all documents in the current queryset.
+
+        This method allows for multiple update operations in a single call.
+
+        Args:
+            correspondent: Set correspondent for all documents
+            document_type: Set document type for all documents
+            storage_path: Set storage path for all documents
+            owner: Owner ID to assign
+
+        Returns:
+            Self for method chaining
+
+        """
+        if not (ids := self._get_ids()):
+            return self
+
+        # Handle correspondent update
+        if correspondent is not None:
+            self.resource.bulk_set_correspondent(ids, correspondent)
+
+        # Handle document type update
+        if document_type is not None:
+            self.resource.bulk_set_document_type(ids, document_type)
+
+        # Handle storage path update
+        if storage_path is not None:
+            self.resource.bulk_set_storage_path(ids, storage_path)
+
+        return self._chain()
+
+    def modify_custom_fields(
+        self,
+        add_custom_fields: dict[int, Any] | None = None,
+        remove_custom_fields: list[int] | None = None,
+    ) -> Self:
+        """
+        Modify custom fields on all documents in the current queryset.
+
+        Args:
+            add_custom_fields: Dictionary of custom field ID to value pairs to add
+            remove_custom_fields: List of custom field IDs to remove
+
+        Returns:
+            Self for method chaining
+
+        Examples:
+            >>> # Add a custom field to documents with "invoice" in title
+            >>> client.documents().title("invoice", exact=False).modify_custom_fields(
+            ...     add_custom_fields={5: "Processed"}
+            ... )
+
+        """
+        ids = self._get_ids()
+        if ids:
+            self.resource.bulk_modify_custom_fields(ids, add_custom_fields, remove_custom_fields)
+        return self
+
+    def modify_tags(self, add_tags: list[int] | None = None, remove_tags: list[int] | None = None) -> Self:
+        """
+        Modify tags on all documents in the current queryset.
+
+        Args:
+            add_tags: List of tag IDs to add
+            remove_tags: List of tag IDs to remove
+
+        Returns:
+            Self for method chaining
+
+        Examples:
+            >>> # Add tag 3 and remove tag 4 from all documents with "invoice" in title
+            >>> client.documents().title("invoice", exact=False).modify_tags(
+            ...     add_tags=[3], remove_tags=[4]
+            ... )
+
+        """
+        ids = self._get_ids()
+        if ids:
+            self.resource.bulk_modify_tags(ids, add_tags, remove_tags)
+        return self
+
+    def add_tag(self, tag_id: int) -> Self:
+        """
+        Add a tag to all documents in the current queryset.
+
+        Args:
+            tag_id: Tag ID to add
+
+        Returns:
+            Self for method chaining
+
+        Examples:
+            >>> # Add tag 3 to all documents with "invoice" in title
+            >>> client.documents().title("invoice", exact=False).add_tag(3)
+
+        """
+        ids = self._get_ids()
+        if ids:
+            self.resource.bulk_add_tag(ids, tag_id)
+        return self
+
+    def remove_tag(self, tag_id: int) -> Self:
+        """
+        Remove a tag from all documents in the current queryset.
+
+        Args:
+            tag_id: Tag ID to remove
+
+        Returns:
+            Self for method chaining
+
+        Examples:
+            >>> # Remove tag 4 from all documents with "invoice" in title
+            >>> client.documents().title("invoice", exact=False).remove_tag(4)
+
+        """
+        ids = self._get_ids()
+        if ids:
+            self.resource.bulk_remove_tag(ids, tag_id)
+        return self
+
+    def set_permissions(self, permissions: dict[str, Any] | None = None, owner_id: int | None = None, merge: bool = False) -> Self:
+        """
+        Set permissions for all documents in the current queryset.
+
+        Args:
+            permissions: Permissions object
+            owner_id: Owner ID to assign
+            merge: Whether to merge with existing permissions (True) or replace them (False)
+
+        Returns:
+            Self for method chaining
+
+        Examples:
+            >>> # Set owner to user 2 for all documents with "invoice" in title
+            >>> client.documents().title("invoice", exact=False).set_permissions(owner_id=2)
+
+        """
+        ids = self._get_ids()
+        if ids:
+            self.resource.bulk_set_permissions(ids, permissions, owner_id, merge)
+        return self

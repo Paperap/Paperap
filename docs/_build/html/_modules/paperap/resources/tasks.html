@@ -1,0 +1,373 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>paperap.resources.tasks &mdash; Paperap 0.0.8 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=53b53b71"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Paperap
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Paperap</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">paperap.resources.tasks</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for paperap.resources.tasks</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">----------------------------------------------------------------------------</span>
+
+<span class="sd">   METADATA:</span>
+
+<span class="sd">       File:    tasks.py</span>
+<span class="sd">        Project: paperap</span>
+<span class="sd">       Created: 2025-03-04</span>
+<span class="sd">        Version: 0.0.9</span>
+<span class="sd">       Author:  Jess Mann</span>
+<span class="sd">       Email:   jess@jmann.me</span>
+<span class="sd">        Copyright (c) 2025 Jess Mann</span>
+
+<span class="sd">----------------------------------------------------------------------------</span>
+
+<span class="sd">   LAST MODIFIED:</span>
+
+<span class="sd">       2025-03-04     By Jess Mann</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">enum</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIError</span><span class="p">,</span> <span class="n">BadResponseError</span><span class="p">,</span> <span class="n">ResourceNotFoundError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.task</span><span class="w"> </span><span class="kn">import</span> <span class="n">Task</span><span class="p">,</span> <span class="n">TaskQuerySet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.resources.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseResource</span><span class="p">,</span> <span class="n">StandardResource</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TaskStatus">
+<a class="viewcode-back" href="../../../api/paperap.resources.tasks.html#paperap.resources.TaskStatus">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TaskStatus</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Status of a task.&quot;&quot;&quot;</span>
+
+    <span class="n">PENDING</span> <span class="o">=</span> <span class="s2">&quot;PENDING&quot;</span>
+    <span class="n">STARTED</span> <span class="o">=</span> <span class="s2">&quot;STARTED&quot;</span>
+    <span class="n">RETRY</span> <span class="o">=</span> <span class="s2">&quot;RETRY&quot;</span>
+    <span class="n">SUCCESS</span> <span class="o">=</span> <span class="s2">&quot;SUCCESS&quot;</span>
+    <span class="n">FAILURE</span> <span class="o">=</span> <span class="s2">&quot;FAILURE&quot;</span>
+    <span class="n">REVOKED</span> <span class="o">=</span> <span class="s2">&quot;REVOKED&quot;</span></div>
+
+
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TaskResource">
+<a class="viewcode-back" href="../../../api/paperap.resources.tasks.html#paperap.resources.TaskResource">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TaskResource</span><span class="p">(</span><span class="n">StandardResource</span><span class="p">[</span><span class="n">Task</span><span class="p">,</span> <span class="n">TaskQuerySet</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resource for managing tasks.&quot;&quot;&quot;</span>
+
+    <span class="n">model_class</span> <span class="o">=</span> <span class="n">Task</span>
+    <span class="n">queryset_class</span> <span class="o">=</span> <span class="n">TaskQuerySet</span>
+
+<div class="viewcode-block" id="TaskResource.acknowledge">
+<a class="viewcode-back" href="../../../api/paperap.resources.tasks.html#paperap.resources.TaskResource.acknowledge">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">acknowledge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Acknowledge a task.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            task_id: ID of the task to acknowledge.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;PUT&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;tasks/</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">/acknowledge/&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TaskResource.bulk_acknowledge">
+<a class="viewcode-back" href="../../../api/paperap.resources.tasks.html#paperap.resources.TaskResource.bulk_acknowledge">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bulk_acknowledge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Acknowledge multiple tasks.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            task_ids: list of task IDs to acknowledge.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="s2">&quot;tasks/bulk_acknowledge/&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;tasks&quot;</span><span class="p">:</span> <span class="n">task_ids</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="TaskResource.wait_for_task">
+<a class="viewcode-back" href="../../../api/paperap.resources.tasks.html#paperap.resources.TaskResource.wait_for_task">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wait_for_task</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">max_wait</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
+        <span class="n">poll_interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">success_callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Task</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">failure_callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Task</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Task</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wait for a task to complete.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            task_id: The task ID to wait for.</span>
+<span class="sd">            max_wait: Maximum time (in seconds) to wait for completion.</span>
+<span class="sd">            poll_interval: Seconds between polling attempts.</span>
+<span class="sd">            success_callback: Optional callback to execute when task succeeds.</span>
+<span class="sd">            failure_callback: Optional callback to execute when task fails.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The completed Task instance.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            APIError: If the task fails or times out.</span>
+<span class="sd">            ResourceNotFoundError: If the task cannot be found.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Waiting for task </span><span class="si">%s</span><span class="s2"> to complete&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="p">)</span>
+        <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="n">max_wait</span>
+
+        <span class="k">while</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">end_time</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">task</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Task </span><span class="si">%s</span><span class="s2"> not found, retrying...&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="p">)</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">poll_interval</span><span class="p">)</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># Check if task is complete</span>
+                <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">SUCCESS</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Task </span><span class="si">%s</span><span class="s2"> completed successfully&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">success_callback</span><span class="p">:</span>
+                        <span class="n">success_callback</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">task</span>
+
+                <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">FAILURE</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Task </span><span class="si">%s</span><span class="s2"> failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="p">,</span> <span class="n">task</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">failure_callback</span><span class="p">:</span>
+                        <span class="n">failure_callback</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">APIError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Task </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2"> failed: </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">REVOKED</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Task </span><span class="si">%s</span><span class="s2"> was revoked&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">APIError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Task </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2"> was revoked&quot;</span><span class="p">)</span>
+
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Task </span><span class="si">%s</span><span class="s2"> status: </span><span class="si">%s</span><span class="s2">, waiting...&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="p">,</span> <span class="n">task</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="n">ResourceNotFoundError</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Task </span><span class="si">%s</span><span class="s2"> not found yet, retrying...&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="p">)</span>
+
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">poll_interval</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="n">APIError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Timed out waiting for task </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2"> to complete&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TaskResource.wait_for_tasks">
+<a class="viewcode-back" href="../../../api/paperap.resources.tasks.html#paperap.resources.TaskResource.wait_for_tasks">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wait_for_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">max_wait</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span> <span class="n">poll_interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Task</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wait for multiple tasks to complete.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            task_ids: List of task IDs to wait for.</span>
+<span class="sd">            max_wait: Maximum time (in seconds) to wait for all tasks.</span>
+<span class="sd">            poll_interval: Seconds between polling attempts.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dictionary mapping task IDs to completed Task instances.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            APIError: If any task fails or times out.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Waiting for </span><span class="si">%d</span><span class="s2"> tasks to complete&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">task_ids</span><span class="p">))</span>
+        <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="n">max_wait</span>
+        <span class="n">completed_tasks</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Task</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">pending_tasks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">task_ids</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="n">pending_tasks</span> <span class="ow">and</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">end_time</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">pending_tasks</span><span class="p">):</span>  <span class="c1"># Create a copy to safely modify during iteration</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">task</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">continue</span>
+
+                    <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">SUCCESS</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Task </span><span class="si">%s</span><span class="s2"> completed successfully&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="p">)</span>
+                        <span class="n">completed_tasks</span><span class="p">[</span><span class="n">task_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">task</span>
+                        <span class="n">pending_tasks</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span>
+
+                    <span class="k">elif</span> <span class="n">task</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">FAILURE</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Task </span><span class="si">%s</span><span class="s2"> failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="p">,</span> <span class="n">task</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="n">APIError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Task </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2"> failed: </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                    <span class="k">elif</span> <span class="n">task</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">REVOKED</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Task </span><span class="si">%s</span><span class="s2"> was revoked&quot;</span><span class="p">,</span> <span class="n">task_id</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="n">APIError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Task </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2"> was revoked&quot;</span><span class="p">)</span>
+
+                <span class="k">except</span> <span class="n">ResourceNotFoundError</span><span class="p">:</span>
+                    <span class="k">pass</span>  <span class="c1"># Task not found yet, continue waiting</span>
+
+            <span class="k">if</span> <span class="n">pending_tasks</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">poll_interval</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">pending_tasks</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">APIError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Timed out waiting for tasks: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pending_tasks</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">completed_tasks</span></div>
+
+
+<div class="viewcode-block" id="TaskResource.get_task_result">
+<a class="viewcode-back" href="../../../api/paperap.resources.tasks.html#paperap.resources.TaskResource.get_task_result">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_task_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">wait</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">max_wait</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the result of a task.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            task_id: The task ID.</span>
+<span class="sd">            wait: Whether to wait for the task to complete if it&#39;s not already.</span>
+<span class="sd">            max_wait: Maximum time (in seconds) to wait if wait=True.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The result of the task.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            APIError: If the task fails or times out.</span>
+<span class="sd">            ResourceNotFoundError: If the task cannot be found.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
+            <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">max_wait</span><span class="o">=</span><span class="n">max_wait</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">task</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ResourceNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Task </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">TaskStatus</span><span class="o">.</span><span class="n">SUCCESS</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">APIError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Task </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2"> is not successful (status: </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">task</span><span class="o">.</span><span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="TaskResource.execute_task">
+<a class="viewcode-back" href="../../../api/paperap.resources.tasks.html#paperap.resources.TaskResource.execute_task">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">max_wait</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Task</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute a task synchronously.</span>
+
+<span class="sd">        This is a helper method that executes a task and waits for its completion.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            method: HTTP method (GET, POST, etc.)</span>
+<span class="sd">            endpoint: API endpoint to call</span>
+<span class="sd">            data: Optional data to send with the request</span>
+<span class="sd">            max_wait: Maximum time to wait for task completion</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The task object, once completed.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            APIError: If the task fails or times out</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">BadResponseError</span><span class="p">(</span><span class="s2">&quot;Expected task ID in response&quot;</span><span class="p">)</span>
+
+        <span class="n">task_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">max_wait</span><span class="o">=</span><span class="n">max_wait</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Jess Mann.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

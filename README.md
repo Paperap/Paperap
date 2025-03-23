@@ -150,7 +150,7 @@ pre-commit run --all-files
 - [ ] Make integration tests easier to setup for other users (wip)
 - [ ] Deleting tags, custom fields, etc via document.tags = None
 - [ ] devcontainer (wip)
-- [ ] git action to distribute to pypi
+- [x] git action to distribute to pypi
 - [ ] Remove validators that pydantic handles natively
 - [ ] cli tools
 - [ ] batch editing (done? needs integration tests)
@@ -160,9 +160,10 @@ pre-commit run --all-files
 - [ ] unit tests for additional edge cases
 - [ ] immutability (resources, response dicts, (optionally) for models)
 - [ ] hypothesis testing (additional models)
-- [ ] Empty trash
+- [x] Empty trash
 - [ ] factories create unique names, and create relationships in db
 - [ ] publish sphinx docs (once stable)
+- [ ] Lazy Document Evaluation after upload async
 - [x] Compile sphinx documentation
 - [x] async model updates
 - [x] uploading documents

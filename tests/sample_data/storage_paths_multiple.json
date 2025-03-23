@@ -1,0 +1,48 @@
+{
+    "count": 3,
+    "next": null,
+    "previous": null,
+    "all": [
+        1868,
+        1859,
+        1886
+    ],
+    "results": [
+        {
+            "id": 1868,
+            "slug": "storagepath-11-discover-11",
+            "name": "StoragePath-11-discover 11",
+            "path": "/office/door.css",
+            "match": "article",
+            "matching_algorithm": 2,
+            "is_insensitive": false,
+            "document_count": 1,
+            "owner": 1,
+            "user_can_change": true
+        },
+        {
+            "id": 1859,
+            "slug": "storagepath-2-our-2",
+            "name": "StoragePath-2-our 2",
+            "path": "/boy/training.wav",
+            "match": "garden",
+            "matching_algorithm": 1,
+            "is_insensitive": true,
+            "document_count": 0,
+            "owner": 1,
+            "user_can_change": true
+        },
+        {
+            "id": 1886,
+            "slug": "storagepath-29-manage-29",
+            "name": "StoragePath-29-manage 29",
+            "path": "/often/effort.key",
+            "match": "only",
+            "matching_algorithm": 3,
+            "is_insensitive": true,
+            "document_count": 1,
+            "owner": 1,
+            "user_can_change": true
+        }
+    ]
+}

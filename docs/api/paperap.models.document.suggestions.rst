@@ -3,8 +3,8 @@ paperap.models.document.suggestions package
 
 .. automodule:: paperap.models.document.suggestions
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Submodules
 ----------

@@ -1,0 +1,42 @@
+{
+    "count": 3,
+    "next": null,
+    "previous": null,
+    "all": [
+        1593,
+        1583,
+        1569
+    ],
+    "results": [
+        {
+            "id": 1593,
+            "name": "some 72",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1583,
+            "name": "sing 62",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1569,
+            "name": "head 48",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        }
+    ]
+}

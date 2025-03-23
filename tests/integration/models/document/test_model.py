@@ -27,9 +27,9 @@ import logging
 import os
 import unittest
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Iterable, override
 from unittest.mock import MagicMock, patch
-from pathlib import Path
 
 from paperap.client import PaperlessClient
 from paperap.exceptions import ReadOnlyFieldError, ResourceNotFoundError

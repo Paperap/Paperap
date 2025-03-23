@@ -1,10 +1,10 @@
 {
-    "id": 1216,
-    "name": "people 75",
+    "id": 1596,
+    "name": "produce 75",
     "data_type": "string",
     "extra_data": {
-        "key": "traditional",
-        "value": "talk"
+        "key": "single",
+        "value": "later"
     },
     "document_count": 0
 }

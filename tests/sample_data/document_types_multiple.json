@@ -1,0 +1,45 @@
+{
+    "count": 3,
+    "next": null,
+    "previous": null,
+    "all": [
+        2122,
+        2125,
+        2129
+    ],
+    "results": [
+        {
+            "id": 2122,
+            "slug": "doctype-20-message-20",
+            "name": "DocType-20-message 20",
+            "match": "pass",
+            "matching_algorithm": 1,
+            "is_insensitive": false,
+            "document_count": 0,
+            "owner": 1,
+            "user_can_change": true
+        },
+        {
+            "id": 2125,
+            "slug": "doctype-23-now-23",
+            "name": "DocType-23-now 23",
+            "match": "hospital",
+            "matching_algorithm": 3,
+            "is_insensitive": true,
+            "document_count": 0,
+            "owner": 1,
+            "user_can_change": true
+        },
+        {
+            "id": 2129,
+            "slug": "doctype-27-business-27",
+            "name": "DocType-27-business 27",
+            "match": "front",
+            "matching_algorithm": 0,
+            "is_insensitive": false,
+            "document_count": 0,
+            "owner": 1,
+            "user_can_change": true
+        }
+    ]
+}

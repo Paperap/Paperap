@@ -1,0 +1,45 @@
+{
+    "count": 3,
+    "next": null,
+    "previous": null,
+    "all": [
+        2159,
+        2174,
+        2136
+    ],
+    "results": [
+        {
+            "id": 2159,
+            "slug": "correspondent-28-conference-28",
+            "name": "Correspondent-28-conference 28",
+            "match": "that",
+            "matching_algorithm": 3,
+            "is_insensitive": false,
+            "document_count": 0,
+            "owner": 1,
+            "user_can_change": true
+        },
+        {
+            "id": 2174,
+            "slug": "correspondent-43-blue-43",
+            "name": "Correspondent-43-blue 43",
+            "match": "strong",
+            "matching_algorithm": 1,
+            "is_insensitive": true,
+            "document_count": 1,
+            "owner": 1,
+            "user_can_change": true
+        },
+        {
+            "id": 2136,
+            "slug": "correspondent-5-this-5",
+            "name": "Correspondent-5-this 5",
+            "match": "artist",
+            "matching_algorithm": 3,
+            "is_insensitive": false,
+            "document_count": 0,
+            "owner": 1,
+            "user_can_change": true
+        }
+    ]
+}

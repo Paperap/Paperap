@@ -1,0 +1,871 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>paperap.resources.base &mdash; Paperap 0.0.8 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=53b53b71"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Paperap
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Paperap</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">paperap.resources.base</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for paperap.resources.base</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+
+
+
+
+<span class="sd">----------------------------------------------------------------------------</span>
+
+<span class="sd">METADATA:</span>
+
+<span class="sd">File:    base.py</span>
+<span class="sd">        Project: paperap</span>
+<span class="sd">Created: 2025-03-21</span>
+<span class="sd">        Version: 0.0.10</span>
+<span class="sd">Author:  Jess Mann</span>
+<span class="sd">Email:   jess@jmann.me</span>
+<span class="sd">        Copyright (c) 2025 Jess Mann</span>
+
+<span class="sd">----------------------------------------------------------------------------</span>
+
+<span class="sd">LAST MODIFIED:</span>
+
+<span class="sd">2025-03-21     By Jess Mann</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">ABCMeta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">string</span><span class="w"> </span><span class="kn">import</span> <span class="n">Template</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Final</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">override</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpUrl</span><span class="p">,</span> <span class="n">field_validator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeVar</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.const</span><span class="w"> </span><span class="kn">import</span> <span class="n">URLS</span><span class="p">,</span> <span class="n">Endpoints</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ConfigurationError</span><span class="p">,</span>
+    <span class="n">ModelValidationError</span><span class="p">,</span>
+    <span class="n">ObjectNotFoundError</span><span class="p">,</span>
+    <span class="n">ResourceNotFoundError</span><span class="p">,</span>
+    <span class="n">ResponseParsingError</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.signals</span><span class="w"> </span><span class="kn">import</span> <span class="n">registry</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">PaperlessClient</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.abstract.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">StandardModel</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.abstract.queryset</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseQuerySet</span><span class="p">,</span> <span class="n">StandardQuerySet</span>
+
+<span class="n">_BaseModel</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_BaseModel&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;BaseModel&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;BaseModel&quot;</span><span class="p">)</span>
+<span class="n">_BaseQuerySet</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_BaseQuerySet&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;BaseQuerySet[Any]&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;BaseQuerySet&quot;</span><span class="p">)</span>
+<span class="n">_StandardModel</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_StandardModel&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;StandardModel&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;StandardModel&quot;</span><span class="p">)</span>
+<span class="n">_StandardQuerySet</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_StandardQuerySet&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;StandardQuerySet[Any]&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;StandardQuerySet&quot;</span><span class="p">)</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="BaseResource">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseResource</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">_BaseModel</span><span class="p">,</span> <span class="n">_BaseQuerySet</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for API resources.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        client: The PaperlessClient instance.</span>
+<span class="sd">        endpoint: The API endpoint for this resource.</span>
+<span class="sd">        model_class: The model class for this resource.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># The model class for this resource.</span>
+    <span class="n">model_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">_BaseModel</span><span class="p">]</span>
+    <span class="n">queryset_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">_BaseQuerySet</span><span class="p">]</span>
+
+    <span class="c1"># The PaperlessClient instance.</span>
+    <span class="n">client</span><span class="p">:</span> <span class="s2">&quot;PaperlessClient&quot;</span>
+    <span class="c1"># The name of the model. This must line up with the API endpoint</span>
+    <span class="c1"># It will default to the model&#39;s name</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="c1"># The API endpoint for this model.</span>
+    <span class="c1"># It will default to a standard schema used by the API</span>
+    <span class="c1"># Setting it will allow you to contact a different schema or even a completely different API.</span>
+    <span class="c1"># this will usually not need to be overridden</span>
+    <span class="n">endpoints</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">Endpoints</span><span class="p">]</span>
+
+<div class="viewcode-block" id="BaseResource.__init__">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="s2">&quot;PaperlessClient&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">client</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">s&quot;</span>
+
+        <span class="c1"># Allow templating</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">endpoints</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># endpoints is always dict[str, Template]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">endpoints</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">safe_substitute</span><span class="p">(</span><span class="n">resource</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+        <span class="c1"># Ensure the model has a link back to this resource</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_class</span><span class="o">.</span><span class="n">_resource</span> <span class="o">=</span> <span class="bp">self</span>  <span class="c1"># type: ignore # allow private access</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="BaseResource.__init_subclass__">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.__init_subclass__">[docs]</a>
+    <span class="nd">@override</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the subclass.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Arbitrary keyword arguments</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Skip processing for the base class itself. TODO: This is a hack</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;BaseResource&quot;</span><span class="p">,</span> <span class="s2">&quot;StandardResource&quot;</span><span class="p">]:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># model_class is required</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">_model_class</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;model_class&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_class must be defined in </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># API Endpoint must be defined</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">endpoints</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;endpoints&quot;</span><span class="p">,</span> <span class="p">{})):</span>
+            <span class="n">endpoints</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;list&quot;</span><span class="p">:</span> <span class="n">URLS</span><span class="o">.</span><span class="n">list</span><span class="p">,</span>
+                <span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="n">URLS</span><span class="o">.</span><span class="n">detail</span><span class="p">,</span>
+                <span class="s2">&quot;create&quot;</span><span class="p">:</span> <span class="n">URLS</span><span class="o">.</span><span class="n">create</span><span class="p">,</span>
+                <span class="s2">&quot;update&quot;</span><span class="p">:</span> <span class="n">URLS</span><span class="o">.</span><span class="n">update</span><span class="p">,</span>
+                <span class="s2">&quot;delete&quot;</span><span class="p">:</span> <span class="n">URLS</span><span class="o">.</span><span class="n">delete</span><span class="p">,</span>
+            <span class="p">}</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">endpoints</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_validate_endpoints</span><span class="p">(</span><span class="n">endpoints</span><span class="p">)</span>  <span class="c1"># type: ignore # Allow assigning in subclass</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BaseModel.Meta[_BaseModel]&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_class</span><span class="o">.</span><span class="n">_meta</span>  <span class="c1"># pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_endpoints</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Endpoints</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ModelValidationError</span><span class="p">(</span><span class="s2">&quot;endpoints must be a dictionary&quot;</span><span class="p">)</span>
+
+        <span class="n">converted</span><span class="p">:</span> <span class="n">Endpoints</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Template</span><span class="p">):</span>
+                <span class="n">converted</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ModelValidationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;endpoints[</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">] must be a string or template&quot;</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">converted</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ModelValidationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;endpoints[</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">] is not a valid template: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+        <span class="c1"># We validated that converted matches endpoints above</span>
+        <span class="k">return</span> <span class="n">converted</span>
+
+<div class="viewcode-block" id="BaseResource.get_endpoint">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.get_endpoint">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_endpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">HttpUrl</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">template</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">endpoints</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Endpoint </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> not defined for resource </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;resource&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;resource&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">safe_substitute</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;http&quot;</span><span class="p">):</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">base_url</span><span class="si">}{</span><span class="n">url</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="n">HttpUrl</span><span class="p">(</span><span class="n">url</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseResource.all">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.all">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_BaseQuerySet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a QuerySet representing all objects of this resource type.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A QuerySet for this resource</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">queryset_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># type: ignore # _meta.queryset is always the right queryset type</span></div>
+
+
+<div class="viewcode-block" id="BaseResource.filter">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.filter">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_BaseQuerySet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a QuerySet filtered by the given parameters.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Filter parameters</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A filtered QuerySet</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseResource.get">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.get">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_BaseModel</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a model by ID.</span>
+
+<span class="sd">        Raises NotImplementedError. Subclasses may implement this.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError: Unless implemented by a subclass.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The model retrieved.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;get method not available for resources without an id&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseResource.create">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.create">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_BaseModel</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new resource.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data: Resource data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The created resource.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Signal before creating resource</span>
+        <span class="n">signal_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;resource&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">}</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;resource.create:before&quot;</span><span class="p">,</span> <span class="s2">&quot;Emitted before creating a resource&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">signal_params</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">url</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_endpoint</span><span class="p">(</span><span class="s2">&quot;create&quot;</span><span class="p">,</span> <span class="n">resource</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Create endpoint not defined for resource </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">response</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">ResourceNotFoundError</span><span class="p">(</span><span class="s2">&quot;Resource </span><span class="si">{resource}</span><span class="s2"> not found after create.&quot;</span><span class="p">,</span> <span class="n">resource_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_to_model</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="c1"># Signal after creating resource</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
+            <span class="s2">&quot;resource.create:after&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Emitted after creating a resource&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">],</span>
+            <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">signal_params</span><span class="p">},</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">model</span></div>
+
+
+<div class="viewcode-block" id="BaseResource.update">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">_BaseModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_BaseModel</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update a resource.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            resource: The resource to update.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The updated resource.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;update method not available for resources without an id&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseResource.update_dict">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.update_dict">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_BaseModel</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update a resource.</span>
+
+<span class="sd">        Subclasses may implement this.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;update_dict method not available for resources without an id&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseResource.delete">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.delete">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Delete a resource.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model_id: ID of the resource.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;delete method not available for resources without an id&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseResource.parse_to_model">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.parse_to_model">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_to_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">_BaseModel</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse an item dictionary into a model instance, handling date parsing.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            item: The item dictionary.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The parsed model instance.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_data_input</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_class</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error parsing model &quot;</span><span class="si">%s</span><span class="s1">&quot; with data: </span><span class="si">%s</span><span class="s1"> -&gt; </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+            <span class="k">raise</span></div>
+
+
+<div class="viewcode-block" id="BaseResource.transform_data_input">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.transform_data_input">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform_data_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform data after receiving it from the API.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data: The data to transform.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The transformed data.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">field_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+    <span class="nd">@overload</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform_data_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">_BaseModel</span><span class="p">,</span> <span class="n">exclude_unset</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span> <span class="o">...</span>
+
+    <span class="nd">@overload</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform_data_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span> <span class="o">...</span>
+
+<div class="viewcode-block" id="BaseResource.transform_data_output">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.transform_data_output">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform_data_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">_BaseModel</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">exclude_unset</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform data before sending it to the API.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model: The model to transform.</span>
+<span class="sd">            exclude_unset: If model is provided, exclude unset fields when calling to_dict()</span>
+<span class="sd">            data: The data to transform.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The transformed data.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">model</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+                <span class="c1"># Combining model.to_dict() and data is ambiguous, so not allowed.</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only one of model or data should be provided&quot;</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="n">exclude_unset</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">field_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="BaseResource.create_model">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.create_model">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_BaseModel</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new model instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Model field values</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A new model instance.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Mypy output:</span>
+        <span class="c1"># base.py:326:52: error: Argument &quot;resource&quot; to &quot;BaseModel&quot; has incompatible type</span>
+        <span class="c1"># &quot;BaseResource[_BaseModel, _BaseQuerySet]&quot;; expected &quot;BaseResource[BaseModel, BaseQuerySet[BaseModel]] | None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_class</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">resource</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># type: ignore</span></div>
+
+
+<div class="viewcode-block" id="BaseResource.request_raw">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.request_raw">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">request_raw</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Template</span> <span class="o">|</span> <span class="n">HttpUrl</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make an HTTP request to the API, and return the raw json response.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            method: The HTTP method to use</span>
+<span class="sd">            url: The full URL to request</span>
+<span class="sd">            params: Query parameters</span>
+<span class="sd">            data: Request body data</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The JSON-decoded response from the API</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">url</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">url</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_endpoint</span><span class="p">(</span><span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="n">resource</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;List endpoint not defined for resource </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">Template</span><span class="p">):</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">safe_substitute</span><span class="p">(</span><span class="n">resource</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span></div>
+
+
+<div class="viewcode-block" id="BaseResource.handle_response">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.handle_response">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">_BaseModel</span><span class="p">]:</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
+            <span class="s2">&quot;resource._handle_response:before&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Emitted before listing resources&quot;</span><span class="p">,</span>
+            <span class="n">return_type</span><span class="o">=</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">],</span>
+            <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="n">response</span><span class="p">,</span> <span class="s2">&quot;resource&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">},</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_results</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_dict_response</span><span class="p">(</span><span class="o">**</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ResponseParsingError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected response to be list/dict, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">registry</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
+            <span class="s2">&quot;resource._handle_response:after&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Emitted after listing resources&quot;</span><span class="p">,</span>
+            <span class="n">return_type</span><span class="o">=</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">],</span>
+            <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="n">response</span><span class="p">,</span> <span class="s2">&quot;resource&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">},</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseResource.handle_dict_response">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.handle_dict_response">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_dict_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">response</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">_BaseModel</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle a response from the API and yield results.</span>
+
+<span class="sd">        Override in subclasses to implement custom response logic.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">results</span> <span class="o">:=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)):</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Signal after receiving response</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
+            <span class="s2">&quot;resource._handle_response:after&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Emitted after list response, before processing&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">],</span>
+            <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">**</span><span class="n">response</span><span class="p">},</span> <span class="s2">&quot;resource&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;results&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">},</span>
+        <span class="p">)</span>
+
+        <span class="c1"># If this is a single-item response (not a list), handle it differently</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="c1"># For resources that return a single object directly</span>
+            <span class="n">registry</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
+                <span class="s2">&quot;resource._handle_results:before&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Emitted for direct object response&quot;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">],</span>
+                <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;resource&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">**</span><span class="n">results</span><span class="p">}},</span>
+            <span class="p">)</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_to_model</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_results</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">raise</span> <span class="n">ResponseParsingError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> results to be list/dict, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">results</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseResource.handle_results">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.handle_results">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">_BaseModel</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Yield parsed models from a list of results.</span>
+
+<span class="sd">        Override in subclasses to implement custom result handling.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ResponseParsingError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> results to be a list, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">results</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ResponseParsingError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected type of elements in results is dict, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">registry</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
+                <span class="s2">&quot;resource._handle_results:before&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Emitted for each item in a list response&quot;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">],</span>
+                <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;resource&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">**</span><span class="n">item</span><span class="p">}},</span>
+            <span class="p">)</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_to_model</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseResource.__call__">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.__call__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">keywords</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_BaseQuerySet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make the resource callable to get a BaseQuerySet.</span>
+
+<span class="sd">        This allows usage like: client.documents(title__contains=&#39;invoice&#39;)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *args: Unused</span>
+<span class="sd">            **keywords: Filter parameters</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A filtered QuerySet</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">keywords</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="StandardResource">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.StandardResource">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">StandardResource</span><span class="p">(</span><span class="n">BaseResource</span><span class="p">[</span><span class="n">_StandardModel</span><span class="p">,</span> <span class="n">_StandardQuerySet</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for API resources.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        client: The PaperlessClient instance.</span>
+<span class="sd">        endpoint: The API endpoint for this resource.</span>
+<span class="sd">        model_class: The model class for this resource.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="StandardResource.get">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.StandardResource.get">[docs]</a>
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_StandardModel</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a model within this resource by ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model_id: ID of the model to retrieve.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The model retrieved</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Signal before getting resource</span>
+        <span class="n">signal_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;resource&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="n">model_id</span><span class="p">}</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;resource.get:before&quot;</span><span class="p">,</span> <span class="s2">&quot;Emitted before getting a resource&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">],</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">signal_params</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">url</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_endpoint</span><span class="p">(</span><span class="s2">&quot;detail&quot;</span><span class="p">,</span> <span class="n">resource</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">model_id</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Get detail endpoint not defined for resource </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">response</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">ObjectNotFoundError</span><span class="p">(</span><span class="n">resource_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">)</span>
+
+        <span class="c1"># If the response doesn&#39;t have an ID, it&#39;s likely a 404</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;detail&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;No ID found in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> response&quot;</span>
+            <span class="k">raise</span> <span class="n">ObjectNotFoundError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">resource_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">)</span>
+
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_to_model</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="c1"># Signal after getting resource</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
+            <span class="s2">&quot;resource.get:after&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Emitted after getting a single resource by id&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">],</span>
+            <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="n">signal_params</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">model</span><span class="p">},</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">model</span></div>
+
+
+<div class="viewcode-block" id="StandardResource.update">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.StandardResource.update">[docs]</a>
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">_StandardModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_StandardModel</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update a model.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model: The model to update.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The updated model.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_data_output</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># Save the model ID</span>
+        <span class="n">model_id</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">id</span>
+
+        <span class="c1"># Remove ID from the data dict to avoid duplicating it in the call</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_dict</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StandardResource.delete">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.StandardResource.delete">[docs]</a>
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">_StandardModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Delete a resource.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model_id: ID of the resource.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">model_id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;model_id is required to delete a resource&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">model_id</span> <span class="o">=</span> <span class="n">model_id</span><span class="o">.</span><span class="n">id</span>
+
+        <span class="c1"># Signal before deleting resource</span>
+        <span class="n">signal_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;resource&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="n">model_id</span><span class="p">}</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;resource.delete:before&quot;</span><span class="p">,</span> <span class="s2">&quot;Emitted before deleting a resource&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">],</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">signal_params</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">url</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_endpoint</span><span class="p">(</span><span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="n">resource</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">model_id</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Delete endpoint not defined for resource </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+
+        <span class="c1"># Signal after deleting resource</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;resource.delete:after&quot;</span><span class="p">,</span> <span class="s2">&quot;Emitted after deleting a resource&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">],</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">signal_params</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StandardResource.update_dict">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.StandardResource.update_dict">[docs]</a>
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">_StandardModel</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update a resource.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model_id: ID of the resource.</span>
+<span class="sd">            data: Resource data.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ResourceNotFoundError: If the resource with the given id is not found</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The updated resource.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Signal before updating resource</span>
+        <span class="n">signal_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;resource&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="n">model_id</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">}</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;resource.update:before&quot;</span><span class="p">,</span> <span class="s2">&quot;Emitted before updating a resource&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">signal_params</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">url</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_endpoint</span><span class="p">(</span><span class="s2">&quot;update&quot;</span><span class="p">,</span> <span class="n">resource</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">model_id</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Update endpoint not defined for resource </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">response</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;PUT&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">ResourceNotFoundError</span><span class="p">(</span><span class="s2">&quot;Resource $</span><span class="si">{resource}</span><span class="s2"> not found after update.&quot;</span><span class="p">,</span> <span class="n">resource_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_to_model</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="c1"># Signal after updating resource</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
+            <span class="s2">&quot;resource.update:after&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Emitted after updating a resource&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">],</span>
+            <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="n">signal_params</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">model</span><span class="p">},</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">model</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="BulkEditing">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BulkEditing">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BulkEditing</span><span class="p">:</span>
+<div class="viewcode-block" id="BulkEditing.bulk_edit_objects">
+<a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BulkEditing.bulk_edit_objects">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bulk_edit_objects</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">BaseResource</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+        <span class="n">object_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">operation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">permissions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">owner_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">merge</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bulk edit non-document objects (tags, correspondents, document types, storage paths).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            object_type: Type of objects to edit (&#39;tags&#39;, &#39;correspondents&#39;, &#39;document_types&#39;, &#39;storage_paths&#39;)</span>
+<span class="sd">            ids: List of object IDs to edit</span>
+<span class="sd">            operation: Operation to perform (&#39;set_permissions&#39; or &#39;delete&#39;)</span>
+<span class="sd">            permissions: Permissions object for &#39;set_permissions&#39; operation</span>
+<span class="sd">            owner_id: Owner ID to assign</span>
+<span class="sd">            merge: Whether to merge permissions with existing ones (True) or replace them (False)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The API response</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If operation is not valid</span>
+<span class="sd">            ConfigurationError: If the bulk edit endpoint is not defined</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">operation</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;set_permissions&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid operation &#39;</span><span class="si">{</span><span class="n">operation</span><span class="si">}</span><span class="s2">&#39;. Must be &#39;set_permissions&#39; or &#39;delete&#39;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Signal before bulk action</span>
+        <span class="n">signal_params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;object_type&quot;</span><span class="p">:</span> <span class="n">object_type</span><span class="p">,</span>
+            <span class="s2">&quot;operation&quot;</span><span class="p">:</span> <span class="n">operation</span><span class="p">,</span>
+            <span class="s2">&quot;ids&quot;</span><span class="p">:</span> <span class="n">ids</span><span class="p">,</span>
+            <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="n">permissions</span><span class="p">,</span>
+            <span class="s2">&quot;owner_id&quot;</span><span class="p">:</span> <span class="n">owner_id</span><span class="p">,</span>
+            <span class="s2">&quot;merge&quot;</span><span class="p">:</span> <span class="n">merge</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
+            <span class="s2">&quot;resource.bulk_edit_objects:before&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Emitted before bulk edit objects&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">],</span>
+            <span class="n">kwargs</span><span class="o">=</span><span class="n">signal_params</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;objects&quot;</span><span class="p">:</span> <span class="n">ids</span><span class="p">,</span> <span class="s2">&quot;object_type&quot;</span><span class="p">:</span> <span class="n">object_type</span><span class="p">,</span> <span class="s2">&quot;operation&quot;</span><span class="p">:</span> <span class="n">operation</span><span class="p">,</span> <span class="s2">&quot;merge&quot;</span><span class="p">:</span> <span class="n">merge</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">permissions</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;permissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">permissions</span>
+        <span class="k">if</span> <span class="n">owner_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;owner&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">owner_id</span>
+
+        <span class="c1"># Use the special endpoint for bulk editing objects</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">HttpUrl</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">base_url</span><span class="si">}</span><span class="s2">/api/bulk_edit_objects/&quot;</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># Signal after bulk action</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
+            <span class="s2">&quot;resource.bulk_edit_objects:after&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Emitted after bulk edit objects&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">],</span>
+            <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="n">signal_params</span><span class="p">,</span> <span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="n">response</span><span class="p">},</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span> <span class="ow">or</span> <span class="p">{}</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Jess Mann.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

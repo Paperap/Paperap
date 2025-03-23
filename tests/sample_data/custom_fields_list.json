@@ -1,93 +1,583 @@
 {
     "count": 76,
-    "next": "http://192.168.11.222:64001/api/custom_fields/?page=2&page_size=1",
+    "next": "http://example.com/api/custom_fields/?page=2&page_size=50",
     "previous": null,
     "all": [
-        1216,
-        1215,
-        1214,
-        1213,
-        1212,
-        1211,
-        1210,
-        1209,
-        1208,
-        1207,
-        1206,
-        1205,
-        1204,
-        1203,
-        1202,
-        1201,
-        1200,
-        1199,
-        1198,
-        1197,
-        1196,
-        1195,
-        1194,
-        1193,
-        1192,
-        1191,
-        1190,
-        1189,
-        1188,
-        1187,
-        1186,
-        1185,
-        1184,
-        1183,
-        1182,
-        1181,
-        1180,
-        1179,
-        1178,
-        1177,
-        1176,
-        1175,
-        1174,
-        1173,
-        1172,
-        1171,
-        1170,
-        1169,
-        1168,
-        1167,
-        1166,
-        1165,
-        1164,
-        1163,
-        1162,
-        1161,
-        1160,
-        1159,
-        1158,
-        1157,
-        1156,
-        1155,
-        1154,
-        1153,
-        1152,
-        1151,
-        1150,
-        1149,
-        1148,
-        1147,
-        1146,
-        1145,
-        1144,
-        1143,
-        1142,
-        1141
+        1596,
+        1595,
+        1594,
+        1593,
+        1592,
+        1591,
+        1590,
+        1589,
+        1588,
+        1587,
+        1586,
+        1585,
+        1584,
+        1583,
+        1582,
+        1581,
+        1580,
+        1579,
+        1578,
+        1577,
+        1576,
+        1575,
+        1574,
+        1573,
+        1572,
+        1571,
+        1570,
+        1569,
+        1568,
+        1567,
+        1566,
+        1565,
+        1564,
+        1563,
+        1562,
+        1561,
+        1560,
+        1559,
+        1558,
+        1557,
+        1556,
+        1555,
+        1554,
+        1553,
+        1552,
+        1551,
+        1550,
+        1549,
+        1548,
+        1547,
+        1546,
+        1545,
+        1544,
+        1543,
+        1542,
+        1541,
+        1540,
+        1539,
+        1538,
+        1537,
+        1536,
+        1535,
+        1534,
+        1533,
+        1532,
+        1531,
+        1530,
+        1529,
+        1528,
+        1527,
+        1526,
+        1525,
+        1524,
+        1523,
+        1522,
+        1521
     ],
     "results": [
         {
-            "id": 1216,
-            "name": "people 75",
+            "id": 1596,
+            "name": "produce 75",
             "data_type": "string",
             "extra_data": {
-                "key": "traditional",
-                "value": "talk"
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1595,
+            "name": "majority 74",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1594,
+            "name": "threat 73",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1593,
+            "name": "some 72",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1592,
+            "name": "choose 71",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1591,
+            "name": "popular 70",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1590,
+            "name": "bed 69",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1589,
+            "name": "her 68",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1588,
+            "name": "and 67",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1587,
+            "name": "stock 66",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1586,
+            "name": "ten 65",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1585,
+            "name": "foreign 64",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1584,
+            "name": "affect 63",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1583,
+            "name": "sing 62",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1582,
+            "name": "film 61",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1581,
+            "name": "management 60",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1580,
+            "name": "ago 59",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1579,
+            "name": "almost 58",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1578,
+            "name": "development 57",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1577,
+            "name": "contain 56",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1576,
+            "name": "student 55",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1575,
+            "name": "program 54",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1574,
+            "name": "woman 53",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1573,
+            "name": "truth 52",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1572,
+            "name": "girl 51",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1571,
+            "name": "population 50",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1570,
+            "name": "throw 49",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1569,
+            "name": "head 48",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1568,
+            "name": "speak 47",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1567,
+            "name": "project 46",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1566,
+            "name": "well 45",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1565,
+            "name": "not 44",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1564,
+            "name": "talk 43",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1563,
+            "name": "person 42",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1562,
+            "name": "authority 41",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1561,
+            "name": "suffer 40",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1560,
+            "name": "science 39",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1559,
+            "name": "run 38",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1558,
+            "name": "quickly 37",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1557,
+            "name": "source 36",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1556,
+            "name": "probably 35",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1555,
+            "name": "attack 34",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1554,
+            "name": "peace 33",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1553,
+            "name": "finish 32",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1552,
+            "name": "concern 31",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1551,
+            "name": "order 30",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1550,
+            "name": "cover 29",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1549,
+            "name": "yard 28",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1548,
+            "name": "smile 27",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
+            },
+            "document_count": 0
+        },
+        {
+            "id": 1547,
+            "name": "throughout 26",
+            "data_type": "string",
+            "extra_data": {
+                "key": "single",
+                "value": "later"
             },
             "document_count": 0
         }

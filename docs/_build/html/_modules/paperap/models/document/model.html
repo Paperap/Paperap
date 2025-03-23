@@ -1,0 +1,1037 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>paperap.models.document.model &mdash; Paperap 0.0.8 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="canonical" href="/_modules/paperap/models/document/model.html" />
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=53b53b71"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../../_static/readthedocs.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            Paperap
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Paperap</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">paperap.models.document.model</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for paperap.models.document.model</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+
+
+
+<span class="sd">----------------------------------------------------------------------------</span>
+
+<span class="sd">METADATA:</span>
+
+<span class="sd">File:    model.py</span>
+<span class="sd">        Project: paperap</span>
+<span class="sd">Created: 2025-03-09</span>
+<span class="sd">        Version: 0.0.10</span>
+<span class="sd">Author:  Jess Mann</span>
+<span class="sd">Email:   jess@jmann.me</span>
+<span class="sd">        Copyright (c) 2025 Jess Mann</span>
+
+<span class="sd">----------------------------------------------------------------------------</span>
+
+<span class="sd">LAST MODIFIED:</span>
+
+<span class="sd">2025-03-09     By Jess Mann</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Self</span><span class="p">,</span> <span class="n">TypedDict</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">override</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pydantic</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">field_serializer</span><span class="p">,</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">model_serializer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeVar</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.const</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CustomFieldTypedDict</span><span class="p">,</span>
+    <span class="n">CustomFieldTypes</span><span class="p">,</span>
+    <span class="n">CustomFieldValues</span><span class="p">,</span>
+    <span class="n">DocumentStorageType</span><span class="p">,</span>
+    <span class="n">FilteringStrategies</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResourceNotFoundError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.abstract.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandardModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.document.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">SUPPORTED_FILTERING_PARAMS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.document.queryset</span><span class="w"> </span><span class="kn">import</span> <span class="n">DocumentQuerySet</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.correspondent.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Correspondent</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.custom_field</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomField</span><span class="p">,</span> <span class="n">CustomFieldQuerySet</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.document.download.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">DownloadedDocument</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.document.metadata.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">DocumentMetadata</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.document.suggestions.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">DocumentSuggestions</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.document_type.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">DocumentType</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.storage_path.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">StoragePath</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.tag</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tag</span><span class="p">,</span> <span class="n">TagQuerySet</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.user.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">User</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.resources.documents</span><span class="w"> </span><span class="kn">import</span> <span class="n">DocumentResource</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="DocumentNote">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentNote">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DocumentNote</span><span class="p">(</span><span class="n">StandardModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a note on a Paperless-NgX document.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">deleted_at</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">restored_at</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">transaction_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">note</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">created</span><span class="p">:</span> <span class="n">datetime</span>
+    <span class="n">document</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">user</span><span class="p">:</span> <span class="nb">int</span>
+
+<div class="viewcode-block" id="DocumentNote.Meta">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentNote.Meta">[docs]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">(</span><span class="n">StandardModel</span><span class="o">.</span><span class="n">Meta</span><span class="p">):</span>
+        <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;deleted_at&quot;</span><span class="p">,</span> <span class="s2">&quot;restored_at&quot;</span><span class="p">,</span> <span class="s2">&quot;transaction_id&quot;</span><span class="p">,</span> <span class="s2">&quot;created&quot;</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="DocumentNote.serialize_datetime">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentNote.serialize_datetime">[docs]</a>
+    <span class="nd">@field_serializer</span><span class="p">(</span><span class="s2">&quot;deleted_at&quot;</span><span class="p">,</span> <span class="s2">&quot;restored_at&quot;</span><span class="p">,</span> <span class="s2">&quot;created&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serialize_datetime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Serialize datetime fields to ISO format.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: The datetime value to serialize.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The serialized datetime value or None if the value is None.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="DocumentNote.get_document">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentNote.get_document">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_document</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Document&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the document associated with this note.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The document associated with this note.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DocumentNote.get_user">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentNote.get_user">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;User&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the user who created this note.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The user who created this note.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">users</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Document">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Document">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Document</span><span class="p">(</span><span class="n">StandardModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a Paperless-NgX document.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        added: The timestamp when the document was added to the system.</span>
+<span class="sd">        archive_serial_number: The serial number of the archive.</span>
+<span class="sd">        archived_file_name: The name of the archived file.</span>
+<span class="sd">        content: The content of the document.</span>
+<span class="sd">        correspondent: The correspondent associated with the document.</span>
+<span class="sd">        created: The timestamp when the document was created.</span>
+<span class="sd">        created_date: The date when the document was created.</span>
+<span class="sd">        updated: The timestamp when the document was last updated.</span>
+<span class="sd">        custom_fields: Custom fields associated with the document.</span>
+<span class="sd">        deleted_at: The timestamp when the document was deleted.</span>
+<span class="sd">        document_type: The document type associated with the document.</span>
+<span class="sd">        is_shared_by_requester: Whether the document is shared by the requester.</span>
+<span class="sd">        notes: Notes associated with the document.</span>
+<span class="sd">        original_filename: The original file name of the document.</span>
+<span class="sd">        owner: The owner of the document.</span>
+<span class="sd">        page_count: The number of pages in the document.</span>
+<span class="sd">        storage_path: The storage path of the document.</span>
+<span class="sd">        tags: The tags associated with the document.</span>
+<span class="sd">        title: The title of the document.</span>
+<span class="sd">        user_can_change: Whether the user can change the document.</span>
+<span class="sd">        checksum: The checksum of the document.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; document = client.documents().get(pk=1)</span>
+<span class="sd">        &gt;&gt;&gt; document.title = &#39;Example Document&#39;</span>
+<span class="sd">        &gt;&gt;&gt; document.save()</span>
+<span class="sd">        &gt;&gt;&gt; document.title</span>
+<span class="sd">        &#39;Example Document&#39;</span>
+
+<span class="sd">        # Get document metadata</span>
+<span class="sd">        &gt;&gt;&gt; metadata = document.get_metadata()</span>
+<span class="sd">        &gt;&gt;&gt; print(metadata.original_mime_type)</span>
+
+<span class="sd">        # Download document</span>
+<span class="sd">        &gt;&gt;&gt; download = document.download()</span>
+<span class="sd">        &gt;&gt;&gt; with open(download.disposition_filename, &#39;wb&#39;) as f:</span>
+<span class="sd">        ...     f.write(download.content)</span>
+
+<span class="sd">        # Get document suggestions</span>
+<span class="sd">        &gt;&gt;&gt; suggestions = document.get_suggestions()</span>
+<span class="sd">        &gt;&gt;&gt; print(suggestions.tags)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># where did this come from? It&#39;s not in sample data?</span>
+    <span class="n">added</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">archive_checksum</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">archive_filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">archive_serial_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">archived_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">checksum</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">content</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">correspondent_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">created</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Creation timestamp&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">created_date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">custom_field_dicts</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">CustomFieldValues</span><span class="p">],</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)]</span>
+    <span class="n">deleted_at</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">document_type_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">is_shared_by_requester</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">notes</span><span class="p">:</span> <span class="s2">&quot;list[DocumentNote]&quot;</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">original_filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">owner</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">page_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">storage_path_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">storage_type</span><span class="p">:</span> <span class="n">DocumentStorageType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">tag_ids</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)]</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">user_can_change</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">_correspondent</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Correspondent</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_document_type</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">DocumentType</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_storage_path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">StoragePath</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_resource</span><span class="p">:</span> <span class="s2">&quot;DocumentResource&quot;</span>  <span class="c1"># type: ignore # nested generics not supported</span>
+    <span class="n">__search_hit__</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Document.Meta">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Document.Meta">[docs]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">(</span><span class="n">StandardModel</span><span class="o">.</span><span class="n">Meta</span><span class="p">):</span>
+        <span class="c1"># NOTE: Filtering appears to be disabled by paperless on page_count</span>
+        <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;page_count&quot;</span><span class="p">,</span> <span class="s2">&quot;deleted_at&quot;</span><span class="p">,</span> <span class="s2">&quot;is_shared_by_requester&quot;</span><span class="p">,</span> <span class="s2">&quot;archived_file_name&quot;</span><span class="p">}</span>
+        <span class="n">filtering_disabled</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;page_count&quot;</span><span class="p">,</span> <span class="s2">&quot;deleted_at&quot;</span><span class="p">,</span> <span class="s2">&quot;is_shared_by_requester&quot;</span><span class="p">}</span>
+        <span class="n">filtering_strategies</span> <span class="o">=</span> <span class="p">{</span><span class="n">FilteringStrategies</span><span class="o">.</span><span class="n">WHITELIST</span><span class="p">}</span>
+        <span class="n">field_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="s2">&quot;tag_ids&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;custom_fields&quot;</span><span class="p">:</span> <span class="s2">&quot;custom_field_dicts&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;document_type&quot;</span><span class="p">:</span> <span class="s2">&quot;document_type_id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;correspondent&quot;</span><span class="p">:</span> <span class="s2">&quot;correspondent_id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;storage_path&quot;</span><span class="p">:</span> <span class="s2">&quot;storage_path_id&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">supported_filtering_params</span> <span class="o">=</span> <span class="n">SUPPORTED_FILTERING_PARAMS</span></div>
+
+
+<div class="viewcode-block" id="Document.serialize_datetime">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Document.serialize_datetime">[docs]</a>
+    <span class="nd">@field_serializer</span><span class="p">(</span><span class="s2">&quot;added&quot;</span><span class="p">,</span> <span class="s2">&quot;created&quot;</span><span class="p">,</span> <span class="s2">&quot;deleted_at&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serialize_datetime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Serialize datetime fields to ISO format.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: The datetime value to serialize.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The serialized datetime value.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Document.serialize_notes">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Document.serialize_notes">[docs]</a>
+    <span class="nd">@field_serializer</span><span class="p">(</span><span class="s2">&quot;notes&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serialize_notes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DocumentNote</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Serialize notes to a list of dictionaries.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: The list of DocumentNote objects to serialize.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of dictionaries representing the notes.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">value</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="Document.validate_tags">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Document.validate_tags">[docs]</a>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;tag_ids&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_tags</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate and convert tag IDs to a list of integers.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: The list of tag IDs to validate.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of validated tag IDs.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">value</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
+
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid type for tags: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Document.validate_custom_fields">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Document.validate_custom_fields">[docs]</a>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;custom_field_dicts&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_custom_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">CustomFieldValues</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate and return custom field dictionaries.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: The list of custom field dictionaries to validate.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of validated custom field dictionaries.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span>
+
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid type for custom fields: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Document.validate_text">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Document.validate_text">[docs]</a>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_text</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate and return a text field.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: The value of the text field to validate.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The validated text value.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid type for text: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Document.validate_notes">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Document.validate_notes">[docs]</a>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;notes&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_notes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate and return the list of notes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: The list of notes to validate.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The validated list of notes.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">DocumentNote</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
+
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid type for notes: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Document.validate_is_shared_by_requester">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Document.validate_is_shared_by_requester">[docs]</a>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;is_shared_by_requester&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_is_shared_by_requester</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate and return the is_shared_by_requester flag.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: The flag to validate.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The validated flag.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span>
+
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid type for is_shared_by_requester: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">custom_field_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the IDs of the custom fields for this document.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">field</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_field_dicts</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">custom_field_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the values of the custom fields for this document.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_field_dicts</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tag_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the names of the tags for this document.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">tag</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TagQuerySet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the tags for this document.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of tags associated with this document.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; document = client.documents().get(pk=1)</span>
+<span class="sd">            &gt;&gt;&gt; for tag in document.tags:</span>
+<span class="sd">            ...     print(f&#39;{tag.name} # {tag.id}&#39;)</span>
+<span class="sd">            &#39;Tag 1 # 1&#39;</span>
+<span class="sd">            &#39;Tag 2 # 2&#39;</span>
+<span class="sd">            &#39;Tag 3 # 3&#39;</span>
+
+<span class="sd">            &gt;&gt;&gt; if 5 in document.tags:</span>
+<span class="sd">            ...     print(&#39;Tag ID #5 is associated with this document&#39;)</span>
+
+<span class="sd">            &gt;&gt;&gt; tag = client.tags().get(pk=1)</span>
+<span class="sd">            &gt;&gt;&gt; if tag in document.tags:</span>
+<span class="sd">            ...     print(&#39;Tag ID #1 is associated with this document&#39;)</span>
+
+<span class="sd">            &gt;&gt;&gt; filtered_tags = document.tags.filter(name__icontains=&#39;example&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; for tag in filtered_tags:</span>
+<span class="sd">            ...     print(f&#39;{tag.name} # {tag.id}&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag_ids</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">tags</span><span class="p">()</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
+
+        <span class="c1"># Use the API&#39;s filtering capability to get only the tags with specific IDs</span>
+        <span class="c1"># The paperless-ngx API supports id__in filter for retrieving multiple objects by ID</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">tags</span><span class="p">()</span><span class="o">.</span><span class="n">id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag_ids</span><span class="p">)</span>
+
+    <span class="nd">@tags</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Iterable[Tag | int] | None&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the tags for this document.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: The tags to set.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tag_ids</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
+            <span class="c1"># Reset tag_ids to ensure we only have the new values</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tag_ids</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tag_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># Check against StandardModel to avoid circular imports</span>
+                <span class="c1"># If it is another type of standard model, pydantic validators will complain</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">StandardModel</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tag_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                    <span class="k">continue</span>
+
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid type for tags: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid type for tags: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">correspondent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Correspondent | None&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the correspondent for this document.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The correspondent or None if not set.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; document = client.documents().get(pk=1)</span>
+<span class="sd">            &gt;&gt;&gt; document.correspondent.name</span>
+<span class="sd">            &#39;Example Correspondent&#39;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Return cache</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_correspondent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pk</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_correspondent</span>
+            <span class="k">if</span> <span class="n">pk</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">correspondent_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">value</span>
+
+        <span class="c1"># None set to retrieve</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">correspondent_id</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Retrieve it</span>
+        <span class="n">correspondent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">correspondents</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">correspondent_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_correspondent</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">correspondent_id</span><span class="p">,</span> <span class="n">correspondent</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">correspondent</span>
+
+    <span class="nd">@correspondent</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">correspondent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Correspondent | int | None&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the correspondent for this document.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: The correspondent to set.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Leave cache in place in case it changes again</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">correspondent_id</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="c1"># Leave cache in place in case id is the same, or id changes again</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">correspondent_id</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Check against StandardModel to avoid circular imports</span>
+        <span class="c1"># If it is another type of standard model, pydantic validators will complain</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">StandardModel</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">correspondent_id</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">id</span>
+            <span class="c1"># Pre-populate the cache</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_correspondent</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid type for correspondent: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">document_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DocumentType | None&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the document type for this document.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The document type or None if not set.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; document = client.documents().get(pk=1)</span>
+<span class="sd">            &gt;&gt;&gt; document.document_type.name</span>
+<span class="sd">            &#39;Example Document Type</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Return cache</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_document_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pk</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_document_type</span>
+            <span class="k">if</span> <span class="n">pk</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">document_type_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">value</span>
+
+        <span class="c1"># None set to retrieve</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">document_type_id</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Retrieve it</span>
+        <span class="n">document_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">document_types</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">document_type_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_document_type</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">document_type_id</span><span class="p">,</span> <span class="n">document_type</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">document_type</span>
+
+    <span class="nd">@document_type</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">document_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;DocumentType | int | None&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the document type for this document.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: The document type to set.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Leave cache in place in case it changes again</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">document_type_id</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="c1"># Leave cache in place in case id is the same, or id changes again</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">document_type_id</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Check against StandardModel to avoid circular imports</span>
+        <span class="c1"># If it is another type of standard model, pydantic validators will complain</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">StandardModel</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">document_type_id</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">id</span>
+            <span class="c1"># Pre-populate the cache</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_document_type</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid type for document_type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">storage_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;StoragePath | None&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the storage path for this document.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The storage path or None if not set.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; document = client.documents().get(pk=1)</span>
+<span class="sd">            &gt;&gt;&gt; document.storage_path.name</span>
+<span class="sd">            &#39;Example Storage Path&#39;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Return cache</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pk</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span>
+            <span class="k">if</span> <span class="n">pk</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_path_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">value</span>
+
+        <span class="c1"># None set to retrieve</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_path_id</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Retrieve it</span>
+        <span class="n">storage_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">storage_paths</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_path_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_path_id</span><span class="p">,</span> <span class="n">storage_path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">storage_path</span>
+
+    <span class="nd">@storage_path</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">storage_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;StoragePath | int | None&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the storage path for this document.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: The storage path to set.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Leave cache in place in case it changes again</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">storage_path_id</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="c1"># Leave cache in place in case id is the same, or id changes again</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">storage_path_id</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Check against StandardModel to avoid circular imports</span>
+        <span class="c1"># If it is another type of standard model, pydantic validators will complain</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">StandardModel</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">storage_path_id</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">id</span>
+            <span class="c1"># Pre-populate the cache</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid type for storage_path: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">custom_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;CustomFieldQuerySet&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the custom fields for this document.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of custom fields associated with this document.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_field_dicts</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">custom_fields</span><span class="p">()</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
+
+        <span class="c1"># Use the API&#39;s filtering capability to get only the custom fields with specific IDs</span>
+        <span class="c1"># The paperless-ngx API supports id__in filter for retrieving multiple objects by ID</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">custom_fields</span><span class="p">()</span><span class="o">.</span><span class="n">id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">custom_field_ids</span><span class="p">)</span>
+
+    <span class="nd">@custom_fields</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">custom_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Iterable[CustomField | CustomFieldValues | CustomFieldTypedDict] | None&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the custom fields for this document.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: The custom fields to set.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">custom_field_dicts</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
+            <span class="n">new_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">CustomFieldValues</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">CustomFieldValues</span><span class="p">):</span>
+                    <span class="n">new_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># isinstance(field, CustomField)</span>
+                <span class="c1"># Check against StandardModel (instead of CustomField) to avoid circular imports</span>
+                <span class="c1"># If it is the wrong type of standard model (e.g. a User), pydantic validators will complain</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">StandardModel</span><span class="p">):</span>
+                    <span class="n">new_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CustomFieldValues</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="n">field</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)))</span>
+                    <span class="k">continue</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="n">new_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CustomFieldValues</span><span class="p">(</span><span class="o">**</span><span class="n">field</span><span class="p">))</span>
+                    <span class="k">continue</span>
+
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid type for custom fields: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">field</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">custom_field_dicts</span> <span class="o">=</span> <span class="n">new_list</span>
+            <span class="k">return</span>
+
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid type for custom fields: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_search_hit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__search_hit__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">search_hit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__search_hit__</span>
+
+<div class="viewcode-block" id="Document.custom_field_value">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Document.custom_field_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">custom_field_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">raise_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the value of a custom field by ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            field_id: The ID of the custom field.</span>
+<span class="sd">            default: The value to return if the field is not found.</span>
+<span class="sd">            raise_errors: Whether to raise an error if the field is not found.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The value of the custom field or the default value if not found.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_field_dicts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">field</span> <span class="o">==</span> <span class="n">field_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">field</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">if</span> <span class="n">raise_errors</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Custom field </span><span class="si">{</span><span class="n">field_id</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">default</span></div>
+
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    def __getattr__(self, name: str) -&gt; Any:</span>
+<span class="sd">        # Allow easy access to custom fields</span>
+<span class="sd">        for custom_field in self.custom_fields:</span>
+<span class="sd">            if custom_field[&#39;field&#39;] == name:</span>
+<span class="sd">                return custom_field[&#39;value&#39;]</span>
+
+<span class="sd">        raise AttributeError(f&quot;&#39;{self.__class__.__name__}&#39; object has no attribute &#39;{name}&#39;&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Document.add_tag">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Document.add_tag">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="s2">&quot;Tag | int | str&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a tag to the document.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tag: The tag to add.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tag_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">StandardModel</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tag_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">instance</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">tags</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">tag</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()):</span>
+                <span class="k">raise</span> <span class="n">ResourceNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tag &#39;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&#39; not found&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tag_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid type for tag: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Document.remove_tag">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Document.remove_tag">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="s2">&quot;Tag | int | str&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a tag from the document.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tag: The tag to remove.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="c1"># TODO: Handle removal with consideration of &quot;tags can&#39;t be empty&quot; rule in paperless</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tag_ids</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">StandardModel</span><span class="p">):</span>
+            <span class="c1"># TODO: Handle removal with consideration of &quot;tags can&#39;t be empty&quot; rule in paperless</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tag_ids</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># TODO: Handle removal with consideration of &quot;tags can&#39;t be empty&quot; rule in paperless</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">instance</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">tags</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">tag</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()):</span>
+                <span class="k">raise</span> <span class="n">ResourceNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tag &#39;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&#39; not found&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tag_ids</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid type for tag: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Document.get_metadata">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Document.get_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DocumentMetadata&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the metadata for this document.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The document metadata.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; metadata = document.get_metadata()</span>
+<span class="sd">            &gt;&gt;&gt; print(metadata.original_mime_type)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Document.download">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Document.download">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">original</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DownloadedDocument&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Download the document file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            original: Whether to download the original file instead of the archived version.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The downloaded document.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; download = document.download()</span>
+<span class="sd">            &gt;&gt;&gt; with open(download.disposition_filename, &#39;wb&#39;) as f:</span>
+<span class="sd">            ...     f.write(download.content)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Document.preview">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Document.preview">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">preview</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">original</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DownloadedDocument&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a preview of the document.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            original: Whether to preview the original file instead of the archived version.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The document preview.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Document.thumbnail">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Document.thumbnail">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">thumbnail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">original</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DownloadedDocument&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the document thumbnail.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            original: Whether to get the thumbnail of the original file.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The document thumbnail.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Document.get_suggestions">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Document.get_suggestions">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_suggestions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DocumentSuggestions&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get suggestions for this document.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The document suggestions.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; suggestions = document.get_suggestions()</span>
+<span class="sd">            &gt;&gt;&gt; print(suggestions.tags)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Document.append_content">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Document.append_content">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Append content to the document.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: The content to append.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="Document.update_locally">
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Document.update_locally">[docs]</a>
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_locally</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_db</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the document locally with the provided data.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            from_db: Whether to update from the database.</span>
+<span class="sd">            **kwargs: Additional data to update the document with.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError: If attempting to set notes or tags to None when they are not already None.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">from_db</span><span class="p">:</span>
+            <span class="c1"># Paperless does not support setting notes or tags to None if not already None</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;notes&quot;</span><span class="p">,</span> <span class="s2">&quot;tag_ids&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+                <span class="n">original</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_original_data</span><span class="p">[</span><span class="n">field</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">original</span> <span class="ow">and</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot set </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> to None. </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> currently: </span><span class="si">{</span><span class="n">original</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Handle aliases</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_original_data</span><span class="p">[</span><span class="s2">&quot;tag_ids&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="s2">&quot;tags&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot set tags to None. Tags currently: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_original_data</span><span class="p">[</span><span class="s1">&#39;tag_ids&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">update_locally</span><span class="p">(</span><span class="n">from_db</span><span class="o">=</span><span class="n">from_db</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Jess Mann.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -21,7 +21,7 @@
 from __future__ import annotations
 
 import unittest
-from unittest.mock import MagicMock, patch, PropertyMock
+from unittest.mock import MagicMock, PropertyMock, patch
 
 from paperap.client import PaperlessClient
 from paperap.const import URLS

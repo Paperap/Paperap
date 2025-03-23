@@ -29,13 +29,14 @@ import unittest
 from datetime import datetime, timezone
 from typing import Iterable, override
 from unittest.mock import MagicMock, patch
+
 from paperap.client import PaperlessClient
 from paperap.exceptions import ReadOnlyFieldError, ResourceNotFoundError
 from paperap.models import *
 from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models.tag import Tag, TagQuerySet
 from paperap.resources.tags import TagResource
-from tests.lib import TagUnitTest, load_sample_data, factories
+from tests.lib import TagUnitTest, factories, load_sample_data
 
 logger = logging.getLogger(__name__)
 

@@ -1,6 +1,6 @@
 [project]
 name = "paperap"
-version = "0.0.9"
+version = "0.0.10"
 description = "Python library for interacting with the Paperless NGX REST API"
 readme = "README.md"
 authors = [{ name = "Jess Mann", email = "jess@jmann.me" }]
@@ -731,6 +731,7 @@ extend-exclude = [
   "config/",
   "__pycache__",
   "tests",
+  "__init__.py",
 ]
 
 [tool.ruff.lint]
@@ -753,6 +754,7 @@ ignore = [
   "D106", # Missing docstring in public nested class
   "D417",
   "C901", # too complex
+  "I001", # Ignore import sorting
 ]
 fixable = ["ALL"]
 unfixable = []
@@ -968,4 +970,6 @@ dev = [
   "types-requests>=2.32.0.20241016",
   "pydantic-basedtyping>=0.1.0",
   "mypy>=1.15.0",
+  "alive-progress>=3.2.0",
+  "playwright>=1.51.0",
 ]

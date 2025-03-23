@@ -3,8 +3,8 @@ paperap.models.document package
 
 .. automodule:: paperap.models.document
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Subpackages
 -----------
@@ -22,5 +22,6 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   paperap.models.document.meta
    paperap.models.document.model
    paperap.models.document.queryset

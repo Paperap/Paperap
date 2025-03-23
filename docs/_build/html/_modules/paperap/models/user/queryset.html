@@ -1,0 +1,361 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>paperap.models.user.queryset &mdash; Paperap 0.0.8 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=53b53b71"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            Paperap
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Paperap</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">paperap.models.user.queryset</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for paperap.models.user.queryset</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">----------------------------------------------------------------------------</span>
+
+<span class="sd">   METADATA:</span>
+
+<span class="sd">       File:    queryset.py</span>
+<span class="sd">        Project: paperap</span>
+<span class="sd">       Created: 2025-03-04</span>
+<span class="sd">        Version: 0.0.5</span>
+<span class="sd">       Author:  Jess Mann</span>
+<span class="sd">       Email:   jess@jmann.me</span>
+<span class="sd">        Copyright (c) 2025 Jess Mann</span>
+
+<span class="sd">----------------------------------------------------------------------------</span>
+
+<span class="sd">   LAST MODIFIED:</span>
+
+<span class="sd">       2025-03-04     By Jess Mann</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Self</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.abstract.queryset</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseQuerySet</span><span class="p">,</span> <span class="n">StandardQuerySet</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.user.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Group</span><span class="p">,</span> <span class="n">User</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="UserQuerySet">
+<a class="viewcode-back" href="../../../../api/paperap.models.user.queryset.html#paperap.models.UserQuerySet">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserQuerySet</span><span class="p">(</span><span class="n">StandardQuerySet</span><span class="p">[</span><span class="s2">&quot;User&quot;</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A lazy-loaded, chainable query interface for Paperless NGX resources.</span>
+
+<span class="sd">    BaseQuerySet provides pagination, filtering, and caching functionality similar to Django&#39;s BaseQuerySet.</span>
+<span class="sd">    It&#39;s designed to be lazy - only fetching data when it&#39;s actually needed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="UserQuerySet.username">
+<a class="viewcode-back" href="../../../../api/paperap.models.user.queryset.html#paperap.models.UserQuerySet.username">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">username</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter users by username.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (str): The username to filter by</span>
+<span class="sd">            exact (bool): If True, match the exact username, otherwise use contains</span>
+<span class="sd">            case_insensitive (bool): If True, ignore case when matching</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Filtered UserQuerySet</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="o">=</span><span class="n">case_insensitive</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="UserQuerySet.email">
+<a class="viewcode-back" href="../../../../api/paperap.models.user.queryset.html#paperap.models.UserQuerySet.email">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">email</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter users by email.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (str): The email to filter by</span>
+<span class="sd">            exact (bool): If True, match the exact email, otherwise use contains</span>
+<span class="sd">            case_insensitive (bool): If True, ignore case when matching</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Filtered UserQuerySet</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s2">&quot;email&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="o">=</span><span class="n">case_insensitive</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="UserQuerySet.first_name">
+<a class="viewcode-back" href="../../../../api/paperap.models.user.queryset.html#paperap.models.UserQuerySet.first_name">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">first_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter users by first name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (str): The first name to filter by</span>
+<span class="sd">            exact (bool): If True, match the exact first name, otherwise use contains</span>
+<span class="sd">            case_insensitive (bool): If True, ignore case when matching</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Filtered UserQuerySet</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s2">&quot;first_name&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="o">=</span><span class="n">case_insensitive</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="UserQuerySet.last_name">
+<a class="viewcode-back" href="../../../../api/paperap.models.user.queryset.html#paperap.models.UserQuerySet.last_name">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">last_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter users by last name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (str): The last name to filter by</span>
+<span class="sd">            exact (bool): If True, match the exact last name, otherwise use contains</span>
+<span class="sd">            case_insensitive (bool): If True, ignore case when matching</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Filtered UserQuerySet</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s2">&quot;last_name&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="o">=</span><span class="n">case_insensitive</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="UserQuerySet.staff">
+<a class="viewcode-back" href="../../../../api/paperap.models.user.queryset.html#paperap.models.UserQuerySet.staff">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">staff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter users by staff status.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: If True, filter users that are staff</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Filtered UserQuerySet</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_staff</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="UserQuerySet.active">
+<a class="viewcode-back" href="../../../../api/paperap.models.user.queryset.html#paperap.models.UserQuerySet.active">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">active</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter users by active status.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: If True, filter users that are active</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Filtered UserQuerySet</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_active</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="UserQuerySet.superuser">
+<a class="viewcode-back" href="../../../../api/paperap.models.user.queryset.html#paperap.models.UserQuerySet.superuser">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">superuser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter users by superuser status.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: If True, filter users that are superusers</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Filtered UserQuerySet</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_superuser</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="UserQuerySet.in_group">
+<a class="viewcode-back" href="../../../../api/paperap.models.user.queryset.html#paperap.models.UserQuerySet.in_group">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">in_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter users by group.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: The group to filter by</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Filtered UserQuerySet</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">groups_contains</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="UserQuerySet.has_permission">
+<a class="viewcode-back" href="../../../../api/paperap.models.user.queryset.html#paperap.models.UserQuerySet.has_permission">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter users by permission.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: The permission to filter by</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Filtered UserQuerySet</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">groups_permissions_contains</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="UserQuerySet.has_inherited_permission">
+<a class="viewcode-back" href="../../../../api/paperap.models.user.queryset.html#paperap.models.UserQuerySet.has_inherited_permission">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_inherited_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter users by inherited permission.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: The inherited permission to filter by</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Filtered UserQuerySet</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">inherited_permissions_contains</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="GroupQuerySet">
+<a class="viewcode-back" href="../../../../api/paperap.models.user.queryset.html#paperap.models.GroupQuerySet">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GroupQuerySet</span><span class="p">(</span><span class="n">StandardQuerySet</span><span class="p">[</span><span class="s2">&quot;Group&quot;</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A lazy-loaded, chainable query interface for Paperless NGX resources.</span>
+
+<span class="sd">    BaseQuerySet provides pagination, filtering, and caching functionality similar to Django&#39;s BaseQuerySet.</span>
+<span class="sd">    It&#39;s designed to be lazy - only fetching data when it&#39;s actually needed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GroupQuerySet.name">
+<a class="viewcode-back" href="../../../../api/paperap.models.user.queryset.html#paperap.models.GroupQuerySet.name">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter groups by name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (str): The name to filter by</span>
+<span class="sd">            exact (bool): If True, match the exact name, otherwise use contains</span>
+<span class="sd">            case_insensitive (bool): If True, ignore case when matching</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Filtered GroupQuerySet</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="o">=</span><span class="n">case_insensitive</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GroupQuerySet.has_permission">
+<a class="viewcode-back" href="../../../../api/paperap.models.user.queryset.html#paperap.models.GroupQuerySet.has_permission">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter groups by permission.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: The permission to filter by</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Filtered GroupQuerySet</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">permissions__contains</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Jess Mann.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

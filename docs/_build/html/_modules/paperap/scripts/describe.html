@@ -1,0 +1,818 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>paperap.scripts.describe &mdash; Paperap 0.0.8 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=53b53b71"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Paperap
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Paperap</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">paperap.scripts.describe</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for paperap.scripts.describe</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+
+
+
+
+<span class="sd">----------------------------------------------------------------------------</span>
+
+<span class="sd">METADATA:</span>
+
+<span class="sd">File:    describe.py</span>
+<span class="sd">        Project: paperap</span>
+<span class="sd">Created: 2025-03-18</span>
+<span class="sd">        Version: 0.0.9</span>
+<span class="sd">Author:  Jess Mann</span>
+<span class="sd">Email:   jess@jmann.me</span>
+<span class="sd">        Copyright (c) 2025 Jess Mann</span>
+
+<span class="sd">----------------------------------------------------------------------------</span>
+
+<span class="sd">LAST MODIFIED:</span>
+
+<span class="sd">2025-03-18     By Jess Mann</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">base64</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">date</span><span class="p">,</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrEnum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">singledispatchmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">BytesIO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">dateparser</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">fitz</span>  <span class="c1"># type: ignore</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">openai</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">openai.types.chat</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alive_progress</span><span class="w"> </span><span class="kn">import</span> <span class="n">alive_bar</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dotenv</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_dotenv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jinja2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">FileSystemLoader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">UnidentifiedImageError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">PrivateAttr</span><span class="p">,</span> <span class="n">field_validator</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">PaperlessClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">DocumentParsingError</span><span class="p">,</span> <span class="n">NoImagesError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.document</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.document.queryset</span><span class="w"> </span><span class="kn">import</span> <span class="n">DocumentQuerySet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.tag</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tag</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.scripts.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProgressBar</span><span class="p">,</span> <span class="n">setup_logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Settings</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">DESCRIBE_ACCEPTED_FORMATS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;jpeg&quot;</span><span class="p">,</span> <span class="s2">&quot;gif&quot;</span><span class="p">,</span> <span class="s2">&quot;tif&quot;</span><span class="p">,</span> <span class="s2">&quot;tiff&quot;</span><span class="p">,</span> <span class="s2">&quot;bmp&quot;</span><span class="p">,</span> <span class="s2">&quot;webp&quot;</span><span class="p">,</span> <span class="s2">&quot;pdf&quot;</span><span class="p">]</span>
+<span class="n">OPENAI_ACCEPTED_FORMATS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;jpeg&quot;</span><span class="p">,</span> <span class="s2">&quot;gif&quot;</span><span class="p">,</span> <span class="s2">&quot;webp&quot;</span><span class="p">,</span> <span class="s2">&quot;pdf&quot;</span><span class="p">]</span>
+<span class="n">MIME_TYPES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;png&quot;</span><span class="p">:</span> <span class="s2">&quot;image/png&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;jpeg&quot;</span><span class="p">:</span> <span class="s2">&quot;image/jpeg&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;jpg&quot;</span><span class="p">:</span> <span class="s2">&quot;image/jpeg&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gif&quot;</span><span class="p">:</span> <span class="s2">&quot;image/gif&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;webp&quot;</span><span class="p">:</span> <span class="s2">&quot;image/webp&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="ScriptDefaults">
+<a class="viewcode-back" href="../../../api/paperap.scripts.describe.html#paperap.scripts.describe.ScriptDefaults">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ScriptDefaults</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+    <span class="n">NEEDS_DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;needs-description&quot;</span>
+    <span class="n">DESCRIBED</span> <span class="o">=</span> <span class="s2">&quot;described&quot;</span>
+    <span class="n">NEEDS_TITLE</span> <span class="o">=</span> <span class="s2">&quot;needs-title&quot;</span>
+    <span class="n">NEEDS_DATE</span> <span class="o">=</span> <span class="s2">&quot;needs-date&quot;</span>
+    <span class="n">MODEL</span> <span class="o">=</span> <span class="s2">&quot;gpt-4o-mini&quot;</span></div>
+
+
+
+<span class="n">SCRIPT_VERSION</span> <span class="o">=</span> <span class="s2">&quot;0.2.2&quot;</span>
+
+
+<div class="viewcode-block" id="DescribePhotos">
+<a class="viewcode-back" href="../../../api/paperap.scripts.describe.html#paperap.scripts.describe.DescribePhotos">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DescribePhotos</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Describes photos in the Paperless NGX instance using an LLM (such as OpenAI&#39;s GPT-4o-mini model).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">max_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">paperless_tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">ScriptDefaults</span><span class="o">.</span><span class="n">NEEDS_DESCRIPTION</span><span class="p">)</span>
+    <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">client</span><span class="p">:</span> <span class="n">PaperlessClient</span>
+    <span class="n">_jinja_env</span><span class="p">:</span> <span class="n">Environment</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">PrivateAttr</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">_progress_bar</span><span class="p">:</span> <span class="n">ProgressBar</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">PrivateAttr</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">_progress_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">PrivateAttr</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">_openai</span><span class="p">:</span> <span class="n">OpenAI</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">PrivateAttr</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">progress_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProgressBar</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_progress_bar</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_progress_bar</span> <span class="o">=</span> <span class="n">alive_bar</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Running&quot;</span><span class="p">,</span> <span class="n">unknown</span><span class="o">=</span><span class="s2">&quot;waves&quot;</span><span class="p">)</span>  <span class="c1"># pyright: ignore[reportAttributeAccessIssue]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_progress_bar</span>  <span class="c1"># type: ignore # pyright not handling the protocol correctly, not sure why</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">openai_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">openai_url</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">openai_key</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">openai_key</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">openai_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">openai_model</span> <span class="ow">or</span> <span class="n">ScriptDefaults</span><span class="o">.</span><span class="n">MODEL</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">openai</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OpenAI</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_openai</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">openai_url</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using custom OpenAI URL: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">openai_url</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_openai</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">openai_key</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">openai_url</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using default OpenAI URL&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_openai</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_openai</span>
+
+<div class="viewcode-block" id="DescribePhotos.validate_max_threads">
+<a class="viewcode-back" href="../../../api/paperap.scripts.describe.html#paperap.scripts.describe.DescribePhotos.validate_max_threads">[docs]</a>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;max_threads&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_max_threads</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="c1"># Sensible default</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
+            <span class="c1"># default is between 1-4 threads. More than 4 presumptively stresses the HDD non-optimally.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">cpu_count</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()):</span>
+                <span class="n">cpu_count</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">cpu_count</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;max_threads must be a positive integer.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">jinja_env</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Environment</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jinja_env</span><span class="p">:</span>
+            <span class="n">templates_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;templates&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_jinja_env</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">FileSystemLoader</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">templates_path</span><span class="p">)),</span> <span class="n">autoescape</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jinja_env</span>
+
+<div class="viewcode-block" id="DescribePhotos.choose_template">
+<a class="viewcode-back" href="../../../api/paperap.scripts.describe.html#paperap.scripts.describe.DescribePhotos.choose_template">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">choose_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">Document</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Choose a jinja template for a document</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;photo.jinja&quot;</span></div>
+
+
+<div class="viewcode-block" id="DescribePhotos.get_prompt">
+<a class="viewcode-back" href="../../../api/paperap.scripts.describe.html#paperap.scripts.describe.DescribePhotos.get_prompt">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">Document</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a prompt to sent to openai using a jinja template.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span>
+
+        <span class="n">template_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">choose_template</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
+        <span class="n">template_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;templates/</span><span class="si">{</span><span class="n">template_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Using template: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">template_path</span><span class="p">)</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jinja_env</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="n">template_path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">description</span> <span class="o">:=</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">document</span><span class="o">=</span><span class="n">document</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Failed to generate prompt.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">description</span></div>
+
+
+<div class="viewcode-block" id="DescribePhotos.extract_images_from_pdf">
+<a class="viewcode-back" href="../../../api/paperap.scripts.describe.html#paperap.scripts.describe.DescribePhotos.extract_images_from_pdf">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">extract_images_from_pdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdf_bytes</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">max_images</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract the first image from a PDF file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pdf_bytes (bytes): The PDF file content as bytes.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bytes | None: The first {max_images} images as bytes or None if no image is found.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">results</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">image_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Open the PDF from bytes</span>
+            <span class="n">pdf_document</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">pdf_bytes</span><span class="p">,</span> <span class="n">filetype</span><span class="o">=</span><span class="s2">&quot;pdf&quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">page_number</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pdf_document</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">max_images</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+                <span class="n">page</span> <span class="o">=</span> <span class="n">pdf_document</span><span class="p">[</span><span class="n">page_number</span><span class="p">]</span>
+                <span class="n">images</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">get_images</span><span class="p">(</span><span class="n">full</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">images</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">images</span><span class="p">:</span>
+                    <span class="n">image_count</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">max_images</span><span class="p">:</span>
+                        <span class="k">break</span>
+
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">xref</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">base_image</span> <span class="o">=</span> <span class="n">pdf_document</span><span class="o">.</span><span class="n">extract_image</span><span class="p">(</span><span class="n">xref</span><span class="p">)</span>
+                        <span class="n">image_bytes</span> <span class="o">=</span> <span class="n">base_image</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">]</span>
+                        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">image_bytes</span><span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Extracted image from page </span><span class="si">{</span><span class="n">page_number</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> of the PDF.&quot;</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                            <span class="s2">&quot;Failed to extract one image from page </span><span class="si">%s</span><span class="s2"> of PDF. Result count </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="n">page_number</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                            <span class="n">count</span><span class="p">,</span>
+                            <span class="n">e</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="k">raise</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;extract_images_from_pdf: Error extracting image from PDF: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">DocumentParsingError</span><span class="p">(</span><span class="s2">&quot;Error extracting image from PDF.&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">results</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">image_count</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NoImagesError</span><span class="p">(</span><span class="s2">&quot;No images found in the PDF&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">DocumentParsingError</span><span class="p">(</span><span class="s2">&quot;Unable to extract images from PDF.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">results</span></div>
+
+
+<div class="viewcode-block" id="DescribePhotos.parse_date">
+<a class="viewcode-back" href="../../../api/paperap.scripts.describe.html#paperap.scripts.describe.DescribePhotos.parse_date">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">date</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse a date string.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            date_str (str): The date string to parse.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            date: The parsed date.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">parsed_date</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_datetime</span><span class="p">(</span><span class="n">date_str</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">parsed_date</span><span class="o">.</span><span class="n">date</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DescribePhotos.parse_datetime">
+<a class="viewcode-back" href="../../../api/paperap.scripts.describe.html#paperap.scripts.describe.DescribePhotos.parse_datetime">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_datetime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse a date string.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            date_str (str): The date string to parse.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            date: The parsed date.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">date_str</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">date_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">date_str</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="c1"># &quot;Date unknown&quot; or &quot;Unknown date&quot; or &quot;No date&quot;</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(date unknown|unknown date|no date|none|unknown|n/?a)$&quot;</span><span class="p">,</span> <span class="n">date_str</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Handle &quot;circa 1950&quot;</span>
+        <span class="k">if</span> <span class="n">matches</span> <span class="o">:=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;((around|circa|mid|early|late|before|after) *)?(\d</span><span class="si">{4}</span><span class="s2">)s?$&quot;</span><span class="p">,</span> <span class="n">date_str</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">):</span>
+            <span class="n">date_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">matches</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">-01-01&quot;</span>
+
+        <span class="n">parsed_date</span> <span class="o">=</span> <span class="n">dateparser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">date_str</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">parsed_date</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid date format: </span><span class="si">{</span><span class="n">date_str</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">parsed_date</span></div>
+
+
+<div class="viewcode-block" id="DescribePhotos.standardize_image_contents">
+<a class="viewcode-back" href="../../../api/paperap.scripts.describe.html#paperap.scripts.describe.DescribePhotos.standardize_image_contents">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">standardize_image_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Standardize image contents to base64-encoded PNG format.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_convert_to_png</span><span class="p">(</span><span class="n">content</span><span class="p">)]</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to convert contents to png, will try other methods: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Interpret it as a pdf</span>
+        <span class="k">if</span> <span class="n">image_contents_list</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_images_from_pdf</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_convert_to_png</span><span class="p">(</span><span class="n">image</span><span class="p">)</span> <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">image_contents_list</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="p">[]</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_convert_to_png</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
+
+        <span class="c1"># Resize large images</span>
+        <span class="k">if</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1024</span> <span class="ow">or</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1024</span><span class="p">:</span>
+            <span class="n">img</span><span class="o">.</span><span class="n">thumbnail</span><span class="p">((</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">1024</span><span class="p">))</span>
+
+        <span class="c1"># Re-save it as PNG in-memory</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
+        <span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;PNG&quot;</span><span class="p">)</span>
+        <span class="n">buf</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Convert to base64</span>
+        <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">buf</span><span class="o">.</span><span class="n">read</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_send_describe_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bytes</span><span class="p">],</span> <span class="n">document</span><span class="p">:</span> <span class="n">Document</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send an image description request to OpenAI.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            content: Document content as bytes or list of bytes</span>
+<span class="sd">            document: The document to describe</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The description generated by OpenAI</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="p">[</span><span class="n">content</span><span class="p">]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Convert all images to standardized format</span>
+            <span class="n">images</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">image_content</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+                <span class="n">images</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">standardize_image_contents</span><span class="p">(</span><span class="n">image_content</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">images</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NoImagesError</span><span class="p">(</span><span class="s2">&quot;No images found to describe.&quot;</span><span class="p">)</span>
+
+            <span class="n">message_contents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">(</span><span class="n">document</span><span class="p">),</span>
+                <span class="p">}</span>
+            <span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">images</span><span class="p">:</span>
+                <span class="n">message_contents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;image_url&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;image_url&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;data:image/png;base64,</span><span class="si">{</span><span class="n">image</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">},</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
+
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">openai</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">openai_model</span><span class="p">,</span>
+                <span class="n">messages</span><span class="o">=</span><span class="p">[</span>
+                    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">message_contents</span><span class="p">}</span>  <span class="c1"># type: ignore</span>
+                <span class="p">],</span>
+                <span class="n">max_tokens</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generated description: </span><span class="si">{</span><span class="n">description</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">fitz</span><span class="o">.</span><span class="n">FileDataError</span> <span class="k">as</span> <span class="n">fde</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Failed to generate description due to error reading file #</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2"> -&gt; </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">document</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">document</span><span class="o">.</span><span class="n">original_filename</span><span class="p">,</span>
+                <span class="n">fde</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">ve</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Failed to generate description for document #</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">. Continuing with next image -&gt; </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">document</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">document</span><span class="o">.</span><span class="n">original_filename</span><span class="p">,</span>
+                <span class="n">ve</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">UnidentifiedImageError</span> <span class="k">as</span> <span class="n">uii</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Failed to identify image format for document #</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">. Continuing with next image -&gt; </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">document</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">document</span><span class="o">.</span><span class="n">original_filename</span><span class="p">,</span>
+                <span class="n">uii</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">openai</span><span class="o">.</span><span class="n">APIConnectionError</span> <span class="k">as</span> <span class="n">ace</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;API Connection Error. Is the OpenAI API URL correct? URL: </span><span class="si">%s</span><span class="s2">, model: </span><span class="si">%s</span><span class="s2"> -&gt; </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">openai_url</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">openai_model</span><span class="p">,</span>
+                <span class="n">ace</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">raise</span>
+
+        <span class="k">return</span> <span class="n">description</span>
+
+<div class="viewcode-block" id="DescribePhotos.convert_image_to_jpg">
+<a class="viewcode-back" href="../../../api/paperap.scripts.describe.html#paperap.scripts.describe.DescribePhotos.convert_image_to_jpg">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_image_to_jpg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bytes_content</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert an image to JPEG format.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            bytes_content (bytes): The image content as bytes.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bytes: The image content as JPEG.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">bytes_content</span><span class="p">))</span>
+            <span class="n">buf</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
+            <span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;JPEG&quot;</span><span class="p">)</span>
+            <span class="n">buf</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">buf</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to convert image to JPEG: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span></div>
+
+
+<div class="viewcode-block" id="DescribePhotos.describe_document">
+<a class="viewcode-back" href="../../../api/paperap.scripts.describe.html#paperap.scripts.describe.DescribePhotos.describe_document">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">describe_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">Document</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Describe a single document using OpenAI&#39;s GPT-4o model.</span>
+
+<span class="sd">        The document object passed in will be updated with the description.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            document: The document to describe.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the document was successfully described</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Describing document </span><span class="si">{</span><span class="n">document</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> using OpenAI...&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">content</span> <span class="o">:=</span> <span class="n">document</span><span class="o">.</span><span class="n">content</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Document content is empty for document #</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">document</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="c1"># Ensure accepted format</span>
+            <span class="n">original_filename</span> <span class="o">=</span> <span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">original_filename</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">original_filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span> <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="n">DESCRIBE_ACCEPTED_FORMATS</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Document </span><span class="si">{</span><span class="n">document</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has unsupported extension: </span><span class="si">{</span><span class="n">original_filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Convert content to bytes if it&#39;s a string</span>
+                <span class="n">content_bytes</span> <span class="o">=</span> <span class="n">content</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span> <span class="k">else</span> <span class="n">content</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">response</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_describe_request</span><span class="p">(</span><span class="n">content_bytes</span><span class="p">,</span> <span class="n">document</span><span class="p">)):</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;OpenAI returned empty description for document </span><span class="si">{</span><span class="n">document</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">except</span> <span class="n">NoImagesError</span> <span class="k">as</span> <span class="n">nie</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No images found in document </span><span class="si">{</span><span class="n">document</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">nie</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">except</span> <span class="n">DocumentParsingError</span> <span class="k">as</span> <span class="n">dpe</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to parse document </span><span class="si">{</span><span class="n">document</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">dpe</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">except</span> <span class="n">openai</span><span class="o">.</span><span class="n">BadRequestError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;invalid_image_format&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="s2">&quot;Failed to generate description for document #</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2"> -&gt; </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">document</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                        <span class="n">document</span><span class="o">.</span><span class="n">original_filename</span><span class="p">,</span>
+                        <span class="n">e</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Bad format for document #</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2"> -&gt; </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">document</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">document</span><span class="o">.</span><span class="n">original_filename</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="c1"># Process the response</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process_response</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">document</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to describe document </span><span class="si">{</span><span class="n">document</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">response</span><span class="si">=}</span><span class="s2"> =&gt; </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="DescribePhotos.process_response">
+<a class="viewcode-back" href="../../../api/paperap.scripts.describe.html#paperap.scripts.describe.DescribePhotos.process_response">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">Document</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process the response from OpenAI and update the document.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            response (str): The response from OpenAI</span>
+<span class="sd">            document (Document): The document to update</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Document: The updated document</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Attempt to parse response as json</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">parsed_response</span> <span class="o">:=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="p">)):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Unable to process response after failed json parsing&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">document</span>
+        <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">jde</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to parse response as JSON: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">jde</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">document</span>
+
+        <span class="c1"># Check if parsed_response is a dictionary</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parsed_response</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Parsed response not a dictionary. Saving response raw to document.content. Document #</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">document</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">document</span><span class="o">.</span><span class="n">original_filename</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">document</span><span class="o">.</span><span class="n">append_content</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">document</span>
+
+        <span class="c1"># Attempt to grab &quot;title&quot;, &quot;description&quot;, &quot;tags&quot;, &quot;date&quot; from parsed_response</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">parsed_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="n">parsed_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="n">parsed_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">parsed_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="n">parsed_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">parsed_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">full_description</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;AI IMAGE DESCRIPTION (v</span><span class="si">{</span><span class="n">SCRIPT_VERSION</span><span class="si">}</span><span class="s2">):</span>
+<span class="s2">            The following description was provided by an Artificial Intelligence (GPT-4o by OpenAI).</span>
+<span class="s2">            It may not be fully accurate. Its purpose is to provide keywords and context</span>
+<span class="s2">            so that the document can be more easily searched.</span>
+<span class="s2">            Suggested Title: </span><span class="si">{</span><span class="n">title</span><span class="si">}</span>
+<span class="s2">            Inferred Date: </span><span class="si">{</span><span class="n">date</span><span class="si">}</span>
+<span class="s2">            Suggested Tags: </span><span class="si">{</span><span class="n">tags</span><span class="si">}</span>
+<span class="s2">            Previous Title: </span><span class="si">{</span><span class="n">document</span><span class="o">.</span><span class="n">title</span><span class="si">}</span>
+<span class="s2">            Previous Date: </span><span class="si">{</span><span class="n">document</span><span class="o">.</span><span class="n">created</span><span class="si">}</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">summary</span><span class="p">:</span>
+            <span class="n">full_description</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Summary: </span><span class="si">{</span><span class="n">summary</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">content</span><span class="p">:</span>
+            <span class="n">full_description</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Content: </span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">description</span><span class="p">:</span>
+            <span class="n">full_description</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Description: </span><span class="si">{</span><span class="n">description</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="n">description</span><span class="p">,</span> <span class="n">summary</span><span class="p">,</span> <span class="n">content</span><span class="p">]):</span>
+            <span class="n">full_description</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Full AI Response: </span><span class="si">{</span><span class="n">parsed_response</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="n">title</span> <span class="ow">and</span> <span class="n">ScriptDefaults</span><span class="o">.</span><span class="n">NEEDS_TITLE</span> <span class="ow">in</span> <span class="n">document</span><span class="o">.</span><span class="n">tag_names</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">document</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+                <span class="n">document</span><span class="o">.</span><span class="n">remove_tag</span><span class="p">(</span><span class="n">ScriptDefaults</span><span class="o">.</span><span class="n">NEEDS_TITLE</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;Failed to update document title. Document #</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2"> -&gt; </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">document</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                    <span class="n">document</span><span class="o">.</span><span class="n">original_filename</span><span class="p">,</span>
+                    <span class="n">e</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">date</span> <span class="ow">and</span> <span class="s2">&quot;ScriptDefaults.NEEDS_DATE&quot;</span> <span class="ow">in</span> <span class="n">document</span><span class="o">.</span><span class="n">tag_names</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">document</span><span class="o">.</span><span class="n">created</span> <span class="o">=</span> <span class="n">date</span>  <span class="c1"># type: ignore # pydantic will handle casting</span>
+                <span class="n">document</span><span class="o">.</span><span class="n">remove_tag</span><span class="p">(</span><span class="s2">&quot;ScriptDefaults.NEEDS_DATE&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;Failed to update document date. Document #</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2"> -&gt; </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">document</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                    <span class="n">document</span><span class="o">.</span><span class="n">original_filename</span><span class="p">,</span>
+                    <span class="n">e</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="c1"># Append the description to the document</span>
+        <span class="n">document</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">full_description</span>
+        <span class="n">document</span><span class="o">.</span><span class="n">remove_tag</span><span class="p">(</span><span class="s2">&quot;ScriptDefaults.NEEDS_DESCRIPTION&quot;</span><span class="p">)</span>
+        <span class="n">document</span><span class="o">.</span><span class="n">add_tag</span><span class="p">(</span><span class="s2">&quot;described&quot;</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully described document </span><span class="si">{</span><span class="n">document</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">document</span></div>
+
+
+<div class="viewcode-block" id="DescribePhotos.describe_documents">
+<a class="viewcode-back" href="../../../api/paperap.scripts.describe.html#paperap.scripts.describe.DescribePhotos.describe_documents">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">describe_documents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">documents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Document</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Describe a list of documents using OpenAI&#39;s GPT-4o model.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            documents (list[Document]): The documents to describe.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[Document]: The documents with the descriptions added.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Fetching documents to describe...&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">documents</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">documents</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">tag_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">paperless_tag</span><span class="p">))</span>
+
+        <span class="n">total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">documents</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2"> documents to describe&quot;</span><span class="p">)</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="n">alive_bar</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">total</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Describing documents&quot;</span><span class="p">,</span> <span class="n">bar</span><span class="o">=</span><span class="s2">&quot;classic&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="bp">self</span><span class="o">.</span><span class="n">_progress_bar</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">document</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">describe_document</span><span class="p">(</span><span class="n">document</span><span class="p">):</span>
+                    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">progress_bar</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">results</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ArgNamespace">
+<a class="viewcode-back" href="../../../api/paperap.scripts.describe.html#paperap.scripts.describe.ArgNamespace">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ArgNamespace</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A custom namespace class for argparse.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">openai_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../../api/paperap.scripts.describe.html#paperap.scripts.describe.main">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run the script.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logging</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">load_dotenv</span><span class="p">()</span>
+
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Describe documents with AI in Paperless-ngx&quot;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--url&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;The base URL of the Paperless NGX instance&quot;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--key&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;The API token for the Paperless NGX instance&quot;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--model&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;The OpenAI model to use&quot;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--openai-url&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;The base URL for the OpenAI API&quot;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--tag&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">ScriptDefaults</span><span class="o">.</span><span class="n">NEEDS_DESCRIPTION</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Tag to filter documents&quot;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--prompt&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Prompt to use for OpenAI&quot;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Verbose output&quot;</span><span class="p">)</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">namespace</span><span class="o">=</span><span class="n">ArgNamespace</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">url</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;PAPERLESS_URL environment variable is not set.&quot;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">key</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;PAPERLESS_KEY environment variable is not set.&quot;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Exclude None, so pydantic settings loads from defaults for an unset param</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="n">v</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">{</span>
+                <span class="s2">&quot;base_url&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
+                <span class="s2">&quot;token&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                <span class="s2">&quot;openai_url&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">openai_url</span><span class="p">,</span>
+                <span class="s2">&quot;openai_model&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+            <span class="p">}</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">}</span>
+        <span class="c1"># Cast to Any to avoid type checking issues with **kwargs</span>
+        <span class="n">settings</span> <span class="o">=</span> <span class="n">Settings</span><span class="p">(</span><span class="o">**</span><span class="n">cast</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">PaperlessClient</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+
+        <span class="n">paperless</span> <span class="o">=</span> <span class="n">DescribePhotos</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">prompt</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting document description process with model: </span><span class="si">{</span><span class="n">paperless</span><span class="o">.</span><span class="n">openai_model</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">paperless</span><span class="o">.</span><span class="n">describe_documents</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully described </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> documents&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;No documents described.&quot;</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Script cancelled by user.&quot;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Jess Mann.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

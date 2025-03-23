@@ -3,8 +3,8 @@ paperap.models.workflow package
 
 .. automodule:: paperap.models.workflow
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Submodules
 ----------

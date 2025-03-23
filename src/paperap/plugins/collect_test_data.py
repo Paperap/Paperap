@@ -7,7 +7,7 @@
        File:    collect_test_data.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.9
+        Version: 0.0.10
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -246,6 +246,7 @@ class SampleDataCollector(Plugin):
             filename_prefix = f"{method.lower()}__"
         filename = f"{filename_prefix}{resource_name}__{params_str}.json"
         filename = sanitize_pattern.sub("_", filename)
+        filename = filename[:100]  # Limit filename length
 
         filepath = self.test_dir / filename
         self.save_response(filepath, parsed_response)

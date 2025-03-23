@@ -1,0 +1,54 @@
+{
+    "count": 3,
+    "next": null,
+    "previous": null,
+    "all": [
+        2079,
+        2056,
+        2087
+    ],
+    "results": [
+        {
+            "id": 2079,
+            "slug": "tag-26-race-26",
+            "name": "Tag-26-race 26",
+            "color": "#a6cee3",
+            "text_color": "#000000",
+            "match": "one",
+            "matching_algorithm": 2,
+            "is_insensitive": false,
+            "is_inbox_tag": false,
+            "document_count": 1,
+            "owner": 1,
+            "user_can_change": true
+        },
+        {
+            "id": 2056,
+            "slug": "tag-3-newspaper-3",
+            "name": "Tag-3-newspaper 3",
+            "color": "#a6cee3",
+            "text_color": "#000000",
+            "match": "once",
+            "matching_algorithm": 1,
+            "is_insensitive": false,
+            "is_inbox_tag": true,
+            "document_count": 22,
+            "owner": 1,
+            "user_can_change": true
+        },
+        {
+            "id": 2087,
+            "slug": "tag-34-enter-34",
+            "name": "Tag-34-enter 34",
+            "color": "#a6cee3",
+            "text_color": "#000000",
+            "match": "these",
+            "matching_algorithm": 2,
+            "is_insensitive": true,
+            "is_inbox_tag": false,
+            "document_count": 2,
+            "owner": 1,
+            "user_can_change": true
+        }
+    ]
+}

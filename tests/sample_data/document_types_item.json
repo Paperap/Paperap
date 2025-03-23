@@ -1,11 +1,11 @@
 {
-    "id": 1738,
-    "slug": "ability-16",
-    "name": "ability 16",
-    "match": "possible",
-    "matching_algorithm": 2,
-    "is_insensitive": false,
-    "document_count": 0,
+    "id": 2102,
+    "slug": "doctype-0-himself-0",
+    "name": "DocType-0-himself 0",
+    "match": "arrive",
+    "matching_algorithm": 1,
+    "is_insensitive": true,
+    "document_count": 1,
     "owner": 1,
     "user_can_change": true
 }

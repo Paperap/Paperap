@@ -3,8 +3,8 @@ paperap.models.ui\_settings package
 
 .. automodule:: paperap.models.ui_settings
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Submodules
 ----------
