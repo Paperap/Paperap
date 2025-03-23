@@ -1,22 +1,8 @@
 """
-----------------------------------------------------------------------------
+Authentication classes for Paperless-ngx API.
 
-   METADATA:
-
-       File:    auth.py
-        Project: paperap
-       Created: 2025-03-04
-        Version: 0.0.9
-       Author:  Jess Mann
-       Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
-----------------------------------------------------------------------------
-
-   LAST MODIFIED:
-
-       2025-03-04     By Jess Mann
-
+This module provides authentication classes for interacting with the Paperless-ngx API.
+It supports token-based authentication and basic username/password authentication.
 """
 
 from __future__ import annotations
@@ -29,7 +15,16 @@ from pydantic import ConfigDict, Field
 
 
 class AuthBase(pydantic.BaseModel, ABC):
-    """Base authentication class."""
+    """
+    Base authentication class for Paperless-ngx API.
+    
+    This abstract base class defines the interface for all authentication methods.
+    Subclasses must implement methods to provide authentication headers and parameters.
+    
+    Attributes:
+        model_config: Pydantic configuration for validation behavior.
+
+    """
 
     model_config = ConfigDict(
         str_strip_whitespace=True,
@@ -39,34 +34,97 @@ class AuthBase(pydantic.BaseModel, ABC):
 
     @abstractmethod
     def get_auth_headers(self) -> dict[str, str]:
-        """Get authentication headers."""
+        """
+        Get authentication headers for API requests.
+        
+        Returns:
+            dict: A dictionary of HTTP headers needed for authentication.
+        
+        Raises:
+            NotImplementedError: If not implemented by subclasses.
+
+        """
         raise NotImplementedError("get_auth_headers must be implemented by subclasses")
 
     @abstractmethod
     def get_auth_params(self) -> dict[str, Any]:
-        """Get authentication parameters for requests."""
+        """
+        Get authentication parameters for API requests.
+        
+        Returns:
+            dict: A dictionary of parameters to include in the request.
+        
+        Raises:
+            NotImplementedError: If not implemented by subclasses.
+
+        """
         raise NotImplementedError("get_auth_params must be implemented by subclasses")
 
 
 class TokenAuth(AuthBase):
-    """Authentication using a token."""
+    """
+    Authentication using a Paperless-ngx API token.
+    
+    This class implements token-based authentication for the Paperless-ngx API.
+    The token is included in the Authorization header of each request.
+    
+    Attributes:
+        token: The API token from Paperless-ngx.
+    
+    Examples:
+        >>> auth = TokenAuth(token="abcdef1234567890abcdef1234567890abcdef12")
+        >>> headers = auth.get_auth_headers()
+        >>> print(headers)
+        {'Authorization': 'Token abcdef1234567890abcdef1234567890abcdef12'}
+
+    """
 
     # token length appears to be 40. Set to 30 just in case (will still catch egregious errors)
     token: Annotated[str, Field(min_length=30, max_length=75, pattern=r"^[a-zA-Z0-9]+$")]
 
     @override
     def get_auth_headers(self) -> dict[str, str]:
-        """Get the authorization headers."""
+        """
+        Get the authorization headers with the token.
+        
+        Returns:
+            dict: A dictionary containing the Authorization header with the token.
+
+        """
         return {"Authorization": f"Token {self.token}"}
 
     @override
     def get_auth_params(self) -> dict[str, Any]:
-        """Get authentication parameters for requests."""
+        """
+        Get authentication parameters for requests.
+        
+        For token authentication, no additional parameters are needed.
+        
+        Returns:
+            dict: An empty dictionary as token auth uses headers, not parameters.
+
+        """
         return {}
 
 
 class BasicAuth(AuthBase):
-    """Authentication using username and password."""
+    """
+    Authentication using username and password.
+    
+    This class implements HTTP Basic Authentication for the Paperless-ngx API.
+    The username and password are passed to the requests library's auth parameter.
+    
+    Attributes:
+        username: The Paperless-ngx username.
+        password: The Paperless-ngx password.
+    
+    Examples:
+        >>> auth = BasicAuth(username="admin", password="password123")
+        >>> params = auth.get_auth_params()
+        >>> print(params)
+        {'auth': ('admin', 'password123')}
+
+    """
 
     username: str
     password: str
@@ -76,11 +134,22 @@ class BasicAuth(AuthBase):
         """
         Get headers for basic auth.
 
-        Basic auth is handled by the requests library, so no headers are needed here.
+        Basic auth is handled by the requests library's auth parameter,
+        so no headers are needed here.
+        
+        Returns:
+            dict: An empty dictionary as basic auth uses parameters, not headers.
+
         """
         return {}
 
     @override
     def get_auth_params(self) -> dict[str, Any]:
-        """Get authentication parameters for requests."""
+        """
+        Get authentication parameters for requests.
+        
+        Returns:
+            dict: A dictionary containing the auth parameter with username and password.
+
+        """
         return {"auth": (self.username, self.password)}

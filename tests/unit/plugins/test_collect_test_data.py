@@ -1,27 +1,5 @@
-"""
 
 
-
-
-----------------------------------------------------------------------------
-
-   METADATA:
-
-       File:    test_collect_test_data.py
-        Project: paperap
-       Created: 2025-03-13
-        Version: 0.0.9
-       Author:  Jess Mann
-       Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
-----------------------------------------------------------------------------
-
-   LAST MODIFIED:
-
-       2025-03-13     By Jess Mann
-
-"""
 
 from __future__ import annotations
 

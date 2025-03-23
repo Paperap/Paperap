@@ -1,22 +1,4 @@
-"""
-----------------------------------------------------------------------------
 
-   METADATA:
-
-       File:    test_document_download.py
-        Project: paperap
-       Created: 2025-03-21
-       Author:  Claude
-       Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
-----------------------------------------------------------------------------
-
-   DESCRIPTION:
-
-       Unit tests for the document_download.py module.
-
-"""
 
 from __future__ import annotations
 

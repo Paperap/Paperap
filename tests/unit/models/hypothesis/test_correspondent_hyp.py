@@ -1,27 +1,5 @@
-"""
 
 
-
-
-----------------------------------------------------------------------------
-
-METADATA:
-
-File:    text_write.py
-        Project: paperap
-Created: 2025-03-12
-        Version: 0.0.9
-Author:  Jess Mann
-Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
-----------------------------------------------------------------------------
-
-LAST MODIFIED:
-
-2025-03-12     By Jess Mann
-
-"""
 import datetime
 import os
 from typing import Any, Iterator, Union

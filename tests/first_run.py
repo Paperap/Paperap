@@ -2,25 +2,6 @@
 
 Usage: python -m tests.first_run
 
-
- ----------------------------------------------------------------------------
-
-    METADATA:
-
-        File:    first_run.py
-        Project: paperap
-        Created: 2025-03-21
-        Version: 0.0.10
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
- ----------------------------------------------------------------------------
-
-    LAST MODIFIED:
-
-        2025-03-21     By Jess Mann
-
 """
 
 from __future__ import annotations
