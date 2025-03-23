@@ -6,42 +6,54 @@ Thank you for considering contributing to Paperap!
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/paperap.git
+   gh repo clone https://github.com/Paperap/Paperap.git
    cd paperap
    ```
 
 2. Create a virtual environment and install development dependencies:
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   pip install -e ".[dev]"
+   uv venv .venv
+   uv sync --all-groups
+   source .venv/bin/activate
    ```
+
+3. Define an .env file
+   ```bash
+   cp env-sample .env
+   ```
+
+Most common actions are defined in package.json scripts. You can run them using `bun run <script>`.
 
 ## Running Tests
 
 ```bash
-pytest
+bun run test
 ```
+
+Integration tests are provided in the `tests/integration` directory. However, you may need to fiddle with them to get the data lined up with your Paperless-ngX instance. This will be improved in the future.
+
+Hypothesis tests are located in `tests/unit/hypothesis`. These tests are run automatically with all unit tests. If you're not familiar with hypothesis, it is worth noting that it will run with slightly different parameters each time, and remember failures for future runs.
 
 ## Building Documentation
 
 ```bash
-cd docs
-python generate_api_docs.py
+python docs/generate_api_docs.py
 ```
 
 ## Code Style
 
 This project uses:
-- Black for code formatting
-- Isort for import sorting
-- Mypy for type checking
-- Pylint and Flake8 for linting
+- ruff
+- pre-commit
+- mypy
+
+It successfully passes pyright, mypy, and basedmypy with a fairly strict config in pyproject.toml. All future code should do the same.
 
 ## Submitting Changes
 
 1. Create a new branch for your changes
 2. Make your changes
 3. Run the tests and ensure they pass
-4. Update documentation if necessary
-5. Submit a pull request
+4. Run linters via `bun run pre-commit`, and github actions via `act`.
+5. Update documentation if necessary
+6. Submit a pull request
