@@ -30,11 +30,11 @@ from typing import TYPE_CHECKING, Any, Final, Generic, Iterable, Iterator, Self,
 from pydantic import HttpUrl
 from typing_extensions import TypeVar
 
+from paperap.const import ClientResponse
 from paperap.exceptions import FilterDisabledError, MultipleObjectsFoundError, ObjectNotFoundError
 
 if TYPE_CHECKING:
     from paperap.models.abstract.model import BaseModel, StandardModel
-    from paperap.client import ClientResponse
     from paperap.resources.base import BaseResource, StandardResource
 
 logger = logging.getLogger(__name__)
@@ -308,7 +308,15 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         if (count := self._get_last_count()) is not None:
             return count
 
-        # I don't think this should ever occur, but just in case.
+        # If we have a last_response and it has 'results', count them
+        if self._last_response and isinstance(self._last_response, dict) and "results" in self._last_response:
+            return len(self._last_response["results"])
+
+        # Fall back to counting the results we have already
+        if self._fetch_all:
+            return len(self._result_cache)
+
+        # If we've tried everything and still can't get a count, raise an error
         raise NotImplementedError(f"Unexpected Error: Could not determine count of objects. Last response: {self._last_response}")
 
     def count_this_page(self) -> int:

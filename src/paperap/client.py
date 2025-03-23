@@ -72,8 +72,6 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-type ClientResponse = dict[str, Any] | list[dict[str, Any]] | None
-
 
 class PaperlessClient:
     """

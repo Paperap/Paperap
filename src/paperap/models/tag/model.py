@@ -6,7 +6,7 @@
        File:    tag.py
         Project: paperap
        Created: 2025-03-04
-        Version: 0.0.9
+        Version: 0.0.10
        Author:  Jess Mann
        Email:   jess@jmann.me
         Copyright (c) 2025 Jess Mann
@@ -24,7 +24,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 
 from paperap.const import MatchingAlgorithmType
 from paperap.models.abstract.model import StandardModel
@@ -47,6 +47,14 @@ class Tag(StandardModel, MatcherMixin):
     document_count: int = 0
     owner: int | None = None
     user_can_change: bool | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def handle_text_color_alias(cls, data: dict[str, Any]) -> dict[str, Any]:
+        """Handle 'text_color' as an alias for 'colour'."""
+        if isinstance(data, dict) and "text_color" in data and data.get("colour") is None and data.get("color") is None:
+            data["colour"] = data.pop("text_color")
+        return data
 
     # Alias for colour
     @property

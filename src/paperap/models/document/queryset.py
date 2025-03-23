@@ -28,9 +28,9 @@ from typing import TYPE_CHECKING, Any, NamedTuple, Self, Union, overload, overri
 
 from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models.mixins.queryset import HasOwner
+from paperap.const import ClientResponse
 
 if TYPE_CHECKING:
-    from paperap.client import ClientResponse
     from paperap.models import Correspondent, Document, DocumentNote, DocumentType, StoragePath
 
 logger = logging.getLogger(__name__)
