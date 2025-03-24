@@ -3,6 +3,11 @@ Authentication classes for Paperless-ngx API.
 
 This module provides authentication classes for interacting with the Paperless-ngx API.
 It supports token-based authentication and basic username/password authentication.
+
+Classes:
+    AuthBase: Abstract base class for authentication methods.
+    TokenAuth: Authentication using a Paperless-ngx API token.
+    BasicAuth: Authentication using username and password.
 """
 
 from __future__ import annotations
@@ -22,8 +27,7 @@ class AuthBase(pydantic.BaseModel, ABC):
     Subclasses must implement methods to provide authentication headers and parameters.
     
     Attributes:
-        model_config: Pydantic configuration for validation behavior.
-
+        model_config (ConfigDict): Pydantic configuration for validation behavior.
     """
 
     model_config = ConfigDict(
@@ -38,11 +42,10 @@ class AuthBase(pydantic.BaseModel, ABC):
         Get authentication headers for API requests.
         
         Returns:
-            dict: A dictionary of HTTP headers needed for authentication.
+            dict[str, str]: A dictionary of HTTP headers needed for authentication.
         
         Raises:
             NotImplementedError: If not implemented by subclasses.
-
         """
         raise NotImplementedError("get_auth_headers must be implemented by subclasses")
 
@@ -52,11 +55,10 @@ class AuthBase(pydantic.BaseModel, ABC):
         Get authentication parameters for API requests.
         
         Returns:
-            dict: A dictionary of parameters to include in the request.
+            dict[str, Any]: A dictionary of parameters to include in the request.
         
         Raises:
             NotImplementedError: If not implemented by subclasses.
-
         """
         raise NotImplementedError("get_auth_params must be implemented by subclasses")
 
@@ -69,14 +71,13 @@ class TokenAuth(AuthBase):
     The token is included in the Authorization header of each request.
     
     Attributes:
-        token: The API token from Paperless-ngx.
+        token (str): The API token from Paperless-ngx.
     
     Examples:
         >>> auth = TokenAuth(token="abcdef1234567890abcdef1234567890abcdef12")
         >>> headers = auth.get_auth_headers()
         >>> print(headers)
         {'Authorization': 'Token abcdef1234567890abcdef1234567890abcdef12'}
-
     """
 
     # token length appears to be 40. Set to 30 just in case (will still catch egregious errors)
@@ -88,8 +89,7 @@ class TokenAuth(AuthBase):
         Get the authorization headers with the token.
         
         Returns:
-            dict: A dictionary containing the Authorization header with the token.
-
+            dict[str, str]: A dictionary containing the Authorization header with the token.
         """
         return {"Authorization": f"Token {self.token}"}
 
@@ -101,8 +101,7 @@ class TokenAuth(AuthBase):
         For token authentication, no additional parameters are needed.
         
         Returns:
-            dict: An empty dictionary as token auth uses headers, not parameters.
-
+            dict[str, Any]: An empty dictionary as token auth uses headers, not parameters.
         """
         return {}
 
@@ -115,15 +114,14 @@ class BasicAuth(AuthBase):
     The username and password are passed to the requests library's auth parameter.
     
     Attributes:
-        username: The Paperless-ngx username.
-        password: The Paperless-ngx password.
+        username (str): The Paperless-ngx username.
+        password (str): The Paperless-ngx password.
     
     Examples:
         >>> auth = BasicAuth(username="admin", password="password123")
         >>> params = auth.get_auth_params()
         >>> print(params)
         {'auth': ('admin', 'password123')}
-
     """
 
     username: str
@@ -138,8 +136,7 @@ class BasicAuth(AuthBase):
         so no headers are needed here.
         
         Returns:
-            dict: An empty dictionary as basic auth uses parameters, not headers.
-
+            dict[str, str]: An empty dictionary as basic auth uses parameters, not headers.
         """
         return {}
 
@@ -149,7 +146,6 @@ class BasicAuth(AuthBase):
         Get authentication parameters for requests.
         
         Returns:
-            dict: A dictionary containing the auth parameter with username and password.
-
+            dict[str, Any]: A dictionary containing the auth parameter with username and password.
         """
         return {"auth": (self.username, self.password)}
