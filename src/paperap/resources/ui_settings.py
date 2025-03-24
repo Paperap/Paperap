@@ -1,4 +1,10 @@
+"""
+Provide access to Paperless-NgX UI settings.
 
+This module contains the resource class for interacting with the UI settings
+endpoint of the Paperless-NgX API. It allows retrieving and updating the
+current user's UI settings.
+"""
 
 from __future__ import annotations
 
@@ -9,7 +15,19 @@ from paperap.resources.base import BaseResource, StandardResource
 
 
 class UISettingsResource(StandardResource[UISettings, UISettingsQuerySet]):
-    """Resource for managing UI settings."""
+    """
+    Resource for managing UI settings in Paperless-NgX.
+
+    This class provides methods to interact with the UI settings endpoint
+    of the Paperless-NgX API, allowing for operations such as retrieving
+    and updating the current user's UI settings.
+
+    Attributes:
+        model_class: The UISettings model class associated with this resource.
+        queryset_class: The UISettingsQuerySet class used for querying UI settings.
+        name: The name of the resource used in API endpoints.
+
+    """
 
     model_class = UISettings
     queryset_class = UISettingsQuerySet
@@ -19,8 +37,20 @@ class UISettingsResource(StandardResource[UISettings, UISettingsQuerySet]):
         """
         Get the current user's UI settings.
 
+        Makes a GET request to the UI settings endpoint to retrieve the
+        current user's UI settings configuration.
+
         Returns:
-            The current user's UI settings.
+            UISettings: The current user's UI settings object, or None if
+                no settings exist or the request failed.
+
+        Example:
+            ```python
+            client = PaperlessClient()
+            ui_settings = client.ui_settings.get_current()
+            if ui_settings:
+                print(f"Dark mode enabled: {ui_settings.settings.get('dark_mode', False)}")
+            ```
 
         """
         if not (response := self.client.request("GET", "ui_settings/")):
@@ -34,11 +64,26 @@ class UISettingsResource(StandardResource[UISettings, UISettingsQuerySet]):
         """
         Update the current user's UI settings.
 
+        Retrieves the current UI settings, updates them with the provided
+        settings dictionary, and saves the changes back to the server.
+        If no settings exist for the current user, creates new settings.
+
         Args:
-            settings: The settings to update.
+            settings: Dictionary of UI settings to update. Keys should match
+                the expected UI settings keys in Paperless-NgX.
 
         Returns:
-            The updated UI settings.
+            UISettings: The updated UI settings object.
+
+        Example:
+            ```python
+            client = PaperlessClient()
+            # Update dark mode and sidebar settings
+            updated_settings = client.ui_settings.update_current({
+                "dark_mode": True,
+                "sidebar_show_inbox": True
+            })
+            ```
 
         """
         ui_settings = self.get_current()
@@ -51,4 +96,17 @@ class UISettingsResource(StandardResource[UISettings, UISettingsQuerySet]):
 
     @override
     def delete(self, model_id: int | UISettings) -> None:
+        """
+        Delete UI settings (not supported).
+
+        This method is overridden to prevent deletion of UI settings,
+        as this operation is not supported by the Paperless-NgX API.
+
+        Args:
+            model_id: The ID of the UI settings to delete, or a UISettings instance.
+
+        Raises:
+            NotImplementedError: Always raised as deletion is not supported.
+
+        """
         raise NotImplementedError("Cannot delete UI settings, per Paperless NGX REST Api")

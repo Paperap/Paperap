@@ -1,4 +1,10 @@
+"""
+Define exception hierarchy for the Paperap library.
 
+This module contains all exceptions that may be raised by the Paperap library
+during its operation. The exceptions form a hierarchy with PaperapError as the
+base class, allowing applications to catch specific or general error types as needed.
+"""
 
 from __future__ import annotations
 
@@ -26,14 +32,20 @@ class PaperapError(Exception):
 
 class ModelValidationError(PaperapError, ValueError):
     """
-    Raised when a model fails validation.
+    Raise when a model fails validation.
 
-    This exception is raised when a Pydantic model fails validation, typically
+    This exception occurs when a Pydantic model fails validation, typically
     when creating or updating a model with invalid data.
 
     Args:
         message: Custom error message. If None, a default message is generated.
         model: The Pydantic model that failed validation.
+
+    Examples:
+        >>> try:
+        ...     client.documents.create(invalid_field="value")
+        ... except ModelValidationError as e:
+        ...     print(f"Validation error: {e}")
 
     """
 
@@ -45,9 +57,9 @@ class ModelValidationError(PaperapError, ValueError):
 
 class ReadOnlyFieldError(ModelValidationError):
     """
-    Raised when a read-only field is set.
+    Raise when a read-only field is modified.
 
-    This exception is raised when an attempt is made to modify a field that
+    This exception occurs when an attempt is made to modify a field that
     is marked as read-only in the model's Meta configuration.
 
     Examples:
@@ -61,9 +73,9 @@ class ReadOnlyFieldError(ModelValidationError):
 
 class ConfigurationError(PaperapError):
     """
-    Raised when the configuration is invalid.
+    Raise when the client configuration is invalid.
 
-    This exception is raised when there's an issue with the client configuration,
+    This exception occurs when there's an issue with the client configuration,
     such as missing required settings or invalid connection parameters.
 
     Examples:
@@ -77,18 +89,26 @@ class ConfigurationError(PaperapError):
 
 class PaperlessError(PaperapError):
     """
-    Raised due to a feature or error of Paperless-NgX.
+    Raise when an error is specific to the Paperless-NgX server.
 
-    This exception is raised when an error occurs that is specific to the
-    Paperless-NgX server or its API, rather than the Paperap client.
+    This exception occurs when an error is specific to the Paperless-NgX server
+    or its API, rather than the Paperap client itself.
+
+    Examples:
+        >>> try:
+        ...     # An operation that depends on a Paperless-NgX feature
+        ...     client.documents.merge([1, 2, 3])
+        ... except PaperlessError as e:
+        ...     print(f"Paperless server error: {e}")
+
     """
 
 
 class APIError(PaperlessError):
     """
-    Raised when the API returns an error.
+    Raise when the Paperless-NgX API returns an error.
 
-    This exception is raised when the Paperless-NgX API returns an error response.
+    This exception occurs when the Paperless-NgX API returns an error response.
     It includes the HTTP status code and error message from the API.
 
     Args:
@@ -119,9 +139,9 @@ class APIError(PaperlessError):
 
 class AuthenticationError(APIError):
     """
-    Raised when authentication fails.
+    Raise when authentication with the Paperless-NgX server fails.
 
-    This exception is raised when the client fails to authenticate with the
+    This exception occurs when the client fails to authenticate with the
     Paperless-NgX server, typically due to invalid credentials or an expired token.
 
     Examples:
@@ -136,28 +156,44 @@ class AuthenticationError(APIError):
 
 class InsufficientPermissionError(APIError):
     """
-    Raised when a user does not have permission to perform an action.
+    Raise when a user lacks permission for an operation.
 
-    This exception is raised when the authenticated user lacks the necessary
+    This exception occurs when the authenticated user lacks the necessary
     permissions to perform the requested operation on the Paperless-NgX server.
+
+    Examples:
+        >>> try:
+        ...     # Attempting an admin-only operation with a regular user account
+        ...     client.users.create(username="new_user")
+        ... except InsufficientPermissionError as e:
+        ...     print(f"Permission denied: {e}")
+
     """
 
 
 class FeatureNotAvailableError(APIError):
     """
-    Raised when a feature is not available.
+    Raise when attempting to use an unavailable feature.
 
-    This exception is raised when attempting to use a feature that is not
+    This exception occurs when attempting to use a feature that is not
     available in the current version of Paperless-NgX or has been disabled
     in the server configuration.
+
+    Examples:
+        >>> try:
+        ...     # Using a feature only available in newer versions
+        ...     client.documents.bulk_edit(...)
+        ... except FeatureNotAvailableError as e:
+        ...     print(f"Feature not available: {e}")
+
     """
 
 
 class FilterDisabledError(FeatureNotAvailableError):
     """
-    Raised when a filter is not available.
+    Raise when attempting to use an unavailable filter.
 
-    This exception is raised when attempting to use a filter that has been
+    This exception occurs when attempting to use a filter that has been
     disabled in the model's Meta configuration or is not supported by the API.
 
     Examples:
@@ -171,9 +207,9 @@ class FilterDisabledError(FeatureNotAvailableError):
 
 class RequestError(APIError):
     """
-    Raised when an error occurs while making a request.
+    Raise when an HTTP request fails.
 
-    This exception is raised when there's an error in the HTTP request itself,
+    This exception occurs when there's an error in the HTTP request itself,
     such as a connection error, timeout, or invalid URL.
 
     Examples:
@@ -187,9 +223,9 @@ class RequestError(APIError):
 
 class BadResponseError(APIError):
     """
-    Raised when a response is returned, but the status code is not 200.
+    Raise when the API returns a non-success status code.
 
-    This exception is raised when the API returns a non-success status code,
+    This exception occurs when the API returns a non-success status code,
     indicating that the request was received but could not be processed successfully.
 
     Examples:
@@ -203,9 +239,9 @@ class BadResponseError(APIError):
 
 class ResponseParsingError(APIError):
     """
-    Raised when the response can't be parsed.
+    Raise when the API response cannot be parsed.
 
-    This exception is raised when the API returns a response that cannot be
+    This exception occurs when the API returns a response that cannot be
     parsed as expected, typically due to an unexpected format or content type.
 
     Examples:
@@ -220,9 +256,9 @@ class ResponseParsingError(APIError):
 
 class ResourceNotFoundError(APIError):
     """
-    Raised when a requested resource is not found.
+    Raise when a requested API resource is not found.
 
-    This exception is raised when the requested API resource (endpoint) does not exist
+    This exception occurs when the requested API resource (endpoint) does not exist
     or is not available.
 
     Args:
@@ -252,9 +288,9 @@ class ResourceNotFoundError(APIError):
 
 class RelationshipNotFoundError(ResourceNotFoundError):
     """
-    Raised when a requested relationship is not found.
+    Raise when a requested model relationship is not found.
 
-    This exception is raised when attempting to access a relationship that
+    This exception occurs when attempting to access a relationship that
     does not exist on a model, such as a foreign key or many-to-many relationship.
 
     Examples:
@@ -268,9 +304,9 @@ class RelationshipNotFoundError(ResourceNotFoundError):
 
 class ObjectNotFoundError(ResourceNotFoundError):
     """
-    Raised when a requested object is not found.
+    Raise when a requested object is not found by ID.
 
-    This exception is raised when attempting to retrieve a specific object by ID
+    This exception occurs when attempting to retrieve a specific object by ID
     that does not exist in the Paperless-NgX database.
 
     Args:
@@ -301,9 +337,9 @@ class ObjectNotFoundError(ResourceNotFoundError):
 
 class MultipleObjectsFoundError(APIError):
     """
-    Raised when multiple objects are found when only one was expected.
+    Raise when multiple objects are found when only one was expected.
 
-    This exception is raised when a query that should return a single object
+    This exception occurs when a query that should return a single object
     returns multiple objects, typically in a get() operation with non-unique filters.
 
     Examples:
@@ -318,18 +354,25 @@ class MultipleObjectsFoundError(APIError):
 
 class DocumentError(PaperapError):
     """
-    Raised when an error occurs with a local document.
+    Raise when an error occurs with a local document file.
 
-    This exception is raised when there's an issue with a local document file,
+    This exception occurs when there's an issue with a local document file,
     such as when uploading or processing a document.
+
+    Examples:
+        >>> try:
+        ...     client.documents.upload("nonexistent_file.pdf")
+        ... except DocumentError as e:
+        ...     print(f"Document error: {e}")
+
     """
 
 
 class NoImagesError(DocumentError):
     """
-    Raised when no images are found in a PDF.
+    Raise when no images or pages are found in a document.
 
-    This exception is raised when attempting to process a PDF document that
+    This exception occurs when attempting to process a document that
     contains no images or pages that can be processed.
 
     Examples:
@@ -343,9 +386,9 @@ class NoImagesError(DocumentError):
 
 class DocumentParsingError(DocumentError):
     """
-    Raised when a document cannot be parsed.
+    Raise when a document cannot be parsed or content extracted.
 
-    This exception is raised when the system fails to parse or extract content
+    This exception occurs when the system fails to parse or extract content
     from a document, typically due to an unsupported format or corrupted file.
 
     Examples:

@@ -1,12 +1,19 @@
+"""
+Provide query interfaces for interacting with Paperless-ngx API resources.
 
+This module implements QuerySet classes that offer a Django-like interface for
+querying, filtering, and manipulating Paperless-ngx resources. The QuerySets
+are lazy-loaded and chainable, allowing for efficient API interactions.
+"""
 
 from __future__ import annotations
 
 import copy
 import logging
 from datetime import datetime
+import resource
 from string import Template
-from typing import TYPE_CHECKING, Any, Final, Generic, Iterable, Iterator, Self, TypeAlias, Union, override
+from typing import TYPE_CHECKING, Any, Final, Generic, Iterable, Iterator, Protocol, Self, TypeAlias, Union, override
 
 from pydantic import HttpUrl
 from typing_extensions import TypeVar
@@ -25,35 +32,31 @@ logger = logging.getLogger(__name__)
 
 class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
     """
-    A lazy-loaded, chainable query interface for Paperless NGX resources.
+    A lazy-loaded, chainable query interface for Paperless-ngx resources.
 
-    BaseQuerySet provides pagination, filtering, and caching functionality similar to Django's QuerySet.
-    It's designed to be lazy - only fetching data when it's actually needed.
+    Provides pagination, filtering, and caching functionality similar to Django's QuerySet.
+    Only fetches data when it's actually needed, optimizing API requests and performance.
 
-    Args:
-        resource: The BaseResource instance.
-        filters: Initial filter parameters.
-        _cache: Optional internal result cache.
+    Attributes:
+        resource: The resource instance associated with the queryset.
+        filters: Dictionary of filters to apply to the API request.
+        _last_response: The last response received from the API.
+        _result_cache: List of model instances already fetched.
         _fetch_all: Whether all results have been fetched.
-        _next_url: URL for the next page of results.
-        _last_response: Optional last response from the API.
-        _iter: Optional iterator for the results.
-
-    Returns:
-        A new instance of BaseQuerySet.
+        _next_url: URL for the next page of results, if any.
+        _urls_fetched: List of URLs already fetched to prevent loops.
+        _iter: Current iterator over results, if any.
 
     Examples:
-        # Create a QuerySet for documents
-        >>> docs = client.documents()
-        >>> for doc in docs:
-        ...    print(doc.id)
-        1
-        2
-        3
+        Basic usage:
+
+        >>> docs = client.documents()  # Returns a BaseQuerySet
+        >>> for doc in docs.filter(title__contains="invoice"):
+        ...     print(doc.title)
 
     """
 
-    resource: "BaseResource[_Model, Self]"
+    resource: "BaseResource[_Model, Self]"  # type: ignore # because mypy doesn't accept nested generics
     filters: dict[str, Any]
     _last_response: ClientResponse | None = None
     _result_cache: list[_Model] = []
@@ -64,7 +67,7 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
 
     def __init__(
         self,
-        resource: "BaseResource[_Model, Self]",
+        resource: "BaseResource[_Model, Self]",  # type: ignore # because mypy doesn't accept nested generics # noqa: F811
         filters: dict[str, Any] | None = None,
         _cache: list[_Model] | None = None,
         _fetch_all: bool = False,
@@ -73,6 +76,20 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         _iter: Iterator[_Model] | None = None,
         _urls_fetched: list[str] | None = None,
     ) -> None:
+        """
+        Initialize a new BaseQuerySet.
+
+        Args:
+            resource: The resource instance that will handle API requests.
+            filters: Initial filters to apply to the queryset.
+            _cache: Pre-populated result cache (internal use).
+            _fetch_all: Whether all results have been fetched (internal use).
+            _next_url: URL for the next page of results (internal use).
+            _last_response: Last API response received (internal use).
+            _iter: Current iterator over results (internal use).
+            _urls_fetched: List of URLs already fetched (internal use).
+
+        """
         self.resource = resource
         self.filters = filters or {}
         self._result_cache = _cache or []
@@ -87,13 +104,14 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
     @property
     def _model(self) -> type[_Model]:
         """
-        Return the model class associated with the resource.
+        Get the model class associated with the resource.
 
         Returns:
-            The model class
+            The model class for this queryset.
 
         Examples:
-            # Create a model instance
+            Create a model instance:
+
             >>> model = queryset._model(**params)
 
         """
@@ -102,13 +120,15 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
     @property
     def _meta(self) -> "BaseModel.Meta[Any]":
         """
-        Return the model's metadata.
+        Get the model's metadata.
 
         Returns:
-            The model's metadata
+            The model's metadata containing information about filtering capabilities,
+            resource paths, and field properties.
 
         Examples:
-            # Get the model's metadata
+            Get the model's read-only fields:
+
             >>> queryset._meta.read_only_fields
             {'id', 'added', 'modified'}
 
@@ -119,7 +139,9 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         Reset the QuerySet to its initial state.
 
-        This clears the result cache and resets the fetch state.
+        Clears the result cache and resets the fetch state, making the queryset
+        behave as if it was newly created. Called internally when filters or
+        other query parameters change.
         """
         self._result_cache = []
         self._fetch_all = False
@@ -132,21 +154,18 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         Update the current filters with new values.
 
-        This updates the current queryset instance. It does not return a new instance. For that reason,
-        do not call this directly. Call filter() or exclude() instead.
+        Updates the current queryset instance in-place. Does not return a new
+        instance. For that reason, do not call this directly. Use filter() or
+        exclude() instead.
 
         Args:
-            values: New filter values to add
+            values: Dictionary of new filter values to add to the existing filters.
 
         Raises:
-            FilterDisabledError: If a filter is not allowed by the resource
+            FilterDisabledError: If a filter is not allowed by the resource's metadata.
 
-        Examples:
-            # Update filters with new values
-            queryset._update_filters({"correspondent": 1})
-
-            # Update filters with multiple values
-            queryset._update_filters({"correspondent": 1, "document_type": 2})
+        Note:
+            This is an internal method that should not be called directly by users.
 
         """
         for key, _value in values.items():
@@ -163,24 +182,24 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         Return a new QuerySet with the given filters applied.
 
         Args:
-            **kwargs: Filters to apply, where keys are field names and values are desired values.
-                    Supports Django-style lookups like field__contains, field__in, etc.
+            **kwargs: Filters to apply, where keys are field names and values are
+                desired values. Supports Django-style lookups like field__contains,
+                field__in, etc.
 
         Returns:
-            A new QuerySet with the additional filters applied
+            A new QuerySet with the additional filters applied.
 
         Examples:
-            # Get documents with specific correspondent
-            docs = client.documents.filter(correspondent=1)
+            Get documents with specific correspondent:
 
-            # Get documents with specific correspondent and document type
-            docs = client.documents.filter(correspondent=1, document_type=2)
+            >>> docs = client.documents().filter(correspondent=1)
 
-            # Get documents with title containing "invoice"
-            docs = client.documents.filter(title__contains="invoice")
+            Filter with multiple conditions:
 
-            # Get documents with IDs in a list
-            docs = client.documents.filter(id__in=[1, 2, 3])
+            >>> docs = client.documents().filter(
+            ...     title__contains="invoice",
+            ...     created__gt="2023-01-01"
+            ... )
 
         """
         processed_filters = {}
@@ -205,14 +224,20 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         Return a new QuerySet excluding objects with the given filters.
 
         Args:
-            **kwargs: Filters to exclude, where keys are field names and values are excluded values
+            **kwargs: Filters to exclude, where keys are field names and values are
+                excluded values. Supports the same lookup syntax as filter().
 
         Returns:
-            A new QuerySet excluding objects that match the filters
+            A new QuerySet excluding objects that match the filters.
 
         Examples:
-            # Get documents with any correspondent except ID 1
-            docs = client.documents.exclude(correspondent=1)
+            Get documents with any correspondent except ID 1:
+
+            >>> docs = client.documents().exclude(correspondent=1)
+
+            Exclude documents with specific words in title:
+
+            >>> docs = client.documents().exclude(title__contains="draft")
 
         """
         # Transform each key to its "not" equivalent
@@ -234,26 +259,36 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         Retrieve a single object from the API.
 
-        Raises NotImplementedError. Subclasses may implement this.
+        This base implementation raises NotImplementedError. Subclasses like
+        StandardQuerySet implement this method for models with ID fields.
 
         Args:
-             pk: The primary key (e.g. the id) of the object to retrieve
+            pk: The primary key (e.g., the id) of the object to retrieve.
 
         Returns:
-            A single object matching the query
+            A single object matching the query.
 
         Raises:
-            ObjectNotFoundError: If no object or multiple objects are found
-            NotImplementedError: If the method is not implemented by the subclass
+            ObjectNotFoundError: If no object is found.
+            MultipleObjectsFoundError: If multiple objects match the query.
+            NotImplementedError: If the method is not implemented by the subclass.
 
         Examples:
-            # Get document with ID 123
-            doc = client.documents.get(123)
+            Get document with ID 123:
+
+            >>> doc = client.documents().get(123)
 
         """
         raise NotImplementedError("Getting a single resource is not defined by BaseModels without an id.")
 
     def _get_last_count(self) -> int | None:
+        """
+        Get the count from the last API response.
+
+        Returns:
+            The count from the last response, or None if not available.
+
+        """
         if self._last_response is None:
             return None
         if isinstance(self._last_response, list):
@@ -264,11 +299,24 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         Return the total number of objects in the queryset.
 
+        Makes an API request if necessary to determine the total count
+        of objects matching the current filters.
+
         Returns:
-            The total count of objects matching the filters
+            The total count of objects matching the filters.
 
         Raises:
-            NotImplementedError: If the response does not have a count attribute
+            NotImplementedError: If the count cannot be determined from the API response.
+
+        Examples:
+            Count all documents:
+
+            >>> total = client.documents().count()
+            >>> print(f"Total documents: {total}")
+
+            Count filtered documents:
+
+            >>> invoice_count = client.documents().filter(title__contains="invoice").count()
 
         """
         # If we have a last response, we can use the "count" field
@@ -304,11 +352,20 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         Return the number of objects on the current page.
 
+        Counts only the objects on the current page of results,
+        without fetching additional pages. Useful for pagination displays.
+
         Returns:
-            The count of objects on the current page
+            The count of objects on the current page.
 
         Raises:
-            NotImplementedError: If _last_response is not set
+            NotImplementedError: If the current page count cannot be determined.
+
+        Examples:
+            Get count of current page:
+
+            >>> page_count = client.documents().count_this_page()
+            >>> print(f"Items on this page: {page_count}")
 
         """
         # If we have a last response, we can count it without a new request
@@ -338,8 +395,20 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         Return a new QuerySet that copies the current one.
 
+        Creates a copy of the current queryset with the same filters.
+        Often used to create a new queryset instance for method chaining.
+
         Returns:
-            A copy of the current BaseQuerySet
+            A copy of the current QuerySet.
+
+        Examples:
+            Create a copy of a queryset:
+
+            >>> all_docs = client.documents().all()
+
+            Chain with other methods:
+
+            >>> recent_docs = client.documents().all().order_by('-created')
 
         """
         return self._chain()
@@ -350,16 +419,19 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
 
         Args:
             *fields: Field names to order by. Prefix with '-' for descending order.
+                Multiple fields can be specified for multi-level sorting.
 
         Returns:
-            A new QuerySet with the ordering applied
+            A new QuerySet with the ordering applied.
 
         Examples:
-            # Order documents by title ascending
-            docs = client.documents.order_by('title')
+            Order documents by title ascending:
 
-            # Order documents by added date descending
-            docs = client.documents.order_by('-added')
+            >>> docs = client.documents().order_by('title')
+
+            Order by multiple fields (created date descending, then title ascending):
+
+            >>> docs = client.documents().order_by('-created', 'title')
 
         """
         if not fields:
@@ -384,8 +456,21 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         Return the first object in the QuerySet, or None if empty.
 
+        Optimizes the API request by limiting to a single result when possible.
+
         Returns:
-            The first object or None if no objects match
+            The first object or None if no objects match.
+
+        Examples:
+            Get the first document:
+
+            >>> first_doc = client.documents().first()
+            >>> if first_doc:
+            ...     print(f"First document: {first_doc.title}")
+
+            Get the first document matching a filter:
+
+            >>> first_invoice = client.documents().filter(title__contains="invoice").first()
 
         """
         if self._result_cache and len(self._result_cache) > 0:
@@ -399,10 +484,23 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         Return the last object in the QuerySet, or None if empty.
 
-        Note: This requires fetching all results to determine the last one.
+        Note:
+            This method requires fetching all results to determine the last one,
+            which may be inefficient for large result sets.
 
         Returns:
-            The last object or None if no objects match
+            The last object or None if no objects match.
+
+        Examples:
+            Get the last document:
+
+            >>> last_doc = client.documents().last()
+            >>> if last_doc:
+            ...     print(f"Last document: {last_doc.title}")
+
+            Get the last document in a specific order:
+
+            >>> oldest_doc = client.documents().order_by('created').last()
 
         """
         # If we have all results, we can just return the last one
@@ -422,8 +520,21 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         Return True if the QuerySet contains any results.
 
+        Optimizes the API request by checking for at least one result
+        rather than fetching all results.
+
         Returns:
-            True if there are any objects matching the filters
+            True if there are any objects matching the filters.
+
+        Examples:
+            Check if any documents exist:
+
+            >>> if client.documents().exists():
+            ...     print("Documents found")
+
+            Check if specific documents exist:
+
+            >>> has_invoices = client.documents().filter(title__contains="invoice").exists()
 
         """
         # Check the cache before potentially making a new request
@@ -437,26 +548,53 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         Return an empty QuerySet.
 
+        Creates a queryset that will always return no results,
+        which is useful for conditional queries.
+
         Returns:
-            An empty QuerySet
+            An empty QuerySet.
+
+        Examples:
+            Create an empty queryset:
+
+            >>> empty_docs = client.documents().none()
+            >>> len(empty_docs)
+            0
+
+            Conditional query:
+
+            >>> if condition:
+            ...     docs = client.documents().filter(title__contains="invoice")
+            ... else:
+            ...     docs = client.documents().none()
 
         """
         return self._chain(filters={"limit": 0})
 
     def filter_field_by_str(self, field: str, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
-        Filter a queryset based on a given field.
+        Filter a queryset based on a given string field.
 
-        This allows subclasses to easily implement custom filter methods.
+        Allows subclasses to easily implement custom filter methods
+        for string fields with consistent behavior.
 
         Args:
             field: The field name to filter by.
-            value: The value to filter against.
-            exact: Whether to filter by an exact match.
+            value: The string value to filter against.
+            exact: Whether to filter by an exact match (True) or contains (False).
             case_insensitive: Whether the filter should be case-insensitive.
 
         Returns:
             A new QuerySet instance with the filter applied.
+
+        Examples:
+            Filter documents by title (case-insensitive exact match):
+
+            >>> docs = client.documents().filter_field_by_str('title', 'Invoice', exact=True)
+
+            Filter documents by title containing text (case-insensitive):
+
+            >>> docs = client.documents().filter_field_by_str('title', 'invoice', exact=False)
 
         """
         if exact:
@@ -470,8 +608,13 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         Fetch all results from the API and populate the cache.
 
-        Returns:
-            None
+        Retrieves all results from the API by following pagination links
+        and stores them in the internal cache for future access. Called internally
+        when operations require the complete result set.
+
+        Note:
+            This is an internal method that should not be called directly by users.
+            For large result sets, this may make multiple API requests.
 
         """
         if self._fetch_all:
@@ -496,22 +639,23 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
 
     def _request_iter(self, url: str | HttpUrl | Template | None = None, params: dict[str, Any] | None = None) -> Iterator[_Model]:
         """
-        Get an iterator of resources.
+        Get an iterator of resources from the API.
+
+        Makes a request to the API and returns an iterator over the resulting
+        model instances. Updates internal state for pagination tracking.
 
         Args:
             url: The URL to request, if different from the resource's default.
-            params: Query parameters.
+            params: Query parameters to include in the request.
 
         Returns:
-            An iterator over the resources.
+            An iterator over the model instances.
 
         Raises:
             NotImplementedError: If the request cannot be completed.
 
-        Examples:
-            # Iterate over documents
-            for doc in queryset._request_iter():
-                print(doc)
+        Note:
+            This is an internal method that should not be called directly by users.
 
         """
         if not (response := self.resource.request_raw(url=url, params=params)):
@@ -524,7 +668,21 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
 
     def _get_next(self, response: ClientResponse | None = None) -> str | None:
         """
-        Get the next url, and adjust our references accordingly.
+        Get the next URL and adjust references accordingly.
+
+        Updates the internal state to point to the next URL for
+        pagination, if available. Also tracks visited URLs to prevent loops.
+
+        Args:
+            response: The response to use for determining the next URL.
+                Defaults to the last response.
+
+        Returns:
+            The next URL, or None if there are no more pages.
+
+        Note:
+            This is an internal method that should not be called directly by users.
+
         """
         # Allow passing a different response
         if response is None:
@@ -556,13 +714,20 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
 
     def _chain(self, **kwargs: Any) -> Self:
         """
-        Return a copy of the current BaseQuerySet with updated attributes.
+        Return a copy of the current QuerySet with updated attributes.
+
+        Creates a new instance of the queryset with the same base attributes
+        as the current one, but with specified attributes updated. Used internally
+        for method chaining.
 
         Args:
-            **kwargs: Attributes to update in the new BaseQuerySet
+            **kwargs: Attributes to update in the new QuerySet.
 
         Returns:
-            A new QuerySet with the updated attributes
+            A new QuerySet with the updated attributes.
+
+        Note:
+            This is an internal method that should not be called directly by users.
 
         """
         # Create a new BaseQuerySet with copied attributes
@@ -586,8 +751,17 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         Iterate over the objects in the QuerySet.
 
+        Implements lazy loading of results, fetching additional pages
+        as needed when iterating through the queryset.
+
         Returns:
-            An iterator over the objects
+            An iterator over the model instances.
+
+        Examples:
+            Iterate through documents:
+
+            >>> for doc in client.documents():
+            ...     print(doc.title)
 
         """
         # If we have a fully populated cache, use it
@@ -627,8 +801,17 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         Return the number of objects in the QuerySet.
 
+        Calls count() to determine the total number of objects
+        matching the current filters.
+
         Returns:
-            The count of objects
+            The count of objects.
+
+        Examples:
+            Get the number of documents:
+
+            >>> num_docs = len(client.documents())
+            >>> print(f"Total documents: {num_docs}")
 
         """
         return self.count()
@@ -637,8 +820,16 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         Return True if the QuerySet has any results.
 
+        Calls exists() to check if any objects match the current filters.
+
         Returns:
-            True if there are any objects matching the filters
+            True if there are any objects matching the filters.
+
+        Examples:
+            Check if any documents exist:
+
+            >>> if client.documents():
+            ...     print("Documents found")
 
         """
         return self.exists()
@@ -647,14 +838,26 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         Retrieve an item or slice of items from the QuerySet.
 
+        Supports both integer indexing and slicing, optimizing
+        API requests when possible by using limit and offset parameters.
+
         Args:
-            key: An integer index or slice
+            key: An integer index or slice object.
 
         Returns:
-            A single object or list of objects
+            A single object or list of objects.
 
         Raises:
-            IndexError: If the index is out of range
+            IndexError: If the index is out of range.
+
+        Examples:
+            Get a single document by position:
+
+            >>> first_doc = client.documents()[0]
+
+            Get a slice of documents:
+
+            >>> recent_docs = client.documents().order_by('-created')[:10]
 
         """
         if isinstance(key, slice):
@@ -718,11 +921,21 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         Return True if the QuerySet contains the given object.
 
+        Checks if the given object is present in the queryset
+        by comparing it with each object in the queryset.
+
         Args:
-            item: The object to check for
+            item: The object to check for.
 
         Returns:
-            True if the object is in the QuerySet
+            True if the object is in the QuerySet.
+
+        Examples:
+            Check if a document is in a queryset:
+
+            >>> doc = client.documents().get(123)
+            >>> if doc in client.documents().filter(title__contains="invoice"):
+            ...     print("Document is an invoice")
 
         """
         if not isinstance(item, self._model):
@@ -733,31 +946,27 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
 
 class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
     """
-    A queryset for StandardModel instances (i.e. BaseModels with standard fields, like id).
+    A queryset for StandardModel instances with ID fields.
 
-    Returns:
-        A new instance of StandardModel.
+    Extends BaseQuerySet to provide additional functionality specific
+    to models with standard fields like 'id', including direct lookups by ID,
+    bulk operations, and specialized filtering methods.
 
-    Raises:
-        ValueError: If resource is not provided.
-
-    Examples:
-        # Create a StandardModel instance
-        model = StandardModel(id=1)
-
-    Args:
-        resource: The BaseResource instance.
-        filters: Initial filter parameters.
-
-    Returns:
-        A new instance of StandardQuerySet.
-
-    Raises:
-        ObjectNotFoundError: If no object or multiple objects are found.
+    Attributes:
+        resource: The StandardResource instance associated with the queryset.
 
     Examples:
-        # Create a StandardQuerySet for documents
-        docs = StandardQuerySet(resource=client.documents)
+        Get documents by ID:
+
+        >>> doc = client.documents().get(123)
+
+        Filter documents by ID:
+
+        >>> docs = client.documents().id([1, 2, 3])
+
+        Perform bulk operations:
+
+        >>> client.documents().filter(title__contains="draft").delete()
 
     """
 
@@ -766,20 +975,25 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
     @override
     def get(self, pk: int) -> _Model:
         """
-        Retrieve a single object from the API.
+        Retrieve a single object from the API by its ID.
+
+        First checks the result cache for an object with the given ID,
+        then falls back to making a direct API request if not found.
 
         Args:
-            pk: The ID of the object to retrieve
+            pk: The ID of the object to retrieve.
 
         Returns:
-            A single object matching the query
+            A single object matching the ID.
 
         Raises:
-            ObjectNotFoundError: If no object or multiple objects are found
+            ObjectNotFoundError: If no object with the given ID exists.
 
         Examples:
-            # Get document with ID 123
-            doc = client.documents.get(123)
+            Get document with ID 123:
+
+            >>> doc = client.documents().get(123)
+            >>> print(f"Retrieved: {doc.title}")
 
         """
         # Attempt to find it in the result cache
@@ -795,11 +1009,25 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
         """
         Filter models by ID.
 
+        Provides a convenient way to filter objects by their ID
+        or a list of IDs.
+
         Args:
-            value: The ID or list of IDs to filter by
+            value: The ID or list of IDs to filter by.
 
         Returns:
-            Filtered QuerySet
+            Filtered QuerySet containing only objects with the specified ID(s).
+
+        Examples:
+            Get document with ID 123:
+
+            >>> doc = client.documents().id(123).first()
+
+            Get multiple documents by ID:
+
+            >>> docs = client.documents().id([123, 456, 789])
+            >>> for doc in docs:
+            ...     print(doc.title)
 
         """
         if isinstance(value, list):
@@ -811,14 +1039,30 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
         """
         Return True if the QuerySet contains the given object.
 
-        NOTE: This method only ensures a match by ID, not by full object equality.
-        This is intentional, as the object may be outdated or not fully populated.
+        Checks if an object with the same ID is in the queryset.
+        Can accept either a model instance or an integer ID.
+
+        Note:
+            This method only ensures a match by ID, not by full object equality.
+            This is intentional, as the object may be outdated or not fully populated.
 
         Args:
-            item: The object or ID to check for
+            item: The object or ID to check for.
 
         Returns:
-            True if the object is in the QuerySet
+            True if an object with the matching ID is in the QuerySet.
+
+        Examples:
+            Check if a document is in a queryset:
+
+            >>> doc = client.documents().get(123)
+            >>> if doc in client.documents().filter(title__contains="invoice"):
+            ...     print("Document is an invoice")
+
+            Check if a document ID is in a queryset:
+
+            >>> if 123 in client.documents().filter(title__contains="invoice"):
+            ...     print("Document 123 is an invoice")
 
         """
         # Handle integers directly
@@ -835,21 +1079,72 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
         # For any other type, it's not in the queryset
         return False
 
+
+class BaseQuerySetProtocol[_Model: BaseModel](Protocol):
+    resource: "BaseResource[_Model]"
+    filters: dict[str, Any]
+    _result_cache: list[_Model]
+    _fetch_all: bool
+    _next_url: str | None
+    _last_response: ClientResponse | None
+    _iter: Iterator[_Model] | None
+    _urls_fetched: list[str]
+
+    def filter(self, **kwargs: Any) -> Self: ...
+    def exclude(self, **kwargs: Any) -> Self: ...
+    def all(self) -> Self: ...
+    def order_by(self, *fields: str) -> Self: ...
+    def first(self) -> _Model | None: ...
+    def last(self) -> _Model | None: ...
+    def exists(self) -> bool: ...
+    def none(self) -> Self: ...
+    def filter_field_by_str(self, field: str, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self: ...
+    def count(self) -> int: ...
+    def count_this_page(self) -> int: ...
+    def __iter__(self) -> Iterator[_Model]: ...
+    def __len__(self) -> int: ...
+    def __bool__(self) -> bool: ...
+    def __getitem__(self, key: int | slice) -> _Model | list[_Model]: ...
+    def __contains__(self, item: Any) -> bool: ...
+
+
+class StandardQuerySetProtocol[_Model: StandardModel](BaseQuerySetProtocol, Protocol):
+    resource: "StandardResource[_Model, Self]"  # type: ignore
+
+    def get(self, pk: int) -> _Model: ...
+    def id(self, value: int | list[int]) -> Self: ...
+
+
+class SupportsBulkActions(StandardQuerySetProtocol, Protocol):
     def bulk_action(self, action: str, **kwargs: Any) -> ClientResponse:
         """
         Perform a bulk action on all objects in the queryset.
 
-        This method fetches all IDs in the queryset and passes them to the resource's bulk_action method.
+        Fetches all IDs in the queryset and passes them to the
+        resource's bulk_action method, allowing operations to be performed
+        on multiple objects in a single API request.
 
         Args:
-            action: The action to perform
-            **kwargs: Additional parameters for the action
+            action: The action to perform (e.g., "delete", "merge").
+            **kwargs: Additional parameters for the action.
 
         Returns:
-            The API response
+            The API response containing results of the bulk action.
 
         Raises:
-            NotImplementedError: If the resource doesn't support bulk actions
+            NotImplementedError: If the resource doesn't support bulk actions.
+
+        Examples:
+            Delete all documents with "draft" in the title:
+
+            >>> client.documents().filter(title__contains="draft").bulk_action("delete")
+
+            Merge documents with custom parameters:
+
+            >>> client.documents().filter(correspondent_id=5).bulk_action(
+            ...     "merge",
+            ...     metadata_document_id=123
+            ... )
 
         """
         if not (fn := getattr(self.resource, "bulk_action", None)):
@@ -868,8 +1163,21 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
         """
         Delete all objects in the queryset.
 
+        This is a convenience method that calls bulk_action("delete").
+
         Returns:
-            The API response
+            The API response containing results of the delete operation.
+
+        Examples:
+            Delete all documents with "draft" in the title:
+
+            >>> client.documents().filter(title__contains="draft").delete()
+
+            Delete old documents:
+
+            >>> from datetime import datetime, timedelta
+            >>> one_year_ago = (datetime.now() - timedelta(days=365)).isoformat()
+            >>> client.documents().filter(created__lt=one_year_ago).delete()
 
         """
         return self.bulk_action("delete")
@@ -878,11 +1186,25 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
         """
         Update all objects in the queryset with the given values.
 
+        Allows updating multiple objects with the same field values
+        in a single API request.
+
         Args:
-            **kwargs: Fields to update
+            **kwargs: Fields to update and their new values.
 
         Returns:
-            The API response
+            The API response containing results of the update operation.
+
+        Raises:
+            NotImplementedError: If the resource doesn't support bulk updates.
+
+        Examples:
+            Update the correspondent for all documents with "invoice" in the title:
+
+            >>> client.documents().filter(title__contains="invoice").bulk_update(
+            ...     correspondent=5,
+            ...     document_type=3
+            ... )
 
         """
         if not (fn := getattr(self.resource, "bulk_update", None)):
@@ -900,12 +1222,30 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
         """
         Assign tags to all objects in the queryset.
 
+        Adds the specified tags to all objects in the queryset.
+
         Args:
-            tag_ids: List of tag IDs to assign
-            remove_existing: If True, remove existing tags before assigning new ones
+            tag_ids: List of tag IDs to assign.
+            remove_existing: If True, remove existing tags before assigning new ones.
+                If False (default), add the new tags to any existing tags.
 
         Returns:
-            The API response
+            The API response containing results of the operation.
+
+        Raises:
+            NotImplementedError: If the resource doesn't support bulk tag assignment.
+
+        Examples:
+            Add tags to all invoices:
+
+            >>> client.documents().filter(title__contains="invoice").bulk_assign_tags([1, 2])
+
+            Replace all tags on tax documents:
+
+            >>> client.documents().filter(title__contains="tax").bulk_assign_tags(
+            ...     [5, 6],
+            ...     remove_existing=True
+            ... )
 
         """
         if not (fn := getattr(self.resource, "bulk_assign_tags", None)):
@@ -923,11 +1263,22 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
         """
         Assign a correspondent to all objects in the queryset.
 
+        Sets the correspondent for all objects in the queryset
+        to the specified correspondent ID.
+
         Args:
-            correspondent_id: Correspondent ID to assign
+            correspondent_id: Correspondent ID to assign.
 
         Returns:
-            The API response
+            The API response containing results of the operation.
+
+        Raises:
+            NotImplementedError: If the resource doesn't support bulk correspondent assignment.
+
+        Examples:
+            Set correspondent for all invoices:
+
+            >>> client.documents().filter(title__contains="invoice").bulk_assign_correspondent(5)
 
         """
         if not (fn := getattr(self.resource, "bulk_assign_correspondent", None)):
@@ -945,11 +1296,22 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
         """
         Assign a document type to all objects in the queryset.
 
+        Sets the document type for all objects in the queryset
+        to the specified document type ID.
+
         Args:
-            document_type_id: Document type ID to assign
+            document_type_id: Document type ID to assign.
 
         Returns:
-            The API response
+            The API response containing results of the operation.
+
+        Raises:
+            NotImplementedError: If the resource doesn't support bulk document type assignment.
+
+        Examples:
+            Set document type for all invoices:
+
+            >>> client.documents().filter(title__contains="invoice").bulk_assign_document_type(3)
 
         """
         if not (fn := getattr(self.resource, "bulk_assign_document_type", None)):
@@ -967,11 +1329,22 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
         """
         Assign a storage path to all objects in the queryset.
 
+        Sets the storage path for all objects in the queryset
+        to the specified storage path ID.
+
         Args:
-            storage_path_id: Storage path ID to assign
+            storage_path_id: Storage path ID to assign.
 
         Returns:
-            The API response
+            The API response containing results of the operation.
+
+        Raises:
+            NotImplementedError: If the resource doesn't support bulk storage path assignment.
+
+        Examples:
+            Set storage path for all tax documents:
+
+            >>> client.documents().filter(title__contains="tax").bulk_assign_storage_path(2)
 
         """
         if not (fn := getattr(self.resource, "bulk_assign_storage_path", None)):
@@ -989,11 +1362,22 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
         """
         Assign an owner to all objects in the queryset.
 
+        Sets the owner for all objects in the queryset
+        to the specified owner ID.
+
         Args:
-            owner_id: Owner ID to assign
+            owner_id: Owner ID to assign.
 
         Returns:
-            The API response
+            The API response containing results of the operation.
+
+        Raises:
+            NotImplementedError: If the resource doesn't support bulk owner assignment.
+
+        Examples:
+            Set owner for all personal documents:
+
+            >>> client.documents().filter(title__contains="personal").bulk_assign_owner(1)
 
         """
         if not (fn := getattr(self.resource, "bulk_assign_owner", None)):

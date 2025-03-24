@@ -1,4 +1,19 @@
+"""
+Define base model classes for Paperless-ngx API objects.
 
+This module provides the foundation for all model classes in Paperap,
+implementing core functionality for serialization, validation, and API
+interactions. The models handle data mapping between Python objects and
+the Paperless-ngx API, with support for automatic saving, dirty tracking,
+and asynchronous operations.
+
+The module contains two primary classes:
+- BaseModel: Abstract base class for all API objects
+- StandardModel: Extension of BaseModel for objects with ID fields
+
+These classes are designed to be subclassed by specific resource models
+like Document, Tag, Correspondent, etc.
+"""
 
 from __future__ import annotations
 
@@ -30,6 +45,23 @@ logger = logging.getLogger(__name__)
 
 
 class ModelConfigType(TypedDict):
+    """
+    Define configuration options for Pydantic models.
+
+    This type definition specifies the configuration options used for
+    all Pydantic models in the application, ensuring consistent behavior
+    across all model classes.
+
+    Attributes:
+        populate_by_name: Allow population by field name as well as alias.
+        validate_assignment: Validate values when attributes are set.
+        validate_default: Validate default values during model initialization.
+        use_enum_values: Use enum values rather than enum instances.
+        extra: How to handle extra fields (ignore them).
+        arbitrary_types_allowed: Allow arbitrary types in model fields.
+
+    """
+
     populate_by_name: bool
     validate_assignment: bool
     validate_default: bool
@@ -52,16 +84,31 @@ class BaseModel(pydantic.BaseModel, ABC):
     """
     Base model for all Paperless-ngx API objects.
 
-    Provides automatic serialization, deserialization, and API interactions
-    with minimal configuration needed.
+    Provide automatic serialization, deserialization, and API interactions
+    with minimal configuration. This abstract class serves as the foundation
+    for all models in the Paperap library, handling data validation, dirty
+    tracking, and API communication.
 
     Attributes:
         _meta: Metadata for the model, including filtering and resource information.
-        _save_lock: Lock for saving operations.
+        _save_lock: Lock for saving operations to prevent race conditions.
         _pending_save: Future object for pending save operations.
+        _save_executor: Executor for asynchronous save operations.
+        _status: Current status of the model (INITIALIZING, READY, UPDATING, SAVING).
+        _original_data: Original data from the server for dirty checking.
+        _saved_data: Data last sent to the database during save operations.
+        _resource: Associated resource for API interactions.
 
     Raises:
-        ValueError: If resource is not provided.
+        ValueError: If resource is not provided during initialization.
+
+    Examples:
+        Models are typically accessed through the client interface:
+
+        >>> document = client.documents.get(123)
+        >>> print(document.title)
+        >>> document.title = "New Title"
+        >>> document.save()
 
     """
 
@@ -82,19 +129,38 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         Metadata for the Model.
 
+        Define model behavior, filtering capabilities, and API interaction rules.
+        Each model class has its own Meta instance that controls how the model
+        interacts with the Paperless-ngx API.
+
         Attributes:
-            name: The name of the model.
-            read_only_fields: Fields that should not be modified.
-            filtering_disabled: Fields disabled for filtering.
-            filtering_fields: Fields allowed for filtering.
-            supported_filtering_params: Params allowed during queryset filtering.
-            blacklist_filtering_params: Params disallowed during queryset filtering.
-            filtering_strategies: Strategies for filtering.
-            resource: The BaseResource instance.
-            queryset: The type of QuerySet for the model.
+            model: Reference to the model class this metadata belongs to.
+            name: The name of the model, used in API paths and error messages.
+            read_only_fields: Fields that should not be modified by the client.
+            filtering_disabled: Fields that cannot be used for filtering.
+            filtering_fields: Fields allowed for filtering operations.
+            supported_filtering_params: Specific filter parameters allowed
+                during queryset filtering (e.g., "content__icontains", "id__gt").
+            blacklist_filtering_params: Filter parameters explicitly disallowed.
+            filtering_strategies: Strategies that determine how filtering is handled
+                (ALLOW_ALL, ALLOW_NONE, WHITELIST, BLACKLIST).
+            field_map: Map of API field names to model attribute names.
+            save_on_write: If True, updating attributes triggers automatic save.
+                If None, follows client.settings.save_on_write.
+            save_timeout: Timeout in seconds for save operations.
 
         Raises:
-            ValueError: If both ALLOW_ALL and ALLOW_NONE filtering strategies are set.
+            ValueError: If both ALLOW_ALL and ALLOW_NONE filtering strategies are set,
+                which would create contradictory behavior.
+
+        Examples:
+            Defining a custom Meta for a model:
+
+            >>> class Document(StandardModel):
+            >>>     class Meta(StandardModel.Meta):
+            >>>         read_only_fields = {"content", "checksum"}
+            >>>         filtering_strategies = {FilteringStrategies.WHITELIST}
+            >>>         supported_filtering_params = {"title__icontains", "created__gt"}
 
         """
 
@@ -141,13 +207,23 @@ class BaseModel(pydantic.BaseModel, ABC):
 
         def filter_allowed(self, filter_param: str) -> bool:
             """
-            Check if a filter is allowed based on the filtering strategies.
+            Check if a filter parameter is allowed based on the filtering strategies.
+
+            Evaluate whether a given filter parameter can be used with this model
+            based on the configured filtering strategies and rules. This method
+            implements the filtering logic defined by the model's filtering_strategies.
 
             Args:
-                filter_param: The filter parameter to check.
+                filter_param: The filter parameter to check (e.g., "title__contains").
 
             Returns:
-                True if the filter is allowed, False otherwise.
+                bool: True if the filter is allowed, False otherwise.
+
+            Examples:
+                >>> meta.filter_allowed("title__contains")
+                True
+                >>> meta.filter_allowed("content__exact")
+                False  # If content is in filtering_disabled
 
             """
             if FilteringStrategies.ALLOW_ALL in self.filtering_strategies:
@@ -187,8 +263,21 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         Initialize subclass and set up metadata.
 
+        Ensure that each subclass has its own Meta definition and properly
+        inherits metadata attributes from parent classes. This method handles
+        the automatic creation and configuration of model metadata.
+
         Args:
-            **kwargs: Additional keyword arguments.
+            **kwargs: Additional keyword arguments passed to parent __init_subclass__.
+
+        Raises:
+            ConfigurationError: If no Meta class is found in the class hierarchy.
+
+        Notes:
+            This method automatically:
+            - Creates a Meta class for the subclass if not explicitly defined
+            - Inherits and merges metadata from parent classes
+            - Initializes the _meta instance for the subclass
 
         """
         super().__init_subclass__(**kwargs)
@@ -267,12 +356,18 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         Initialize the model with resource and data.
 
+        Set up the model with the provided resource and initialize it with
+        field values from the API response or user input.
+
         Args:
-            resource: The BaseResource instance.
-            **data: Additional data to initialize the model.
+            **data: Field values to initialize the model with.
 
         Raises:
-            ValueError: If resource is not provided.
+            ValueError: If resource is not provided or properly initialized.
+
+        Notes:
+            Models should typically be created through their resource's methods
+            rather than directly instantiated.
 
         """
         super().__init__(**data)
@@ -285,24 +380,54 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         Get the client associated with this model.
 
+        Provide access to the PaperlessClient instance that handles API
+        communication for this model.
+
         Returns:
-            The PaperlessClient instance.
+            PaperlessClient: The client instance associated with this model's resource.
 
         """
         return self._resource.client
 
     @property
     def resource(self) -> "BaseResource[Self]":
+        """
+        Get the resource associated with this model.
+
+        Provide access to the resource instance that handles API interactions
+        for this model type, such as retrieving, creating, updating, and
+        deleting objects.
+
+        Returns:
+            BaseResource[Self]: The resource instance for this model type.
+
+        """
         return self._resource
 
     @property
     def save_executor(self) -> concurrent.futures.ThreadPoolExecutor:
+        """
+        Get the thread pool executor for asynchronous save operations.
+
+        Provide access to the thread pool that handles asynchronous save operations,
+        creating a new executor if one doesn't exist yet.
+
+        Returns:
+            concurrent.futures.ThreadPoolExecutor: The executor for handling
+                asynchronous save operations.
+
+        """
         if not self._save_executor:
             self._save_executor = concurrent.futures.ThreadPoolExecutor(max_workers=5, thread_name_prefix="model_save_worker")
         return self._save_executor
 
     def cleanup(self) -> None:
-        """Clean up resources used by the model class."""
+        """
+        Clean up resources used by the model.
+
+        Shut down the save executor to release resources. Call this method
+        when the model is no longer needed to prevent resource leaks.
+        """
         if self._save_executor:
             self._save_executor.shutdown(wait=True)
             self._save_executor = None
@@ -324,15 +449,21 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         Create a model instance from API response data.
 
+        Instantiate a model from a dictionary of API response data,
+        handling field mapping and type conversion through the resource's
+        parse_to_model method.
+
         Args:
             data: Dictionary containing the API response data.
 
         Returns:
-            A model instance initialized with the provided data.
+            Self: A model instance initialized with the provided data.
 
         Examples:
-            # Create a Document instance from API data
-            doc = Document.from_dict(api_data)
+            >>> api_data = {"id": 123, "title": "Invoice", "created": "2023-01-01T00:00:00Z"}
+            >>> doc = Document.from_dict(api_data)
+            >>> print(doc.id, doc.title)
+            123 Invoice
 
         """
         return cls._resource.parse_to_model(data)
@@ -347,17 +478,28 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         Convert the model to a dictionary for API requests.
 
+        Prepare the model data for submission to the API, with options to
+        control which fields are included based on their properties and values.
+
         Args:
-            include_read_only: Whether to include read-only fields.
+            include_read_only: Whether to include read-only fields in the output.
+                Set to False when preparing data for update operations.
             exclude_none: Whether to exclude fields with None values.
-            exclude_unset: Whether to exclude fields that are not set.
+            exclude_unset: Whether to exclude fields that were not explicitly set.
+                Useful for partial updates.
 
         Returns:
-            A dictionary with model data ready for API submission.
+            dict[str, Any]: A dictionary with model data ready for API submission.
 
         Examples:
-            # Convert a Document instance to a dictionary
-            data = doc.to_dict()
+            >>> # Full representation including all fields
+            >>> data = doc.to_dict()
+            >>>
+            >>> # Only include fields that can be modified
+            >>> update_data = doc.to_dict(include_read_only=False)
+            >>>
+            >>> # Only include fields that have been explicitly set
+            >>> partial_data = doc.to_dict(exclude_unset=True)
 
         """
         exclude: set[str] = set() if include_read_only else set(self._meta.read_only_fields)
@@ -370,17 +512,27 @@ class BaseModel(pydantic.BaseModel, ABC):
 
     def dirty_fields(self, comparison: Literal["saved", "db", "both"] = "both") -> dict[str, tuple[Any, Any]]:
         """
-        Show which fields have changed since last update from the paperless ngx db.
+        Show which fields have changed since last update from the Paperless NGX database.
+
+        Compare the current model data with the last saved or retrieved data
+        to identify changes. This method helps determine what will be sent to
+        the server on the next save operation.
 
         Args:
-            comparison:
-                Specify the data to compare ('saved' or 'db').
-                Db is the last data retrieved from Paperless NGX
-                Saved is the last data sent to Paperless NGX to be saved
+            comparison: Specify the data to compare against:
+                - "saved": Compare against the last data sent to Paperless NGX
+                - "db": Compare against the last data retrieved from Paperless NGX
+                - "both": Compare against both saved and db data (default)
 
         Returns:
-            A dictionary {field: (original_value, new_value)} of fields that have
-            changed since last update from the paperless ngx db.
+            dict[str, tuple[Any, Any]]: A dictionary mapping field names to tuples of
+                (original_value, current_value) for all fields that have changed.
+
+        Examples:
+            >>> doc = client.documents.get(123)
+            >>> doc.title = "New Title"
+            >>> doc.dirty_fields()
+            {'title': ('Original Title', 'New Title')}
 
         """
         current_data = self.model_dump()
@@ -410,16 +562,27 @@ class BaseModel(pydantic.BaseModel, ABC):
 
     def is_dirty(self, comparison: Literal["saved", "db", "both"] = "both") -> bool:
         """
-        Check if any field has changed since last update from the paperless ngx db.
+        Check if any field has changed since last update from the Paperless NGX database.
+
+        Determine if the model has unsaved changes by comparing current data
+        with the last saved or retrieved data. New models are always considered dirty.
 
         Args:
-            comparison:
-                Specify the data to compare ('saved' or 'db').
-                Db is the last data retrieved from Paperless NGX
-                Saved is the last data sent to Paperless NGX to be saved
+            comparison: Specify the data to compare against:
+                - "saved": Compare against the last data sent to Paperless NGX
+                - "db": Compare against the last data retrieved from Paperless NGX
+                - "both": Compare against both saved and db data (default)
 
         Returns:
-            True if any field has changed.
+            bool: True if any field has changed, False otherwise.
+
+        Examples:
+            >>> doc = client.documents.get(123)
+            >>> doc.is_dirty()
+            False
+            >>> doc.title = "New Title"
+            >>> doc.is_dirty()
+            True
 
         """
         if self.is_new():
@@ -429,33 +592,66 @@ class BaseModel(pydantic.BaseModel, ABC):
     @classmethod
     def create(cls, **kwargs: Any) -> Self:
         """
-        Create a new model instance.
+        Create a new model instance and save it to the server.
+
+        Create a new instance of the model with the specified field values
+        and immediately save it to the Paperless NGX server. This is a
+        convenience method that delegates to the resource's create method.
 
         Args:
-            **kwargs: Field values to set.
+            **kwargs: Field values to set on the new model instance.
 
         Returns:
-            A new model instance.
+            Self: A new model instance that has been saved to the server.
 
         Examples:
-            # Create a new Document instance
-            doc = Document.create(filename="example.pdf", contents=b"PDF data")
+            >>> tag = Tag.create(name="Invoices", color="#ff0000")
+            >>> correspondent = Correspondent.create(name="Electric Company")
+            >>> doc_type = DocumentType.create(name="Bill")
 
         """
         return cls._resource.create(**kwargs)
 
     def delete(self) -> None:
+        """
+        Delete this model from the Paperless NGX server.
+
+        Remove the model from the server. After calling this method,
+        the model instance should not be used anymore as it no longer
+        represents a valid server object.
+
+        Raises:
+            ResourceNotFoundError: If the model doesn't exist on the server.
+            APIError: If the server returns an error response.
+
+        """
         return self._resource.delete(self)
 
     def update_locally(self, *, from_db: bool | None = None, skip_changed_fields: bool = False, **kwargs: Any) -> None:
         """
         Update model attributes without triggering automatic save.
 
-        Args:
-            **kwargs: Field values to update
+        Update the model's attributes with the provided values without sending
+        changes to the server, regardless of the save_on_write setting. This is
+        useful for local modifications or when applying server updates.
 
-        Returns:
-            Self with updated values
+        Args:
+            from_db: Whether the update is from the database. If True, resets the
+                dirty tracking to consider the model clean after the update.
+            skip_changed_fields: Whether to skip updating fields that have unsaved
+                changes. Useful when merging updates from the server with local changes.
+            **kwargs: Field values to update.
+
+        Raises:
+            ReadOnlyFieldError: If attempting to change a read-only field when
+                from_db is False.
+
+        Examples:
+            >>> doc = client.documents.get(123)
+            >>> # Update without saving to server
+            >>> doc.update_locally(title="New Title", correspondent_id=5)
+            >>> # Update from server data
+            >>> doc.update_locally(from_db=True, **server_data)
 
         """
         from_db = from_db if from_db is not None else False
@@ -485,15 +681,15 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         Update this model with new values.
 
-        Subclasses implement this with auto-saving features.
-        However, base BaseModel instances simply call update_locally.
+        Update the model with the provided field values. In BaseModel,
+        this simply calls update_locally without saving. Subclasses
+        (like StandardModel) may implement automatic saving.
 
         Args:
-            **kwargs: New field values.
+            **kwargs: New field values to set on the model.
 
         Examples:
-            # Update a Document instance
-            doc.update(filename="new_example.pdf")
+            >>> model.update(name="New Name", description="Updated description")
 
         """
         # Since we have no id, we can't save. Therefore, all updates are silent updates
@@ -505,18 +701,35 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         Check if this model represents a new (unsaved) object.
 
+        Determine if the model has been saved to the server. Subclasses
+        must implement this method, typically by checking if the model
+        has a valid ID or other server-assigned identifier.
+
         Returns:
-            True if the model is new, False otherwise.
+            bool: True if the model is new (not yet saved), False otherwise.
 
         Examples:
-            # Check if a Document instance is new
-            is_new = doc.is_new()
+            >>> doc = Document.create(title="New Document")
+            >>> doc.is_new()  # Returns False after creation
+            >>>
+            >>> # When creating a model instance manually:
+            >>> doc = Document(title="Draft Document")
+            >>> doc.is_new()  # Returns True
 
         """
 
     def should_save_on_write(self) -> bool:
         """
-        Check if the model should save on attribute write, factoring in the client settings.
+        Check if the model should save on attribute write.
+
+        Determine if changes to model attributes should trigger an automatic
+        save operation based on configuration settings. This method considers
+        both the model's meta settings and the client settings, with the
+        model's setting taking precedence.
+
+        Returns:
+            bool: True if the model should save on write, False otherwise.
+
         """
         if self._meta.save_on_write is not None:
             return self._meta.save_on_write
@@ -525,12 +738,33 @@ class BaseModel(pydantic.BaseModel, ABC):
     def enable_save_on_write(self) -> None:
         """
         Enable automatic saving on attribute write.
+
+        Set the model's meta configuration to allow automatic saving whenever
+        an attribute is modified, overriding the client's default setting.
+        This affects only this specific model instance.
+
+        Examples:
+            >>> doc = client.documents.get(123)
+            >>> doc.enable_save_on_write()
+            >>> doc.title = "New Title"  # This will trigger an automatic save
+
         """
         self._meta.save_on_write = True
 
     def disable_save_on_write(self) -> None:
         """
         Disable automatic saving on attribute write.
+
+        Set the model's meta configuration to prevent automatic saving whenever
+        an attribute is modified, overriding the client's default setting.
+        This affects only this specific model instance.
+
+        Examples:
+            >>> doc = client.documents.get(123)
+            >>> doc.disable_save_on_write()
+            >>> doc.title = "New Title"  # This won't trigger an automatic save
+            >>> doc.save()  # Manual save required
+
         """
         self._meta.save_on_write = False
 
@@ -538,15 +772,21 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         Check if the model matches the provided data.
 
+        Compare the model's current data with a given dictionary to determine
+        if they are equivalent. This is useful for checking if a model needs
+        to be updated based on new data from the server.
+
         Args:
-            data: Dictionary containing the data to compare.
+            data: Dictionary containing the data to compare against.
 
         Returns:
-            True if the model matches the data, False otherwise.
+            bool: True if the model matches the data, False otherwise.
 
         Examples:
-            # Check if a Document instance matches API data
-            matches = doc.matches_dict(api_data)
+            >>> doc = client.documents.get(123)
+            >>> new_data = {"id": 123, "title": "Invoice", "correspondent_id": 5}
+            >>> doc.matches_dict(new_data)
+            False  # If any values differ
 
         """
         return self.to_dict() == data
@@ -556,8 +796,11 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         Human-readable string representation.
 
+        Provide a string representation of the model that includes the
+        model type and ID, typically used for logging and debugging purposes.
+
         Returns:
-            A string representation of the model.
+            str: A string representation of the model (e.g., "Document #123").
 
         """
         return f"{self._meta.name.capitalize()}"
@@ -567,8 +810,26 @@ class StandardModel(BaseModel, ABC):
     """
     Standard model for Paperless-ngx API objects with an ID field.
 
+    Extend BaseModel to include a unique identifier and additional functionality
+    for API objects that require an ID. Most Paperless-ngx resources are
+    represented by StandardModel subclasses.
+
+    This class adds functionality for:
+    - Tracking whether an object is new or existing
+    - Automatic saving of changes to the server
+    - Refreshing data from the server
+    - Synchronous and asynchronous save operations
+
     Attributes:
-        id: Unique identifier for the model.
+        id: Unique identifier for the model from Paperless-ngx.
+        _resource: Associated resource for API interactions.
+
+    Examples:
+        StandardModel subclasses are typically accessed through the client:
+
+        >>> doc = client.documents.get(123)
+        >>> tag = client.tags.create(name="Important")
+        >>> correspondent = client.correspondents.all()[0]
 
     """
 
@@ -579,18 +840,32 @@ class StandardModel(BaseModel, ABC):
         """
         Metadata for the StandardModel.
 
+        Define metadata specific to StandardModel, including read-only fields
+        and filtering parameters common to all standard Paperless-ngx resources.
+
         Attributes:
-            read_only_fields: Fields that should not be modified.
-            supported_filtering_params: Params allowed during queryset filtering.
+            read_only_fields: Fields that should not be modified,
+                including the 'id' field which is set by the server.
+            supported_filtering_params: Common filtering parameters
+                supported for all standard models, including id-based lookups.
 
         """
 
-        # Fields that should not be modified
         read_only_fields: ClassVar[set[str]] = {"id"}
         supported_filtering_params = {"id__in", "id"}
 
     @property
     def resource(self) -> "StandardResource[Self]":  # type: ignore
+        """
+        Get the resource associated with this model.
+
+        Provide access to the StandardResource instance that handles API
+        interactions for this model type, with support for ID-based operations.
+
+        Returns:
+            StandardResource[Self]: The resource instance for this model type.
+
+        """
         return self._resource
 
     @override
@@ -598,11 +873,21 @@ class StandardModel(BaseModel, ABC):
         """
         Update this model with new values and save changes.
 
-        NOTE: new instances will not be saved automatically.
-        (I'm not sure if that's the right design decision or not)
+        Update the model with the provided field values and automatically
+        save the changes to the server if the model is not new. This method
+        combines update_locally and save for convenience.
 
         Args:
-            **kwargs: New field values.
+            **kwargs: New field values to set on the model.
+
+        Note:
+            New (unsaved) instances will be updated locally but not saved automatically.
+            Use create() to save new instances.
+
+        Examples:
+            >>> doc = client.documents.get(123)
+            >>> doc.update(title="New Title", correspondent_id=5)
+            >>> # Changes are immediately saved to the server
 
         """
         # Hold off on saving until all updates are complete
@@ -614,11 +899,23 @@ class StandardModel(BaseModel, ABC):
         """
         Refresh the model with the latest data from the server.
 
+        Retrieve the latest data for the model from the server and update
+        the model instance with any changes. This is useful when you suspect
+        the server data may have changed due to actions by other users or
+        automated processes.
+
         Returns:
-            True if the model data changes, False on failure or if the data does not change.
+            bool: True if the model data changed, False if the data is identical
+                or the refresh failed.
 
         Raises:
-            ResourceNotFoundError: If the model is not found on Paperless. (e.g. it was deleted remotely)
+            ResourceNotFoundError: If the model is not found on the server
+                (e.g., it was deleted remotely).
+
+        Examples:
+            >>> doc = client.documents.get(123)
+            >>> # After some time or operations by other users
+            >>> doc.refresh()  # Update with latest data from server
 
         """
         if self.is_new():
@@ -633,22 +930,57 @@ class StandardModel(BaseModel, ABC):
         return True
 
     def save(self, *, force: bool = False) -> bool:
+        """
+        Save this model to the Paperless NGX server.
+
+        Send the current model state to the server, creating a new object
+        or updating an existing one. This is a convenience method that
+        calls save_sync.
+
+        Args:
+            force: Whether to force the save operation even if the model
+                is not dirty or is already saving.
+
+        Returns:
+            bool: True if the save was successful, False otherwise.
+
+        Examples:
+            >>> doc = client.documents.get(123)
+            >>> doc.title = "New Title"
+            >>> doc.save()
+            >>>
+            >>> # Force save even if no changes
+            >>> doc.save(force=True)
+
+        """
         return self.save_sync(force=force)
 
     def save_sync(self, *, force: bool = False) -> bool:
         """
         Save this model instance synchronously.
 
-        Changes are sent to the server immediately, and the model is updated
-        when the server responds.
+        Send changes to the server immediately and update the model when
+        the server responds. This method blocks until the save operation
+        is complete.
+
+        Args:
+            force: Whether to force the save operation even if the model
+                is not dirty or is already saving.
 
         Returns:
-            True if the save was successful, False otherwise.
+            bool: True if the save was successful, False otherwise.
 
         Raises:
-            ResourceNotFoundError: If the resource doesn't exist on the server
-            RequestError: If there's a communication error with the server
-            PermissionError: If the user doesn't have permission to update the resource
+            ResourceNotFoundError: If the resource doesn't exist on the server.
+            RequestError: If there's a communication error with the server.
+            APIError: If the server returns an error response.
+            PermissionError: If the user doesn't have permission to update the resource.
+
+        Examples:
+            >>> doc = client.documents.get(123)
+            >>> doc.title = "New Title"
+            >>> success = doc.save_sync()
+            >>> print(f"Save {'succeeded' if success else 'failed'}")
 
         """
         if self.is_new():
@@ -724,11 +1056,25 @@ class StandardModel(BaseModel, ABC):
         """
         Save this model instance asynchronously.
 
-        Changes are sent to the server in a background thread, and the model
-        is updated when the server responds.
+        Send changes to the server in a background thread, allowing other
+        operations to continue while waiting for the server response.
+        The model will be updated with the server's response when the
+        save completes.
+
+        Args:
+            force: Whether to force the save operation even if the model
+                is not dirty or is already saving.
 
         Returns:
-            True if the save was successfully submitted async, False otherwise.
+            bool: True if the save was successfully submitted to the background
+                thread, False otherwise (e.g., if there are no changes to save).
+
+        Examples:
+            >>> doc = client.documents.get(123)
+            >>> doc.title = "New Title"
+            >>> # Continue execution immediately while save happens in background
+            >>> doc.save_async()
+            >>> # Do other work...
 
         """
         if not force:
@@ -757,15 +1103,20 @@ class StandardModel(BaseModel, ABC):
 
     def _perform_save_async(self) -> Self | None:
         """
-        Perform the actual save operation.
+        Perform the actual save operation in a background thread.
+
+        Handle the core logic for saving the model to the server, preparing
+        the data and sending the update request. This internal method is called
+        by save_async() in a separate thread.
 
         Returns:
-            The updated model from the server or None if no save was needed.
+            Self | None: The updated model from the server or None if no save was needed.
 
         Raises:
-            ResourceNotFoundError: If the resource doesn't exist on the server
-            RequestError: If there's a communication error with the server
-            PermissionError: If the user doesn't have permission to update the resource
+            ResourceNotFoundError: If the resource doesn't exist on the server.
+            RequestError: If there's a communication error with the server.
+            APIError: If the server returns an error response.
+            PermissionError: If the user doesn't have permission to update the resource.
 
         """
         # Prepare and send the update to the server
@@ -784,8 +1135,15 @@ class StandardModel(BaseModel, ABC):
         """
         Handle the result of an asynchronous save operation.
 
+        Process the result of an async save, updating the model with the
+        server's response or handling errors. This internal method is called
+        automatically when an asynchronous save operation completes.
+
         Args:
             future: The completed Future object containing the save result.
+
+        Returns:
+            bool: True if the save result was handled successfully, False otherwise.
 
         """
         try:
@@ -868,17 +1226,35 @@ class StandardModel(BaseModel, ABC):
         """
         Check if this model represents a new (unsaved) object.
 
+        Determine if the model has been saved to the server by checking
+        if it has a valid ID (non-zero). StandardModel implements this
+        method by checking the id attribute.
+
         Returns:
-            True if the model is new, False otherwise.
+            bool: True if the model is new (not yet saved), False otherwise.
 
         Examples:
-            # Check if a Document instance is new
-            is_new = doc.is_new()
+            >>> doc = Document(title="Draft")  # No ID yet
+            >>> doc.is_new()
+            True
+            >>> saved_doc = client.documents.get(123)
+            >>> saved_doc.is_new()
+            False
 
         """
         return self.id == 0
 
     def _autosave(self) -> None:
+        """
+        Automatically save the model if conditions are met.
+
+        Handle automatic saving based on the save_on_write setting when
+        attributes are modified. This internal method is called by __setattr__
+        and skips saving for:
+        - New models (not yet saved)
+        - When auto-save is disabled
+        - When there are no changes to save
+        """
         # Skip autosave for:
         # - New models (not yet saved)
         # - When auto-save is disabled
@@ -890,11 +1266,21 @@ class StandardModel(BaseModel, ABC):
     @override
     def __setattr__(self, name: str, value: Any) -> None:
         """
-        Override attribute setting to automatically trigger async save.
+        Override attribute setting to automatically trigger save.
+
+        Intercept attribute assignments and trigger an automatic save
+        operation if appropriate based on the save_on_write setting.
+        This enables the "save on write" functionality that makes the
+        model automatically sync changes to the server.
 
         Args:
-            name: Attribute name
+            name: Attribute name to set
             value: New attribute value
+
+        Notes:
+            - Private attributes (starting with '_') never trigger autosave
+            - Autosave only happens when model status is READY
+            - Autosave is skipped for new models or when save_on_write is False
 
         """
         # Set the new value
@@ -913,8 +1299,11 @@ class StandardModel(BaseModel, ABC):
         """
         Human-readable string representation.
 
+        This method returns a string representation of the model, typically
+        used for logging and debugging purposes.
+
         Returns:
-            A string representation of the model.
+            str: A string representation of the model.
 
         """
         return f"{self._meta.name.capitalize()} #{self.id}"

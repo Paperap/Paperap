@@ -1,4 +1,3 @@
-
 """
 Module for configuration resource management.
 

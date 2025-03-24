@@ -1,4 +1,13 @@
+"""
+Provide base resource classes for interacting with Paperless-NgX API endpoints.
 
+This module contains the foundation classes for all API resources in Paperap.
+Resources handle communication with the Paperless-NgX API, including request
+formatting, response parsing, and model instantiation.
+
+Each resource corresponds to an API endpoint in Paperless-NgX and provides
+methods for retrieving, creating, updating, and deleting resources.
+"""
 
 from __future__ import annotations
 
@@ -38,27 +47,30 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
     """
     Base class for API resources.
 
-    This abstract class provides the foundation for all API resources in Paperap.
-    It handles the communication with the Paperless-NgX API, including request
-    formatting, response parsing, and model instantiation.
+    Provides the foundation for all API resources in Paperap. Handles communication
+    with the Paperless-NgX API, including request formatting, response parsing,
+    and model instantiation.
 
     Each resource corresponds to an API endpoint in Paperless-NgX and provides
     methods for retrieving, creating, updating, and deleting resources.
 
     Args:
-        client: The PaperlessClient instance for making API requests.
+        client: PaperlessClient instance for making API requests.
 
     Attributes:
-        model_class: The model class for this resource.
-        queryset_class: The queryset class for this resource.
-        client: The PaperlessClient instance.
-        name: The name of the resource (defaults to model name + 's').
+        model_class: Model class for this resource.
+        queryset_class: QuerySet class for this resource.
+        client: PaperlessClient instance.
+        name: Name of the resource (defaults to model name + 's').
         endpoints: Dictionary of API endpoint templates.
 
     Examples:
+        >>> from paperap import PaperlessClient
         >>> client = PaperlessClient()
         >>> resource = DocumentResource(client)
         >>> documents = resource.all()
+        >>> for doc in documents[:5]:  # Get first 5 documents
+        ...     print(doc.title)
 
     """
 
@@ -79,13 +91,13 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
 
     def __init__(self, client: "PaperlessClient") -> None:
         """
-        Initialize the resource.
+        Initialize the resource with a client instance.
 
         Sets up the resource with the client, configures endpoints, and establishes
         the relationship between the resource and its model class.
 
         Args:
-            client: The PaperlessClient instance for making API requests.
+            client: PaperlessClient instance for making API requests.
 
         """
         self.client = client
@@ -146,7 +158,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         Get the Meta class of the model.
 
         Returns:
-            The Meta class instance from the model_class.
+            Meta class instance from the model_class.
 
         """
         return self.model_class._meta  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
@@ -157,7 +169,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         Validate and convert endpoint definitions to Templates.
 
         Args:
-            value: The endpoints dictionary to validate.
+            value: Endpoints dictionary to validate.
 
         Returns:
             Dictionary of validated endpoint Templates.
@@ -194,11 +206,11 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         the URL is properly formatted with the base URL if needed.
 
         Args:
-            name: The name of the endpoint (e.g., "list", "detail").
+            name: Name of the endpoint (e.g., "list", "detail").
             **kwargs: Parameters to substitute in the endpoint template.
 
         Returns:
-            The fully-formed URL for the endpoint.
+            Fully-formed URL for the endpoint.
 
         Raises:
             ConfigurationError: If the requested endpoint is not defined.
@@ -228,7 +240,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         Creates a new QuerySet instance for this resource without any filters.
 
         Returns:
-            A QuerySet for this resource.
+            QuerySet for this resource.
 
         Examples:
             >>> all_documents = client.documents.all()
@@ -249,7 +261,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             **kwargs: Filter parameters as field=value pairs.
 
         Returns:
-            A filtered QuerySet.
+            Filtered QuerySet.
 
         Examples:
             >>> invoices = client.documents.filter(
@@ -272,7 +284,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             **kwargs: Additional keyword arguments.
 
         Returns:
-            The retrieved model.
+            Retrieved model.
 
         Raises:
             NotImplementedError: This base method is not implemented.
@@ -291,7 +303,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             **kwargs: Resource data as field=value pairs.
 
         Returns:
-            The newly created model instance.
+            Newly created model instance.
 
         Raises:
             ConfigurationError: If the create endpoint is not defined.
@@ -334,10 +346,10 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         Subclasses should implement this method to update a model.
 
         Args:
-            model: The model instance to update.
+            model: Model instance to update.
 
         Returns:
-            The updated model instance.
+            Updated model instance.
 
         Raises:
             NotImplementedError: This base method is not implemented.
@@ -357,7 +369,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             **kwargs: Field values to update.
 
         Returns:
-            The updated model instance.
+            Updated model instance.
 
         Raises:
             NotImplementedError: This base method is not implemented.
@@ -389,10 +401,10 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         Transforms the raw API data and validates it against the model class.
 
         Args:
-            item: The dictionary of data from the API.
+            item: Dictionary of data from the API.
 
         Returns:
-            A validated model instance.
+            Validated model instance.
 
         Raises:
             ResponseParsingError: If the data cannot be parsed into a valid model.
@@ -413,10 +425,10 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         in the model's Meta class.
 
         Args:
-            **data: The raw data from the API.
+            **data: Raw data from the API.
 
         Returns:
-            The transformed data ready for model validation.
+            Transformed data ready for model validation.
 
         """
         for key, value in self._meta.field_map.items():
@@ -438,12 +450,12 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         in the model's Meta class.
 
         Args:
-            model: The model instance to transform. If provided, its to_dict() method is used.
+            model: Model instance to transform. If provided, its to_dict() method is used.
             exclude_unset: If model is provided, whether to exclude unset fields.
             **data: Raw data to transform if no model is provided.
 
         Returns:
-            The transformed data ready to send to the API.
+            Transformed data ready to send to the API.
 
         Raises:
             ValueError: If both model and data are provided.
@@ -471,7 +483,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             **kwargs: Model field values.
 
         Returns:
-            A new, unsaved model instance.
+            New, unsaved model instance.
 
         Examples:
             >>> doc = client.documents.create_model(
@@ -500,16 +512,23 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         into model instances.
 
         Args:
-            url: The URL to request. If None, uses the list endpoint.
-            method: The HTTP method to use (GET, POST, PUT, DELETE).
+            url: URL to request. If None, uses the list endpoint.
+            method: HTTP method to use (GET, POST, PUT, DELETE).
             params: Query parameters to include in the request.
             data: Request body data for POST/PUT requests.
 
         Returns:
-            The JSON-decoded response from the API.
+            JSON-decoded response from the API.
 
         Raises:
             ConfigurationError: If no URL is provided and the list endpoint is not defined.
+
+        Examples:
+            >>> # Get raw data from a custom endpoint
+            >>> response = resource.request_raw(
+            ...     url="https://paperless.example.com/api/custom/",
+            ...     params={"filter": "value"}
+            ... )
 
         """
         if not url and not (url := self.get_endpoint("list", resource=self.name)):
@@ -529,7 +548,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         before and after processing.
 
         Args:
-            response: The API response to process.
+            response: API response to process.
 
         Yields:
             Model instances created from the response data.
@@ -569,7 +588,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         with a list of items or may be a single item directly.
 
         Args:
-            **response: The dictionary response from the API.
+            **response: Dictionary response from the API.
 
         Yields:
             Model instances created from the response data.
@@ -650,7 +669,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             **keywords: Filter parameters as field=value pairs.
 
         Returns:
-            A filtered QuerySet.
+            Filtered QuerySet.
 
         Examples:
             >>> # These are equivalent:
@@ -672,9 +691,10 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
     REST pattern with unique integer IDs.
 
     Args:
-        client: The PaperlessClient instance for making API requests.
+        client: PaperlessClient instance for making API requests.
 
     Examples:
+        >>> from paperap import PaperlessClient
         >>> client = PaperlessClient()
         >>> resource = TagResource(client)
         >>> tag = resource.get(5)  # Get tag with ID 5
@@ -697,7 +717,7 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
             **kwargs: Additional keyword arguments.
 
         Returns:
-            The retrieved model instance.
+            Retrieved model instance.
 
         Raises:
             ConfigurationError: If the detail endpoint is not defined.
@@ -743,10 +763,10 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         Converts the model to a dictionary and sends it to the API for updating.
 
         Args:
-            model: The model instance to update.
+            model: Model instance to update.
 
         Returns:
-            The updated model instance.
+            Updated model instance.
 
         Examples:
             >>> tag = client.tags.get(5)
@@ -819,7 +839,7 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
             **data: Field values to update.
 
         Returns:
-            The updated model instance.
+            Updated model instance.
 
         Raises:
             ConfigurationError: If the update endpoint is not defined.
@@ -881,7 +901,7 @@ class BulkEditing:
             merge: Whether to merge permissions with existing ones (True) or replace them (False).
 
         Returns:
-            The API response dictionary.
+            API response dictionary.
 
         Raises:
             ValueError: If operation is not valid.

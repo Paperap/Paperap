@@ -1,4 +1,10 @@
+"""
+Document resource module for interacting with Paperless-NgX document API.
 
+This module provides classes for managing documents and document notes in a Paperless-NgX
+system. It includes functionality for uploading, downloading, and manipulating documents,
+as well as performing bulk operations on multiple documents.
+"""
 
 from __future__ import annotations
 
@@ -25,7 +31,20 @@ logger = logging.getLogger(__name__)
 
 
 class DocumentResource(StandardResource[Document, DocumentQuerySet]):
-    """Resource for managing documents."""
+    """
+    Resource for managing documents in Paperless-NgX.
+
+    This class provides methods for interacting with the documents API endpoint,
+    including uploading, downloading, and manipulating documents, as well as
+    performing bulk operations on multiple documents.
+
+    Attributes:
+        model_class: The Document model class.
+        queryset_class: The DocumentQuerySet class for query operations.
+        name: The resource name used in API endpoints.
+        endpoints: Dictionary mapping endpoint names to URL templates.
+
+    """
 
     model_class = Document
     queryset_class = DocumentQuerySet
@@ -46,6 +65,26 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
     }
 
     def download(self, document_id: int, *, original: bool = False) -> bytes:
+        """
+        Download a document's file content.
+
+        Args:
+            document_id: The ID of the document to download.
+            original: If True, download the original document file. If False,
+                download the archived version.
+
+        Returns:
+            The document's file content as bytes.
+
+        Raises:
+            ResourceNotFoundError: If the document download fails.
+
+        Example:
+            >>> content = client.documents.download(123)
+            >>> with open("document.pdf", "wb") as f:
+            ...     f.write(content)
+
+        """
         url = self.get_endpoint("download", pk=document_id)
         params = {"original": str(original).lower()}
         # Request raw bytes by setting json_response to False
@@ -55,6 +94,24 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         return response
 
     def preview(self, document_id: int) -> bytes:
+        """
+        Download a document's preview image.
+
+        Args:
+            document_id: The ID of the document to get a preview for.
+
+        Returns:
+            The document's preview image content as bytes.
+
+        Raises:
+            ResourceNotFoundError: If the document preview fails.
+
+        Example:
+            >>> preview = client.documents.preview(123)
+            >>> with open("preview.png", "wb") as f:
+            ...     f.write(preview)
+
+        """
         url = self.get_endpoint("preview", pk=document_id)
         response = self.client.request("GET", url, json_response=False)
         if response is None:
@@ -62,6 +119,24 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         return response
 
     def thumbnail(self, document_id: int) -> bytes:
+        """
+        Download a document's thumbnail image.
+
+        Args:
+            document_id: The ID of the document to get a thumbnail for.
+
+        Returns:
+            The document's thumbnail image content as bytes.
+
+        Raises:
+            ResourceNotFoundError: If the document thumbnail retrieval fails.
+
+        Example:
+            >>> thumbnail = client.documents.thumbnail(123)
+            >>> with open("thumbnail.png", "wb") as f:
+            ...     f.write(thumbnail)
+
+        """
         url = self.get_endpoint("thumbnail", pk=document_id)
         response = self.client.request("GET", url, json_response=False)
         if response is None:
@@ -70,18 +145,36 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
     def upload_async(self, filepath: Path | str, **metadata) -> str:
         """
-        Upload a document from a file to paperless ngx.
+        Upload a document from a file to Paperless-NgX asynchronously.
+
+        This method starts an asynchronous upload process and returns a task ID
+        that can be used to track the upload progress.
 
         Args:
             filepath: The path to the file to upload.
+            **metadata: Additional metadata for the document, such as:
+                title: Document title
+                created: Document creation date
+                correspondent: Correspondent ID
+                document_type: Document type ID
+                tags: List of tag IDs
+                archive_serial_number: Custom reference number
 
         Returns:
-            A UUID string (task identifier) as returned by Paperless ngx.
-            e.g. ca6a6dc8-b434-4fcd-8436-8b2546465622
+            A UUID string (task identifier) as returned by Paperless-NgX.
+            e.g. "ca6a6dc8-b434-4fcd-8436-8b2546465622"
 
         Raises:
             FileNotFoundError: If the file does not exist.
             ResourceNotFoundError: If the upload fails.
+
+        Example:
+            >>> task_id = client.documents.upload_async("invoice.pdf",
+            ...     title="Electric Bill March 2023",
+            ...     correspondent=5,
+            ...     tags=[1, 2])
+            >>> # Later, check the task status
+            >>> task = client.tasks.get(task_id)
 
         """
         if not isinstance(filepath, Path):
@@ -93,18 +186,35 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         """
         Upload a document and wait until it has been processed.
 
+        This method uploads a document and blocks until processing is complete,
+        returning the created Document object.
+
         Args:
             filepath: Path to the file to upload.
             max_wait: Maximum time (in seconds) to wait for processing.
             poll_interval: Seconds between polling attempts.
-            **metadata: Additional metadata for the upload.
+            **metadata: Additional metadata for the document, such as:
+                title: Document title
+                created: Document creation date
+                correspondent: Correspondent ID
+                document_type: Document type ID
+                tags: List of tag IDs
+                archive_serial_number: Custom reference number
 
         Returns:
             A Document instance once available.
 
         Raises:
+            FileNotFoundError: If the file does not exist.
             APIError: If the document is not processed within the max_wait.
             BadResponseError: If document processing succeeds but no document ID is returned.
+
+        Example:
+            >>> document = client.documents.upload_sync("invoice.pdf",
+            ...     title="Electric Bill March 2023",
+            ...     correspondent=5,
+            ...     tags=[1, 2])
+            >>> print(f"Uploaded document ID: {document.id}")
 
         """
         task_id = self.upload_async(filepath, **metadata)
@@ -125,19 +235,32 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
     def upload_content(self, file_content: bytes, filename: str, **metadata) -> str:
         """
-        Upload a document with optional metadata.
+        Upload document content with optional metadata.
+
+        This method allows uploading a document from binary content rather than a file.
 
         Args:
-            file_content: The binary content of the file to upload
-            filename: The name of the file
-            **metadata: Additional metadata to include with the upload
+            file_content: The binary content of the file to upload.
+            filename: The name of the file (used for content type detection).
+            **metadata: Additional metadata for the document, such as:
+                title: Document title
+                created: Document creation date
+                correspondent: Correspondent ID
+                document_type: Document type ID
+                tags: List of tag IDs
+                archive_serial_number: Custom reference number
 
         Returns:
-            A string that looks like this: ca6a6dc8-b434-4fcd-8436-8b2546465622
-            This is likely a task id, or similar.
+            A task ID string (UUID) that can be used to track the upload progress.
 
         Raises:
-            ResourceNotFoundError: If the upload fails
+            ResourceNotFoundError: If the upload fails.
+
+        Example:
+            >>> with open("document.pdf", "rb") as f:
+            ...     content = f.read()
+            >>> task_id = client.documents.upload_content(content, "document.pdf",
+            ...     title="Important Document")
 
         """
         files = {"document": (filename, file_content)}
@@ -148,6 +271,21 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         return str(response)
 
     def next_asn(self) -> int:
+        """
+        Get the next available archive serial number (ASN).
+
+        Returns:
+            The next available archive serial number as an integer.
+
+        Raises:
+            APIError: If the request fails or returns invalid data.
+
+        Example:
+            >>> next_number = client.documents.next_asn()
+            >>> document = client.documents.upload_sync("invoice.pdf",
+            ...     archive_serial_number=next_number)
+
+        """
         url = self.get_endpoint("next_asn")
         response = self.client.request("GET", url)
         if not response or "next_asn" not in response:
@@ -158,16 +296,27 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         """
         Perform a bulk action on multiple documents.
 
+        This is a generic method used by specific bulk operations to perform
+        actions on multiple documents at once.
+
         Args:
             action: The action to perform (e.g., "delete", "set_correspondent", etc.)
-            ids: List of document IDs to perform the action on
-            **kwargs: Additional parameters for the action
+            ids: List of document IDs to perform the action on.
+            **kwargs: Additional parameters for the action, specific to each action type.
 
         Returns:
-            The API response
+            The API response as a dictionary.
 
         Raises:
-            ConfigurationError: If the bulk edit endpoint is not defined
+            ConfigurationError: If the bulk edit endpoint is not defined.
+            APIError: If the bulk action fails.
+
+        Example:
+            >>> response = client.documents.bulk_action(
+            ...     "set_correspondent",
+            ...     [123, 124, 125],
+            ...     correspondent=5
+            ... )
 
         """
         # Signal before bulk action
@@ -195,10 +344,16 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         Delete multiple documents at once.
 
         Args:
-            ids: List of document IDs to delete
+            ids: List of document IDs to delete.
 
         Returns:
-            The API response
+            The API response as a dictionary.
+
+        Raises:
+            APIError: If the bulk delete operation fails.
+
+        Example:
+            >>> response = client.documents.bulk_delete([123, 124, 125])
 
         """
         return self.bulk_action("delete", ids)
@@ -207,30 +362,48 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         """
         Reprocess multiple documents.
 
+        Reprocessing documents will re-run the document consumer pipeline,
+        including OCR, classification, and tagging.
+
         Args:
-            ids: List of document IDs to reprocess
+            ids: List of document IDs to reprocess.
 
         Returns:
-            The API response
+            The API response as a dictionary.
+
+        Raises:
+            APIError: If the bulk reprocess operation fails.
+
+        Example:
+            >>> response = client.documents.bulk_reprocess([123, 124])
 
         """
         return self.bulk_action("reprocess", ids)
 
     def bulk_merge(self, ids: list[int], metadata_document_id: int | None = None, delete_originals: bool = False) -> bool:
         """
-        Merge multiple documents.
+        Merge multiple documents into a single document.
 
         Args:
-            ids: List of document IDs to merge
-            metadata_document_id: Apply metadata from this document to the merged document
-            delete_originals: Whether to delete the original documents after merging
+            ids: List of document IDs to merge.
+            metadata_document_id: Apply metadata from this document to the merged document.
+                If None, metadata from the first document will be used.
+            delete_originals: Whether to delete the original documents after merging.
 
         Returns:
-            True if submitting the merge was successful
+            True if submitting the merge was successful.
 
         Raises:
-            BadResponseError: If the merge action returns an unexpected response
-            APIError: If the merge action fails
+            BadResponseError: If the merge action returns an unexpected response.
+            APIError: If the merge action fails.
+
+        Example:
+            >>> # Merge documents 123, 124, and 125, using metadata from 123
+            >>> success = client.documents.bulk_merge(
+            ...     [123, 124, 125],
+            ...     metadata_document_id=123,
+            ...     delete_originals=True
+            ... )
 
         """
         params = {}
@@ -250,15 +423,27 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
     def bulk_split(self, document_id: int, pages: list, delete_originals: bool = False) -> dict[str, Any]:
         """
-        Split a document.
+        Split a document into multiple documents based on page ranges.
 
         Args:
-            document_id: Document ID to split
-            pages: List of pages to split (can include ranges, e.g. "[1,2-3,4,5-7]")
-            delete_originals: Whether to delete the original document after splitting
+            document_id: Document ID to split.
+            pages: List of pages to split into separate documents. Can include
+                individual pages and page ranges (e.g., [1, "2-3", 4, "5-7"]).
+            delete_originals: Whether to delete the original document after splitting.
 
         Returns:
-            The API response
+            The API response as a dictionary.
+
+        Raises:
+            APIError: If the split operation fails.
+
+        Example:
+            >>> # Split document 123 into three documents: pages 1, 2-3, and 4
+            >>> response = client.documents.bulk_split(
+            ...     123,
+            ...     [1, "2-3", 4],
+            ...     delete_originals=True
+            ... )
 
         """
         params: dict[str, Any] = {"pages": pages}
@@ -269,14 +454,22 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
     def bulk_rotate(self, ids: list[int], degrees: int) -> dict[str, Any]:
         """
-        Rotate documents.
+        Rotate multiple documents by a specified angle.
 
         Args:
-            ids: List of document IDs to rotate
-            degrees: Degrees to rotate (must be 90, 180, or 270)
+            ids: List of document IDs to rotate.
+            degrees: Degrees to rotate (must be 90, 180, or 270).
 
         Returns:
-            The API response
+            The API response as a dictionary.
+
+        Raises:
+            ValueError: If degrees is not 90, 180, or 270.
+            APIError: If the rotation operation fails.
+
+        Example:
+            >>> # Rotate documents 123 and 124 by 90 degrees
+            >>> response = client.documents.bulk_rotate([123, 124], 90)
 
         """
         if degrees not in (90, 180, 270):
@@ -286,14 +479,21 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
     def bulk_delete_pages(self, document_id: int, pages: list[int]) -> dict[str, Any]:
         """
-        Delete pages from a document.
+        Delete specific pages from a document.
 
         Args:
-            document_id: Document ID
-            pages: List of page numbers to delete
+            document_id: Document ID to modify.
+            pages: List of page numbers to delete (1-based indexing).
 
         Returns:
-            The API response
+            The API response as a dictionary.
+
+        Raises:
+            APIError: If the page deletion operation fails.
+
+        Example:
+            >>> # Delete pages 2 and 4 from document 123
+            >>> response = client.documents.bulk_delete_pages(123, [2, 4])
 
         """
         return self.bulk_action("delete_pages", [document_id], pages=pages)
@@ -308,12 +508,23 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         Modify custom fields on multiple documents.
 
         Args:
-            ids: List of document IDs to update
-            add_custom_fields: Dictionary of custom field ID to value pairs to add
-            remove_custom_fields: List of custom field IDs to remove
+            ids: List of document IDs to update.
+            add_custom_fields: Dictionary mapping custom field IDs to values to add or update.
+            remove_custom_fields: List of custom field IDs to remove from the documents.
 
         Returns:
-            The API response
+            The API response as a dictionary.
+
+        Raises:
+            APIError: If the custom field modification fails.
+
+        Example:
+            >>> # Add/update custom fields 3 and 5, remove custom field 7
+            >>> response = client.documents.bulk_modify_custom_fields(
+            ...     [123, 124, 125],
+            ...     add_custom_fields={3: "High Priority", 5: "2023-04-15"},
+            ...     remove_custom_fields=[7]
+            ... )
 
         """
         params: dict[str, Any] = {}
@@ -329,12 +540,23 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         Modify tags on multiple documents.
 
         Args:
-            ids: List of document IDs to update
-            add_tags: List of tag IDs to add
-            remove_tags: List of tag IDs to remove
+            ids: List of document IDs to update.
+            add_tags: List of tag IDs to add to the documents.
+            remove_tags: List of tag IDs to remove from the documents.
 
         Returns:
-            The API response
+            The API response as a dictionary.
+
+        Raises:
+            APIError: If the tag modification fails.
+
+        Example:
+            >>> # Add tags 1 and 2, remove tag 3 from multiple documents
+            >>> response = client.documents.bulk_modify_tags(
+            ...     [123, 124, 125],
+            ...     add_tags=[1, 2],
+            ...     remove_tags=[3]
+            ... )
 
         """
         params = {}
@@ -347,42 +569,67 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
     def bulk_add_tag(self, ids: list[int], tag_id: int) -> dict[str, Any]:
         """
-        Add a tag to multiple documents.
+        Add a single tag to multiple documents.
 
         Args:
-            ids: List of document IDs to update
-            tag_id: Tag ID to add
+            ids: List of document IDs to update.
+            tag_id: Tag ID to add to all specified documents.
 
         Returns:
-            The API response
+            The API response as a dictionary.
+
+        Raises:
+            APIError: If the tag addition fails.
+
+        Example:
+            >>> # Add tag 5 to documents 123, 124, and 125
+            >>> response = client.documents.bulk_add_tag([123, 124, 125], 5)
 
         """
         return self.bulk_action("add_tag", ids, tag=tag_id)
 
     def bulk_remove_tag(self, ids: list[int], tag_id: int) -> dict[str, Any]:
         """
-        Remove a tag from multiple documents.
+        Remove a single tag from multiple documents.
 
         Args:
-            ids: List of document IDs to update
-            tag_id: Tag ID to remove
+            ids: List of document IDs to update.
+            tag_id: Tag ID to remove from all specified documents.
 
         Returns:
-            The API response
+            The API response as a dictionary.
+
+        Raises:
+            APIError: If the tag removal fails.
+
+        Example:
+            >>> # Remove tag 3 from documents 123, 124, and 125
+            >>> response = client.documents.bulk_remove_tag([123, 124, 125], 3)
 
         """
         return self.bulk_action("remove_tag", ids, tag=tag_id)
 
     def bulk_set_correspondent(self, ids: list[int], correspondent: "Correspondent | int") -> dict[str, Any]:
         """
-        Set correspondent for multiple documents.
+        Set the correspondent for multiple documents.
 
         Args:
-            ids: List of document IDs to update
-            correspondent: Correspondent ID to assign
+            ids: List of document IDs to update.
+            correspondent: Correspondent object or ID to assign to all specified documents.
 
         Returns:
-            The API response
+            The API response as a dictionary.
+
+        Raises:
+            APIError: If the correspondent update fails.
+
+        Example:
+            >>> # Set correspondent 5 for documents 123, 124, and 125
+            >>> response = client.documents.bulk_set_correspondent([123, 124, 125], 5)
+            >>>
+            >>> # Or using a correspondent object
+            >>> correspondent = client.correspondents.get(5)
+            >>> response = client.documents.bulk_set_correspondent([123, 124, 125], correspondent)
 
         """
         if not isinstance(correspondent, int):
@@ -391,14 +638,25 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
     def bulk_set_document_type(self, ids: list[int], document_type: "DocumentType | int") -> dict[str, Any]:
         """
-        Set document type for multiple documents.
+        Set the document type for multiple documents.
 
         Args:
-            ids: List of document IDs to update
-            document_type_id: Document type ID to assign
+            ids: List of document IDs to update.
+            document_type: DocumentType object or ID to assign to all specified documents.
 
         Returns:
-            The API response
+            The API response as a dictionary.
+
+        Raises:
+            APIError: If the document type update fails.
+
+        Example:
+            >>> # Set document type 3 for documents 123, 124, and 125
+            >>> response = client.documents.bulk_set_document_type([123, 124, 125], 3)
+            >>>
+            >>> # Or using a document type object
+            >>> doc_type = client.document_types.get(3)
+            >>> response = client.documents.bulk_set_document_type([123, 124, 125], doc_type)
 
         """
         if not isinstance(document_type, int):
@@ -407,14 +665,25 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
     def bulk_set_storage_path(self, ids: list[int], storage_path: "StoragePath | int") -> dict[str, Any]:
         """
-        Set storage path for multiple documents.
+        Set the storage path for multiple documents.
 
         Args:
-            ids: List of document IDs to update
-            storage_path_id: Storage path ID to assign
+            ids: List of document IDs to update.
+            storage_path: StoragePath object or ID to assign to all specified documents.
 
         Returns:
-            The API response
+            The API response as a dictionary.
+
+        Raises:
+            APIError: If the storage path update fails.
+
+        Example:
+            >>> # Set storage path 4 for documents 123, 124, and 125
+            >>> response = client.documents.bulk_set_storage_path([123, 124, 125], 4)
+            >>>
+            >>> # Or using a storage path object
+            >>> path = client.storage_paths.get(4)
+            >>> response = client.documents.bulk_set_storage_path([123, 124, 125], path)
 
         """
         if not isinstance(storage_path, int):
@@ -428,13 +697,25 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         Set permissions for multiple documents.
 
         Args:
-            ids: List of document IDs to update
-            permissions: Permissions object
-            owner_id: Owner ID to assign
-            merge: Whether to merge with existing permissions (True) or replace them (False)
+            ids: List of document IDs to update.
+            permissions: Permissions object defining user and group permissions.
+            owner_id: Owner ID to assign to the documents.
+            merge: Whether to merge with existing permissions (True) or replace them (False).
 
         Returns:
-            The API response
+            The API response as a dictionary.
+
+        Raises:
+            APIError: If the permissions update fails.
+
+        Example:
+            >>> # Set owner to user 2 for documents 123, 124, and 125
+            >>> response = client.documents.bulk_set_permissions(
+            ...     [123, 124, 125],
+            ...     owner_id=2,
+            ...     permissions={"users": {"2": "view"}, "groups": {"1": "edit"}},
+            ...     merge=True
+            ... )
 
         """
         params: dict[str, Any] = {"merge": merge}
@@ -447,13 +728,17 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
     def empty_trash(self) -> dict[str, Any]:
         """
-        Empty the trash.
+        Empty the trash, permanently deleting all documents in the trash.
 
         Returns:
-            The API response.
+            The API response as a dictionary.
 
         Raises:
             APIError: If the empty trash request fails.
+
+        Example:
+            >>> response = client.documents.empty_trash()
+            >>> print("Trash emptied successfully")
 
         """
         endpoint = self.get_endpoint("empty_trash")
@@ -466,7 +751,19 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
 
 class DocumentNoteResource(StandardResource[DocumentNote, DocumentNoteQuerySet]):
-    """Resource for managing document notes."""
+    """
+    Resource for managing document notes in Paperless-NgX.
+
+    This class provides methods for interacting with the document notes API endpoint,
+    allowing creation, retrieval, updating, and deletion of notes attached to documents.
+
+    Attributes:
+        model_class: The DocumentNote model class.
+        queryset_class: The DocumentNoteQuerySet class for query operations.
+        name: The resource name used in API endpoints.
+        endpoints: Dictionary mapping endpoint names to URL templates.
+
+    """
 
     model_class = DocumentNote
     queryset_class = DocumentNoteQuerySet

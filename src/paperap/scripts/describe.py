@@ -1,4 +1,13 @@
+"""
+Describe documents with AI in Paperless-ngx.
 
+This script uses the OpenAI API to generate descriptions for documents stored in a Paperless-ngx instance.
+It extracts images from documents and sends them to OpenAI for processing, updating the document content
+with the generated description.
+
+Usage:
+    $ python describe.py --tag needs-description
+"""
 
 from __future__ import annotations
 
@@ -38,8 +47,11 @@ from paperap.settings import Settings
 
 logger = logging.getLogger(__name__)
 
+# File formats accepted by the describe script
 DESCRIBE_ACCEPTED_FORMATS = ["png", "jpg", "jpeg", "gif", "tif", "tiff", "bmp", "webp", "pdf"]
+# File formats accepted by OpenAI's vision models
 OPENAI_ACCEPTED_FORMATS = ["png", "jpg", "jpeg", "gif", "webp", "pdf"]
+# MIME type mapping for image formats
 MIME_TYPES = {
     "png": "image/png",
     "jpeg": "image/jpeg",
@@ -57,12 +69,32 @@ class ScriptDefaults(StrEnum):
     MODEL = "gpt-4o-mini"
 
 
+# Current version of the describe script
 SCRIPT_VERSION = "0.2.2"
 
 
 class DescribePhotos(BaseModel):
     """
-    Describes photos in the Paperless NGX instance using an LLM (such as OpenAI's GPT-4o-mini model).
+    Describes photos in the Paperless NGX instance using a language model.
+
+    This class provides methods to extract images from documents, generate prompts using Jinja templates,
+    and interact with the OpenAI API to obtain descriptions for documents stored in a Paperless NGX instance.
+
+    Attributes:
+        max_threads (int): Maximum number of threads to use for processing.
+        paperless_tag (str | None): Tag to filter documents for description.
+        prompt (str | None): Custom prompt to use for OpenAI.
+        client (PaperlessClient): Client for interacting with the Paperless-NgX API.
+        _jinja_env (Environment | None): Jinja environment for template rendering.
+        _progress_bar (ProgressBar | None): Progress bar for tracking processing status.
+        _progress_message (str | None): Message to display in the progress bar.
+        _openai (OpenAI | None): OpenAI client for API interaction.
+
+    Example:
+        >>> client = PaperlessClient(settings)
+        >>> describer = DescribePhotos(client=client)
+        >>> describer.describe_documents()
+
     """
 
     max_threads: int = 0
@@ -128,13 +160,30 @@ class DescribePhotos(BaseModel):
 
     def choose_template(self, document: Document) -> str:
         """
-        Choose a jinja template for a document
+        Choose a Jinja template for a document.
+
+        Args:
+            document (Document): The document for which to choose a template.
+
+        Returns:
+            str: The name of the Jinja template to use.
+
         """
         return "photo.jinja"
 
     def get_prompt(self, document: Document) -> str:
         """
-        Generate a prompt to sent to openai using a jinja template.
+        Generate a prompt to send to OpenAI using a Jinja template.
+
+        Args:
+            document (Document): The document for which to generate a prompt.
+
+        Returns:
+            str: The generated prompt.
+
+        Raises:
+            ValueError: If the prompt generation fails.
+
         """
         if self.prompt:
             return self.prompt
@@ -151,13 +200,23 @@ class DescribePhotos(BaseModel):
 
     def extract_images_from_pdf(self, pdf_bytes: bytes, max_images: int = 2) -> list[bytes]:
         """
-        Extract the first image from a PDF file.
+        Extract images from a PDF file.
 
         Args:
             pdf_bytes (bytes): The PDF file content as bytes.
+            max_images (int): Maximum number of images to extract.
 
         Returns:
-            bytes | None: The first {max_images} images as bytes or None if no image is found.
+            list[bytes]: A list of extracted images as bytes.
+
+        Raises:
+            DocumentParsingError: If an error occurs during image extraction.
+            NoImagesError: If no images are found in the PDF.
+
+        Example:
+            >>> with open("document.pdf", "rb") as f:
+            >>>     pdf_bytes = f.read()
+            >>> images = describer.extract_images_from_pdf(pdf_bytes)
 
         """
         results: list[bytes] = []
@@ -211,13 +270,17 @@ class DescribePhotos(BaseModel):
 
     def parse_date(self, date_str: str) -> date | None:
         """
-        Parse a date string.
+        Parse a date string into a date object.
 
         Args:
             date_str (str): The date string to parse.
 
         Returns:
-            date: The parsed date.
+            date | None: The parsed date or None if parsing fails.
+
+        Example:
+            >>> parsed_date = describer.parse_date("2025-03-24")
+            >>> print(parsed_date)
 
         """
         if not (parsed_date := self.parse_datetime(date_str)):
@@ -226,13 +289,20 @@ class DescribePhotos(BaseModel):
 
     def parse_datetime(self, date_str: str) -> datetime | None:
         """
-        Parse a date string.
+        Parse a date string into a datetime object.
 
         Args:
             date_str (str): The date string to parse.
 
         Returns:
-            date: The parsed date.
+            datetime | None: The parsed datetime or None if parsing fails.
+
+        Raises:
+            ValueError: If the date format is invalid.
+
+        Example:
+            >>> parsed_datetime = describer.parse_datetime("2025-03-24T15:30:00")
+            >>> print(parsed_datetime)
 
         """
         if not date_str:
@@ -256,6 +326,18 @@ class DescribePhotos(BaseModel):
     def standardize_image_contents(self, content: bytes) -> list[str]:
         """
         Standardize image contents to base64-encoded PNG format.
+
+        Args:
+            content (bytes): The image content as bytes.
+
+        Returns:
+            list[str]: A list of base64-encoded PNG images.
+
+        Example:
+            >>> with open("image.jpg", "rb") as f:
+            >>>     image_bytes = f.read()
+            >>> png_images = describer.standardize_image_contents(image_bytes)
+
         """
         try:
             return [self._convert_to_png(content)]
@@ -376,7 +458,15 @@ class DescribePhotos(BaseModel):
             bytes_content (bytes): The image content as bytes.
 
         Returns:
-            bytes: The image content as JPEG.
+            bytes: The image content in JPEG format.
+
+        Raises:
+            Exception: If the conversion fails.
+
+        Example:
+            >>> with open("image.png", "rb") as f:
+            >>>     png_bytes = f.read()
+            >>> jpeg_bytes = describer.convert_image_to_jpg(png_bytes)
 
         """
         try:
@@ -391,15 +481,23 @@ class DescribePhotos(BaseModel):
 
     def describe_document(self, document: Document) -> bool:
         """
-        Describe a single document using OpenAI's GPT-4o model.
+        Describe a single document using OpenAI's language model.
 
         The document object passed in will be updated with the description.
 
         Args:
-            document: The document to describe.
+            document (Document): The document to describe.
 
         Returns:
-            bool: True if the document was successfully described
+            bool: True if the document was successfully described, False otherwise.
+
+        Raises:
+            requests.RequestException: If a request error occurs.
+
+        Example:
+            >>> document = client.documents.get(123)
+            >>> success = describer.describe_document(document)
+            >>> print("Description successful:", success)
 
         """
         response = None
@@ -454,11 +552,16 @@ class DescribePhotos(BaseModel):
         Process the response from OpenAI and update the document.
 
         Args:
-            response (str): The response from OpenAI
-            document (Document): The document to update
+            response (str): The response from OpenAI.
+            document (Document): The document to update.
 
         Returns:
-            Document: The updated document
+            Document: The updated document with the description added.
+
+        Example:
+            >>> response = '{"title": "Sample Title", "description": "Sample Description"}'
+            >>> updated_document = describer.process_response(response, document)
+            >>> print(updated_document.title)
 
         """
         # Attempt to parse response as json
@@ -541,13 +644,19 @@ class DescribePhotos(BaseModel):
 
     def describe_documents(self, documents: list[Document] | None = None) -> list[Document]:
         """
-        Describe a list of documents using OpenAI's GPT-4o model.
+        Describe a list of documents using OpenAI's language model.
 
         Args:
-            documents (list[Document]): The documents to describe.
+            documents (list[Document] | None): The documents to describe. If None, fetches documents
+                from the Paperless NGX instance using the specified tag.
 
         Returns:
             list[Document]: The documents with the descriptions added.
+
+        Example:
+            >>> documents = client.documents.filter(tag_name="needs-description")
+            >>> described_documents = describer.describe_documents(documents)
+            >>> print(f"Described {len(described_documents)} documents")
 
         """
         logger.info("Fetching documents to describe...")
@@ -569,6 +678,16 @@ class DescribePhotos(BaseModel):
 class ArgNamespace(argparse.Namespace):
     """
     A custom namespace class for argparse.
+
+    Attributes:
+        url (str): The base URL of the Paperless NGX instance.
+        key (str): The API token for the Paperless NGX instance.
+        model (str | None): The OpenAI model to use.
+        openai_url (str | None): The base URL for the OpenAI API.
+        tag (str): Tag to filter documents.
+        prompt (str | None): Prompt to use for OpenAI.
+        verbose (bool): Verbose output flag.
+
     """
 
     url: str
@@ -583,6 +702,17 @@ class ArgNamespace(argparse.Namespace):
 def main() -> None:
     """
     Run the script.
+
+    This function sets up logging, parses command-line arguments, and initiates the document
+    description process using the DescribePhotos class.
+
+    Raises:
+        SystemExit: If required environment variables are not set or an error occurs.
+
+    Example:
+        To run the script from the command line:
+        $ python describe.py --url http://paperless.local:8000 --key your_api_token
+
     """
     logger = setup_logging()
     try:
