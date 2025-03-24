@@ -25,15 +25,17 @@ if TYPE_CHECKING:
 class ConfigType(TypedDict, total=False):
     """
     Type definition for plugin configuration schema entries.
-    
+
     This TypedDict defines the structure of configuration options that plugins
     can declare in their get_config_schema method.
-    
+
     Attributes:
         type: The Python type of the configuration value.
         description: Human-readable description of the configuration option.
         required: Whether this configuration option is required.
+
     """
+
     type: NotRequired[type]
     description: NotRequired[str]
     required: NotRequired[bool]
@@ -42,39 +44,40 @@ class ConfigType(TypedDict, total=False):
 class Plugin(pydantic.BaseModel, ABC):
     """
     Base class for all Paperap plugins.
-    
+
     This abstract class defines the interface that all plugins must implement.
     Plugins extend the functionality of the Paperap client by hooking into
     various parts of the application lifecycle.
-    
+
     Plugins are configured using Pydantic models, allowing for automatic validation
     of configuration options.
-    
+
     Attributes:
         name: Class attribute that defines the unique name of the plugin.
         description: Class attribute for human-readable plugin description.
         version: Class attribute for the plugin version string.
         manager: Reference to the PluginManager that manages this plugin.
-    
+
     Examples:
         ```python
         class MyPlugin(Plugin):
             name = "my_plugin"
             description = "A sample plugin that logs API requests"
             version = "1.0.0"
-            
+
             def setup(self) -> None:
                 # Register signal handlers
                 self.manager.client.signals.connect("request:before", self.on_request)
-                
+
             def teardown(self) -> None:
                 # Clean up resources
                 self.manager.client.signals.disconnect("request:before", self.on_request)
-                
+
             def on_request(self, method, url, **kwargs):
                 print(f"API Request: {method} {url}")
                 return kwargs
         ```
+
     """
 
     # Class attributes for plugin metadata
@@ -87,15 +90,16 @@ class Plugin(pydantic.BaseModel, ABC):
     def __init_subclass__(cls, **kwargs: ConfigDict):
         """
         Validate plugin subclass requirements.
-        
+
         This method is called when a new plugin class is defined. It ensures that
         required class attributes like 'name' are properly set.
-        
+
         Args:
             **kwargs: Additional configuration options for the subclass.
-            
+
         Raises:
             ValueError: If the plugin name is not set.
+
         """
         # Enforce name is set
         if not getattr(cls, "name", None):
@@ -125,6 +129,7 @@ class Plugin(pydantic.BaseModel, ABC):
         Raises:
             ModelValidationError: If the provided configuration options don't match
                 the expected schema.
+
         """
         # Pydantic handles config
         super().__init__(**kwargs)
@@ -136,9 +141,10 @@ class Plugin(pydantic.BaseModel, ABC):
     def client(self) -> "PaperlessClient":
         """
         Get the PaperlessClient instance associated with this plugin.
-        
+
         Returns:
             The PaperlessClient instance that this plugin is attached to.
+
         """
         return self.manager.client
 
@@ -146,20 +152,21 @@ class Plugin(pydantic.BaseModel, ABC):
     def setup(self) -> None:
         """
         Register signal handlers and perform other initialization tasks.
-        
+
         This method is called automatically when the plugin is initialized.
         Subclasses must implement this method to set up any necessary resources,
         register signal handlers, or perform other initialization tasks.
-        
+
         Examples:
             ```python
             def setup(self) -> None:
                 # Register signal handlers
                 self.client.signals.connect("document.save:before", self.on_document_save)
-                
+
                 # Initialize resources
                 self.temp_dir = tempfile.TemporaryDirectory()
             ```
+
         """
         pass
 
@@ -167,20 +174,21 @@ class Plugin(pydantic.BaseModel, ABC):
     def teardown(self) -> None:
         """
         Clean up resources when the plugin is disabled or the application exits.
-        
+
         Subclasses must implement this method to clean up any resources that were
         allocated during setup, such as temporary files, network connections, or
         signal handlers.
-        
+
         Examples:
             ```python
             def teardown(self) -> None:
                 # Disconnect signal handlers
                 self.client.signals.disconnect("document.save:before", self.on_document_save)
-                
+
                 # Clean up resources
                 self.temp_dir.cleanup()
             ```
+
         """
         pass
 
@@ -192,7 +200,7 @@ class Plugin(pydantic.BaseModel, ABC):
         This method returns a dictionary describing the configuration options that
         this plugin accepts. Each entry in the dictionary corresponds to a configuration
         option, with metadata about its type, description, and whether it's required.
-        
+
         The schema is used for validation when the plugin is initialized, and can also
         be used to generate configuration UI in management interfaces.
 
@@ -216,5 +224,6 @@ class Plugin(pydantic.BaseModel, ABC):
                     }
                 }
             ```
+
         """
         return {}

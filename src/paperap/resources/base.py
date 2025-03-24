@@ -35,29 +35,31 @@ logger = logging.getLogger(__name__)
 
 
 class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
-    """Base class for API resources.
-    
+    """
+    Base class for API resources.
+
     This abstract class provides the foundation for all API resources in Paperap.
     It handles the communication with the Paperless-NgX API, including request
     formatting, response parsing, and model instantiation.
-    
+
     Each resource corresponds to an API endpoint in Paperless-NgX and provides
     methods for retrieving, creating, updating, and deleting resources.
-    
+
     Args:
         client: The PaperlessClient instance for making API requests.
-    
+
     Attributes:
         model_class: The model class for this resource.
         queryset_class: The queryset class for this resource.
         client: The PaperlessClient instance.
         name: The name of the resource (defaults to model name + 's').
         endpoints: Dictionary of API endpoint templates.
-    
+
     Examples:
         >>> client = PaperlessClient()
         >>> resource = DocumentResource(client)
         >>> documents = resource.all()
+
     """
 
     # The model class for this resource.
@@ -76,13 +78,15 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
     endpoints: ClassVar[Endpoints]
 
     def __init__(self, client: "PaperlessClient") -> None:
-        """Initialize the resource.
-        
+        """
+        Initialize the resource.
+
         Sets up the resource with the client, configures endpoints, and establishes
         the relationship between the resource and its model class.
-        
+
         Args:
             client: The PaperlessClient instance for making API requests.
+
         """
         self.client = client
         if not hasattr(self, "name"):
@@ -101,16 +105,18 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
     @override
     @classmethod
     def __init_subclass__(cls, **kwargs: Any) -> None:
-        """Initialize the subclass with required attributes.
-        
+        """
+        Initialize the subclass with required attributes.
+
         Validates that subclasses define required attributes like model_class
         and sets up default endpoints if not explicitly defined.
-        
+
         Args:
             **kwargs: Arbitrary keyword arguments passed to parent __init_subclass__.
-        
+
         Raises:
             ConfigurationError: If model_class is not defined in the subclass.
+
         """
         super().__init_subclass__(**kwargs)
 
@@ -136,25 +142,29 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
 
     @property
     def _meta(self) -> "BaseModel.Meta[_BaseModel]":
-        """Get the Meta class of the model.
-        
+        """
+        Get the Meta class of the model.
+
         Returns:
             The Meta class instance from the model_class.
+
         """
         return self.model_class._meta  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
 
     @classmethod
     def _validate_endpoints(cls, value: Any) -> Endpoints:
-        """Validate and convert endpoint definitions to Templates.
-        
+        """
+        Validate and convert endpoint definitions to Templates.
+
         Args:
             value: The endpoints dictionary to validate.
-            
+
         Returns:
             Dictionary of validated endpoint Templates.
-            
+
         Raises:
             ModelValidationError: If endpoints are not properly formatted.
+
         """
         if not isinstance(value, dict):
             raise ModelValidationError("endpoints must be a dictionary")
@@ -177,24 +187,26 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         return converted
 
     def get_endpoint(self, name: str, **kwargs: Any) -> str | HttpUrl:
-        """Get a fully-formed URL for the specified endpoint.
-        
+        """
+        Get a fully-formed URL for the specified endpoint.
+
         Retrieves the endpoint template, substitutes any parameters, and ensures
         the URL is properly formatted with the base URL if needed.
-        
+
         Args:
             name: The name of the endpoint (e.g., "list", "detail").
             **kwargs: Parameters to substitute in the endpoint template.
-            
+
         Returns:
             The fully-formed URL for the endpoint.
-            
+
         Raises:
             ConfigurationError: If the requested endpoint is not defined.
-            
+
         Examples:
             >>> resource.get_endpoint("detail", pk=123)
             'https://paperless.example.com/api/documents/123/'
+
         """
         if not (template := self.endpoints.get(name, None)):
             raise ConfigurationError(f"Endpoint {name} not defined for resource {self.name}")
@@ -210,79 +222,87 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         return HttpUrl(url)
 
     def all(self) -> _BaseQuerySet:
-        """Return a QuerySet representing all objects of this resource type.
-        
+        """
+        Return a QuerySet representing all objects of this resource type.
+
         Creates a new QuerySet instance for this resource without any filters.
-        
+
         Returns:
             A QuerySet for this resource.
-            
+
         Examples:
             >>> all_documents = client.documents.all()
             >>> for doc in all_documents:
             ...     print(doc.title)
+
         """
         return self.queryset_class(self)  # type: ignore # _meta.queryset is always the right queryset type
 
     def filter(self, **kwargs: Any) -> _BaseQuerySet:
-        """Return a QuerySet filtered by the given parameters.
-        
+        """
+        Return a QuerySet filtered by the given parameters.
+
         Creates a new QuerySet with filters applied. Filters use Django-style
         field lookups (e.g., field__contains, field__gt).
-        
+
         Args:
             **kwargs: Filter parameters as field=value pairs.
-            
+
         Returns:
             A filtered QuerySet.
-            
+
         Examples:
             >>> invoices = client.documents.filter(
             ...     title__contains="invoice",
             ...     created__gt="2023-01-01"
             ... )
+
         """
         return self.all().filter(**kwargs)
 
     def get(self, *args: Any, **kwargs: Any) -> _BaseModel:
-        """Get a model by ID.
-        
+        """
+        Get a model by ID.
+
         This is a base method that raises NotImplementedError.
         Subclasses should implement this method to retrieve a specific model by ID.
-        
+
         Args:
             *args: Positional arguments (typically model_id).
             **kwargs: Additional keyword arguments.
-            
+
         Returns:
             The retrieved model.
-            
+
         Raises:
             NotImplementedError: This base method is not implemented.
+
         """
         raise NotImplementedError("get method not available for resources without an id")
 
     def create(self, **kwargs: Any) -> _BaseModel:
-        """Create a new resource.
-        
+        """
+        Create a new resource.
+
         Sends a POST request to the API to create a new resource with the provided data.
         Emits signals before and after the creation.
-        
+
         Args:
             **kwargs: Resource data as field=value pairs.
-            
+
         Returns:
             The newly created model instance.
-            
+
         Raises:
             ConfigurationError: If the create endpoint is not defined.
             ResourceNotFoundError: If the resource cannot be created.
-            
+
         Examples:
             >>> tag = client.tags.create(
             ...     name="Invoices",
             ...     color="#ff0000"
             ... )
+
         """
         # Signal before creating resource
         signal_params = {"resource": self.name, "data": kwargs}
@@ -307,68 +327,76 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         return model
 
     def update(self, model: _BaseModel) -> _BaseModel:
-        """Update a resource.
-        
+        """
+        Update a resource.
+
         This is a base method that raises NotImplementedError.
         Subclasses should implement this method to update a model.
-        
+
         Args:
             model: The model instance to update.
-            
+
         Returns:
             The updated model instance.
-            
+
         Raises:
             NotImplementedError: This base method is not implemented.
+
         """
         raise NotImplementedError("update method not available for resources without an id")
 
     def update_dict(self, *args: Any, **kwargs: Any) -> _BaseModel:
-        """Update a resource using a dictionary of values.
-        
+        """
+        Update a resource using a dictionary of values.
+
         This is a base method that raises NotImplementedError.
         Subclasses should implement this method to update a model using a dictionary.
-        
+
         Args:
             *args: Positional arguments (typically model_id).
             **kwargs: Field values to update.
-            
+
         Returns:
             The updated model instance.
-            
+
         Raises:
             NotImplementedError: This base method is not implemented.
+
         """
         raise NotImplementedError("update_dict method not available for resources without an id")
 
     def delete(self, *args: Any, **kwargs: Any) -> None:
-        """Delete a resource.
-        
+        """
+        Delete a resource.
+
         This is a base method that raises NotImplementedError.
         Subclasses should implement this method to delete a model.
-        
+
         Args:
             *args: Positional arguments (typically model_id).
             **kwargs: Additional keyword arguments.
-            
+
         Raises:
             NotImplementedError: This base method is not implemented.
+
         """
         raise NotImplementedError("delete method not available for resources without an id")
 
     def parse_to_model(self, item: dict[str, Any]) -> _BaseModel:
-        """Parse an item dictionary into a model instance.
-        
+        """
+        Parse an item dictionary into a model instance.
+
         Transforms the raw API data and validates it against the model class.
-        
+
         Args:
             item: The dictionary of data from the API.
-            
+
         Returns:
             A validated model instance.
-            
+
         Raises:
             ResponseParsingError: If the data cannot be parsed into a valid model.
+
         """
         try:
             data = self.transform_data_input(**item)
@@ -378,16 +406,18 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             raise
 
     def transform_data_input(self, **data: Any) -> dict[str, Any]:
-        """Transform data after receiving it from the API.
-        
+        """
+        Transform data after receiving it from the API.
+
         Maps API field names to model field names using the field_map defined
         in the model's Meta class.
-        
+
         Args:
             **data: The raw data from the API.
-            
+
         Returns:
             The transformed data ready for model validation.
+
         """
         for key, value in self._meta.field_map.items():
             if key in data:
@@ -401,21 +431,23 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
     def transform_data_output(self, **data: Any) -> dict[str, Any]: ...
 
     def transform_data_output(self, model: _BaseModel | None = None, exclude_unset: bool = True, **data: Any) -> dict[str, Any]:
-        """Transform data before sending it to the API.
-        
+        """
+        Transform data before sending it to the API.
+
         Maps model field names to API field names using the field_map defined
         in the model's Meta class.
-        
+
         Args:
             model: The model instance to transform. If provided, its to_dict() method is used.
             exclude_unset: If model is provided, whether to exclude unset fields.
             **data: Raw data to transform if no model is provided.
-            
+
         Returns:
             The transformed data ready to send to the API.
-            
+
         Raises:
             ValueError: If both model and data are provided.
+
         """
         if model:
             if data:
@@ -429,23 +461,25 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         return data
 
     def create_model(self, **kwargs: Any) -> _BaseModel:
-        """Create a new model instance without saving to the API.
-        
+        """
+        Create a new model instance without saving to the API.
+
         Instantiates a new model with the provided field values and associates
         it with this resource.
-        
+
         Args:
             **kwargs: Model field values.
-            
+
         Returns:
             A new, unsaved model instance.
-            
+
         Examples:
             >>> doc = client.documents.create_model(
             ...     title="New Document",
             ...     correspondent_id=5
             ... )
             >>> doc.save()  # Save to the API
+
         """
         # Mypy output:
         # base.py:326:52: error: Argument "resource" to "BaseModel" has incompatible type
@@ -459,22 +493,24 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
     ) -> dict[str, Any] | list[dict[str, Any]] | None:
-        """Make an HTTP request to the API and return the raw JSON response.
-        
+        """
+        Make an HTTP request to the API and return the raw JSON response.
+
         A low-level method to send requests to the API without processing the response
         into model instances.
-        
+
         Args:
             url: The URL to request. If None, uses the list endpoint.
             method: The HTTP method to use (GET, POST, PUT, DELETE).
             params: Query parameters to include in the request.
             data: Request body data for POST/PUT requests.
-            
+
         Returns:
             The JSON-decoded response from the API.
-            
+
         Raises:
             ConfigurationError: If no URL is provided and the list endpoint is not defined.
+
         """
         if not url and not (url := self.get_endpoint("list", resource=self.name)):
             raise ConfigurationError(f"List endpoint not defined for resource {self.name}")
@@ -486,19 +522,21 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         return response
 
     def handle_response(self, response: Any) -> Iterator[_BaseModel]:
-        """Process API response and yield model instances.
-        
+        """
+        Process API response and yield model instances.
+
         Handles different response formats (list or dict) and emits signals
         before and after processing.
-        
+
         Args:
             response: The API response to process.
-            
+
         Yields:
             Model instances created from the response data.
-            
+
         Raises:
             ResponseParsingError: If the response format is unexpected.
+
         """
         registry.emit(
             "resource._handle_response:before",
@@ -524,19 +562,21 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         )
 
     def handle_dict_response(self, **response: dict[str, Any]) -> Iterator[_BaseModel]:
-        """Handle a dictionary response from the API and yield model instances.
-        
+        """
+        Handle a dictionary response from the API and yield model instances.
+
         Processes responses that are dictionaries, which may contain a 'results' key
         with a list of items or may be a single item directly.
-        
+
         Args:
             **response: The dictionary response from the API.
-            
+
         Yields:
             Model instances created from the response data.
-            
+
         Raises:
             ResponseParsingError: If the response format is unexpected.
+
         """
         if not (results := response.get("results", response)):
             return
@@ -568,19 +608,21 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         raise ResponseParsingError(f"Expected {self.name} results to be list/dict, got {type(results)} -> {results}")
 
     def handle_results(self, results: list[dict[str, Any]]) -> Iterator[_BaseModel]:
-        """Yield parsed models from a list of results.
-        
+        """
+        Yield parsed models from a list of results.
+
         Processes a list of dictionaries into model instances, emitting signals
         for each item.
-        
+
         Args:
             results: List of dictionaries from the API.
-            
+
         Yields:
             Model instances created from the results.
-            
+
         Raises:
             ResponseParsingError: If the results format is unexpected.
+
         """
         if not isinstance(results, list):
             raise ResponseParsingError(f"Expected {self.name} results to be a list, got {type(results)} -> {results}")
@@ -598,67 +640,73 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             yield self.parse_to_model(item)
 
     def __call__(self, *args: Any, **keywords: Any) -> _BaseQuerySet:
-        """Make the resource callable to get a filtered QuerySet.
-        
+        """
+        Make the resource callable to get a filtered QuerySet.
+
         This allows for a shorthand syntax when filtering resources.
-        
+
         Args:
             *args: Unused positional arguments.
             **keywords: Filter parameters as field=value pairs.
-            
+
         Returns:
             A filtered QuerySet.
-            
+
         Examples:
             >>> # These are equivalent:
             >>> client.documents(title__contains='invoice')
             >>> client.documents.filter(title__contains='invoice')
+
         """
         return self.filter(**keywords)
 
 
 class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
-    """Base class for API resources with standard ID-based operations.
-    
+    """
+    Base class for API resources with standard ID-based operations.
+
     Extends BaseResource with implementations for get, update, and delete
     operations that work with models having an 'id' field.
-    
+
     This class is used for most Paperless-NgX resources that follow the standard
     REST pattern with unique integer IDs.
-    
+
     Args:
         client: The PaperlessClient instance for making API requests.
-    
+
     Examples:
         >>> client = PaperlessClient()
         >>> resource = TagResource(client)
         >>> tag = resource.get(5)  # Get tag with ID 5
         >>> tag.name = "New Name"
         >>> resource.update(tag)   # Update the tag
+
     """
 
     @override
     def get(self, model_id: int, *args: Any, **kwargs: Any) -> _StandardModel:
-        """Get a model within this resource by ID.
-        
+        """
+        Get a model within this resource by ID.
+
         Retrieves a specific model by its ID, emitting signals before and after
         the operation.
-        
+
         Args:
             model_id: ID of the model to retrieve.
             *args: Additional positional arguments.
             **kwargs: Additional keyword arguments.
-            
+
         Returns:
             The retrieved model instance.
-            
+
         Raises:
             ConfigurationError: If the detail endpoint is not defined.
             ObjectNotFoundError: If the model with the given ID does not exist.
-            
+
         Examples:
             >>> document = client.documents.get(123)
             >>> print(document.title)
+
         """
         # Signal before getting resource
         signal_params = {"resource": self.name, "model_id": model_id}
@@ -689,20 +737,22 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
 
     @override
     def update(self, model: _StandardModel) -> _StandardModel:
-        """Update a model in the API.
-        
+        """
+        Update a model in the API.
+
         Converts the model to a dictionary and sends it to the API for updating.
-        
+
         Args:
             model: The model instance to update.
-            
+
         Returns:
             The updated model instance.
-            
+
         Examples:
             >>> tag = client.tags.get(5)
             >>> tag.name = "Updated Name"
             >>> updated_tag = client.tags.update(tag)
+
         """
         data = model.to_dict()
         data = self.transform_data_output(**data)
@@ -717,25 +767,27 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
 
     @override
     def delete(self, model_id: int | _StandardModel) -> None:
-        """Delete a resource from the API.
-        
+        """
+        Delete a resource from the API.
+
         Sends a DELETE request to remove the resource, emitting signals before
         and after the operation.
-        
+
         Args:
             model_id: ID of the resource or the model instance to delete.
-            
+
         Raises:
             ValueError: If model_id is not provided.
             ConfigurationError: If the delete endpoint is not defined.
-            
+
         Examples:
             >>> # Delete by ID
             >>> client.tags.delete(5)
-            >>> 
+            >>>
             >>> # Delete by model instance
             >>> tag = client.tags.get(5)
             >>> client.tags.delete(tag)
+
         """
         if not model_id:
             raise ValueError("model_id is required to delete a resource")
@@ -756,28 +808,30 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
 
     @override
     def update_dict(self, model_id: int, **data: dict[str, Any]) -> _StandardModel:
-        """Update a resource using a dictionary of values.
-        
+        """
+        Update a resource using a dictionary of values.
+
         Sends a PUT request to update the resource with the provided data,
         emitting signals before and after the operation.
-        
+
         Args:
             model_id: ID of the resource to update.
             **data: Field values to update.
-            
+
         Returns:
             The updated model instance.
-            
+
         Raises:
             ConfigurationError: If the update endpoint is not defined.
             ResourceNotFoundError: If the resource with the given ID is not found.
-            
+
         Examples:
             >>> updated_tag = client.tags.update_dict(
             ...     5,
             ...     name="New Name",
             ...     color="#ff0000"
             ... )
+
         """
         # Signal before updating resource
         signal_params = {"resource": self.name, "model_id": model_id, "data": data}
@@ -812,11 +866,12 @@ class BulkEditing:
         owner_id: int | None = None,
         merge: bool = False,
     ) -> dict[str, Any]:
-        """Bulk edit non-document objects in the API.
-        
+        """
+        Bulk edit non-document objects in the API.
+
         Performs operations on multiple objects of the same type in a single request.
         Currently supports permission setting and deletion operations.
-        
+
         Args:
             object_type: Type of objects to edit ('tags', 'correspondents', 'document_types', 'storage_paths').
             ids: List of object IDs to edit.
@@ -824,13 +879,13 @@ class BulkEditing:
             permissions: Permissions object for 'set_permissions' operation.
             owner_id: Owner ID to assign.
             merge: Whether to merge permissions with existing ones (True) or replace them (False).
-            
+
         Returns:
             The API response dictionary.
-            
+
         Raises:
             ValueError: If operation is not valid.
-            
+
         Examples:
             >>> # Delete multiple tags
             >>> client.tags.bulk_edit_objects(
@@ -838,7 +893,7 @@ class BulkEditing:
             ...     ids=[1, 2, 3],
             ...     operation="delete"
             ... )
-            >>> 
+            >>>
             >>> # Set permissions on multiple document types
             >>> client.document_types.bulk_edit_objects(
             ...     object_type="document_types",
@@ -847,6 +902,7 @@ class BulkEditing:
             ...     permissions={"view": {"users": [1]}, "change": {"groups": [2]}},
             ...     owner_id=1
             ... )
+
         """
         if operation not in ("set_permissions", "delete"):
             raise ValueError(f"Invalid operation '{operation}'. Must be 'set_permissions' or 'delete'")

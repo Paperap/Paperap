@@ -63,17 +63,17 @@ logger = logging.getLogger(__name__)
 class PaperlessClient:
     """
     Client for interacting with the Paperless-NgX API.
-    
+
     This is the main entry point for all interactions with a Paperless-ngx server.
     It handles authentication, request management, and provides access to all API
     resources through convenient properties.
-    
+
     Args:
         settings: Settings object containing client configuration. If None, settings
             will be loaded from environment variables and/or kwargs.
         **kwargs: Additional settings that will override those in the settings object
             or environment variables. See Settings class for available options.
-            
+
     Attributes:
         settings: The configuration settings for this client.
         auth: The authentication handler (TokenAuth or BasicAuth).
@@ -87,13 +87,13 @@ class PaperlessClient:
         tags: Resource for managing tags.
         tasks: Resource for managing tasks.
         saved_views: Resource for managing saved views.
-        
+
     Raises:
         ValueError: If neither token nor username/password authentication is provided.
-        
+
     Examples:
         Using token authentication:
-        
+
         >>> from paperap import PaperlessClient
         >>> from paperap.settings import Settings
         >>> client = PaperlessClient(
@@ -102,24 +102,25 @@ class PaperlessClient:
         ...         token="40characterslong40characterslong40charac"
         ...     )
         ... )
-        
+
         Using basic authentication:
-        
+
         >>> client = PaperlessClient(
         ...     base_url="https://paperless.example.com",
         ...     username="user",
         ...     password="pass"
         ... )
-        
+
         Loading settings from environment variables:
-        
+
         >>> # With PAPERLESS_BASE_URL and PAPERLESS_TOKEN set in environment
         >>> client = PaperlessClient()
-        
+
         Using as a context manager:
-        
+
         >>> with PaperlessClient(token="mytoken", base_url="https://paperless.local") as client:
         ...     docs = client.documents.all()
+
     """
 
     settings: Settings
@@ -183,36 +184,39 @@ class PaperlessClient:
     def base_url(self) -> HttpUrl:
         """
         Get the base URL of the Paperless-ngx server.
-        
+
         Returns:
             The base URL as an HttpUrl object.
+
         """
         return self.settings.base_url
 
     def __enter__(self) -> PaperlessClient:
         """
         Enter context manager.
-        
+
         Returns:
             Self, allowing the client to be used in a with statement.
+
         """
         return self
 
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """
         Exit context manager, ensuring resources are properly released.
-        
+
         Args:
             exc_type: Exception type if an exception was raised in the context.
             exc_val: Exception value if an exception was raised.
             exc_tb: Exception traceback if an exception was raised.
+
         """
         self.close()
 
     def _init_resources(self) -> None:
         """
         Initialize all API resources.
-        
+
         This method creates instances of all resource classes and assigns them
         to the appropriate attributes of the client.
         """
@@ -249,6 +253,7 @@ class PaperlessClient:
         Args:
             plugin_config: Optional configuration dictionary for plugins. If None,
                 a default configuration will be used.
+
         """
         from paperap.plugins.manager import PluginManager  # pylint: disable=import-outside-toplevel
 
@@ -277,18 +282,20 @@ class PaperlessClient:
     def _get_auth_params(self) -> dict[str, Any]:
         """
         Get authentication parameters for requests.
-        
+
         Returns:
             Dictionary of authentication parameters to be passed to requests.
+
         """
         return self.auth.get_auth_params()
 
     def get_headers(self) -> dict[str, str]:
         """
         Get headers for API requests.
-        
+
         Returns:
             Dictionary of HTTP headers including authentication headers.
+
         """
         headers = {}
 
@@ -299,7 +306,7 @@ class PaperlessClient:
     def close(self) -> None:
         """
         Close the client and release resources.
-        
+
         This method ensures the HTTP session is properly closed to prevent
         resource leaks.
         """
@@ -317,32 +324,33 @@ class PaperlessClient:
     ) -> requests.Response | None:
         """
         Make a raw request to the Paperless-NgX API.
-        
+
         This method handles the low-level HTTP communication with the Paperless-ngx
         server, including URL construction, header management, and error handling.
         It returns the raw response object without parsing the content.
-        
+
         Args:
             method: HTTP method (GET, POST, PUT, DELETE).
             endpoint: API endpoint relative to base URL or absolute URL.
             params: Query parameters for the request.
             data: Request body data.
             files: Files to upload.
-            
+
         Returns:
             Response object or None if the server returned a 204 No Content response.
-            
+
         Raises:
             AuthenticationError: If authentication fails (401).
             ResourceNotFoundError: If the requested resource doesn't exist (404).
             InsufficientPermissionError: If the user lacks permission (403).
             RequestError: For connection or request failures.
             BadResponseError: For other HTTP error responses.
-            
+
         Examples:
             >>> response = client.request_raw("GET", "api/documents/")
             >>> print(response.status_code)
             200
+
         """
         if isinstance(endpoint, HttpUrl):
             # Use URL object directly
@@ -441,17 +449,17 @@ class PaperlessClient:
     ) -> None:
         """
         Handle HTTP error responses from the API.
-        
+
         This method analyzes error responses from the Paperless-ngx API and raises
         appropriate exceptions based on the status code and error message.
-        
+
         Args:
             response: The HTTP response object.
             url: The URL that was requested.
             params: The query parameters that were sent.
             data: The request body data that was sent.
             files: The files that were uploaded.
-            
+
         Raises:
             ValueError: For 400 errors with missing required fields.
             RelationshipNotFoundError: For 400 errors with invalid relationships.
@@ -460,6 +468,7 @@ class PaperlessClient:
             InsufficientPermissionError: For 403 permission errors.
             ResourceNotFoundError: For 404 not found errors.
             BadResponseError: For all other error responses.
+
         """
         error_message = self._extract_error_message(response)
 
@@ -555,11 +564,11 @@ class PaperlessClient:
     ) -> dict[str, Any] | bytes | None:
         """
         Make a request to the Paperless-NgX API and parse the response.
-        
+
         This method extends request_raw by handling the parsing of the response
         and emitting signals before and after the request. It's the primary method
         used by resources to communicate with the API.
-        
+
         Args:
             method: HTTP method (GET, POST, PUT, DELETE).
             endpoint: API endpoint relative to base URL or absolute URL.
@@ -567,29 +576,30 @@ class PaperlessClient:
             data: Request body data.
             files: Files to upload.
             json_response: Whether to parse the response as JSON (True) or return raw bytes (False).
-            
+
         Returns:
             If json_response is True, returns a dictionary parsed from the JSON response.
             If json_response is False, returns the raw response bytes.
             Returns None if the server returned a 204 No Content response.
-            
+
         Raises:
             AuthenticationError: If authentication fails.
             ResourceNotFoundError: If the requested resource doesn't exist.
             ResponseParsingError: If the response cannot be parsed as JSON.
             RequestError: For connection or request failures.
             APIError: For other API errors.
-            
+
         Note:
             Generally, this should be done using resources, not by calling this method directly.
-            
+
         Examples:
             >>> data = client.request("GET", "api/documents/123/")
             >>> print(data["title"])
             Invoice March 2023
-            
+
             >>> # Get binary content
             >>> pdf_bytes = client.request("GET", "api/documents/123/download/", json_response=False)
+
         """
         kwargs = {
             "client": self,
@@ -626,15 +636,16 @@ class PaperlessClient:
     def _extract_error_message(self, response: requests.Response) -> str:
         """
         Extract a human-readable error message from an error response.
-        
+
         This method attempts to parse the error response in various formats
         to extract the most useful error message for the user.
-        
+
         Args:
             response: The HTTP error response.
-            
+
         Returns:
             A string containing the extracted error message.
+
         """
         try:
             error_data = response.json()
@@ -669,24 +680,24 @@ class PaperlessClient:
     ) -> str:
         """
         Generate an API token using username and password.
-        
+
         This method allows obtaining a token that can be used for subsequent
         authentication instead of repeatedly sending username and password.
-        
+
         Args:
             base_url: The base URL of the Paperless-NgX instance.
             username: Username for authentication.
             password: Password for authentication.
             timeout: Request timeout in seconds. If None, uses the client's default timeout.
-            
+
         Returns:
             Generated API token as a string.
-            
+
         Raises:
             AuthenticationError: If authentication fails due to invalid credentials.
             RequestError: For connection or request failures.
             ResponseParsingError: If the response cannot be parsed or doesn't contain a token.
-            
+
         Examples:
             >>> token = client.generate_token(
             ...     "https://paperless.example.com",
@@ -695,6 +706,7 @@ class PaperlessClient:
             ... )
             >>> print(token)
             40characterslong40characterslong40charac
+
         """
         if timeout is None:
             timeout = self.settings.timeout
@@ -749,20 +761,21 @@ class PaperlessClient:
     def get_statistics(self) -> dict[str, Any]:
         """
         Get system statistics from the Paperless-ngx server.
-        
+
         This method retrieves statistics about the Paperless-ngx system,
         including document counts, storage usage, and other metrics.
-        
+
         Returns:
             Dictionary containing system statistics.
-            
+
         Raises:
             APIError: If the statistics cannot be retrieved.
-            
+
         Examples:
             >>> stats = client.get_statistics()
             >>> print(f"Total documents: {stats['documents_total']}")
             Total documents: 1250
+
         """
         if result := self.request("GET", "api/statistics/"):
             return result
@@ -771,21 +784,22 @@ class PaperlessClient:
     def get_system_status(self) -> dict[str, Any]:
         """
         Get system status from the Paperless-ngx server.
-        
+
         This method retrieves information about the current status of the
         Paperless-ngx system, including version information, task queue status,
         and other operational metrics.
-        
+
         Returns:
             Dictionary containing system status information.
-            
+
         Raises:
             APIError: If the status information cannot be retrieved.
-            
+
         Examples:
             >>> status = client.get_system_status()
             >>> print(f"Paperless version: {status['version']}")
             Paperless version: 1.14.5
+
         """
         if result := self.request("GET", "api/status/"):
             return result
@@ -794,21 +808,22 @@ class PaperlessClient:
     def get_config(self) -> dict[str, Any]:
         """
         Get system configuration from the Paperless-ngx server.
-        
+
         This method retrieves the current configuration settings of the
         Paperless-ngx server, including feature flags, settings, and
         other configuration parameters.
-        
+
         Returns:
             Dictionary containing system configuration.
-            
+
         Raises:
             APIError: If the configuration cannot be retrieved.
-            
+
         Examples:
             >>> config = client.get_config()
             >>> print(f"OCR language: {config['ocr_language']}")
             OCR language: eng
+
         """
         if result := self.request("GET", "api/config/"):
             return result
