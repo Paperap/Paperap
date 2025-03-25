@@ -170,9 +170,7 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         for key, _value in values.items():
             if not self._meta.filter_allowed(key):
-                raise FilterDisabledError(
-                    f"Filtering by {key} for {self.resource.name} does not appear to be supported by the API."
-                )
+                raise FilterDisabledError(f"Filtering by {key} for {self.resource.name} does not appear to be supported by the API.")
 
         if values:
             # Reset the cache if filters change
@@ -349,7 +347,7 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
 
         # If we've tried everything and still can't get a count, raise an error
         raise NotImplementedError(
-            f"Unexpected Error: Could not determine count of objects. Last response: {self._last_response}"
+            f"Unexpected Error: Could not determine count of objects. Last response: {self._last_response}",
         )
 
     def count_this_page(self) -> int:
@@ -1090,6 +1088,7 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
 
 class BaseQuerySetProtocol[_Model: BaseModel](Protocol):
     resource: "BaseResource"
+
     def filter(self, **kwargs: Any) -> Self: ...
     def exclude(self, **kwargs: Any) -> Self: ...
     def all(self) -> Self: ...
@@ -1106,8 +1105,9 @@ class BaseQuerySetProtocol[_Model: BaseModel](Protocol):
     def __getitem__(self, key: int | slice) -> _Model | list[_Model]: ...
     def __contains__(self, item: Any) -> bool: ...
 
+
 class SupportsBulkActions:
-    def bulk_action(self : BaseQuerySetProtocol, action: str, **kwargs: Any) -> ClientResponse:
+    def bulk_action(self: BaseQuerySetProtocol, action: str, **kwargs: Any) -> ClientResponse:
         """
         Perform a bulk action on all objects in the queryset.
 
@@ -1150,7 +1150,7 @@ class SupportsBulkActions:
 
         return fn(action, ids, **kwargs)
 
-    def delete(self : BaseQuerySetProtocol) -> ClientResponse:
+    def delete(self: BaseQuerySetProtocol) -> ClientResponse:
         """
         Delete all objects in the queryset.
 
@@ -1183,7 +1183,7 @@ class SupportsBulkActions:
 
         return fn("delete", ids)
 
-    def bulk_update(self : BaseQuerySetProtocol, **kwargs: Any) -> ClientResponse:
+    def bulk_update(self: BaseQuerySetProtocol, **kwargs: Any) -> ClientResponse:
         """
         Update all objects in the queryset with the given values.
 
@@ -1222,7 +1222,7 @@ class SupportsBulkActions:
     def bulk_assign_tags(
         self : BaseQuerySetProtocol,
         tag_ids: list[int],
-        remove_existing: bool = False
+        remove_existing: bool = False,
     ) -> ClientResponse:
         """
         Assign tags to all objects in the queryset.
@@ -1264,7 +1264,7 @@ class SupportsBulkActions:
 
         return fn(ids, tag_ids, remove_existing)
 
-    def bulk_assign_correspondent(self : BaseQuerySetProtocol, correspondent_id: int) -> ClientResponse:
+    def bulk_assign_correspondent(self: BaseQuerySetProtocol, correspondent_id: int) -> ClientResponse:
         """
         Assign a correspondent to all objects in the queryset.
 
@@ -1297,7 +1297,7 @@ class SupportsBulkActions:
 
         return fn(ids, correspondent_id)
 
-    def bulk_assign_document_type(self : BaseQuerySetProtocol, document_type_id: int) -> ClientResponse:
+    def bulk_assign_document_type(self: BaseQuerySetProtocol, document_type_id: int) -> ClientResponse:
         """
         Assign a document type to all objects in the queryset.
 
@@ -1330,7 +1330,7 @@ class SupportsBulkActions:
 
         return fn(ids, document_type_id)
 
-    def bulk_assign_storage_path(self : BaseQuerySetProtocol, storage_path_id: int) -> ClientResponse:
+    def bulk_assign_storage_path(self: BaseQuerySetProtocol, storage_path_id: int) -> ClientResponse:
         """
         Assign a storage path to all objects in the queryset.
 
@@ -1363,7 +1363,7 @@ class SupportsBulkActions:
 
         return fn(ids, storage_path_id)
 
-    def bulk_assign_owner(self : BaseQuerySetProtocol, owner_id: int) -> ClientResponse:
+    def bulk_assign_owner(self: BaseQuerySetProtocol, owner_id: int) -> ClientResponse:
         """
         Assign an owner to all objects in the queryset.
 
