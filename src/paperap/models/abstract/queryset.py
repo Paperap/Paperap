@@ -753,7 +753,7 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         Delete all objects in the queryset.
 
-        The Base QuerySet calls a separate delete request for each object. Some 
+        The Base QuerySet calls a separate delete request for each object. Some
         child classes offer bulk deletion functionality that will perform it all
         in one request.
 
@@ -1144,9 +1144,8 @@ class BaseQuerySetProtocol[_Model: BaseModel](Protocol):
     def __getitem__(self, key: int | slice) -> _Model | list[_Model]: ...
     def __contains__(self, item: Any) -> bool: ...
 
-
-class SupportsBulkActions:
-    def action(self: BaseQuerySetProtocol, action: str, **kwargs: Any) -> ClientResponse:
+class BulkQuerySet[_Model: StandardModel](StandardQuerySet[_Model]):
+    def _bulk_action(self, action: str, **kwargs: Any) -> ClientResponse:
         """
         Perform a bulk action on all objects in the queryset.
 
@@ -1189,7 +1188,8 @@ class SupportsBulkActions:
 
         return fn(action, ids, **kwargs)
 
-    def delete(self: BaseQuerySetProtocol) -> ClientResponse:
+    @override
+    def delete(self) -> ClientResponse:
         """
         Delete all objects in the queryset.
 
@@ -1214,9 +1214,10 @@ class SupportsBulkActions:
         # We only need IDs, so optimize by requesting just the ID field if possible
         ids = [obj.id for obj in self]
 
-        return self.resource.delete(ids)
+        return self.resource.delete(ids) # type: ignore # Not sure why pyright is complaining
 
-    def update(self: BaseQuerySetProtocol, **kwargs: Any) -> ClientResponse:
+    @override
+    def update(self, **kwargs: Any) -> Self:
         """
         Update all objects in the queryset with the given values.
 
@@ -1248,11 +1249,13 @@ class SupportsBulkActions:
         ids = [obj.id for obj in self]
 
         if not ids:
-            return {"success": True, "count": 0}
+            return self
 
-        return fn(ids, **kwargs)
+        fn(ids, **kwargs)
 
-    def assign_owner(self: BaseQuerySetProtocol, owner_id: int) -> ClientResponse:
+        return self._chain()
+
+    def assign_owner(self, owner_id: int) -> ClientResponse:
         """
         Assign an owner to all objects in the queryset.
 

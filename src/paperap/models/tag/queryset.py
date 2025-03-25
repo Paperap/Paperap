@@ -12,7 +12,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any, Self, Union
 
-from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet, SupportsBulkActions
+from paperap.models.abstract.queryset import BulkQuerySet
 from paperap.models.mixins.queryset import HasStandard
 
 if TYPE_CHECKING:
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class TagQuerySet(StandardQuerySet["Tag"], HasStandard, SupportsBulkActions):
+class TagQuerySet(BulkQuerySet["Tag"], HasStandard):
     """
     Implement specialized filtering methods for Paperless-ngx tags.
 

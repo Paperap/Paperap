@@ -182,7 +182,13 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         with filepath.open("rb") as f:
             return self.upload_content(f.read(), filepath.name, **metadata)
 
-    def upload_sync(self, filepath: Path | str, max_wait: int = 300, poll_interval: float = 1.0, **metadata) -> Document:
+    def upload_sync(
+        self,
+        filepath: Path | str,
+        max_wait: int = 300,
+        poll_interval: float = 1.0,
+        **metadata,
+    ) -> Document:
         """
         Upload a document and wait until it has been processed.
 
@@ -226,7 +232,12 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
                 raise BadResponseError("Document processing succeeded but no document ID was returned")
 
         # Wait for the task to complete
-        task = self.client.tasks.wait_for_task(task_id, max_wait=max_wait, poll_interval=poll_interval, success_callback=on_success)
+        task = self.client.tasks.wait_for_task(
+            task_id,
+            max_wait=max_wait,
+            poll_interval=poll_interval,
+            success_callback=on_success,
+        )
 
         if not task.related_document:
             raise BadResponseError("Document processing succeeded but no document ID was returned")
@@ -292,47 +303,45 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             raise APIError("Failed to retrieve next ASN")
         return response["next_asn"]
 
-    def bulk_action(self, action: str, ids: list[int], **kwargs: Any) -> dict[str, Any]:
+    def _document_bulk_operation(self, operation: str, ids: list[int], **kwargs: Any) -> dict[str, Any]:
         """
-        Perform a bulk action on multiple documents.
+        Perform a bulk operation on multiple documents.
 
         This is a generic method used by specific bulk operations to perform
-        actions on multiple documents at once.
+        actions on multiple documents at once using the document-specific bulk_edit endpoint.
 
         Args:
-            action: The action to perform (e.g., "delete", "set_correspondent", etc.)
-            ids: List of document IDs to perform the action on.
-            **kwargs: Additional parameters for the action, specific to each action type.
+            operation: The operation to perform (e.g., "delete", "set_correspondent", etc.)
+            ids: List of document IDs to perform the operation on.
+            **kwargs: Additional parameters for the operation, specific to each type.
 
         Returns:
             The API response as a dictionary.
 
         Raises:
             ConfigurationError: If the bulk edit endpoint is not defined.
-            APIError: If the bulk action fails.
-
-        Example:
-            >>> response = client.documents.bulk_action(
-            ...     "set_correspondent",
-            ...     [123, 124, 125],
-            ...     correspondent=5
-            ... )
+            APIError: If the bulk operation fails.
 
         """
         # Signal before bulk action
-        signal_params = {"resource": self.name, "action": action, "ids": ids, "kwargs": kwargs}
-        registry.emit("resource.bulk_action:before", "Emitted before bulk action", args=[self], kwargs=signal_params)
+        signal_params = {"resource": self.name, "operation": operation, "ids": ids, "kwargs": kwargs}
+        registry.emit(
+            "resource.bulk_operation:before",
+            "Emitted before bulk operation",
+            args=[self],
+            kwargs=signal_params,
+        )
 
         # Prepare the data for the bulk action
-        data = {"method": action, "documents": ids, "parameters": kwargs}
+        data = {"method": operation, "documents": ids, "parameters": kwargs}
 
         bulk_edit_url = f"{self.client.base_url}/api/documents/bulk_edit/"
         response = self.client.request("POST", bulk_edit_url, data=data)
 
         # Signal after bulk action
         registry.emit(
-            "resource.bulk_action:after",
-            "Emitted after bulk action",
+            "resource.bulk_operation:after",
+            "Emitted after bulk operation",
             args=[self],
             kwargs={**signal_params, "response": response},
         )
@@ -355,36 +364,48 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         """
         ids = [model.id if isinstance(model, Document) else model for model in models]
-        return self.bulk_action("delete", ids)
+        return self._document_bulk_operation("delete", ids)
 
-    def reprocess(self, ids: list[int]) -> dict[str, Any]:
+    def reprocess(self, document_ids: int | list[int]) -> dict[str, Any]:
         """
-        Reprocess multiple documents.
+        Reprocess one or multiple documents.
 
         Reprocessing documents will re-run the document consumer pipeline,
         including OCR, classification, and tagging.
 
         Args:
-            ids: List of document IDs to reprocess.
+            document_ids: Single document ID or list of document IDs to reprocess.
 
         Returns:
             The API response as a dictionary.
 
         Raises:
-            APIError: If the bulk reprocess operation fails.
+            APIError: If the reprocess operation fails.
 
-        Example:
+        Examples:
+            >>> # Reprocess a single document
+            >>> response = client.documents.reprocess(123)
+            >>>
+            >>> # Reprocess multiple documents
             >>> response = client.documents.reprocess([123, 124])
 
         """
-        return self.bulk_action("reprocess", ids)
+        if isinstance(document_ids, int):
+            document_ids = [document_ids]
 
-    def merge(self, ids: list[int], metadata_document_id: int | None = None, delete_originals: bool = False) -> bool:
+        return self._document_bulk_operation("reprocess", document_ids)
+
+    def merge(
+        self,
+        document_ids: int | list[int],
+        metadata_document_id: int | None = None,
+        delete_originals: bool = False,
+    ) -> bool:
         """
         Merge multiple documents into a single document.
 
         Args:
-            ids: List of document IDs to merge.
+            document_ids: Single document ID or list of document IDs to merge.
             metadata_document_id: Apply metadata from this document to the merged document.
                 If None, metadata from the first document will be used.
             delete_originals: Whether to delete the original documents after merging.
@@ -393,11 +414,18 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             True if submitting the merge was successful.
 
         Raises:
-            BadResponseError: If the merge action returns an unexpected response.
-            APIError: If the merge action fails.
+            BadResponseError: If the merge operation returns an unexpected response.
+            APIError: If the merge operation fails.
 
-        Example:
-            >>> # Merge documents 123, 124, and 125, using metadata from 123
+        Examples:
+            >>> # Ensure document is a list for merging
+            >>> success = client.documents.merge(
+            ...     [123],
+            ...     metadata_document_id=123,
+            ...     delete_originals=True
+            ... )
+            >>>
+            >>> # Merge multiple documents
             >>> success = client.documents.merge(
             ...     [123, 124, 125],
             ...     metadata_document_id=123,
@@ -411,13 +439,21 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if delete_originals:
             params["delete_originals"] = True
 
-        result = self.bulk_action("merge", ids, **params)
+        # Ensure document_ids is a list
+        if isinstance(document_ids, int):
+            document_ids = [document_ids]
+
+        # Merging requires at least one document
+        if not document_ids:
+            raise ValueError("At least one document ID is required for merging")
+
+        result = self._document_bulk_operation("merge", document_ids, **params)
         # Expect {'result': 'OK'}
         if not result or "result" not in result:
-            raise BadResponseError(f"Merge action returned unexpected response: {result}")
+            raise BadResponseError(f"Merge operation returned unexpected response: {result}")
 
         if result.get("result", None) != "OK":
-            raise APIError(f"Merge action failed: {result}")
+            raise APIError(f"Merge operation failed: {result}")
         return True
 
     def split(self, document_id: int, pages: list, delete_originals: bool = False) -> dict[str, Any]:
@@ -436,9 +472,9 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         Raises:
             APIError: If the split operation fails.
 
-        Example:
+        Examples:
             >>> # Split document 123 into three documents: pages 1, 2-3, and 4
-            >>> response = client.documents.bulk_split(
+            >>> response = client.documents.split(
             ...     123,
             ...     [1, "2-3", 4],
             ...     delete_originals=True
@@ -449,14 +485,14 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if delete_originals:
             params["delete_originals"] = True
 
-        return self.bulk_action("split", [document_id], **params)
+        return self._document_bulk_operation("split", [document_id], **params)
 
-    def rotate(self, ids: list[int], degrees: int) -> dict[str, Any]:
+    def rotate(self, document_ids: int | list[int], degrees: int) -> dict[str, Any]:
         """
-        Rotate multiple documents by a specified angle.
+        Rotate one or multiple documents by a specified angle.
 
         Args:
-            ids: List of document IDs to rotate.
+            document_ids: Single document ID or list of document IDs to rotate.
             degrees: Degrees to rotate (must be 90, 180, or 270).
 
         Returns:
@@ -466,15 +502,21 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             ValueError: If degrees is not 90, 180, or 270.
             APIError: If the rotation operation fails.
 
-        Example:
-            >>> # Rotate documents 123 and 124 by 90 degrees
+        Examples:
+            >>> # Rotate a single document by 90 degrees
+            >>> response = client.documents.rotate(123, 90)
+            >>>
+            >>> # Rotate multiple documents by 90 degrees
             >>> response = client.documents.rotate([123, 124], 90)
 
         """
         if degrees not in (90, 180, 270):
             raise ValueError("Degrees must be 90, 180, or 270")
 
-        return self.bulk_action("rotate", ids, degrees=degrees)
+        if isinstance(document_ids, int):
+            document_ids = [document_ids]
+
+        return self._document_bulk_operation("rotate", document_ids, degrees=degrees)
 
     def delete_pages(self, document_id: int, pages: list[int]) -> dict[str, Any]:
         """
@@ -490,24 +532,24 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         Raises:
             APIError: If the page deletion operation fails.
 
-        Example:
+        Examples:
             >>> # Delete pages 2 and 4 from document 123
             >>> response = client.documents.delete_pages(123, [2, 4])
 
         """
-        return self.bulk_action("delete_pages", [document_id], pages=pages)
+        return self._document_bulk_operation("delete_pages", [document_id], pages=pages)
 
     def modify_custom_fields(
         self,
-        ids: list[int],
+        document_ids: int | list[int],
         add_custom_fields: dict[int, Any] | None = None,
         remove_custom_fields: list[int] | None = None,
     ) -> dict[str, Any]:
         """
-        Modify custom fields on multiple documents.
+        Modify custom fields on one or multiple documents.
 
         Args:
-            ids: List of document IDs to update.
+            document_ids: Single document ID or list of document IDs to update.
             add_custom_fields: Dictionary mapping custom field IDs to values to add or update.
             remove_custom_fields: List of custom field IDs to remove from the documents.
 
@@ -517,8 +559,15 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         Raises:
             APIError: If the custom field modification fails.
 
-        Example:
-            >>> # Add/update custom fields 3 and 5, remove custom field 7
+        Examples:
+            >>> # For a single document
+            >>> response = client.documents.modify_custom_fields(
+            ...     123,
+            ...     add_custom_fields={3: "High Priority"},
+            ...     remove_custom_fields=[7]
+            ... )
+            >>>
+            >>> # For multiple documents
             >>> response = client.documents.modify_custom_fields(
             ...     [123, 124, 125],
             ...     add_custom_fields={3: "High Priority", 5: "2023-04-15"},
@@ -532,14 +581,22 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if remove_custom_fields:
             params["remove_custom_fields"] = remove_custom_fields
 
-        return self.bulk_action("modify_custom_fields", ids, **params)
+        if isinstance(document_ids, int):
+            document_ids = [document_ids]
 
-    def modify_tags(self, ids: list[int], add_tags: list[int] | None = None, remove_tags: list[int] | None = None) -> dict[str, Any]:
+        return self._document_bulk_operation("modify_custom_fields", document_ids, **params)
+
+    def modify_tags(
+        self,
+        document_ids: int | list[int],
+        add_tags: list[int] | None = None,
+        remove_tags: list[int] | None = None,
+    ) -> dict[str, Any]:
         """
-        Modify tags on multiple documents.
+        Modify tags on one or multiple documents.
 
         Args:
-            ids: List of document IDs to update.
+            document_ids: Single document ID or list of document IDs to update.
             add_tags: List of tag IDs to add to the documents.
             remove_tags: List of tag IDs to remove from the documents.
 
@@ -549,8 +606,15 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         Raises:
             APIError: If the tag modification fails.
 
-        Example:
-            >>> # Add tags 1 and 2, remove tag 3 from multiple documents
+        Examples:
+            >>> # For a single document
+            >>> response = client.documents.modify_tags(
+            ...     123,
+            ...     add_tags=[1, 2],
+            ...     remove_tags=[3]
+            ... )
+            >>>
+            >>> # For multiple documents
             >>> response = client.documents.modify_tags(
             ...     [123, 124, 125],
             ...     add_tags=[1, 2],
@@ -564,14 +628,17 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if remove_tags:
             params["remove_tags"] = remove_tags
 
-        return self.bulk_action("modify_tags", ids, **params)
+        if isinstance(document_ids, int):
+            document_ids = [document_ids]
 
-    def add_tag(self, ids: list[int], tag_id: int) -> dict[str, Any]:
+        return self._document_bulk_operation("modify_tags", document_ids, **params)
+
+    def add_tag(self, document_ids: int | list[int], tag_id: int) -> dict[str, Any]:
         """
-        Add a single tag to multiple documents.
+        Add a single tag to one or multiple documents.
 
         Args:
-            ids: List of document IDs to update.
+            document_ids: Single document ID or list of document IDs to update.
             tag_id: Tag ID to add to all specified documents.
 
         Returns:
@@ -580,19 +647,25 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         Raises:
             APIError: If the tag addition fails.
 
-        Example:
-            >>> # Add tag 5 to documents 123, 124, and 125
+        Examples:
+            >>> # Add tag to a single document
+            >>> response = client.documents.add_tag(123, 5)
+            >>>
+            >>> # Add tag to multiple documents
             >>> response = client.documents.add_tag([123, 124, 125], 5)
 
         """
-        return self.bulk_action("add_tag", ids, tag=tag_id)
+        if isinstance(document_ids, int):
+            document_ids = [document_ids]
 
-    def remove_tag(self, ids: list[int], tag_id: int) -> dict[str, Any]:
+        return self._document_bulk_operation("add_tag", document_ids, tag=tag_id)
+
+    def remove_tag(self, document_ids: int | list[int], tag_id: int) -> dict[str, Any]:
         """
-        Remove a single tag from multiple documents.
+        Remove a single tag from one or multiple documents.
 
         Args:
-            ids: List of document IDs to update.
+            document_ids: Single document ID or list of document IDs to update.
             tag_id: Tag ID to remove from all specified documents.
 
         Returns:
@@ -601,19 +674,25 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         Raises:
             APIError: If the tag removal fails.
 
-        Example:
-            >>> # Remove tag 3 from documents 123, 124, and 125
+        Examples:
+            >>> # Remove tag from a single document
+            >>> response = client.documents.remove_tag(123, 3)
+            >>>
+            >>> # Remove tag from multiple documents
             >>> response = client.documents.remove_tag([123, 124, 125], 3)
 
         """
-        return self.bulk_action("remove_tag", ids, tag=tag_id)
+        if isinstance(document_ids, int):
+            document_ids = [document_ids]
 
-    def set_correspondent(self, ids: list[int], correspondent: "Correspondent | int") -> dict[str, Any]:
+        return self._document_bulk_operation("remove_tag", document_ids, tag=tag_id)
+
+    def set_correspondent(self, document_ids: int | list[int], correspondent: "Correspondent | int") -> dict[str, Any]:
         """
-        Set the correspondent for multiple documents.
+        Set the correspondent for one or multiple documents.
 
         Args:
-            ids: List of document IDs to update.
+            document_ids: Single document ID or list of document IDs to update.
             correspondent: Correspondent object or ID to assign to all specified documents.
 
         Returns:
@@ -622,8 +701,11 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         Raises:
             APIError: If the correspondent update fails.
 
-        Example:
-            >>> # Set correspondent 5 for documents 123, 124, and 125
+        Examples:
+            >>> # Set correspondent for a single document
+            >>> response = client.documents.set_correspondent(123, 5)
+            >>>
+            >>> # Set correspondent for multiple documents
             >>> response = client.documents.set_correspondent([123, 124, 125], 5)
             >>>
             >>> # Or using a correspondent object
@@ -633,14 +715,18 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         """
         if not isinstance(correspondent, int):
             correspondent = correspondent.id
-        return self.bulk_action("set_correspondent", ids, correspondent=correspondent)
 
-    def set_document_type(self, ids: list[int], document_type: "DocumentType | int") -> dict[str, Any]:
+        if isinstance(document_ids, int):
+            document_ids = [document_ids]
+
+        return self._document_bulk_operation("set_correspondent", document_ids, correspondent=correspondent)
+
+    def set_document_type(self, document_ids: int | list[int], document_type: "DocumentType | int") -> dict[str, Any]:
         """
-        Set the document type for multiple documents.
+        Set the document type for one or multiple documents.
 
         Args:
-            ids: List of document IDs to update.
+            document_ids: Single document ID or list of document IDs to update.
             document_type: DocumentType object or ID to assign to all specified documents.
 
         Returns:
@@ -649,8 +735,11 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         Raises:
             APIError: If the document type update fails.
 
-        Example:
-            >>> # Set document type 3 for documents 123, 124, and 125
+        Examples:
+            >>> # Set document type for a single document
+            >>> response = client.documents.set_document_type(123, 3)
+            >>>
+            >>> # Set document type for multiple documents
             >>> response = client.documents.set_document_type([123, 124, 125], 3)
             >>>
             >>> # Or using a document type object
@@ -660,14 +749,18 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         """
         if not isinstance(document_type, int):
             document_type = document_type.id
-        return self.bulk_action("set_document_type", ids, document_type=document_type)
 
-    def set_storage_path(self, ids: list[int], storage_path: "StoragePath | int") -> dict[str, Any]:
+        if isinstance(document_ids, int):
+            document_ids = [document_ids]
+
+        return self._document_bulk_operation("set_document_type", document_ids, document_type=document_type)
+
+    def set_storage_path(self, document_ids: int | list[int], storage_path: "StoragePath | int") -> dict[str, Any]:
         """
-        Set the storage path for multiple documents.
+        Set the storage path for one or multiple documents.
 
         Args:
-            ids: List of document IDs to update.
+            document_ids: Single document ID or list of document IDs to update.
             storage_path: StoragePath object or ID to assign to all specified documents.
 
         Returns:
@@ -676,8 +769,11 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         Raises:
             APIError: If the storage path update fails.
 
-        Example:
-            >>> # Set storage path 4 for documents 123, 124, and 125
+        Examples:
+            >>> # Set storage path for a single document
+            >>> response = client.documents.set_storage_path(123, 4)
+            >>>
+            >>> # Set storage path for multiple documents
             >>> response = client.documents.set_storage_path([123, 124, 125], 4)
             >>>
             >>> # Or using a storage path object
@@ -687,16 +783,24 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         """
         if not isinstance(storage_path, int):
             storage_path = storage_path.id
-        return self.bulk_action("set_storage_path", ids, storage_path=storage_path)
+
+        if isinstance(document_ids, int):
+            document_ids = [document_ids]
+
+        return self._document_bulk_operation("set_storage_path", document_ids, storage_path=storage_path)
 
     def set_permissions(
-        self, ids: list[int], permissions: dict[str, Any] | None = None, owner_id: int | None = None, merge: bool = False
+        self,
+        model_ids: int | list[int],
+        permissions: dict[str, Any] | None = None,
+        owner_id: int | None = None,
+        merge: bool = False,
     ) -> dict[str, Any]:
         """
-        Set permissions for multiple documents.
+        Set permissions for one or multiple documents.
 
         Args:
-            ids: List of document IDs to update.
+            model_ids: Single document ID or list of document IDs to update.
             permissions: Permissions object defining user and group permissions.
             owner_id: Owner ID to assign to the documents.
             merge: Whether to merge with existing permissions (True) or replace them (False).
@@ -707,8 +811,16 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         Raises:
             APIError: If the permissions update fails.
 
-        Example:
-            >>> # Set owner to user 2 for documents 123, 124, and 125
+        Examples:
+            >>> # Set permissions for a single document
+            >>> response = client.documents.set_permissions(
+            ...     123,
+            ...     owner_id=2,
+            ...     permissions={"users": {"2": "view"}, "groups": {"1": "edit"}},
+            ...     merge=True
+            ... )
+            >>>
+            >>> # Set permissions for multiple documents
             >>> response = client.documents.set_permissions(
             ...     [123, 124, 125],
             ...     owner_id=2,
@@ -723,7 +835,10 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if owner_id is not None:
             params["owner"] = owner_id
 
-        return self.bulk_action("set_permissions", ids, **params)
+        if isinstance(model_ids, int):
+            model_ids = [model_ids]
+
+        return self._document_bulk_operation("set_permissions", model_ids, **params)
 
     def empty_trash(self) -> dict[str, Any]:
         """

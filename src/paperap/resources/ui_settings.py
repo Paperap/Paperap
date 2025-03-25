@@ -95,15 +95,9 @@ class UISettingsResource(StandardResource[UISettings, UISettingsQuerySet]):
         return self.create(**{"settings": settings})
 
     @override
-    def delete(self, model_id: int | UISettings) -> None:
+    def delete(self, model: int | UISettings | list[int | UISettings]) -> None:
         """
         Delete UI settings (not supported).
-
-        This method is overridden to prevent deletion of UI settings,
-        as this operation is not supported by the Paperless-NgX API.
-
-        Args:
-            model_id: The ID of the UI settings to delete, or a UISettings instance.
 
         Raises:
             NotImplementedError: Always raised as deletion is not supported.

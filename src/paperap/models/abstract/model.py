@@ -612,7 +612,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         return cls._resource.create(**kwargs)
 
-    def delete(self) -> None:
+    def delete(self) -> ClientResponse:
         """
         Delete this model from the Paperless NGX server.
 

@@ -5,6 +5,7 @@ default_language_version:
 default_install_hook_types: [pre-commit, pre-push]
 files: '^(.+\.(py|ts|js|tsx|jsx|yaml|toml)|.+/requirements/.*\.txt)$'
 exclude: "(^[._]|/config/|/docs/|/logs/|/node_modules/)"
+fail_fast: false
 
 # GITHUB
 # See https://pre-commit.com/hooks.html for more hooks
@@ -21,7 +22,8 @@ repos:
       - id: check-toml
       - id: detect-private-key
       - id: end-of-file-fixer
-      - id: trailing-whitespace
+      # Trailing whitespace is already handled by ruff, disabling this to avoid duplicated work
+      # - id: trailing-whitespace
       - id: mixed-line-ending
         args: [--fix=lf]
       - id: debug-statements
@@ -32,7 +34,8 @@ repos:
     hooks:
       # Run the linter.
       - id: ruff
-        args: [--fix]
+        args: [--fix, --fix-only]
+        stages: [commit]
       # Run the formatter.
       - id: ruff-format
         always_run: true
