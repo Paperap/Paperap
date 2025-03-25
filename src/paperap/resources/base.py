@@ -935,7 +935,7 @@ class BaseResourceProtocol[_BaseModel: "BaseModel", _BaseQuerySet: "BaseQuerySet
     def __call__(self, *args: Any, **keywords: Any) -> _BaseQuerySet: ...
 
 
-class BulkEditingMixin:
+class BulkEditingMixin[_Model : "StandardModel"]:
     def _bulk_operation(
         self: BaseResourceProtocol,  # type: ignore
         ids: list[int],
@@ -1046,5 +1046,5 @@ class BulkEditingMixin:
 
         return self._bulk_operation(ids=model_ids, operation="set_permissions", **params)  # type: ignore # allow protected access
 
-    def _delete_multiple(self, models: list[int | _StandardModel]) -> ClientResponse:
+    def _delete_multiple(self, models: list[int | _Model]) -> ClientResponse:
         return self._bulk_operation(ids=models, operation="delete")  # type: ignore # allow protected access

@@ -15,10 +15,10 @@ import re
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Union, cast, override
+from typing import Any, Protocol, cast, override
 
 import dateparser
-import fitz  # PyMuPDF # type: ignore
+import fitz  # type: ignore
 import openai
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from openai import OpenAI

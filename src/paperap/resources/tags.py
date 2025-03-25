@@ -32,7 +32,7 @@ from paperap.models.tag import Tag, TagQuerySet
 from paperap.resources.base import BaseResource, BulkEditingMixin, StandardResource
 
 
-class TagResource(StandardResource[Tag, TagQuerySet], BulkEditingMixin):
+class TagResource(StandardResource[Tag, TagQuerySet], BulkEditingMixin[Tag]):
     """
     Manage tag resources in the Paperless-NgX system.
 

@@ -22,7 +22,7 @@ from paperap.models.correspondent import Correspondent, CorrespondentQuerySet
 from paperap.resources.base import BaseResource, BulkEditingMixin, StandardResource
 
 
-class CorrespondentResource(StandardResource[Correspondent, CorrespondentQuerySet], BulkEditingMixin):
+class CorrespondentResource(StandardResource[Correspondent, CorrespondentQuerySet], BulkEditingMixin[Correspondent]):
     """
     Resource for managing correspondents in Paperless-NgX.
 
