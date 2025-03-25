@@ -159,7 +159,7 @@ def test_fuzz_document_validate_text(value: Union[str, None]) -> None:
 
     # Second test indirectly through instantiation
     document = DocumentFactory.create(content = value, title = value)
-    
+
 note = DocumentNoteFactory.to_dict()
 @given(
     id=st.integers(min_value=1, max_value=10**6),

@@ -132,7 +132,7 @@ class TestConstModel(unittest.TestCase):
         """Test model for ConstModel tests."""
         name: str
         value: int
-        optional: Optional[str] = None
+        optional: str | None = None
 
     def test_model_creation(self):
         """

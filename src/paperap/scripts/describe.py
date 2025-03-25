@@ -92,6 +92,10 @@ class DescribePhotos(BaseModel):
         >>> describer = DescribePhotos(client=client)
         >>> describer.describe_documents()
 
+    Notes:
+        Custom templates can be provided by setting the PAPERLESS_TEMPLATE_DIRECTORY
+        environment variable or passing template_dir to the Settings constructor.
+
     """
 
     max_threads: int = 0
@@ -151,7 +155,12 @@ class DescribePhotos(BaseModel):
     @property
     def jinja_env(self) -> Environment:
         if not self._jinja_env:
-            templates_path = Path(__file__).parent / "templates"
+            # If template_dir is provided in settings, use that
+            if self.client.settings.template_dir:
+                templates_path = Path(self.client.settings.template_dir)
+            else:
+                # Otherwise use the default path
+                templates_path = Path(__file__).parent / "templates"
             self._jinja_env = Environment(loader=FileSystemLoader(str(templates_path)), autoescape=True)
         return self._jinja_env
 

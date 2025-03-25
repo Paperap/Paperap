@@ -37,7 +37,7 @@ fake = Faker()
 
 SAMPLE_DATA = Path(__file__).parent / "sample_data"
 
-def generate_sample_text_files(output_dir: Path, count: int = 20) -> List[Path]:
+def generate_sample_text_files(output_dir: Path, count: int = 20) -> list[Path]:
     """
     Generate sample text files for document upload testing.
 

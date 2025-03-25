@@ -15,7 +15,7 @@ from tests.lib import factories
 class TestDocumentQuerysetBulkOperations(DocumentUnitTest):
     """Test document queryset bulk operations functionality."""
     mock_env = False
-    test_docs: List[Document] = []
+    test_docs: list[Document] = []
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -119,7 +119,7 @@ class TestDocumentQuerysetBulkOperations(DocumentUnitTest):
 
         return new_doc
 
-    def _create_multiple_test_documents(self, count: int = 3) -> List[Document]:
+    def _create_multiple_test_documents(self, count: int = 3) -> list[Document]:
         """Create multiple test documents."""
         docs = []
         for i in range(count):

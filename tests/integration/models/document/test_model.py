@@ -171,7 +171,7 @@ class TestFeatures(IntegrationTest):
         document1 = self.client.documents().get(self._initial_data['id'])
         document2 = self.client.documents().get(self._initial_data['id'])
         self.assertEqual(document1, document2, "Documents with the same ID are not equal")
-        
+
 class TestUpload(IntegrationTest):
     save_on_write = False
 
@@ -202,7 +202,7 @@ class TestUpload(IntegrationTest):
             # Still there
             second_retrieved_document = self.client.documents().get(document.id)
             self.assertEqual(document, second_retrieved_document)
-            
+
             # Delete it
             document.delete()
 

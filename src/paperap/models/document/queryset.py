@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING, Any, NamedTuple, Self, Union, overload, overri
 from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models.mixins.queryset import HasOwner
 from paperap.const import ClientResponse
+from paperap.services.enrichment import DocumentEnrichmentService, EnrichmentConfig
 
 if TYPE_CHECKING:
     from paperap.models import Correspondent, Document, DocumentNote, DocumentType, StoragePath
@@ -85,6 +86,13 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
     """
 
     resource: "DocumentResource"  # type: ignore # because nested generics are not allowed
+    _enrichment_service : DocumentEnrichmentService
+
+    @property
+    def enrichment_service(self) -> DocumentEnrichmentService:
+        if not self._enrichment_service:
+            self._enrichment_service = DocumentEnrichmentService()
+        return self._enrichment_service
 
     def tag_id(self, tag_id: int | list[int]) -> Self:
         """
@@ -1488,3 +1496,102 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         if ids:
             self.resource.set_permissions(ids, permissions, owner_id, merge)
         return self
+    def summarize(
+        self,
+        model: str = "gpt-4o-mini",
+        template_name: str = "summarize",
+        template_dir: str | None = None,
+        batch_size: int = 10,
+        api_key: str | None = None,
+        api_url: str | None = None,
+    ) -> Self:
+        """
+        Summarize documents in the queryset using an LLM.
+
+        Args:
+            model: The model to use
+            template_name: The template to use
+            template_dir: Optional custom directory for templates
+            batch_size: Number of documents to process at once
+            api_key: Optional OpenAI API key
+            api_url: Optional custom OpenAI API URL
+
+        Returns:
+            Itself, for chainability
+
+        """
+        config = EnrichmentConfig(
+            template_name=template_name,
+            template_dir=template_dir,
+            model=model,
+            api_key=api_key,
+            api_url=api_url,
+            vision=False,  # No need for vision for summarization
+        )
+
+        results = []
+
+        # Process documents in batches
+        documents : list[Document] = list(self[:]) # type: ignore # TODO
+        for i in range(0, len(documents), batch_size):
+            batch = documents[i:i+batch_size]
+            for doc in batch:
+                result = self.enrichment_service.process_document(doc, config)
+                if result.success:
+                    results.append(result.document)
+                else:
+                    logger.error(f"Failed to summarize document {doc.id}: {result.error}")
+
+        return self._chain()
+
+    def describe(
+        self,
+        model: str = "gpt-4o-mini",
+        template_name: str = "describe",
+        template_dir: str | None = None,
+        batch_size: int = 10,
+        max_images: int = 2,
+        api_key: str | None = None,
+        api_url: str | None = None,
+    ) -> Self:
+        """
+        Describe documents in the queryset using an LLM with vision capabilities.
+
+        Args:
+            model: The model to use
+            template_name: The template to use
+            template_dir: Optional custom directory for templates
+            batch_size: Number of documents to process at once
+            max_images: Maximum number of images to extract per document
+            api_key: Optional OpenAI API key
+            api_url: Optional custom OpenAI API URL
+
+        Returns:
+            Itself, for chainability
+
+        """
+        config = EnrichmentConfig(
+            template_name=template_name,
+            template_dir=template_dir,
+            model=model,
+            api_key=api_key,
+            api_url=api_url,
+            vision=True,
+            extract_images=True,
+            max_images=max_images,
+        )
+
+        results = []
+
+        # Process documents in batches
+        documents : list[Document] = list(self[:]) # type: ignore # TODO
+        for i in range(0, len(documents), batch_size):
+            batch = documents[i:i+batch_size]
+            for doc in batch:
+                result = self.enrichment_service.process_document(doc, config)
+                if result.success:
+                    results.append(result.document)
+                else:
+                    logger.error(f"Failed to describe document {doc.id}: {result.error}")
+
+        return self._chain()

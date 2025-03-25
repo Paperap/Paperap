@@ -1061,6 +1061,58 @@ class Document(StandardModel):
 
         raise TypeError(f"Invalid type for tag: {type(tag)}")
 
+    def set_custom_field(self, field : str | int, value : Any) -> None:
+        """
+        Set a custom field value for this document.
+
+        Sets the value of a custom field for this document. The field can be specified
+        as a CustomField object, a field ID, or a field name. If a field name is provided,
+        the method will look up the corresponding field ID.
+
+        Args:
+            field (str | int): The field to set. Can be a CustomField object, a field ID, or a field name.
+            value (Any): The value to set for the custom field.
+
+        Raises:
+            TypeError: If the input value is not a CustomField object, an integer, or a string.
+            ResourceNotFoundError: If a field name is provided but no matching field is found.
+
+        Example:
+            >>> document = client.documents().get(1)
+            >>> # Set custom field by ID
+            >>> document.set_custom_field(5, "2023-04-15")
+            >>> # Set custom field by object
+            >>> field = client.custom_fields().get(3)
+            >>> document.set_custom_field(field, "INV-12345")
+            >>> # Set custom field by name
+            >>> document.set_custom_field("Due Date", "2023-04-15")
+
+        """
+        if isinstance(field, int):
+            # Check if document already has that field
+            for custom_field in self.custom_field_dicts:
+                if custom_field.field == field:
+                    custom_field.value = value
+                    return
+
+            # If not, add it
+            self.custom_field_dicts.append(CustomFieldValues(field=field, value=value))
+            return
+
+        if isinstance(field, str):
+            if not (instance := self._client.custom_fields(name=field).first()):
+                raise ResourceNotFoundError(f"Custom field '{field}' not found")
+
+            for custom_field in self.custom_field_dicts:
+                if custom_field.field == instance.id:
+                    custom_field.value = value
+                    return
+
+            self.custom_field_dicts.append(CustomFieldValues(field=instance.id, value=value))
+            return
+
+        raise TypeError(f"Invalid type for custom field: {type(field)}")
+
     def get_metadata(self) -> "DocumentMetadata":
         """
         Get the metadata for this document.

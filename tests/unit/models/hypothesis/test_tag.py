@@ -68,17 +68,17 @@ def tag_id_strategy() -> st.SearchStrategy[int]:
 # @example(**d(tag_dict, id=9999, color="#ff0000", name="Red Tag"))  # Color as hex string
 # @example(**d(tag_dict, id=9998, color=16711680, name="Also Red"))  # Color as integer
 def test_fuzz_Tag(
-    match: Optional[str],
-    matching_algorithm: Optional[Union[paperap.const.MatchingAlgorithmType, int]],
-    is_insensitive: Optional[bool],
+    match: str | None,
+    matching_algorithm: paperap.const.MatchingAlgorithmType | int | None,
+    is_insensitive: bool | None,
     id: int,
-    name: Optional[str],
-    slug: Optional[str],
-    color: Optional[Union[str, int]],
-    is_inbox_tag: Optional[bool],
+    name: str | None,
+    slug: str | None,
+    color: str | int | None,
+    is_inbox_tag: bool | None,
     document_count: int,
-    owner: Optional[int],
-    user_can_change: Optional[bool],
+    owner: int | None,
+    user_can_change: bool | None,
 ) -> None:
     """Test that the Tag model can be initialized with various input combinations."""
     tag = Tag(
@@ -95,7 +95,7 @@ def test_fuzz_Tag(
         owner=owner,
         user_can_change=user_can_change,
     )
-    
+
     # Verify that the properties match what was passed in
     assert tag.id == id
     assert tag.name == name
@@ -104,7 +104,7 @@ def test_fuzz_Tag(
     assert tag.document_count == document_count
     assert tag.owner == owner
     assert tag.user_can_change == user_can_change
-    
+
     # Test color aliases
     if color is not None:
         assert tag.color == color
@@ -123,17 +123,17 @@ def test_color_aliases(color: Union[str, int]) -> None:
         tag1 = Tag(resource=resource, id=1, color=color)
         assert tag1.color == color
         assert tag1.colour == color
-        
+
         # Test setting via colour
         tag2 = Tag(resource=resource, id=1, colour=color)
         assert tag2.color == color
         assert tag2.colour == color
-        
+
         # Test setting via property after creation
         tag3 = Tag(resource=resource, id=1)
         tag3.color = color
         assert tag3.colour == color
-        
+
         tag4 = Tag(resource=resource, id=1)
         tag4.colour = color
         assert tag4.color == color
@@ -146,15 +146,15 @@ def test_color_aliases(color: Union[str, int]) -> None:
         "text_color": st.one_of(hex_color_strategy(), st.integers(min_value=0, max_value=16777215)),
     })
 )
-def test_text_color_alias(data: Dict[str, Any]) -> None:
+def test_text_color_alias(data: dict[str, Any]) -> None:
     """Test that text_color is properly aliased to colour."""
     expected_color = data["text_color"]
-    
+
     # Verify the validator correctly transforms the input
     processed = Tag.handle_text_color_alias(data)
     assert "colour" in processed
     assert processed["colour"] == expected_color
-    
+
     # Create a tag with text_color and verify it's accessible via both properties
     tag = Tag(resource=resource, **data)
     assert tag.color == expected_color
@@ -170,17 +170,17 @@ def test_color_priority(text_color: Union[str, int], colour: Union[str, int]) ->
     """Test that colour/color takes priority over text_color."""
     # Skip test cases where the colors are equal
     assume(text_color != colour)
-    
+
     data = {
-        "id": 1, 
+        "id": 1,
         "text_color": text_color,
         "colour": colour,
         "resource": resource,
     }
-    
+
     processed = Tag.handle_text_color_alias(data)
     assert processed["colour"] == colour
-    
+
     tag = Tag(**data)
     assert tag.color == colour
     assert tag.colour == colour
@@ -194,8 +194,8 @@ def test_color_priority(text_color: Union[str, int], colour: Union[str, int]) ->
         st.dictionaries(
             keys=st.text(min_size=1, max_size=20),
             values=st.one_of(
-                st.text(), 
-                st.integers(), 
+                st.text(),
+                st.integers(),
                 st.booleans(),
                 st.lists(st.integers(), min_size=0, max_size=5)
             ),
@@ -205,7 +205,7 @@ def test_color_priority(text_color: Union[str, int], colour: Union[str, int]) ->
     ),
     _fetch_all=st.booleans(),
 )
-def test_TagQuerySet(filters: Optional[Dict[str, Any]], _fetch_all: bool) -> None:
+def test_TagQuerySet(filters: dict[str, Any] | None, _fetch_all: bool) -> None:
     """Test TagQuerySet initialization with realistic parameters."""
     # Create a TagQuerySet with the resource
     queryset = TagQuerySet(
@@ -213,7 +213,7 @@ def test_TagQuerySet(filters: Optional[Dict[str, Any]], _fetch_all: bool) -> Non
         filters=filters,
         _fetch_all=_fetch_all,
     )
-    
+
     # Basic validation
     assert queryset.resource == resource
     assert queryset.filters == (filters or {})
@@ -224,11 +224,11 @@ def test_tag_queryset_filter():
     """Test that the filter method creates a new queryset with updated filters."""
     queryset = TagQuerySet(resource=resource)
     filtered = queryset.filter(name="Test Tag")
-    
+
     # Verify that a new instance was created with the filter
     assert filtered is not queryset
     assert filtered.filters == {"name": "Test Tag"}
-    
+
     # Chain another filter
     double_filtered = filtered.filter(colour="#ff0000")
     assert double_filtered.filters == {"name": "Test Tag", "colour": "#ff0000"}
@@ -238,7 +238,7 @@ def test_tag_queryset_exclude():
     """Test that the exclude method creates negative filters."""
     queryset = TagQuerySet(resource=resource)
     excluded = queryset.exclude(name="Hidden Tag")
-    
+
     # Verify negative filter was created
     assert "name__not" in excluded.filters
     assert excluded.filters["name__not"] == "Hidden Tag"
@@ -248,7 +248,7 @@ def test_tag_queryset_all():
     """Test that the all method returns a clean queryset."""
     queryset = TagQuerySet(resource=resource, filters={"name": "Test"})
     all_queryset = queryset.all()
-    
+
     # Should be a new instance without the same filters as the original
     assert all_queryset is not queryset
     # The actual implementation may not clear filters, adjust assertion to match implementation
@@ -268,12 +268,12 @@ def test_tag_creation(name: str, color: str):
             name=name,
             color=color
         )
-        
+
         # Verify the tag has the expected properties
         assert tag.name == name
         assert tag.color == color
         assert tag.id == 0  # Default ID for a new tag is 0
-        
+
         # Provide an ID to simulate an existing tag
         existing_tag = Tag(
             resource=resource,
@@ -296,7 +296,7 @@ def test_tag_creation(name: str, color: str):
         st.none()
     )
 )
-def test_tag_field_validation(name: Optional[str], color: Optional[Union[str, int]]):
+def test_tag_field_validation(name: str | None, color: str | int | None):
     """Test validation of Tag fields."""
     # Create a tag with the data
     tag = Tag(
@@ -305,7 +305,7 @@ def test_tag_field_validation(name: Optional[str], color: Optional[Union[str, in
         name=name,
         color=color
     )
-    
+
     # Check that the model validated and stored the data correctly
     assert tag.name == name
     assert tag.color == color
