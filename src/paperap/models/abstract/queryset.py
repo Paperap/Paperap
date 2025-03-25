@@ -1242,7 +1242,7 @@ class BulkQuerySet[_Model: StandardModel](StandardQuerySet[_Model]):
 
         """
         if not (fn := getattr(self.resource, "bulk_update", None)):
-            raise NotImplementedError(f"Resource {self.resource.name} does not support bulk updates")
+            return super().update(**kwargs)
 
         # Fetch all IDs in the queryset
         ids = [obj.id for obj in self]
