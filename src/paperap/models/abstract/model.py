@@ -32,7 +32,7 @@ import pydantic
 from pydantic import Field, PrivateAttr
 from typing_extensions import TypeVar
 
-from paperap.const import FilteringStrategies, ModelStatus
+from paperap.const import ClientResponse, FilteringStrategies, ModelStatus
 from paperap.exceptions import APIError, ConfigurationError, ReadOnlyFieldError, RequestError, ResourceNotFoundError
 from paperap.models.abstract.meta import StatusContext
 from paperap.signals import registry

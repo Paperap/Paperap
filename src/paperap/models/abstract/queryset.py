@@ -749,7 +749,7 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
 
         return clone
 
-    def delete(self) -> None:
+    def delete(self) -> Any:
         """
         Delete all objects in the queryset.
 
@@ -1210,17 +1210,11 @@ class SupportsBulkActions:
             >>> client.documents().filter(created__lt=one_year_ago).delete()
 
         """
-        if not (fn := getattr(self.resource, "bulk_action", None)):
-            raise NotImplementedError(f"Resource {self.resource.name} does not support bulk actions")
-
         # Fetch all IDs in the queryset
         # We only need IDs, so optimize by requesting just the ID field if possible
         ids = [obj.id for obj in self]
 
-        if not ids:
-            return {"success": True, "count": 0}
-
-        return fn("delete", ids)
+        return self.resource.delete(ids)
 
     def update(self: BaseQuerySetProtocol, **kwargs: Any) -> ClientResponse:
         """
@@ -1277,10 +1271,10 @@ class SupportsBulkActions:
         Examples:
             Set owner for all personal documents:
 
-            >>> client.documents().filter(title__contains="personal").bulk_assign_owner(1)
+            >>> client.documents().filter(title__contains="personal").assign_owner(1)
 
         """
-        if not (fn := getattr(self.resource, "bulk_assign_owner", None)):
+        if not (fn := getattr(self.resource, "assign_owner", None)):
             raise NotImplementedError(f"Resource {self.resource.name} does not support bulk owner assignment")
 
         # Fetch all IDs in the queryset

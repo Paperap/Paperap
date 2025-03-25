@@ -1149,7 +1149,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         return [doc.id for doc in self]
 
     @override
-    def delete(self) -> None:
+    def delete(self) -> ClientResponse:
         """
         Delete all documents in the current queryset.
 
@@ -1157,8 +1157,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         the current queryset filters.
 
         Returns:
-            ClientResponse: The API response from the bulk delete operation.
-            None if there are no documents to delete.
+            None
 
         Examples:
             >>> # Delete all documents with "invoice" in title
@@ -1169,7 +1168,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         """
         if ids := self._get_ids():
-            self.resource.bulk_delete(ids)
+            return self.resource.delete(ids)
         return None
 
     def reprocess(self) -> ClientResponse:
@@ -1180,7 +1179,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         on all documents matching the current queryset filters.
 
         Returns:
-            ClientResponse: The API response from the bulk reprocess operation.
+            ClientResponse: The API response from the reprocess operation.
             None if there are no documents to reprocess.
 
         Examples:
@@ -1194,7 +1193,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         """
         if ids := self._get_ids():
-            return self.resource.bulk_reprocess(ids)
+            return self.resource.reprocess(ids)
         return None
 
     def merge(self, metadata_document_id: int | None = None, delete_originals: bool = False) -> bool:
@@ -1212,8 +1211,8 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             bool: True if submitting the merge succeeded, False if there are no documents to merge.
 
         Raises:
-            BadResponseError: If the merge action returns an unexpected response.
-            APIError: If the merge action fails.
+            BadResponseError: If the merge operation returns an unexpected response.
+            APIError: If the merge operation fails.
 
         Examples:
             >>> # Merge all documents with tag "merge_me"
@@ -1226,7 +1225,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         """
         if ids := self._get_ids():
-            return self.resource.bulk_merge(ids, metadata_document_id, delete_originals)
+            return self.resource.merge(ids, metadata_document_id, delete_originals)
         return False
 
     def rotate(self, degrees: int) -> ClientResponse:
@@ -1240,7 +1239,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             degrees: Degrees to rotate (must be 90, 180, or 270).
 
         Returns:
-            ClientResponse: The API response from the bulk rotate operation.
+            ClientResponse: The API response from the rotate operation.
             None if there are no documents to rotate.
 
         Examples:
@@ -1252,7 +1251,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         """
         if ids := self._get_ids():
-            return self.resource.bulk_rotate(ids, degrees)
+            return self.resource.rotate(ids, degrees)
         return None
 
     @override
@@ -1297,15 +1296,15 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         # Handle correspondent update
         if correspondent is not None:
-            self.resource.bulk_set_correspondent(ids, correspondent)
+            self.resource.set_correspondent(ids, correspondent)
 
         # Handle document type update
         if document_type is not None:
-            self.resource.bulk_set_document_type(ids, document_type)
+            self.resource.set_document_type(ids, document_type)
 
         # Handle storage path update
         if storage_path is not None:
-            self.resource.bulk_set_storage_path(ids, storage_path)
+            self.resource.set_storage_path(ids, storage_path)
 
         return self._chain()
 
@@ -1342,7 +1341,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         ids = self._get_ids()
         if ids:
-            self.resource.bulk_modify_custom_fields(ids, add_custom_fields, remove_custom_fields)
+            self.resource.modify_custom_fields(ids, add_custom_fields, remove_custom_fields)
         return self
 
     def modify_tags(self, add_tags: list[int] | None = None, remove_tags: list[int] | None = None) -> Self:
@@ -1375,7 +1374,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         ids = self._get_ids()
         if ids:
-            self.resource.bulk_modify_tags(ids, add_tags, remove_tags)
+            self.resource.modify_tags(ids, add_tags, remove_tags)
         return self
 
     def add_tag(self, tag_id: int) -> Self:
@@ -1400,7 +1399,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         ids = self._get_ids()
         if ids:
-            self.resource.bulk_add_tag(ids, tag_id)
+            self.resource.add_tag(ids, tag_id)
         return self
 
     def remove_tag(self, tag_id: int) -> Self:
@@ -1425,7 +1424,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         ids = self._get_ids()
         if ids:
-            self.resource.bulk_remove_tag(ids, tag_id)
+            self.resource.remove_tag(ids, tag_id)
         return self
 
     def set_permissions(self, permissions: dict[str, Any] | None = None, owner_id: int | None = None, merge: bool = False) -> Self:
@@ -1461,5 +1460,5 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         ids = self._get_ids()
         if ids:
-            self.resource.bulk_set_permissions(ids, permissions, owner_id, merge)
+            self.resource.set_permissions(ids, permissions, owner_id, merge)
         return self

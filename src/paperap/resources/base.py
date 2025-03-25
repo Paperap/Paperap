@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Final, Generic, Iterator, overl
 from pydantic import HttpUrl, field_validator
 from typing_extensions import TypeVar
 
-from paperap.const import URLS, Endpoints
+from paperap.const import URLS, ClientResponse, Endpoints
 from paperap.exceptions import (
     ConfigurationError,
     ModelValidationError,
@@ -377,7 +377,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         """
         raise NotImplementedError("update_dict method not available for resources without an id")
 
-    def delete(self, *args: Any, **kwargs: Any) -> None:
+    def delete(self, *args: Any, **kwargs: Any) -> ClientResponse:
         """
         Delete a resource.
 
@@ -786,7 +786,16 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         return self.update_dict(model_id, **data)
 
     @override
-    def delete(self, model_id: int | _StandardModel) -> None:
+    def delete(self, model: int | _StandardModel | list[int | _StandardModel]) -> ClientResponse:
+        if isinstance(model, list):
+            return self._delete_multiple(model)
+        return self._delete_single(model)
+
+    def _delete_multiple(self, models: list[int | _StandardModel]) -> ClientResponse:
+        for model in models:
+            self._delete_single(model)
+
+    def _delete_single(self, model: int | _StandardModel) -> ClientResponse:
         """
         Delete a resource from the API.
 
@@ -809,22 +818,24 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
             >>> client.tags.delete(tag)
 
         """
-        if not model_id:
+        if not model:
             raise ValueError("model_id is required to delete a resource")
-        if not isinstance(model_id, int):
-            model_id = model_id.id
+        if not isinstance(model, int):
+            model = model.id
 
         # Signal before deleting resource
-        signal_params = {"resource": self.name, "model_id": model_id}
+        signal_params = {"resource": self.name, "model_id": model}
         registry.emit("resource.delete:before", "Emitted before deleting a resource", args=[self], kwargs=signal_params)
 
-        if not (url := self.get_endpoint("delete", resource=self.name, pk=model_id)):
+        if not (url := self.get_endpoint("delete", resource=self.name, pk=model)):
             raise ConfigurationError(f"Delete endpoint not defined for resource {self.name}")
 
-        self.client.request("DELETE", url)
+        result = self.client.request("DELETE", url)
 
         # Signal after deleting resource
         registry.emit("resource.delete:after", "Emitted after deleting a resource", args=[self], kwargs=signal_params)
+
+        return result
 
     @override
     def update_dict(self, model_id: int, **data: dict[str, Any]) -> _StandardModel:
@@ -876,7 +887,7 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         return model
 
 
-class BulkEditing:
+class BulkEditingMixin:
     def bulk_edit_objects(  # type: ignore
         self: BaseResource,  # type: ignore
         object_type: str,

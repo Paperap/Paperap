@@ -17,7 +17,7 @@ from typing import TYPE_CHECKING, Any, Iterator, override
 
 from typing_extensions import TypeVar
 
-from paperap.const import URLS
+from paperap.const import URLS, ClientResponse
 from paperap.exceptions import APIError, BadResponseError, ResourceNotFoundError
 from paperap.models.document import Document, DocumentNote, DocumentNoteQuerySet, DocumentQuerySet
 from paperap.models.task import Task
@@ -339,26 +339,25 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         return response or {}
 
-    def bulk_delete(self, ids: list[int]) -> dict[str, Any]:
+    @override
+    def _delete_multiple(self, models: list[int | Document]) -> ClientResponse:
         """
-        Delete multiple documents at once.
+        Delete multiple documents.
 
         Args:
-            ids: List of document IDs to delete.
+            models: List of document IDs or Document objects to delete.
 
         Returns:
-            The API response as a dictionary.
+            The API response as a dictionary or list of dictionaries.
 
         Raises:
-            APIError: If the bulk delete operation fails.
-
-        Example:
-            >>> response = client.documents.bulk_delete([123, 124, 125])
+            APIError: If the delete operation fails.
 
         """
+        ids = [model.id if isinstance(model, Document) else model for model in models]
         return self.bulk_action("delete", ids)
 
-    def bulk_reprocess(self, ids: list[int]) -> dict[str, Any]:
+    def reprocess(self, ids: list[int]) -> dict[str, Any]:
         """
         Reprocess multiple documents.
 
@@ -375,12 +374,12 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             APIError: If the bulk reprocess operation fails.
 
         Example:
-            >>> response = client.documents.bulk_reprocess([123, 124])
+            >>> response = client.documents.reprocess([123, 124])
 
         """
         return self.bulk_action("reprocess", ids)
 
-    def bulk_merge(self, ids: list[int], metadata_document_id: int | None = None, delete_originals: bool = False) -> bool:
+    def merge(self, ids: list[int], metadata_document_id: int | None = None, delete_originals: bool = False) -> bool:
         """
         Merge multiple documents into a single document.
 
@@ -399,7 +398,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         Example:
             >>> # Merge documents 123, 124, and 125, using metadata from 123
-            >>> success = client.documents.bulk_merge(
+            >>> success = client.documents.merge(
             ...     [123, 124, 125],
             ...     metadata_document_id=123,
             ...     delete_originals=True
@@ -421,7 +420,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             raise APIError(f"Merge action failed: {result}")
         return True
 
-    def bulk_split(self, document_id: int, pages: list, delete_originals: bool = False) -> dict[str, Any]:
+    def split(self, document_id: int, pages: list, delete_originals: bool = False) -> dict[str, Any]:
         """
         Split a document into multiple documents based on page ranges.
 
@@ -452,7 +451,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         return self.bulk_action("split", [document_id], **params)
 
-    def bulk_rotate(self, ids: list[int], degrees: int) -> dict[str, Any]:
+    def rotate(self, ids: list[int], degrees: int) -> dict[str, Any]:
         """
         Rotate multiple documents by a specified angle.
 
@@ -469,7 +468,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         Example:
             >>> # Rotate documents 123 and 124 by 90 degrees
-            >>> response = client.documents.bulk_rotate([123, 124], 90)
+            >>> response = client.documents.rotate([123, 124], 90)
 
         """
         if degrees not in (90, 180, 270):
@@ -477,7 +476,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         return self.bulk_action("rotate", ids, degrees=degrees)
 
-    def bulk_delete_pages(self, document_id: int, pages: list[int]) -> dict[str, Any]:
+    def delete_pages(self, document_id: int, pages: list[int]) -> dict[str, Any]:
         """
         Delete specific pages from a document.
 
@@ -493,12 +492,12 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         Example:
             >>> # Delete pages 2 and 4 from document 123
-            >>> response = client.documents.bulk_delete_pages(123, [2, 4])
+            >>> response = client.documents.delete_pages(123, [2, 4])
 
         """
         return self.bulk_action("delete_pages", [document_id], pages=pages)
 
-    def bulk_modify_custom_fields(
+    def modify_custom_fields(
         self,
         ids: list[int],
         add_custom_fields: dict[int, Any] | None = None,
@@ -520,7 +519,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         Example:
             >>> # Add/update custom fields 3 and 5, remove custom field 7
-            >>> response = client.documents.bulk_modify_custom_fields(
+            >>> response = client.documents.modify_custom_fields(
             ...     [123, 124, 125],
             ...     add_custom_fields={3: "High Priority", 5: "2023-04-15"},
             ...     remove_custom_fields=[7]
@@ -535,7 +534,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         return self.bulk_action("modify_custom_fields", ids, **params)
 
-    def bulk_modify_tags(self, ids: list[int], add_tags: list[int] | None = None, remove_tags: list[int] | None = None) -> dict[str, Any]:
+    def modify_tags(self, ids: list[int], add_tags: list[int] | None = None, remove_tags: list[int] | None = None) -> dict[str, Any]:
         """
         Modify tags on multiple documents.
 
@@ -552,7 +551,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         Example:
             >>> # Add tags 1 and 2, remove tag 3 from multiple documents
-            >>> response = client.documents.bulk_modify_tags(
+            >>> response = client.documents.modify_tags(
             ...     [123, 124, 125],
             ...     add_tags=[1, 2],
             ...     remove_tags=[3]
@@ -567,7 +566,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         return self.bulk_action("modify_tags", ids, **params)
 
-    def bulk_add_tag(self, ids: list[int], tag_id: int) -> dict[str, Any]:
+    def add_tag(self, ids: list[int], tag_id: int) -> dict[str, Any]:
         """
         Add a single tag to multiple documents.
 
@@ -583,12 +582,12 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         Example:
             >>> # Add tag 5 to documents 123, 124, and 125
-            >>> response = client.documents.bulk_add_tag([123, 124, 125], 5)
+            >>> response = client.documents.add_tag([123, 124, 125], 5)
 
         """
         return self.bulk_action("add_tag", ids, tag=tag_id)
 
-    def bulk_remove_tag(self, ids: list[int], tag_id: int) -> dict[str, Any]:
+    def remove_tag(self, ids: list[int], tag_id: int) -> dict[str, Any]:
         """
         Remove a single tag from multiple documents.
 
@@ -604,12 +603,12 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         Example:
             >>> # Remove tag 3 from documents 123, 124, and 125
-            >>> response = client.documents.bulk_remove_tag([123, 124, 125], 3)
+            >>> response = client.documents.remove_tag([123, 124, 125], 3)
 
         """
         return self.bulk_action("remove_tag", ids, tag=tag_id)
 
-    def bulk_set_correspondent(self, ids: list[int], correspondent: "Correspondent | int") -> dict[str, Any]:
+    def set_correspondent(self, ids: list[int], correspondent: "Correspondent | int") -> dict[str, Any]:
         """
         Set the correspondent for multiple documents.
 
@@ -625,18 +624,18 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         Example:
             >>> # Set correspondent 5 for documents 123, 124, and 125
-            >>> response = client.documents.bulk_set_correspondent([123, 124, 125], 5)
+            >>> response = client.documents.set_correspondent([123, 124, 125], 5)
             >>>
             >>> # Or using a correspondent object
             >>> correspondent = client.correspondents.get(5)
-            >>> response = client.documents.bulk_set_correspondent([123, 124, 125], correspondent)
+            >>> response = client.documents.set_correspondent([123, 124, 125], correspondent)
 
         """
         if not isinstance(correspondent, int):
             correspondent = correspondent.id
         return self.bulk_action("set_correspondent", ids, correspondent=correspondent)
 
-    def bulk_set_document_type(self, ids: list[int], document_type: "DocumentType | int") -> dict[str, Any]:
+    def set_document_type(self, ids: list[int], document_type: "DocumentType | int") -> dict[str, Any]:
         """
         Set the document type for multiple documents.
 
@@ -652,18 +651,18 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         Example:
             >>> # Set document type 3 for documents 123, 124, and 125
-            >>> response = client.documents.bulk_set_document_type([123, 124, 125], 3)
+            >>> response = client.documents.set_document_type([123, 124, 125], 3)
             >>>
             >>> # Or using a document type object
             >>> doc_type = client.document_types.get(3)
-            >>> response = client.documents.bulk_set_document_type([123, 124, 125], doc_type)
+            >>> response = client.documents.set_document_type([123, 124, 125], doc_type)
 
         """
         if not isinstance(document_type, int):
             document_type = document_type.id
         return self.bulk_action("set_document_type", ids, document_type=document_type)
 
-    def bulk_set_storage_path(self, ids: list[int], storage_path: "StoragePath | int") -> dict[str, Any]:
+    def set_storage_path(self, ids: list[int], storage_path: "StoragePath | int") -> dict[str, Any]:
         """
         Set the storage path for multiple documents.
 
@@ -679,18 +678,18 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         Example:
             >>> # Set storage path 4 for documents 123, 124, and 125
-            >>> response = client.documents.bulk_set_storage_path([123, 124, 125], 4)
+            >>> response = client.documents.set_storage_path([123, 124, 125], 4)
             >>>
             >>> # Or using a storage path object
             >>> path = client.storage_paths.get(4)
-            >>> response = client.documents.bulk_set_storage_path([123, 124, 125], path)
+            >>> response = client.documents.set_storage_path([123, 124, 125], path)
 
         """
         if not isinstance(storage_path, int):
             storage_path = storage_path.id
         return self.bulk_action("set_storage_path", ids, storage_path=storage_path)
 
-    def bulk_set_permissions(
+    def set_permissions(
         self, ids: list[int], permissions: dict[str, Any] | None = None, owner_id: int | None = None, merge: bool = False
     ) -> dict[str, Any]:
         """
@@ -710,7 +709,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         Example:
             >>> # Set owner to user 2 for documents 123, 124, and 125
-            >>> response = client.documents.bulk_set_permissions(
+            >>> response = client.documents.set_permissions(
             ...     [123, 124, 125],
             ...     owner_id=2,
             ...     permissions={"users": {"2": "view"}, "groups": {"1": "edit"}},
@@ -748,24 +747,3 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if not response:
             raise APIError("Empty trash failed")
         return response  # type: ignore # request should have returned correct response TODO
-
-
-class DocumentNoteResource(StandardResource[DocumentNote, DocumentNoteQuerySet]):
-    """
-    Resource for managing document notes in Paperless-NgX.
-
-    This class provides methods for interacting with the document notes API endpoint,
-    allowing creation, retrieval, updating, and deletion of notes attached to documents.
-
-    Attributes:
-        model_class: The DocumentNote model class.
-        queryset_class: The DocumentNoteQuerySet class for query operations.
-        name: The resource name used in API endpoints.
-        endpoints: Dictionary mapping endpoint names to URL templates.
-
-    """
-
-    model_class = DocumentNote
-    queryset_class = DocumentNoteQuerySet
-    name = "notes"
-    endpoints = {"list": Template("/api/document/${pk}/notes/")}
