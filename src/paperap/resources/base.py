@@ -1046,6 +1046,5 @@ class BulkEditingMixin:
 
         return self._bulk_operation(ids=model_ids, operation="set_permissions", **params)  # type: ignore # allow protected access
 
-
     def _delete_multiple(self, models: list[int | _StandardModel]) -> ClientResponse:
         return self._bulk_operation(ids=models, operation="delete")  # type: ignore # allow protected access
