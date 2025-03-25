@@ -170,7 +170,7 @@ class PaperlessClient:
         # Set default headers
         self.session.headers.update(
             {
-                "Accept": "application/json; version=2",
+                "Accept": "application/json; version=7",
                 # Don't set Content-Type here as it will be set appropriately per request
                 # "Content-Type": "application/json",
             }

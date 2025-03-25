@@ -1165,17 +1165,17 @@ class BulkQuerySet[_Model: StandardModel](StandardQuerySet[_Model]):
         Examples:
             Delete all documents with "draft" in the title:
 
-            >>> client.documents().filter(title__contains="draft").bulk_action("delete")
+            >>> client.documents().filter(title__contains="draft")._bulk_action("delete")
 
             Merge documents with custom parameters:
 
-            >>> client.documents().filter(correspondent_id=5).bulk_action(
+            >>> client.documents().filter(correspondent_id=5)._bulk_action(
             ...     "merge",
             ...     metadata_document_id=123
             ... )
 
         """
-        if not (fn := getattr(self.resource, "bulk_action", None)):
+        if not (fn := getattr(self.resource, "_bulk_operation", None)):
             raise NotImplementedError(f"Resource {self.resource.name} does not support bulk actions")
 
         # Fetch all IDs in the queryset
@@ -1185,14 +1185,14 @@ class BulkQuerySet[_Model: StandardModel](StandardQuerySet[_Model]):
         if not ids:
             return {"success": True, "count": 0}
 
-        return fn(action, ids, **kwargs)
+        return fn(ids=ids, operation=action, **kwargs)
 
     @override
     def delete(self) -> ClientResponse:
         """
         Delete all objects in the queryset.
 
-        This is a convenience method that calls bulk_action("delete").
+        This is a convenience method that calls _bulk_action("delete").
 
         Returns:
             The API response containing results of the delete operation.

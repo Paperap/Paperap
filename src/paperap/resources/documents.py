@@ -303,7 +303,8 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             raise APIError("Failed to retrieve next ASN")
         return response["next_asn"]
 
-    def _document_bulk_operation(self, operation: str, ids: list[int], **kwargs: Any) -> dict[str, Any]:
+    @override
+    def _bulk_operation(self, operation: str, ids: list[int], **kwargs: Any) -> ClientResponse:
         """
         Perform a bulk operation on multiple documents.
 
@@ -346,7 +347,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             kwargs={**signal_params, "response": response},
         )
 
-        return response or {}
+        return response
 
     @override
     def _delete_multiple(self, models: list[int | Document]) -> ClientResponse:
@@ -364,9 +365,9 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         """
         ids = [model.id if isinstance(model, Document) else model for model in models]
-        return self._document_bulk_operation("delete", ids)
+        return self._bulk_operation("delete", ids)
 
-    def reprocess(self, document_ids: int | list[int]) -> dict[str, Any]:
+    def reprocess(self, document_ids: int | list[int]) -> ClientResponse:
         """
         Reprocess one or multiple documents.
 
@@ -393,7 +394,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if isinstance(document_ids, int):
             document_ids = [document_ids]
 
-        return self._document_bulk_operation("reprocess", document_ids)
+        return self._bulk_operation("reprocess", document_ids)
 
     def merge(
         self,
@@ -447,16 +448,16 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if not document_ids:
             raise ValueError("At least one document ID is required for merging")
 
-        result = self._document_bulk_operation("merge", document_ids, **params)
+        result = self._bulk_operation("merge", document_ids, **params)
         # Expect {'result': 'OK'}
         if not result or "result" not in result:
             raise BadResponseError(f"Merge operation returned unexpected response: {result}")
 
-        if result.get("result", None) != "OK":
+        if not isinstance(result, dict) or result.get("result", None) != "OK":
             raise APIError(f"Merge operation failed: {result}")
         return True
 
-    def split(self, document_id: int, pages: list, delete_originals: bool = False) -> dict[str, Any]:
+    def split(self, document_id: int, pages: list, delete_originals: bool = False) -> ClientResponse:
         """
         Split a document into multiple documents based on page ranges.
 
@@ -485,9 +486,9 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if delete_originals:
             params["delete_originals"] = True
 
-        return self._document_bulk_operation("split", [document_id], **params)
+        return self._bulk_operation("split", [document_id], **params)
 
-    def rotate(self, document_ids: int | list[int], degrees: int) -> dict[str, Any]:
+    def rotate(self, document_ids: int | list[int], degrees: int) -> ClientResponse:
         """
         Rotate one or multiple documents by a specified angle.
 
@@ -516,9 +517,9 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if isinstance(document_ids, int):
             document_ids = [document_ids]
 
-        return self._document_bulk_operation("rotate", document_ids, degrees=degrees)
+        return self._bulk_operation("rotate", document_ids, degrees=degrees)
 
-    def delete_pages(self, document_id: int, pages: list[int]) -> dict[str, Any]:
+    def delete_pages(self, document_id: int, pages: list[int]) -> ClientResponse:
         """
         Delete specific pages from a document.
 
@@ -537,14 +538,14 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             >>> response = client.documents.delete_pages(123, [2, 4])
 
         """
-        return self._document_bulk_operation("delete_pages", [document_id], pages=pages)
+        return self._bulk_operation("delete_pages", [document_id], pages=pages)
 
     def modify_custom_fields(
         self,
         document_ids: int | list[int],
         add_custom_fields: dict[int, Any] | None = None,
         remove_custom_fields: list[int] | None = None,
-    ) -> dict[str, Any]:
+    ) -> ClientResponse:
         """
         Modify custom fields on one or multiple documents.
 
@@ -584,14 +585,14 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if isinstance(document_ids, int):
             document_ids = [document_ids]
 
-        return self._document_bulk_operation("modify_custom_fields", document_ids, **params)
+        return self._bulk_operation("modify_custom_fields", document_ids, **params)
 
     def modify_tags(
         self,
         document_ids: int | list[int],
         add_tags: list[int] | None = None,
         remove_tags: list[int] | None = None,
-    ) -> dict[str, Any]:
+    ) -> ClientResponse:
         """
         Modify tags on one or multiple documents.
 
@@ -631,9 +632,9 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if isinstance(document_ids, int):
             document_ids = [document_ids]
 
-        return self._document_bulk_operation("modify_tags", document_ids, **params)
+        return self._bulk_operation("modify_tags", document_ids, **params)
 
-    def add_tag(self, document_ids: int | list[int], tag_id: int) -> dict[str, Any]:
+    def add_tag(self, document_ids: int | list[int], tag_id: int) -> ClientResponse:
         """
         Add a single tag to one or multiple documents.
 
@@ -658,9 +659,9 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if isinstance(document_ids, int):
             document_ids = [document_ids]
 
-        return self._document_bulk_operation("add_tag", document_ids, tag=tag_id)
+        return self._bulk_operation("add_tag", document_ids, tag=tag_id)
 
-    def remove_tag(self, document_ids: int | list[int], tag_id: int) -> dict[str, Any]:
+    def remove_tag(self, document_ids: int | list[int], tag_id: int) -> ClientResponse:
         """
         Remove a single tag from one or multiple documents.
 
@@ -685,9 +686,9 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if isinstance(document_ids, int):
             document_ids = [document_ids]
 
-        return self._document_bulk_operation("remove_tag", document_ids, tag=tag_id)
+        return self._bulk_operation("remove_tag", document_ids, tag=tag_id)
 
-    def set_correspondent(self, document_ids: int | list[int], correspondent: "Correspondent | int") -> dict[str, Any]:
+    def set_correspondent(self, document_ids: int | list[int], correspondent: "Correspondent | int") -> ClientResponse:
         """
         Set the correspondent for one or multiple documents.
 
@@ -719,9 +720,9 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if isinstance(document_ids, int):
             document_ids = [document_ids]
 
-        return self._document_bulk_operation("set_correspondent", document_ids, correspondent=correspondent)
+        return self._bulk_operation("set_correspondent", document_ids, correspondent=correspondent)
 
-    def set_document_type(self, document_ids: int | list[int], document_type: "DocumentType | int") -> dict[str, Any]:
+    def set_document_type(self, document_ids: int | list[int], document_type: "DocumentType | int") -> ClientResponse:
         """
         Set the document type for one or multiple documents.
 
@@ -753,9 +754,9 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if isinstance(document_ids, int):
             document_ids = [document_ids]
 
-        return self._document_bulk_operation("set_document_type", document_ids, document_type=document_type)
+        return self._bulk_operation("set_document_type", document_ids, document_type=document_type)
 
-    def set_storage_path(self, document_ids: int | list[int], storage_path: "StoragePath | int") -> dict[str, Any]:
+    def set_storage_path(self, document_ids: int | list[int], storage_path: "StoragePath | int") -> ClientResponse:
         """
         Set the storage path for one or multiple documents.
 
@@ -787,7 +788,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if isinstance(document_ids, int):
             document_ids = [document_ids]
 
-        return self._document_bulk_operation("set_storage_path", document_ids, storage_path=storage_path)
+        return self._bulk_operation("set_storage_path", document_ids, storage_path=storage_path)
 
     def set_permissions(
         self,
@@ -795,7 +796,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         permissions: dict[str, Any] | None = None,
         owner_id: int | None = None,
         merge: bool = False,
-    ) -> dict[str, Any]:
+    ) -> ClientResponse:
         """
         Set permissions for one or multiple documents.
 
@@ -838,7 +839,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if isinstance(model_ids, int):
             model_ids = [model_ids]
 
-        return self._document_bulk_operation("set_permissions", model_ids, **params)
+        return self._bulk_operation("set_permissions", model_ids, **params)
 
     def empty_trash(self) -> dict[str, Any]:
         """

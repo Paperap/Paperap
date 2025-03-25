@@ -20,10 +20,9 @@ import re
 import sys
 from datetime import date, datetime
 from enum import StrEnum
-from functools import singledispatchmethod
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Collection, Dict, Iterator, List, TypeVar, Union, cast
+from typing import Any, cast
 
 import dateparser
 import fitz  # type: ignore
@@ -40,8 +39,6 @@ from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, field_validator
 from paperap.client import PaperlessClient
 from paperap.exceptions import DocumentParsingError, NoImagesError
 from paperap.models.document import Document
-from paperap.models.document.queryset import DocumentQuerySet
-from paperap.models.tag import Tag
 from paperap.scripts.utils import ProgressBar, setup_logging
 from paperap.settings import Settings
 

@@ -148,7 +148,7 @@ pre-commit run --all-files
 ```
 
 ## TODO
-- [ ] unit tests to 100% coverage (currently around 85%)
+- [ ] increase test coverage (currently around 85%)
 - [ ] Make integration tests easier to setup for other users (wip)
 - [ ] Deleting tags, custom fields, etc via document.tags = None
 - [ ] devcontainer (wip)

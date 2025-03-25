@@ -199,7 +199,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         return converted
 
     def _bulk_operation(self, *args: Any, **kwargs: Any) -> Any:
-        raise NotImplementedError("bulk_operation method not available for resources without an id")
+        raise NotImplementedError("_bulk_operation method not available for resources without an id")
 
     def get_endpoint(self, name: str, **kwargs: Any) -> str | HttpUrl:
         """
@@ -1046,22 +1046,6 @@ class BulkEditingMixin:
 
         return self._bulk_operation(ids=model_ids, operation="set_permissions", **params)  # type: ignore # allow protected access
 
-    def bulk_delete(
-        self: BaseResourceProtocol,  # type: ignore
-        model_ids: list[int],
-    ) -> ClientResponse:
-        """
-        Delete multiple resources at once.
 
-        Args:
-            model_ids: List of IDs to delete.
-
-        Returns:
-            API response dictionary.
-
-        Examples:
-            >>> # Delete multiple tags at once
-            >>> client.tags.bulk_delete([1, 2, 3])
-
-        """
-        return self._bulk_operation(ids=model_ids, operation="delete")  # type: ignore # allow protected access
+    def _delete_multiple(self, models: list[int | _StandardModel]) -> ClientResponse:
+        return self._bulk_operation(ids=models, operation="delete")  # type: ignore # allow protected access
