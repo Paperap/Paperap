@@ -129,8 +129,8 @@ class BasicAuth(AuthBase):
 
     """
 
-    username: str
-    password: str
+    username: str = Field(min_length=0, max_length=255)
+    password: str = Field(min_length=0, max_length=255)
 
     @override
     def get_auth_headers(self) -> dict[str, str]:

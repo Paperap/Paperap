@@ -792,6 +792,15 @@ class BaseModel(pydantic.BaseModel, ABC):
         return self.to_dict() == data
 
     @override
+    def __eq__(self, value: object) -> bool:
+        """
+        Compare this model with another object for equality.
+        """
+        if isinstance(value, BaseModel):
+            return self.to_dict() == value.to_dict()
+        return super().__eq__(value)
+
+    @override
     def __str__(self) -> str:
         """
         Human-readable string representation.

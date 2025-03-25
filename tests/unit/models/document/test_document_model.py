@@ -105,6 +105,13 @@ class TestDocumentBase(DocumentUnitTest):
         self.assertEqual(model_dict["document_type_id"], 1)
         self.assertEqual(model_dict["tag_ids"], [1, 2, 3])
 
+    def test_equals(self):
+        with patch("paperap.client.PaperlessClient.request") as mock_request:
+            mock_request.return_value = sample_document
+            document1 = self.get_resource(DocumentResource, 1)
+            document2 = self.get_resource(DocumentResource, 1)
+            self.assertEqual(document1, document2)
+
 class TestGetRelationships(DocumentUnitTest):
     def __temp_disable_test_get_tags(self):
         sample_data = load_sample_data('tags_list_id__in_38,162,160,191.json')

@@ -9,6 +9,7 @@ access to all API resources.
 from __future__ import annotations
 
 import logging
+import os
 import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, Unpack, overload
@@ -262,18 +263,19 @@ class PaperlessClient:
         # Create and configure the plugin manager
         self.manager = PluginManager(client=self)
 
-        # Discover available plugins
-        self.manager.discover_plugins()
+        if os.getenv("PAPERAP_TESTING", False):
+            # Discover available plugins
+            self.manager.discover_plugins()
 
-        # Configure plugins
-        plugin_config = plugin_config or {
-            "enabled_plugins": ["SampleDataCollector"],
-            "settings": {
-                "SampleDataCollector": {
-                    "test_dir": str(Path(__file__).parents[3] / "tests/sample_data"),
+            # Configure plugins
+            plugin_config = plugin_config or {
+                "enabled_plugins": ["SampleDataCollector"],
+                "settings": {
+                    "SampleDataCollector": {
+                        "test_dir": str(Path(__file__).parents[3] / "tests/sample_data"),
+                    },
                 },
-            },
-        }
+            }
         self.manager.configure(plugin_config)
 
         # Initialize all enabled plugins
