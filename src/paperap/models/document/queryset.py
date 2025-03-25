@@ -1148,7 +1148,8 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return [doc.id for doc in self]
 
-    def delete(self) -> ClientResponse:
+    @override
+    def delete(self) -> None:
         """
         Delete all documents in the current queryset.
 
@@ -1168,7 +1169,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         """
         if ids := self._get_ids():
-            return self.resource.bulk_delete(ids)
+            self.resource.bulk_delete(ids)
         return None
 
     def reprocess(self) -> ClientResponse:
@@ -1254,6 +1255,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             return self.resource.bulk_rotate(ids, degrees)
         return None
 
+    @override
     def update(
         self,
         *,
@@ -1262,6 +1264,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         document_type: "DocumentType | int | None" = None,
         storage_path: "StoragePath | int | None" = None,
         owner: int | None = None,
+        **kwargs : Any,
     ) -> Self:
         """
         Perform bulk updates on all documents in the current queryset.
