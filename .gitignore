@@ -12,3 +12,4 @@ paperless-ngx
 *.out
 .stubs
 .aider*
+.direnv/

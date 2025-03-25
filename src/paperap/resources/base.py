@@ -198,7 +198,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         # We validated that converted matches endpoints above
         return converted
 
-    def _bulk_operation(self, *args : Any, **kwargs: Any) -> Any:
+    def _bulk_operation(self, *args: Any, **kwargs: Any) -> Any:
         raise NotImplementedError("bulk_operation method not available for resources without an id")
 
     def get_endpoint(self, name: str, **kwargs: Any) -> str | HttpUrl:
@@ -803,7 +803,7 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         for model in models:
             _response = self._delete_single(model)
 
-        return None # TODO
+        return None  # TODO
 
     def _delete_single(self, model: int | _StandardModel) -> ClientResponse:
         """
@@ -896,12 +896,14 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
 
         return model
 
-class BaseResourceProtocol[_BaseModel : "BaseModel", _BaseQuerySet : "BaseQuerySet"](Protocol):
+
+class BaseResourceProtocol[_BaseModel: "BaseModel", _BaseQuerySet: "BaseQuerySet"](Protocol):
     model_class: type[_BaseModel]
     queryset_class: type[_BaseQuerySet]
     name: str
     endpoints: ClassVar[Endpoints]
     client: "PaperlessClient"
+
     def get_endpoint(self, name: str, **kwargs: Any) -> str | HttpUrl: ...
     def all(self) -> _BaseQuerySet: ...
     def filter(self, **kwargs: Any) -> _BaseQuerySet: ...
@@ -929,16 +931,16 @@ class BaseResourceProtocol[_BaseModel : "BaseModel", _BaseQuerySet : "BaseQueryS
     def handle_response(self, response: Any) -> Iterator[_BaseModel]: ...
     def handle_dict_response(self, **response: dict[str, Any]) -> Iterator[_BaseModel]: ...
     def handle_results(self, results: list[dict[str, Any]]) -> Iterator[_BaseModel]: ...
-    def _bulk_operation(self, *args : Any, **kwargs: Any) -> Any: ...
+    def _bulk_operation(self, *args: Any, **kwargs: Any) -> Any: ...
     def __call__(self, *args: Any, **keywords: Any) -> _BaseQuerySet: ...
 
-class BulkEditingMixin:
 
+class BulkEditingMixin:
     def _bulk_operation(
         self: BaseResourceProtocol,  # type: ignore
         ids: list[int],
         operation: str,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> ClientResponse:
         """
         Perform a bulk operation on multiple objects through the generic bulk edit endpoint.
@@ -966,7 +968,7 @@ class BulkEditingMixin:
             "resource": self.name,
             "operation": operation,
             "ids": ids,
-            **kwargs
+            **kwargs,
         }
         registry.emit(
             "resource.bulk_operation:before",
@@ -979,7 +981,7 @@ class BulkEditingMixin:
             "objects": ids,
             "object_type": self.name,
             "operation": operation,
-            **kwargs
+            **kwargs,
         }
 
         # Use the special endpoint for bulk editing objects
@@ -997,13 +999,12 @@ class BulkEditingMixin:
 
         return response
 
-
     def set_permissions(
         self: BaseResourceProtocol,  # type: ignore
         model_ids: int | list[int],
         permissions: dict[str, Any] | None = None,
         owner_id: int | None = None,
-        merge: bool = False
+        merge: bool = False,
     ) -> ClientResponse:
         """
         Set permissions for one or multiple resources.
@@ -1043,11 +1044,11 @@ class BulkEditingMixin:
         if isinstance(model_ids, int):
             model_ids = [model_ids]
 
-        return self._bulk_operation(ids=model_ids, operation="set_permissions", **params) # type: ignore # allow protected access
+        return self._bulk_operation(ids=model_ids, operation="set_permissions", **params)  # type: ignore # allow protected access
 
     def bulk_delete(
         self: BaseResourceProtocol,  # type: ignore
-        model_ids: list[int]
+        model_ids: list[int],
     ) -> ClientResponse:
         """
         Delete multiple resources at once.
@@ -1063,4 +1064,4 @@ class BulkEditingMixin:
             >>> client.tags.bulk_delete([1, 2, 3])
 
         """
-        return self._bulk_operation(ids=model_ids, operation="delete") # type: ignore # allow protected access
+        return self._bulk_operation(ids=model_ids, operation="delete")  # type: ignore # allow protected access

@@ -350,7 +350,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         *,
         exact: bool = True,
         case_insensitive: bool = True,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Self:
         """
         Filter documents by document type.
@@ -461,7 +461,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         *,
         exact: bool = True,
         case_insensitive: bool = True,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Self:
         """
         Filter documents by storage path.
@@ -1189,7 +1189,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         """
         if ids := self._get_ids():
-            return self.resource.delete(ids) # type: ignore # Not sure why pyright is complaining
+            return self.resource.delete(ids)  # type: ignore # Not sure why pyright is complaining
         return None
 
     def reprocess(self) -> ClientResponse:
@@ -1284,7 +1284,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         document_type: "DocumentType | int | None" = None,
         storage_path: "StoragePath | int | None" = None,
         owner: int | None = None,
-        **kwargs : Any,
+        **kwargs: Any,
     ) -> Self:
         """
         Perform bulk updates on all documents in the current queryset.
@@ -1452,7 +1452,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         self,
         permissions: dict[str, Any] | None = None,
         owner_id: int | None = None,
-        merge: bool = False
+        merge: bool = False,
     ) -> Self:
         """
         Set permissions for all documents in the current queryset.

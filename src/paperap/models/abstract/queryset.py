@@ -168,9 +168,7 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         for key, _value in values.items():
             if not self._meta.filter_allowed(key):
-                raise FilterDisabledError(
-                    f"Filtering by {key} for {self.resource.name} does not appear to be supported by the API."
-                )
+                raise FilterDisabledError(f"Filtering by {key} for {self.resource.name} does not appear to be supported by the API.")
 
         if values:
             # Reset the cache if filters change
@@ -1144,6 +1142,7 @@ class BaseQuerySetProtocol[_Model: BaseModel](Protocol):
     def __getitem__(self, key: int | slice) -> _Model | list[_Model]: ...
     def __contains__(self, item: Any) -> bool: ...
 
+
 class BulkQuerySet[_Model: StandardModel](StandardQuerySet[_Model]):
     def _bulk_action(self, action: str, **kwargs: Any) -> ClientResponse:
         """
@@ -1214,7 +1213,7 @@ class BulkQuerySet[_Model: StandardModel](StandardQuerySet[_Model]):
         # We only need IDs, so optimize by requesting just the ID field if possible
         ids = [obj.id for obj in self]
 
-        return self.resource.delete(ids) # type: ignore # Not sure why pyright is complaining
+        return self.resource.delete(ids)  # type: ignore # Not sure why pyright is complaining
 
     @override
     def update(self, **kwargs: Any) -> Self:
