@@ -1,28 +1,4 @@
-"""
 
-Tests that are run for every model. These are not exhaustive, and each model
-should have its own tests specific to it. However, these ensure there is at
-least a base level of testing for all models.
-
- ----------------------------------------------------------------------------
-
-    METADATA:
-
-        File:    test_from_dict.py
-        Project: paperap
-        Created: 2025-03-04
-        Version: 0.0.9
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
- ----------------------------------------------------------------------------
-
-    LAST MODIFIED:
-
-        2025-03-04     By Jess Mann
-
-"""
 import logging
 import os
 import types

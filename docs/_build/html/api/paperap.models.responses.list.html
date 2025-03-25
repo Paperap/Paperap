@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -77,52 +77,124 @@
              
   <section id="module-paperap.models.responses.list">
 <span id="paperap-models-responses-list-module"></span><h1>paperap.models.responses.list module<a class="headerlink" href="#module-paperap.models.responses.list" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<p>METADATA:</p>
-<p>File:    list.py
-Project: paperap
-Created: 2025-03-11
-Version: 0.0.5
-Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a>
-Copyright (c) 2025 Jess Mann</p>
-<hr class="docutils" />
-<p>LAST MODIFIED:</p>
-<p>2025-03-11     By Jess Mann</p>
+<p>Response models for list-based API responses from Paperless-ngx.</p>
+<p>This module contains models that represent paginated list responses from the
+Paperless-ngx API. These models handle the standard response format for
+collections of resources, including pagination metadata.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.responses.list.ListResponse">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.responses.list.</span></span><span class="sig-name descname"><span class="pre">ListResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/responses/list.html#ListResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.responses.list.ListResponse" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel" title="paperap.models.abstract.model.StandardModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardModel</span></code></a></p>
-<p>Not currently used, but kept for documentation or future expansion.</p>
-<p>The structure of an api response from paperless ngx for a list of models.</p>
+<p>Model representing a paginated list response from the Paperless-ngx API.</p>
+<p>This class models the standard structure of list responses returned by the
+Paperless-ngx API, which include pagination metadata and the actual results.
+While not currently used in the main codebase, it’s maintained for documentation
+and potential future implementation.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.responses.list.ListResponse.count">
+<span class="sig-name descname"><span class="pre">count</span></span><a class="headerlink" href="#paperap.models.responses.list.ListResponse.count" title="Link to this definition"></a></dt>
+<dd><p>Total number of items across all pages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.responses.list.ListResponse.next">
+<span class="sig-name descname"><span class="pre">next</span></span><a class="headerlink" href="#paperap.models.responses.list.ListResponse.next" title="Link to this definition"></a></dt>
+<dd><p>URL to fetch the next page of results, or None if this is the last page.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.responses.list.ListResponse.previous">
+<span class="sig-name descname"><span class="pre">previous</span></span><a class="headerlink" href="#paperap.models.responses.list.ListResponse.previous" title="Link to this definition"></a></dt>
+<dd><p>URL to fetch the previous page of results, or None if this is the first page.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.responses.list.ListResponse.all">
+<span class="sig-name descname"><span class="pre">all</span></span><a class="headerlink" href="#paperap.models.responses.list.ListResponse.all" title="Link to this definition"></a></dt>
+<dd><p>List of IDs for all items matching the query, across all pages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">list[int]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.responses.list.ListResponse.results">
+<span class="sig-name descname"><span class="pre">results</span></span><a class="headerlink" href="#paperap.models.responses.list.ListResponse.results" title="Link to this definition"></a></dt>
+<dd><p>List of model instances for the current page.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">list[StandardModel]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<p><a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>python
+# Example of what a ListResponse might look like when implemented
+response = ListResponse(</p>
+<blockquote>
+<div><p>count=150,
+next=”<a class="reference external" href="https://paperless.example.com/api/documents/?page=2">https://paperless.example.com/api/documents/?page=2</a>”,
+previous=None,
+all=[1, 2, 3, 4, …],
+results=[Document(…), Document(…), …]</p>
+</div></blockquote>
+<p>)</p>
+<p># Access total count
+total = response.count</p>
+<p># Iterate through current page results
+for document in response.results:</p>
+<blockquote>
+<div><p>print(document.title)</p>
+</div></blockquote>
+<p><a href="#id5"><span class="problematic" id="id6">``</span></a><a href="#id7"><span class="problematic" id="id8">`</span></a></p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.responses.list.ListResponse.count">
-<span class="sig-name descname"><span class="pre">count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#paperap.models.responses.list.ListResponse.count" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.responses.list.ListResponse.next">
-<span class="sig-name descname"><span class="pre">next</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.responses.list.ListResponse.next" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">next</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.responses.list.ListResponse.previous">
-<span class="sig-name descname"><span class="pre">previous</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.responses.list.ListResponse.previous" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">previous</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.responses.list.ListResponse.all">
-<span class="sig-name descname"><span class="pre">all</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#paperap.models.responses.list.ListResponse.all" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">all</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.responses.list.ListResponse.results">
-<span class="sig-name descname"><span class="pre">results</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[StandardModel]</span></em><a class="headerlink" href="#paperap.models.responses.list.ListResponse.results" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id12">
+<span class="sig-name descname"><span class="pre">results</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[StandardModel]</span></em><a class="headerlink" href="#id12" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">

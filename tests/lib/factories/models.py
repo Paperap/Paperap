@@ -1,27 +1,4 @@
-"""
 
-
-
-
- ----------------------------------------------------------------------------
-
-    METADATA:
-
-        File:    models.py
-        Project: paperap
-        Created: 2025-03-21
-        Version: 0.0.10
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
- ----------------------------------------------------------------------------
-
-    LAST MODIFIED:
-
-        2025-03-21     By Jess Mann
-
-"""
 
 from __future__ import annotations
 
@@ -163,7 +140,7 @@ class CorrespondentFactory(PydanticFactory[Correspondent]):
     slug = factory.LazyFunction(fake.slug)
     name = factory.Sequence(lambda n: f"Correspondent-{n}-{fake.word()}")
     match = factory.Faker("word")
-    matching_algorithm = factory.Faker("random_int", min=0, max=3)
+    matching_algorithm = factory.Faker("random_int", min=-1, max=6)
     is_insensitive = factory.Faker("boolean")
     document_count = factory.Faker("random_int", min=0, max=100)
     owner = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
@@ -322,7 +299,7 @@ class DocumentTypeFactory(PydanticFactory[DocumentType]):
     name = factory.Sequence(lambda n: f"DocType-{n}-{fake.word()}")
     slug = factory.LazyFunction(fake.slug)
     match = factory.Faker("word")
-    matching_algorithm = factory.Faker("random_int", min=0, max=3)
+    matching_algorithm = factory.Faker("random_int", min=-1, max=6)
     is_insensitive = factory.Faker("boolean")
     document_count = factory.Faker("random_int", min=0, max=1000)
     owner = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
@@ -338,7 +315,7 @@ class TagFactory(PydanticFactory[Tag]):
     slug = factory.LazyFunction(fake.slug)
     colour = factory.Faker("hex_color")
     match = factory.Faker("word")
-    matching_algorithm = factory.Faker("random_int", min=0, max=3)
+    matching_algorithm = factory.Faker("random_int", min=-1, max=6)
     is_insensitive = factory.Faker("boolean")
     is_inbox_tag = factory.Faker("boolean")
     document_count = factory.Faker("random_int", min=0, max=500)
@@ -388,7 +365,7 @@ class StoragePathFactory(PydanticFactory[StoragePath]):
     slug = factory.LazyFunction(fake.slug)
     path = factory.Faker("file_path")
     match = factory.Faker("word")
-    matching_algorithm = factory.Faker("random_int", min=0, max=3)
+    matching_algorithm = factory.Faker("random_int", min=-1, max=6)
     is_insensitive = factory.Faker("boolean")
     document_count = factory.Faker("random_int", min=0, max=500)
     owner = factory.Maybe(factory.Faker("boolean"), factory.Faker("random_int", min=1, max=100), None)
@@ -714,7 +691,7 @@ class WorkflowTriggerFactory(PydanticFactory[WorkflowTrigger]):
     filter_path = factory.Maybe(factory.Faker("boolean"), factory.Faker("file_path"), None)
     filter_filename = factory.Maybe(factory.Faker("boolean"), factory.Faker("file_name"), None)
     filter_mailrule = factory.Maybe(factory.Faker("boolean"), factory.Faker("word"), None)
-    matching_algorithm = factory.Faker("random_int", min=0, max=3)
+    matching_algorithm = factory.Faker("random_int", min=-1, max=6)
     match = factory.Faker("word")
     is_insensitive = factory.Faker("boolean")
     filter_has_tags = factory.List([factory.Faker("random_int", min=1, max=50) for _ in range(5)])

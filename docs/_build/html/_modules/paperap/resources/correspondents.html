@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/resources/correspondents.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../_static/readthedocs.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,24 +76,21 @@
              
   <h1>Source code for paperap.resources.correspondents</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">Correspondent resource module for interacting with Paperless-NgX correspondent endpoints.</span>
 
-<span class="sd">   METADATA:</span>
+<span class="sd">This module provides the CorrespondentResource class which handles all API interactions</span>
+<span class="sd">related to correspondents in a Paperless-NgX system. Correspondents represent people or</span>
+<span class="sd">organizations that send or receive documents.</span>
 
-<span class="sd">       File:    correspondents.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">       Created: 2025-03-04</span>
-<span class="sd">        Version: 0.0.9</span>
-<span class="sd">       Author:  Jess Mann</span>
-<span class="sd">       Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">   LAST MODIFIED:</span>
-
-<span class="sd">       2025-03-04     By Jess Mann</span>
-
+<span class="sd">Typical usage example:</span>
+<span class="sd">    &gt;&gt;&gt; # Get all correspondents</span>
+<span class="sd">    &gt;&gt;&gt; correspondents = client.correspondents.all()</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; # Create a new correspondent</span>
+<span class="sd">    &gt;&gt;&gt; new_correspondent = client.correspondents.create(name=&quot;Electric Company&quot;)</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; # Get a specific correspondent</span>
+<span class="sd">    &gt;&gt;&gt; electric = client.correspondents.get(3)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -99,9 +100,67 @@
 
 
 <div class="viewcode-block" id="CorrespondentResource">
-<a class="viewcode-back" href="../../../api/paperap.resources.correspondents.html#paperap.resources.CorrespondentResource">[docs]</a>
+<a class="viewcode-back" href="../../../api/paperap.resources.correspondents.html#paperap.resources.correspondents.CorrespondentResource">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CorrespondentResource</span><span class="p">(</span><span class="n">StandardResource</span><span class="p">[</span><span class="n">Correspondent</span><span class="p">,</span> <span class="n">CorrespondentQuerySet</span><span class="p">],</span> <span class="n">BulkEditing</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resource for managing correspondents.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Resource for managing correspondents in Paperless-NgX.</span>
+
+<span class="sd">    This resource provides methods for creating, retrieving, updating, and deleting</span>
+<span class="sd">    correspondent objects via the Paperless-NgX API. It extends the standard</span>
+<span class="sd">    resource methods and incorporates bulk editing capabilities for efficient</span>
+<span class="sd">    processing of multiple correspondent records.</span>
+
+<span class="sd">    Correspondents represent people or organizations that send or receive documents</span>
+<span class="sd">    in a Paperless-NgX system. They can be used to automatically categorize documents</span>
+<span class="sd">    based on matching rules.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        client: The PaperlessClient instance this resource is attached to.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        model_class (Type[Correspondent]): Reference to the Correspondent model class.</span>
+<span class="sd">        queryset_class (Type[CorrespondentQuerySet]): Reference to the query set class for correspondents.</span>
+<span class="sd">        name (str): The API endpoint name for managing correspondents.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Create a new correspondent:</span>
+
+<span class="sd">        &gt;&gt;&gt; new_correspondent = client.correspondents.create(</span>
+<span class="sd">        ...     name=&quot;Electric Company&quot;,</span>
+<span class="sd">        ...     matching_algorithm=&quot;auto&quot;,</span>
+<span class="sd">        ...     match=&quot;electric&quot;</span>
+<span class="sd">        ... )</span>
+
+<span class="sd">        Retrieve a correspondent by ID:</span>
+
+<span class="sd">        &gt;&gt;&gt; correspondent = client.correspondents.get(3)</span>
+<span class="sd">        &gt;&gt;&gt; print(correspondent.name)</span>
+
+<span class="sd">        Update a correspondent:</span>
+
+<span class="sd">        &gt;&gt;&gt; correspondent = client.correspondents.get(3)</span>
+<span class="sd">        &gt;&gt;&gt; correspondent.name = &quot;Updated Name&quot;</span>
+<span class="sd">        &gt;&gt;&gt; correspondent.save()</span>
+
+<span class="sd">        Delete a correspondent:</span>
+
+<span class="sd">        &gt;&gt;&gt; correspondent = client.correspondents.get(3)</span>
+<span class="sd">        &gt;&gt;&gt; correspondent.delete()</span>
+
+<span class="sd">        Filter correspondents:</span>
+
+<span class="sd">        &gt;&gt;&gt; electric_correspondents = client.correspondents().filter(</span>
+<span class="sd">        ...     name__icontains=&quot;electric&quot;</span>
+<span class="sd">        ... )</span>
+
+<span class="sd">        Bulk operations on correspondents:</span>
+
+<span class="sd">        &gt;&gt;&gt; # Get all correspondents with &quot;Company&quot; in the name</span>
+<span class="sd">        &gt;&gt;&gt; company_correspondents = client.correspondents().filter(name__icontains=&quot;Company&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; # Update all of them at once</span>
+<span class="sd">        &gt;&gt;&gt; company_correspondents.update(matching_algorithm=&quot;auto&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">model_class</span> <span class="o">=</span> <span class="n">Correspondent</span>
     <span class="n">queryset_class</span> <span class="o">=</span> <span class="n">CorrespondentQuerySet</span>

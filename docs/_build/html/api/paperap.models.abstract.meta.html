@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -77,42 +77,50 @@
              
   <section id="module-paperap.models.abstract.meta">
 <span id="paperap-models-abstract-meta-module"></span><h1>paperap.models.abstract.meta module<a class="headerlink" href="#module-paperap.models.abstract.meta" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<blockquote>
-<div><p>METADATA:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>File:    meta.py</dt><dd><p>Project: paperap</p>
-</dd>
-<dt>Created: 2025-03-07</dt><dd><p>Version: 0.0.9</p>
-</dd>
-</dl>
-<p>Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
-<blockquote>
-<div><p>Copyright (c) 2025 Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
-</div></blockquote>
-<hr class="docutils" />
-<blockquote>
-<div><p>LAST MODIFIED:</p>
-<blockquote>
-<div><p>2025-03-07     By Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
+<p>Provide context management for model status transitions.</p>
+<p>The module implements a context manager that safely handles model status changes
+during operations like saving or updating. It ensures proper status transitions
+and resource locking to maintain data integrity throughout the lifecycle of
+model operations.</p>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Basic usage to temporarily change a model’s status:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">StatusContext</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">ModelStatus</span><span class="o">.</span><span class="n">UPDATING</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="c1"># Perform operations that require the model to be in UPDATING status</span>
+<span class="gp">... </span>    <span class="n">model</span><span class="o">.</span><span class="n">update_field</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Using StatusContext in a model method:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">with</span> <span class="n">StatusContext</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ModelStatus</span><span class="o">.</span><span class="n">SAVING</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="c1"># Perform save operation</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">_save_to_api</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.abstract.meta.StatusContext">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.abstract.meta.</span></span><span class="sig-name descname"><span class="pre">StatusContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/meta.html#StatusContext"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.meta.StatusContext" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Context manager for safely updating model status.</p>
+<p>Manage model status changes safely with proper resource locking.</p>
+<p>Provides a mechanism to temporarily change the status of a model
+while ensuring the previous status is restored upon completion.
+Handles acquisition and release of save locks to prevent concurrent
+modifications that could lead to data inconsistency.</p>
+<p>When used as a context manager, StatusContext will:
+1. Optionally acquire a save lock if the new status is SAVING
+2. Store the model’s current status
+3. Set the model’s status to the new status
+4. Execute the context body
+5. Restore the original status when exiting
+6. Release any acquired locks</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.abstract.meta.StatusContext.model">
 <span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#paperap.models.abstract.meta.StatusContext.model" title="Link to this definition"></a></dt>
-<dd><p>The model whose status is being updated.</p>
+<dd><p>The model whose status is being managed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">SomeModel</span></code></p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -134,17 +142,29 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dd><p>The status before entering the context.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelStatus</span></code></p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelStatus</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
+<p>Using StatusContext in a model method:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">SomeModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">perform_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="k">with</span> <span class="n">StatusContext</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ModelStatus</span><span class="o">.</span><span class="n">UPDATING</span><span class="p">):</span>
-<span class="gp">... </span>            <span class="c1"># Perform an update</span>
+<span class="gp">... </span>            <span class="c1"># Perform an update operation</span>
+<span class="gp">... </span>            <span class="bp">self</span><span class="o">.</span><span class="n">_update_remote_data</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Using StatusContext with error handling:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">with</span> <span class="n">StatusContext</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">ModelStatus</span><span class="o">.</span><span class="n">SAVING</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="c1"># Attempt to save the model</span>
+<span class="gp">... </span>        <span class="n">model</span><span class="o">.</span><span class="n">_save_to_api</span><span class="p">()</span>
+<span class="gp">... </span><span class="k">except</span> <span class="n">APIError</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="c1"># The model&#39;s status will be restored even if an error occurs</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Failed to save model&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -159,29 +179,54 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="py property">
 <dt class="sig sig-object py" id="id0">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.BaseModel" title="paperap.models.abstract.model.BaseModel"><span class="pre">BaseModel</span></a></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
-<dd><p>Read-only access to the model.</p>
+<dd><p>Get the model associated with this context.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The model whose status is being managed.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="paperap.models.html#paperap.models.BaseModel" title="paperap.models.BaseModel">BaseModel</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="id1">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">new_status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.const.html#paperap.const.ModelStatus" title="paperap.const.ModelStatus"><span class="pre">ModelStatus</span></a></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
-<dd><p>Read-only access to the new status.</p>
+<dd><p>Get the status that will be set within this context.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The status to set within the context.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="paperap.const.html#paperap.const.ModelStatus" title="paperap.const.ModelStatus">ModelStatus</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="id2">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">previous_status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.const.html#paperap.const.ModelStatus" title="paperap.const.ModelStatus"><span class="pre">ModelStatus</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
-<dd><p>Read-only access to the previous status.</p>
+<dd><p>Get the status that was set before entering this context.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The previous status, or None if not yet entered.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="paperap.const.html#paperap.const.ModelStatus" title="paperap.const.ModelStatus">ModelStatus</a> | None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.meta.StatusContext.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/meta.html#StatusContext.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.meta.StatusContext.__init__" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Initialize the StatusContext with a model and target status.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>model</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.BaseModel" title="paperap.models.abstract.model.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></span>)</p></li>
-<li><p><strong>new_status</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="paperap.const.html#paperap.const.ModelStatus" title="paperap.const.ModelStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelStatus</span></code></a></span>)</p></li>
+<li><p><strong>model</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code>) – The model whose status will be temporarily changed.</p></li>
+<li><p><strong>new_status</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ModelStatus</span></code>) – The status to set while in this context.</p></li>
 </ul>
 </dd>
 </dl>
@@ -190,23 +235,86 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.meta.StatusContext.save_lock">
 <span class="sig-name descname"><span class="pre">save_lock</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/meta.html#StatusContext.save_lock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.meta.StatusContext.save_lock" title="Link to this definition"></a></dt>
-<dd><p>Acquire the save lock</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
-</dd>
-</dl>
+<dd><p>Acquire the save lock for the model.</p>
+<p>Acquires the model’s save lock to ensure that no other operations can
+modify the model while the status is being updated. The lock is implemented
+as a threading.RLock to allow reentrant locking from the same thread.
+:rtype: <span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method sets the internal _save_lock_acquired flag to True when
+successful, which is used to determine if unlock is needed later.</p>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.meta.StatusContext.save_unlock">
 <span class="sig-name descname"><span class="pre">save_unlock</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/meta.html#StatusContext.save_unlock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.meta.StatusContext.save_unlock" title="Link to this definition"></a></dt>
-<dd><p>Release the save lock, only if this statuscontext previous acquired it.</p>
+<dd><p>Release the save lock for the model.</p>
+<p>Releases the model’s save lock if it was acquired by this context manager,
+allowing other operations to modify the model. The lock is only released
+if it was previously acquired by this specific StatusContext instance.
+:rtype: <span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method checks the internal _save_lock_acquired flag to ensure
+it only releases locks that it has acquired.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.models.abstract.meta.StatusContext.__enter__">
+<span class="sig-name descname"><span class="pre">__enter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/meta.html#StatusContext.__enter__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.meta.StatusContext.__enter__" title="Link to this definition"></a></dt>
+<dd><p>Enter the context, updating the model’s status.</p>
+<p>Performs the following operations:
+1. Acquires the save lock if the new status is ModelStatus.SAVING
+2. Stores the model’s current status for later restoration
+3. Sets the model’s status to the new status
+:rtype: <span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method intentionally returns None instead of self to prevent
+direct access to the context manager, ensuring proper status reversion.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.models.abstract.meta.StatusContext.__exit__">
+<span class="sig-name descname"><span class="pre">__exit__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traceback</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/meta.html#StatusContext.__exit__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.meta.StatusContext.__exit__" title="Link to this definition"></a></dt>
+<dd><p>Exit the context, restoring the model’s previous status.</p>
+<p>Performs the following cleanup operations:
+1. Restores the model’s status to its previous value
+2. Sets status to ModelStatus.ERROR if no previous status was recorded
+3. Releases the save lock if it was acquired</p>
+<p>Ensures proper cleanup even if an exception occurred within the context.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exc_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">type[BaseException]</span> <span class="pre">|</span> <span class="pre">None</span></code>) – The exception type, if any.</p></li>
+<li><p><strong>exc_value</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">BaseException</span> <span class="pre">|</span> <span class="pre">None</span></code>) – The exception value, if any.</p></li>
+<li><p><strong>traceback</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable[Any]</span></code>) – The traceback information, if any.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method does not suppress exceptions; they will propagate normally.</p>
+</div>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Handling exceptions while using StatusContext:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">with</span> <span class="n">StatusContext</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">ModelStatus</span><span class="o">.</span><span class="n">PROCESSING</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Something went wrong&quot;</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="c1"># The model&#39;s status will be restored before this exception handler runs</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error occurred, but model status was properly restored&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 </dd></dl>

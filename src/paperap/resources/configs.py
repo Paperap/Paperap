@@ -1,32 +1,42 @@
 """
-----------------------------------------------------------------------------
+Module for configuration resource management.
 
-   METADATA:
+This module provides the ConfigResource class, a specialized resource for handling
+configuration objects within the Paperless-NgX API. It encapsulates common CRUD operations and
+offers a consistent interface for interacting with configuration settings.
 
-       File:    configs.py
-        Project: paperap
-       Created: 2025-03-21
-        Version: 0.0.9
-       Author:  Jess Mann
-       Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
-----------------------------------------------------------------------------
-
-   LAST MODIFIED:
-
-       2025-03-21     By Jess Mann
+Example:
+    from paperap.resources.configs import ConfigResource
+    config_resource = ConfigResource(client)
+    config = config_resource.get(1)
+    print(config)
 
 """
 
 from __future__ import annotations
-
 from paperap.models.config import Config
 from paperap.resources.base import StandardResource
 
 
 class ConfigResource(StandardResource[Config]):
-    """Resource for managing configs."""
+    """
+    Resource for managing configuration objects.
+
+    This class provides a concrete implementation of StandardResource to handle configuration (Config)
+    objects in a Paperless-NgX system. It encapsulates common CRUD operations, ensuring that configuration
+    settings can be reliably created, retrieved, updated, and deleted with minimal configuration.
+
+    Attributes:
+        model_class (Type[Config]): The model class representing configuration objects.
+        name (str): The API endpoint name used to access configuration-related resources.
+
+    Example:
+        >>> from paperap.resources.configs import ConfigResource
+        >>> config_resource = ConfigResource(client)
+        >>> config = config_resource.get(1)
+        >>> print(config)
+
+    """
 
     model_class = Config
     name: str = "configs"

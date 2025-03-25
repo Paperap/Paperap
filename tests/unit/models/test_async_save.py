@@ -1,27 +1,4 @@
-"""
 
-
-
-
-----------------------------------------------------------------------------
-
-METADATA:
-
-File:    test_async_save.py
-        Project: paperap
-Created: 2025-03-15
-        Version: 0.0.9
-Author:  Jess Mann
-Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
-----------------------------------------------------------------------------
-
-LAST MODIFIED:
-
-2025-03-15     By Jess Mann
-
-"""
 import concurrent.futures
 import threading
 import time

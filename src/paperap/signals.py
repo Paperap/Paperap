@@ -1,25 +1,12 @@
 """
+Signal system for Paperap.
 
+This module provides a flexible signal/event system that allows components to communicate
+without direct dependencies. It supports prioritized handlers, handler chains, and
+temporary handler disabling.
 
-
-----------------------------------------------------------------------------
-
-METADATA:
-
-File:    signals.py
-        Project: paperap
-Created: 2025-03-09
-        Version: 0.0.9
-Author:  Jess Mann
-Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
-----------------------------------------------------------------------------
-
-LAST MODIFIED:
-
-2025-03-09     By Jess Mann
-
+The signal system is designed around a singleton registry that manages all signals
+and their handlers. Signals can be created, connected to, and emitted through this registry.
 """
 
 from __future__ import annotations
@@ -45,6 +32,16 @@ logger = logging.getLogger(__name__)
 class QueueType(TypedDict):
     """
     A type used by SignalRegistry for storing queued signal actions.
+
+    This dictionary stores handlers that are registered before their signals
+    are created, allowing for flexible registration order.
+
+    Attributes:
+        connect: Maps signal names to sets of (handler, priority) tuples.
+        disconnect: Maps signal names to sets of handlers to disconnect.
+        disable: Maps signal names to sets of handlers to disable.
+        enable: Maps signal names to sets of handlers to enable.
+
     """
 
     connect: dict[str, set[tuple[Callable[..., Any], int]]]
@@ -61,7 +58,16 @@ class SignalPriority:
     """
     Priority levels for signal handlers.
 
-    Any int can be provided, but these are the recommended values.
+    These constants define standard priority levels for signal handlers.
+    Lower numbers execute first, allowing precise control over handler execution order.
+
+    Attributes:
+        FIRST: Execute before all other handlers.
+        HIGH: Execute with high priority.
+        NORMAL: Default priority level.
+        LOW: Execute with low priority.
+        LAST: Execute after all other handlers.
+
     """
 
     FIRST = 0
@@ -74,6 +80,11 @@ class SignalPriority:
 class SignalParams(TypedDict):
     """
     A type used by SignalRegistry for storing signal parameters.
+
+    Attributes:
+        name: The name of the signal.
+        description: A description of the signal's purpose.
+
     """
 
     name: str
@@ -86,7 +97,23 @@ class Signal[_ReturnType]:
 
     Handlers can be registered with a priority to control execution order.
     Each handler receives the output of the previous handler as its first argument,
-    enabling a filter/transformation chain.
+    enabling a filter/transformation chain. This allows handlers to modify data
+    as it passes through the chain.
+
+    Attributes:
+        name: The unique name of this signal.
+        description: A human-readable description of the signal's purpose.
+        _handlers: Dictionary mapping priority levels to lists of handler functions.
+        _disabled_handlers: Set of temporarily disabled handler functions.
+
+    Example:
+        >>> signal = Signal("document.save")
+        >>> def log_save(doc, **kwargs):
+        ...     print(f"Saving document: {doc.title}")
+        ...     return doc
+        >>> signal.connect(log_save)
+        >>> signal.emit(document)
+
     """
 
     name: str
@@ -95,6 +122,14 @@ class Signal[_ReturnType]:
     _disabled_handlers: set[Callable[..., _ReturnType]]
 
     def __init__(self, name: str, description: str = "") -> None:
+        """
+        Initialize a new signal.
+
+        Args:
+            name: The unique name of this signal.
+            description: A human-readable description of the signal's purpose.
+
+        """
         self.name = name
         self.description = description
         self._handlers = defaultdict(list)
@@ -107,7 +142,16 @@ class Signal[_ReturnType]:
 
         Args:
             handler: The handler function to be called when the signal is emitted.
+                The function should accept the transformed value as its first argument,
+                and return the further transformed value.
             priority: The priority level for this handler (lower numbers execute first).
+                Use SignalPriority constants for standard levels.
+
+        Example:
+            >>> def transform_document(doc, **kwargs):
+            ...     doc.title = doc.title.upper()
+            ...     return doc
+            >>> signal.connect(transform_document, SignalPriority.HIGH)
 
         """
         self._handlers[priority].append(handler)
@@ -121,7 +165,11 @@ class Signal[_ReturnType]:
         Disconnect a handler from this signal.
 
         Args:
-            handler: The handler to disconnect.
+            handler: The handler to disconnect. The handler will no longer be called
+                when the signal is emitted.
+
+        Example:
+            >>> signal.disconnect(transform_document)
 
         """
         for priority in self._handlers:
@@ -139,14 +187,20 @@ class Signal[_ReturnType]:
         Emit the signal, calling all connected handlers in priority order.
 
         Each handler receives the output of the previous handler as its first argument.
-        Other arguments are passed unchanged.
+        Other arguments are passed unchanged. This creates a transformation chain
+        where each handler can modify the data before passing it to the next handler.
 
         Args:
-            *args: Positional arguments to pass to handlers.
-            **kwargs: Keyword arguments to pass to handlers.
+            *args: Positional arguments to pass to handlers. The first argument
+                is the value that will be transformed through the handler chain.
+            **kwargs: Keyword arguments to pass to all handlers.
 
         Returns:
             The final result after all handlers have processed the data.
+
+        Example:
+            >>> # Transform a document through multiple handlers
+            >>> transformed_doc = signal.emit(document, user="admin")
 
         """
         current_value: _ReturnType | None = None
@@ -172,8 +226,15 @@ class Signal[_ReturnType]:
         """
         Temporarily disable a handler without disconnecting it.
 
+        Disabled handlers remain connected but are skipped during signal emission.
+        This is useful for temporarily suspending a handler's execution without
+        losing its registration.
+
         Args:
             handler: The handler to disable.
+
+        Example:
+            >>> signal.disable(log_save)  # Temporarily stop logging
 
         """
         self._disabled_handlers.add(handler)
@@ -183,7 +244,11 @@ class Signal[_ReturnType]:
         Re-enable a temporarily disabled handler.
 
         Args:
-            handler: The handler to enable.
+            handler: The handler to enable. If the handler wasn't disabled,
+                this method has no effect.
+
+        Example:
+            >>> signal.enable(log_save)  # Resume logging
 
         """
         if handler in self._disabled_handlers:
@@ -194,15 +259,27 @@ class SignalRegistry:
     """
     Registry of all signals in the application.
 
-    Signals can be created, connected to, and emitted through the registry.
+    This singleton class manages all signals in the application, providing
+    a central point for creating, connecting to, and emitting signals.
+
+    The registry also handles queuing of signal actions when signals are
+    connected to before they are created, ensuring that handlers are properly
+    registered regardless of initialization order.
+
+    Attributes:
+        _instance: The singleton instance of this class.
+        _signals: Dictionary mapping signal names to Signal instances.
+        _queue: Dictionary of queued actions for signals not yet created.
 
     Examples:
+        >>> # Emit a signal with keyword arguments
         >>> SignalRegistry.emit(
         ...     "document.save:success",
         ...     "Fired when a document has been saved successfully",
         ...     kwargs = {"document": document}
         ... )
 
+        >>> # Emit a signal that transforms data
         >>> filtered_data = SignalRegistry.emit(
         ...     "document.save:before",
         ...     "Fired before a document is saved. Optionally filters the data that will be saved.",
@@ -210,7 +287,11 @@ class SignalRegistry:
         ...     kwargs = {"document": document}
         ... )
 
-        >>> SignalRegistry.connect("document.save:success", my_handler)
+        >>> # Connect a handler to a signal
+        >>> def log_document_save(document, **kwargs):
+        ...     print(f"Document saved: {document.title}")
+        ...     return document
+        >>> SignalRegistry.connect("document.save:success", log_document_save)
 
     """
 
@@ -219,6 +300,7 @@ class SignalRegistry:
     _queue: QueueType
 
     def __init__(self) -> None:
+        """Initialize the signal registry."""
         self._signals = {}
         self._queue = {
             "connect": {},  # {signal_name: {(handler, priority), ...}}
@@ -230,7 +312,7 @@ class SignalRegistry:
 
     def __new__(cls) -> Self:
         """
-        Ensure that only one instance of the class is created.
+        Ensure that only one instance of the class is created (singleton pattern).
 
         Returns:
             The singleton instance of this class.
@@ -245,6 +327,9 @@ class SignalRegistry:
         """
         Get the singleton instance of this class.
 
+        This method ensures that only one instance of SignalRegistry exists
+        throughout the application.
+
         Returns:
             The singleton instance of this class.
 
@@ -255,7 +340,11 @@ class SignalRegistry:
 
     def register(self, signal: Signal[Any]) -> None:
         """
-        Register a signal and process queued actions.
+        Register a signal and process any queued actions for it.
+
+        This method registers a signal with the registry and processes any
+        actions (connect, disconnect, etc.) that were queued for this signal
+        before it was created.
 
         Args:
             signal: The signal to register.
@@ -281,7 +370,10 @@ class SignalRegistry:
 
     def queue_action(self, action: ActionType, name: str, handler: Callable[..., Any], priority: int | None = None) -> None:
         """
-        Queue any signal-related action to be processed when the signal is registered.
+        Queue a signal-related action to be processed when the signal is registered.
+
+        This method allows actions to be queued for signals that haven't been
+        created yet, ensuring that handlers can be registered in any order.
 
         Args:
             action: The action to queue (connect, disconnect, disable, enable).
@@ -291,6 +383,9 @@ class SignalRegistry:
 
         Raises:
             ValueError: If the action is invalid.
+
+        Example:
+            >>> registry.queue_action("connect", "document.save", log_handler, SignalPriority.HIGH)
 
         """
         if action not in self._queue:
@@ -314,6 +409,11 @@ class SignalRegistry:
         Returns:
             The signal instance, or None if not found.
 
+        Example:
+            >>> signal = registry.get("document.save:success")
+            >>> if signal:
+            ...     signal.emit(document)
+
         """
         return self._signals.get(name)
 
@@ -324,6 +424,10 @@ class SignalRegistry:
         Returns:
             A list of signal names.
 
+        Example:
+            >>> signals = registry.list_signals()
+            >>> print(f"Available signals: {', '.join(signals)}")
+
         """
         return list(self._signals.keys())
 
@@ -331,13 +435,22 @@ class SignalRegistry:
         """
         Create and register a new signal.
 
+        This method creates a new signal with the given name and description,
+        registers it with the registry, and processes any queued actions for it.
+
         Args:
-            name: Signal name
-            description: Optional description for new signals
-            return_type: Optional return type for new signals
+            name: Signal name. Should be unique and descriptive.
+            description: Optional description for the new signal.
+            return_type: Optional return type for the new signal.
 
         Returns:
             The new signal instance.
+
+        Example:
+            >>> save_signal = registry.create(
+            ...     "document.save:success",
+            ...     "Fired when a document has been saved successfully"
+            ... )
 
         """
         signal = Signal[R](name, description)
@@ -389,17 +502,28 @@ class SignalRegistry:
         """
         Emit a signal, calling handlers in priority order.
 
-        Each handler transforms the first argument and passes it to the next handler.
+        This method emits a signal with the given name, creating it if it doesn't
+        exist. Each handler in the signal's chain receives the output of the previous
+        handler as its first argument, allowing for data transformation.
 
         Args:
-            name: Signal name
-            description: Optional description for new signals
-            return_type: Optional return type for new signals
-            args: List of positional arguments (first one is transformed through the chain)
-            kwargs: Keyword arguments passed to all handlers
+            name: Signal name. If the signal doesn't exist, it will be created.
+            description: Optional description for new signals.
+            return_type: Optional return type for new signals.
+            args: The value to be transformed through the handler chain.
+            kwargs: Keyword arguments passed to all handlers.
 
         Returns:
-            The transformed first argument after all handlers have processed it
+            The transformed value after all handlers have processed it.
+
+        Example:
+            >>> # Transform document data through a handler chain
+            >>> processed_data = registry.emit(
+            ...     "document.process",
+            ...     "Process document data before saving",
+            ...     args=document_data,
+            ...     kwargs={"user": current_user}
+            ... )
 
         """
         if not (signal := self.get(name)):
@@ -413,10 +537,21 @@ class SignalRegistry:
         """
         Connect a handler to a signal, or queue it if the signal is not yet registered.
 
+        This method connects a handler function to a signal with the given name.
+        If the signal doesn't exist yet, the connection is queued and will be
+        established when the signal is created.
+
         Args:
             name: The signal name.
             handler: The handler function to connect.
-            priority: The priority level for this handler (lower numbers execute first
+            priority: The priority level for this handler (lower numbers execute first).
+                Use SignalPriority constants for standard levels.
+
+        Example:
+            >>> def log_document_save(document, **kwargs):
+            ...     print(f"Document saved: {document.title}")
+            ...     return document
+            >>> registry.connect("document.save:success", log_document_save)
 
         """
         if signal := self.get(name):
@@ -428,9 +563,16 @@ class SignalRegistry:
         """
         Disconnect a handler from a signal, or queue it if the signal is not yet registered.
 
+        This method disconnects a handler function from a signal with the given name.
+        If the signal doesn't exist yet, the disconnection is queued and will be
+        processed when the signal is created.
+
         Args:
             name: The signal name.
             handler: The handler function to disconnect.
+
+        Example:
+            >>> registry.disconnect("document.save:success", log_document_save)
 
         """
         if signal := self.get(name):
@@ -442,9 +584,17 @@ class SignalRegistry:
         """
         Temporarily disable a handler for a signal, or queue it if the signal is not yet registered.
 
+        This method temporarily disables a handler function for a signal with the given name.
+        The handler remains connected but will be skipped during signal emission.
+        If the signal doesn't exist yet, the disable action is queued.
+
         Args:
             name: The signal name.
-            handler: The handler function to disable
+            handler: The handler function to disable.
+
+        Example:
+            >>> # Temporarily disable logging during bulk operations
+            >>> registry.disable("document.save:success", log_document_save)
 
         """
         if signal := self.get(name):
@@ -456,9 +606,16 @@ class SignalRegistry:
         """
         Enable a previously disabled handler, or queue it if the signal is not yet registered.
 
+        This method re-enables a previously disabled handler function for a signal.
+        If the signal doesn't exist yet, the enable action is queued.
+
         Args:
             name: The signal name.
             handler: The handler function to enable.
+
+        Example:
+            >>> # Re-enable logging after bulk operations
+            >>> registry.enable("document.save:success", log_document_save)
 
         """
         if signal := self.get(name):
@@ -470,13 +627,20 @@ class SignalRegistry:
         """
         Check if a handler is queued for a signal action.
 
+        This method checks if a specific handler is queued for a specific action
+        on a signal that hasn't been created yet.
+
         Args:
             action: The action to check (connect, disconnect, disable, enable).
             name: The signal name.
             handler: The handler function to check.
 
         Returns:
-            True if the handler is queued, False otherwise.
+            True if the handler is queued for the specified action, False otherwise.
+
+        Example:
+            >>> is_queued = registry.is_queued("disable", "document.save", log_handler)
+            >>> print(f"Handler is {'queued for disabling' if is_queued else 'not queued'}")
 
         """
         for queued_handler in self._queue[action].get(name, set()):
@@ -489,4 +653,5 @@ class SignalRegistry:
         return False
 
 
+# Create a singleton instance of the registry for global use
 registry = SignalRegistry.get_instance()

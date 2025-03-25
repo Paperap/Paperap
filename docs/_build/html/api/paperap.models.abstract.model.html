@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -77,62 +77,89 @@
              
   <section id="module-paperap.models.abstract.model">
 <span id="paperap-models-abstract-model-module"></span><h1>paperap.models.abstract.model module<a class="headerlink" href="#module-paperap.models.abstract.model" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<blockquote>
-<div><p>METADATA:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>File:    base.py</dt><dd><p>Project: paperap</p>
-</dd>
-<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.9</p>
-</dd>
-</dl>
-<p>Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
-<blockquote>
-<div><p>Copyright (c) 2025 Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
-</div></blockquote>
-<hr class="docutils" />
-<blockquote>
-<div><p>LAST MODIFIED:</p>
-<blockquote>
-<div><p>2025-03-04     By Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
+<p>Define base model classes for Paperless-ngx API objects.</p>
+<p>This module provides the foundation for all model classes in Paperap,
+implementing core functionality for serialization, validation, and API
+interactions. The models handle data mapping between Python objects and
+the Paperless-ngx API, with support for automatic saving, dirty tracking,
+and asynchronous operations.</p>
+<p>The module contains two primary classes:
+- BaseModel: Abstract base class for all API objects
+- StandardModel: Extension of BaseModel for objects with ID fields</p>
+<p>These classes are designed to be subclassed by specific resource models
+like Document, Tag, Correspondent, etc.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.ModelConfigType">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.abstract.model.</span></span><span class="sig-name descname"><span class="pre">ModelConfigType</span></span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#ModelConfigType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.ModelConfigType" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
+<p>Define configuration options for Pydantic models.</p>
+<p>This type definition specifies the configuration options used for
+all Pydantic models in the application, ensuring consistent behavior
+across all model classes.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.ModelConfigType.populate_by_name">
-<span class="sig-name descname"><span class="pre">populate_by_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></em><a class="headerlink" href="#paperap.models.abstract.model.ModelConfigType.populate_by_name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">populate_by_name</span></span><a class="headerlink" href="#paperap.models.abstract.model.ModelConfigType.populate_by_name" title="Link to this definition"></a></dt>
+<dd><p>Allow population by field name as well as alias.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.ModelConfigType.validate_assignment">
-<span class="sig-name descname"><span class="pre">validate_assignment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></em><a class="headerlink" href="#paperap.models.abstract.model.ModelConfigType.validate_assignment" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">validate_assignment</span></span><a class="headerlink" href="#paperap.models.abstract.model.ModelConfigType.validate_assignment" title="Link to this definition"></a></dt>
+<dd><p>Validate values when attributes are set.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.ModelConfigType.validate_default">
-<span class="sig-name descname"><span class="pre">validate_default</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></em><a class="headerlink" href="#paperap.models.abstract.model.ModelConfigType.validate_default" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">validate_default</span></span><a class="headerlink" href="#paperap.models.abstract.model.ModelConfigType.validate_default" title="Link to this definition"></a></dt>
+<dd><p>Validate default values during model initialization.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.ModelConfigType.use_enum_values">
-<span class="sig-name descname"><span class="pre">use_enum_values</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></em><a class="headerlink" href="#paperap.models.abstract.model.ModelConfigType.use_enum_values" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">use_enum_values</span></span><a class="headerlink" href="#paperap.models.abstract.model.ModelConfigType.use_enum_values" title="Link to this definition"></a></dt>
+<dd><p>Use enum values rather than enum instances.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.ModelConfigType.extra">
-<span class="sig-name descname"><span class="pre">extra</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code></a><span class="pre">[</span><code class="docutils literal notranslate"><span class="pre">'ignore'</span></code><span class="pre">]</span></em><a class="headerlink" href="#paperap.models.abstract.model.ModelConfigType.extra" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">extra</span></span><a class="headerlink" href="#paperap.models.abstract.model.ModelConfigType.extra" title="Link to this definition"></a></dt>
+<dd><p>How to handle extra fields (ignore them).</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.ModelConfigType.arbitrary_types_allowed">
-<span class="sig-name descname"><span class="pre">arbitrary_types_allowed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></em><a class="headerlink" href="#paperap.models.abstract.model.ModelConfigType.arbitrary_types_allowed" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">arbitrary_types_allowed</span></span><a class="headerlink" href="#paperap.models.abstract.model.ModelConfigType.arbitrary_types_allowed" title="Link to this definition"></a></dt>
+<dd><p>Allow arbitrary types in model fields.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">populate_by_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">validate_assignment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">validate_default</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">use_enum_values</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">extra</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code></a><span class="pre">[</span><code class="docutils literal notranslate"><span class="pre">'ignore'</span></code><span class="pre">]</span></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">arbitrary_types_allowed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -142,8 +169,10 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.abstract.model.</span></span><span class="sig-name descname"><span class="pre">BaseModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#BaseModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.BaseModel" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
 <p>Base model for all Paperless-ngx API objects.</p>
-<p>Provides automatic serialization, deserialization, and API interactions
-with minimal configuration needed.</p>
+<p>Provide automatic serialization, deserialization, and API interactions
+with minimal configuration. This abstract class serves as the foundation
+for all models in the Paperap library, handling data validation, dirty
+tracking, and API communication.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel._meta">
 <span class="sig-name descname"><span class="pre">_meta</span></span><a class="headerlink" href="#paperap.models.abstract.model.BaseModel._meta" title="Link to this definition"></a></dt>
@@ -153,7 +182,7 @@ with minimal configuration needed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel._save_lock">
 <span class="sig-name descname"><span class="pre">_save_lock</span></span><a class="headerlink" href="#paperap.models.abstract.model.BaseModel._save_lock" title="Link to this definition"></a></dt>
-<dd><p>Lock for saving operations.</p>
+<dd><p>Lock for saving operations to prevent race conditions.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -162,12 +191,54 @@ with minimal configuration needed.</p>
 <dd><p>Future object for pending save operations.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel._save_executor">
+<span class="sig-name descname"><span class="pre">_save_executor</span></span><a class="headerlink" href="#paperap.models.abstract.model.BaseModel._save_executor" title="Link to this definition"></a></dt>
+<dd><p>Executor for asynchronous save operations.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel._status">
+<span class="sig-name descname"><span class="pre">_status</span></span><a class="headerlink" href="#paperap.models.abstract.model.BaseModel._status" title="Link to this definition"></a></dt>
+<dd><p>Current status of the model (INITIALIZING, READY, UPDATING, SAVING).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel._original_data">
+<span class="sig-name descname"><span class="pre">_original_data</span></span><a class="headerlink" href="#paperap.models.abstract.model.BaseModel._original_data" title="Link to this definition"></a></dt>
+<dd><p>Original data from the server for dirty checking.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel._saved_data">
+<span class="sig-name descname"><span class="pre">_saved_data</span></span><a class="headerlink" href="#paperap.models.abstract.model.BaseModel._saved_data" title="Link to this definition"></a></dt>
+<dd><p>Data last sent to the database during save operations.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel._resource">
+<span class="sig-name descname"><span class="pre">_resource</span></span><a class="headerlink" href="#paperap.models.abstract.model.BaseModel._resource" title="Link to this definition"></a></dt>
+<dd><p>Associated resource for API interactions.</p>
+</dd></dl>
+
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If resource is not provided.</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If resource is not provided during initialization.</p>
 </dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Models are typically accessed through the client interface:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">document</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">document</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;New Title&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">document</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
 </dd>
 </dl>
 <dl class="py class">
@@ -175,116 +246,148 @@ with minimal configuration needed.</p>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#BaseModel.Meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.Meta" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a></p>
 <p>Metadata for the Model.</p>
+<p>Define model behavior, filtering capabilities, and API interaction rules.
+Each model class has its own Meta instance that controls how the model
+interacts with the Paperless-ngx API.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.Meta.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.Meta.model" title="Link to this definition"></a></dt>
+<dd><p>Reference to the model class this metadata belongs to.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.Meta.name">
 <span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.Meta.name" title="Link to this definition"></a></dt>
-<dd><p>The name of the model.</p>
+<dd><p>The name of the model, used in API paths and error messages.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.Meta.read_only_fields">
 <span class="sig-name descname"><span class="pre">read_only_fields</span></span><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.Meta.read_only_fields" title="Link to this definition"></a></dt>
-<dd><p>Fields that should not be modified.</p>
+<dd><p>Fields that should not be modified by the client.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.Meta.filtering_disabled">
 <span class="sig-name descname"><span class="pre">filtering_disabled</span></span><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.Meta.filtering_disabled" title="Link to this definition"></a></dt>
-<dd><p>Fields disabled for filtering.</p>
+<dd><p>Fields that cannot be used for filtering.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.Meta.filtering_fields">
 <span class="sig-name descname"><span class="pre">filtering_fields</span></span><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.Meta.filtering_fields" title="Link to this definition"></a></dt>
-<dd><p>Fields allowed for filtering.</p>
+<dd><p>Fields allowed for filtering operations.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.Meta.supported_filtering_params">
 <span class="sig-name descname"><span class="pre">supported_filtering_params</span></span><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.Meta.supported_filtering_params" title="Link to this definition"></a></dt>
-<dd><p>Params allowed during queryset filtering.</p>
+<dd><p>Specific filter parameters allowed
+during queryset filtering (e.g., “content__icontains”, “id__gt”).</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.Meta.blacklist_filtering_params">
 <span class="sig-name descname"><span class="pre">blacklist_filtering_params</span></span><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.Meta.blacklist_filtering_params" title="Link to this definition"></a></dt>
-<dd><p>Params disallowed during queryset filtering.</p>
+<dd><p>Filter parameters explicitly disallowed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.Meta.filtering_strategies">
 <span class="sig-name descname"><span class="pre">filtering_strategies</span></span><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.Meta.filtering_strategies" title="Link to this definition"></a></dt>
-<dd><p>Strategies for filtering.</p>
+<dd><p>Strategies that determine how filtering is handled
+(ALLOW_ALL, ALLOW_NONE, WHITELIST, BLACKLIST).</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.Meta.resource">
-<span class="sig-name descname"><span class="pre">resource</span></span><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.Meta.resource" title="Link to this definition"></a></dt>
-<dd><p>The BaseResource instance.</p>
+<dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.Meta.field_map">
+<span class="sig-name descname"><span class="pre">field_map</span></span><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.Meta.field_map" title="Link to this definition"></a></dt>
+<dd><p>Map of API field names to model attribute names.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.Meta.queryset">
-<span class="sig-name descname"><span class="pre">queryset</span></span><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.Meta.queryset" title="Link to this definition"></a></dt>
-<dd><p>The type of QuerySet for the model.</p>
+<dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.Meta.save_on_write">
+<span class="sig-name descname"><span class="pre">save_on_write</span></span><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.Meta.save_on_write" title="Link to this definition"></a></dt>
+<dd><p>If True, updating attributes triggers automatic save.
+If None, follows client.settings.save_on_write.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.Meta.save_timeout">
+<span class="sig-name descname"><span class="pre">save_timeout</span></span><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.Meta.save_timeout" title="Link to this definition"></a></dt>
+<dd><p>Timeout in seconds for save operations.</p>
 </dd></dl>
 
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If both ALLOW_ALL and ALLOW_NONE filtering strategies are set.</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If both ALLOW_ALL and ALLOW_NONE filtering strategies are set,
+    which would create contradictory behavior.</p>
 </dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>model</strong> (<span class="sphinx_autodoc_typehints-type">type[_Self]</span>)</p>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Defining a custom Meta for a model:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Document</span><span class="p">(</span><span class="n">StandardModel</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">(</span><span class="n">StandardModel</span><span class="o">.</span><span class="n">Meta</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="s2">&quot;checksum&quot;</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="n">filtering_strategies</span> <span class="o">=</span> <span class="p">{</span><span class="n">FilteringStrategies</span><span class="o">.</span><span class="n">WHITELIST</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="n">supported_filtering_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;title__icontains&quot;</span><span class="p">,</span> <span class="s2">&quot;created__gt&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model</strong> (<span class="sphinx_autodoc_typehints-type">type[_Self]</span>)</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id1">
-<span class="sig-name descname"><span class="pre">read_only_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">ClassVar</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id2">
-<span class="sig-name descname"><span class="pre">filtering_disabled</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">ClassVar</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">filtering_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">ClassVar</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id4">
-<span class="sig-name descname"><span class="pre">supported_filtering_params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">ClassVar</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'limit'}</span></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id5">
-<span class="sig-name descname"><span class="pre">blacklist_filtering_params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">ClassVar</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="id6">
-<span class="sig-name descname"><span class="pre">filtering_strategies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">ClassVar</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a><span class="pre">[</span><a class="reference internal" href="paperap.const.html#paperap.const.FilteringStrategies" title="paperap.const.FilteringStrategies"><code class="xref py py-class docutils literal notranslate"><span class="pre">FilteringStrategies</span></code></a><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{FilteringStrategies.BLACKLIST}</span></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.Meta.field_map">
-<span class="sig-name descname"><span class="pre">field_map</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.Meta.field_map" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">read_only_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">ClassVar</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.Meta.save_on_write">
-<span class="sig-name descname"><span class="pre">save_on_write</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> <span class="pre">|</span> <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.Meta.save_on_write" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">filtering_disabled</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">ClassVar</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.Meta.save_timeout">
-<span class="sig-name descname"><span class="pre">save_timeout</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">ModelPrivateAttr(default=60)</span></em><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.Meta.save_timeout" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">filtering_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">ClassVar</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">supported_filtering_params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">ClassVar</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'limit'}</span></em><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">blacklist_filtering_params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">ClassVar</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id12">
+<span class="sig-name descname"><span class="pre">filtering_strategies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">ClassVar</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a><span class="pre">[</span><a class="reference internal" href="paperap.const.html#paperap.const.FilteringStrategies" title="paperap.const.FilteringStrategies"><code class="xref py py-class docutils literal notranslate"><span class="pre">FilteringStrategies</span></code></a><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{FilteringStrategies.BLACKLIST}</span></em><a class="headerlink" href="#id12" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id13">
+<span class="sig-name descname"><span class="pre">field_map</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#id13" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id14">
+<span class="sig-name descname"><span class="pre">save_on_write</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> <span class="pre">|</span> <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id14" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id15">
+<span class="sig-name descname"><span class="pre">save_timeout</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">ModelPrivateAttr(default=60)</span></em><a class="headerlink" href="#id15" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -298,25 +401,37 @@ with minimal configuration needed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.Meta.model">
-<span class="sig-name descname"><span class="pre">model</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeVar" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a><span class="pre">(</span><code class="docutils literal notranslate"><span class="pre">_Self</span></code><span class="pre">,</span> <span class="pre">bound=</span> <span class="pre">BaseModel)]</span></em><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.Meta.model" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id16">
+<span class="sig-name descname"><span class="pre">model</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeVar" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a><span class="pre">(</span><code class="docutils literal notranslate"><span class="pre">_Self</span></code><span class="pre">,</span> <span class="pre">bound=</span> <span class="pre">BaseModel)]</span></em><a class="headerlink" href="#id16" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.Meta.filter_allowed">
 <span class="sig-name descname"><span class="pre">filter_allowed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter_param</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#BaseModel.Meta.filter_allowed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.Meta.filter_allowed" title="Link to this definition"></a></dt>
-<dd><p>Check if a filter is allowed based on the filtering strategies.</p>
+<dd><p>Check if a filter parameter is allowed based on the filtering strategies.</p>
+<p>Evaluate whether a given filter parameter can be used with this model
+based on the configured filtering strategies and rules. This method
+implements the filtering logic defined by the model’s filtering_strategies.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filter_param</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The filter parameter to check.</p>
+<dd class="field-odd"><p><strong>filter_param</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The filter parameter to check (e.g., “title__contains”).</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the filter is allowed, False otherwise.</p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True if the filter is allowed, False otherwise.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">meta</span><span class="o">.</span><span class="n">filter_allowed</span><span class="p">(</span><span class="s2">&quot;title__contains&quot;</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">meta</span><span class="o">.</span><span class="n">filter_allowed</span><span class="p">(</span><span class="s2">&quot;content__exact&quot;</span><span class="p">)</span>
+<span class="go">False  # If content is in filtering_disabled</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -325,14 +440,27 @@ with minimal configuration needed.</p>
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.__init_subclass__">
 <em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__init_subclass__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#BaseModel.__init_subclass__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.__init_subclass__" title="Link to this definition"></a></dt>
 <dd><p>Initialize subclass and set up metadata.</p>
+<p>Ensure that each subclass has its own Meta definition and properly
+inherits metadata attributes from parent classes. This method handles
+the automatic creation and configuration of model metadata.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Additional keyword arguments.</p>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Additional keyword arguments passed to parent __init_subclass__.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ConfigurationError" title="paperap.exceptions.ConfigurationError"><strong>ConfigurationError</strong></a> – If no Meta class is found in the class hierarchy.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
 </dd>
 </dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>This method automatically:
+- Creates a Meta class for the subclass if not explicitly defined
+- Inherits and merges metadata from parent classes
+- Initializes the _meta instance for the subclass</p>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -345,33 +473,66 @@ with minimal configuration needed.</p>
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#BaseModel.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.__init__" title="Link to this definition"></a></dt>
 <dd><p>Initialize the model with resource and data.</p>
+<p>Set up the model with the provided resource and initialize it with
+field values from the API response or user input.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>resource</strong> – The BaseResource instance.</p></li>
-<li><p><strong>**data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Additional data to initialize the model.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>**data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Field values to initialize the model with.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If resource is not provided.</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If resource is not provided or properly initialized.</p>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>Models should typically be created through their resource’s methods
+rather than directly instantiated.</p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.resource">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resource</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.BaseResource" title="paperap.resources.base.BaseResource"><span class="pre">BaseResource</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.resource" title="Link to this definition"></a></dt>
+<dd><p>Get the resource associated with this model.</p>
+<p>Provide access to the resource instance that handles API interactions
+for this model type, such as retrieving, creating, updating, and
+deleting objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The resource instance for this model type.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.BaseResource" title="paperap.resources.base.BaseResource">BaseResource</a>[Self]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.resource">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resource</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.BaseResource" title="paperap.resources.base.BaseResource"><span class="pre">BaseResource</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.13)"><span class="pre">Self</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="paperap.models.html#paperap.models.BaseQuerySet" title="paperap.models.BaseQuerySet"><span class="pre">BaseQuerySet</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.resource" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.save_executor">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save_executor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ThreadPoolExecutor</span></em><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.save_executor" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the thread pool executor for asynchronous save operations.</p>
+<p>Provide access to the thread pool that handles asynchronous save operations,
+creating a new executor if one doesn’t exist yet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>The executor for handling</dt><dd><p>asynchronous save operations.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.ThreadPoolExecutor" title="(in Python v3.13)">concurrent.futures.ThreadPoolExecutor</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.cleanup">
 <span class="sig-name descname"><span class="pre">cleanup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#BaseModel.cleanup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.cleanup" title="Link to this definition"></a></dt>
-<dd><p>Clean up resources used by the model class.</p>
+<dd><p>Clean up resources used by the model.</p>
+<p>Shut down the save executor to release resources. Call this method
+when the model is no longer needed to prevent resource leaks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -401,21 +562,28 @@ method.</p>
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.from_dict">
 <em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#BaseModel.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.from_dict" title="Link to this definition"></a></dt>
 <dd><p>Create a model instance from API response data.</p>
+<p>Instantiate a model from a dictionary of API response data,
+handling field mapping and type conversion through the resource’s
+parse_to_model method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span>) – Dictionary containing the API response data.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A model instance initialized with the provided data.</p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A model instance initialized with the provided data.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Self</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
-<p># Create a Document instance from API data
-doc = Document.from_dict(api_data)</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">api_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">123</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Invoice&quot;</span><span class="p">,</span> <span class="s2">&quot;created&quot;</span><span class="p">:</span> <span class="s2">&quot;2023-01-01T00:00:00Z&quot;</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">api_data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">doc</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+<span class="go">123 Invoice</span>
+</pre></div>
+</div>
 </div>
 </dd></dl>
 
@@ -423,95 +591,153 @@ doc = Document.from_dict(api_data)</p>
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.to_dict">
 <span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_read_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_none</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_unset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#BaseModel.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.to_dict" title="Link to this definition"></a></dt>
 <dd><p>Convert the model to a dictionary for API requests.</p>
+<p>Prepare the model data for submission to the API, with options to
+control which fields are included based on their properties and values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>include_read_only</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Whether to include read-only fields.</p></li>
+<li><p><strong>include_read_only</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Whether to include read-only fields in the output.
+Set to False when preparing data for update operations.</p></li>
 <li><p><strong>exclude_none</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Whether to exclude fields with None values.</p></li>
-<li><p><strong>exclude_unset</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Whether to exclude fields that are not set.</p></li>
+<li><p><strong>exclude_unset</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Whether to exclude fields that were not explicitly set.
+Useful for partial updates.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary with model data ready for API submission.</p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A dictionary with model data ready for API submission.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>, Any]</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
-<p># Convert a Document instance to a dictionary
-data = doc.to_dict()</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Full representation including all fields</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Only include fields that can be modified</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">update_data</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">include_read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Only include fields that have been explicitly set</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">partial_data</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.dirty_fields">
 <span class="sig-name descname"><span class="pre">dirty_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comparison</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'both'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#BaseModel.dirty_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.dirty_fields" title="Link to this definition"></a></dt>
-<dd><p>Show which fields have changed since last update from the paperless ngx db.</p>
+<dd><p>Show which fields have changed since last update from the Paperless NGX database.</p>
+<p>Compare the current model data with the last saved or retrieved data
+to identify changes. This method helps determine what will be sent to
+the server on the next save operation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>comparison</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code></a>[<code class="docutils literal notranslate"><span class="pre">'saved'</span></code>, <code class="docutils literal notranslate"><span class="pre">'db'</span></code>, <code class="docutils literal notranslate"><span class="pre">'both'</span></code>]</span>) – Specify the data to compare (‘saved’ or ‘db’).
-Db is the last data retrieved from Paperless NGX
-Saved is the last data sent to Paperless NGX to be saved</p>
+<dd class="field-odd"><p><strong>comparison</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code></a>[<code class="docutils literal notranslate"><span class="pre">'saved'</span></code>, <code class="docutils literal notranslate"><span class="pre">'db'</span></code>, <code class="docutils literal notranslate"><span class="pre">'both'</span></code>]</span>) – Specify the data to compare against:
+- “saved”: Compare against the last data sent to Paperless NGX
+- “db”: Compare against the last data retrieved from Paperless NGX
+- “both”: Compare against both saved and db data (default)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>(original_value, new_value)} of fields that have
-changed since last update from the paperless ngx db.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A dictionary {field</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>A dictionary mapping field names to tuples of</dt><dd><p>(original_value, current_value) for all fields that have changed.</p>
 </dd>
 </dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a>[Any, Any]]</p>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;New Title&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">dirty_fields</span><span class="p">()</span>
+<span class="go">{&#39;title&#39;: (&#39;Original Title&#39;, &#39;New Title&#39;)}</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.is_dirty">
 <span class="sig-name descname"><span class="pre">is_dirty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comparison</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'both'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#BaseModel.is_dirty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.is_dirty" title="Link to this definition"></a></dt>
-<dd><p>Check if any field has changed since last update from the paperless ngx db.</p>
+<dd><p>Check if any field has changed since last update from the Paperless NGX database.</p>
+<p>Determine if the model has unsaved changes by comparing current data
+with the last saved or retrieved data. New models are always considered dirty.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>comparison</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code></a>[<code class="docutils literal notranslate"><span class="pre">'saved'</span></code>, <code class="docutils literal notranslate"><span class="pre">'db'</span></code>, <code class="docutils literal notranslate"><span class="pre">'both'</span></code>]</span>) – Specify the data to compare (‘saved’ or ‘db’).
-Db is the last data retrieved from Paperless NGX
-Saved is the last data sent to Paperless NGX to be saved</p>
+<dd class="field-odd"><p><strong>comparison</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code></a>[<code class="docutils literal notranslate"><span class="pre">'saved'</span></code>, <code class="docutils literal notranslate"><span class="pre">'db'</span></code>, <code class="docutils literal notranslate"><span class="pre">'both'</span></code>]</span>) – Specify the data to compare against:
+- “saved”: Compare against the last data sent to Paperless NGX
+- “db”: Compare against the last data retrieved from Paperless NGX
+- “both”: Compare against both saved and db data (default)</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if any field has changed, False otherwise.</p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True if any field has changed.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">is_dirty</span><span class="p">()</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;New Title&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">is_dirty</span><span class="p">()</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.create">
 <em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#BaseModel.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.create" title="Link to this definition"></a></dt>
-<dd><p>Create a new model instance.</p>
+<dd><p>Create a new model instance and save it to the server.</p>
+<p>Create a new instance of the model with the specified field values
+and immediately save it to the Paperless NGX server. This is a
+convenience method that delegates to the resource’s create method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Field values to set.</p>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Field values to set on the new model instance.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new model instance that has been saved to the server.</p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A new model instance.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Self</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
-<p># Create a new Document instance
-doc = Document.create(filename=”example.pdf”, contents=b”PDF data”)</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tag</span> <span class="o">=</span> <span class="n">Tag</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Invoices&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#ff0000&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">correspondent</span> <span class="o">=</span> <span class="n">Correspondent</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Electric Company&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc_type</span> <span class="o">=</span> <span class="n">DocumentType</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Bill&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.delete">
 <span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#BaseModel.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.delete" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+<dd><p>Delete this model from the Paperless NGX server.</p>
+<p>Remove the model from the server. After calling this method,
+the model instance should not be used anymore as it no longer
+represents a valid server object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the model doesn’t exist on the server.</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><strong>APIError</strong></a> – If the server returns an error response.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -520,32 +746,49 @@ doc = Document.create(filename=”example.pdf”, contents=b”PDF data”)</p>
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.update_locally">
 <span class="sig-name descname"><span class="pre">update_locally</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_changed_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#BaseModel.update_locally"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.update_locally" title="Link to this definition"></a></dt>
 <dd><p>Update model attributes without triggering automatic save.</p>
+<p>Update the model’s attributes with the provided values without sending
+changes to the server, regardless of the save_on_write setting. This is
+useful for local modifications or when applying server updates.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Field values to update</p></li>
-<li><p><strong>from_db</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>)</p></li>
-<li><p><strong>skip_changed_fields</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>)</p></li>
+<li><p><strong>from_db</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Whether the update is from the database. If True, resets the
+dirty tracking to consider the model clean after the update.</p></li>
+<li><p><strong>skip_changed_fields</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Whether to skip updating fields that have unsaved
+changes. Useful when merging updates from the server with local changes.</p></li>
+<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Field values to update.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ReadOnlyFieldError" title="paperap.exceptions.ReadOnlyFieldError"><strong>ReadOnlyFieldError</strong></a> – If attempting to change a read-only field when
+    from_db is False.</p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Self with updated values</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Update without saving to server</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">update_locally</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;New Title&quot;</span><span class="p">,</span> <span class="n">correspondent_id</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Update from server data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">update_locally</span><span class="p">(</span><span class="n">from_db</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">server_data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.update">
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#BaseModel.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.update" title="Link to this definition"></a></dt>
 <dd><p>Update this model with new values.</p>
-<p>Subclasses implement this with auto-saving features.
-However, base BaseModel instances simply call update_locally.</p>
+<p>Update the model with the provided field values. In BaseModel,
+this simply calls update_locally without saving. Subclasses
+(like StandardModel) may implement automatic saving.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – New field values.</p>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – New field values to set on the model.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
@@ -553,8 +796,9 @@ However, base BaseModel instances simply call update_locally.</p>
 </dl>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
-<p># Update a Document instance
-doc.update(filename=”new_example.pdf”)</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;New Name&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Updated description&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </dd></dl>
 
@@ -562,28 +806,44 @@ doc.update(filename=”new_example.pdf”)</p>
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.is_new">
 <em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_new</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#BaseModel.is_new"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.is_new" title="Link to this definition"></a></dt>
 <dd><p>Check if this model represents a new (unsaved) object.</p>
+<p>Determine if the model has been saved to the server. Subclasses
+must implement this method, typically by checking if the model
+has a valid ID or other server-assigned identifier.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the model is new (not yet saved), False otherwise.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if the model is new, False otherwise.</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
-<p># Check if a Document instance is new
-is_new = doc.is_new()</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;New Document&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">is_new</span><span class="p">()</span>  <span class="c1"># Returns False after creation</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># When creating a model instance manually:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Draft Document&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">is_new</span><span class="p">()</span>  <span class="c1"># Returns True</span>
+</pre></div>
+</div>
 </div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.should_save_on_write">
 <span class="sig-name descname"><span class="pre">should_save_on_write</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#BaseModel.should_save_on_write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.should_save_on_write" title="Link to this definition"></a></dt>
-<dd><p>Check if the model should save on attribute write, factoring in the client settings.</p>
+<dd><p>Check if the model should save on attribute write.</p>
+<p>Determine if changes to model attributes should trigger an automatic
+save operation based on configuration settings. This method considers
+both the model’s meta settings and the client settings, with the
+model’s setting taking precedence.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the model should save on write, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -592,43 +852,65 @@ is_new = doc.is_new()</p>
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.enable_save_on_write">
 <span class="sig-name descname"><span class="pre">enable_save_on_write</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#BaseModel.enable_save_on_write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.enable_save_on_write" title="Link to this definition"></a></dt>
 <dd><p>Enable automatic saving on attribute write.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
-</dd>
-</dl>
+<p>Set the model’s meta configuration to allow automatic saving whenever
+an attribute is modified, overriding the client’s default setting.
+This affects only this specific model instance.
+:rtype: <span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">enable_save_on_write</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;New Title&quot;</span>  <span class="c1"># This will trigger an automatic save</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.disable_save_on_write">
 <span class="sig-name descname"><span class="pre">disable_save_on_write</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#BaseModel.disable_save_on_write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.disable_save_on_write" title="Link to this definition"></a></dt>
 <dd><p>Disable automatic saving on attribute write.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
-</dd>
-</dl>
+<p>Set the model’s meta configuration to prevent automatic saving whenever
+an attribute is modified, overriding the client’s default setting.
+This affects only this specific model instance.
+:rtype: <span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">disable_save_on_write</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;New Title&quot;</span>  <span class="c1"># This won&#39;t trigger an automatic save</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>  <span class="c1"># Manual save required</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.matches_dict">
 <span class="sig-name descname"><span class="pre">matches_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#BaseModel.matches_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.matches_dict" title="Link to this definition"></a></dt>
 <dd><p>Check if the model matches the provided data.</p>
+<p>Compare the model’s current data with a given dictionary to determine
+if they are equivalent. This is useful for checking if a model needs
+to be updated based on new data from the server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span>) – Dictionary containing the data to compare.</p>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span>) – Dictionary containing the data to compare against.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the model matches the data, False otherwise.</p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True if the model matches the data, False otherwise.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
-<p># Check if a Document instance matches API data
-matches = doc.matches_dict(api_data)</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">123</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Invoice&quot;</span><span class="p">,</span> <span class="s2">&quot;correspondent_id&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">matches_dict</span><span class="p">(</span><span class="n">new_data</span><span class="p">)</span>
+<span class="go">False  # If any values differ</span>
+</pre></div>
+</div>
 </div>
 </dd></dl>
 
@@ -636,12 +918,14 @@ matches = doc.matches_dict(api_data)</p>
 <dt class="sig sig-object py" id="paperap.models.abstract.model.BaseModel.__str__">
 <span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#BaseModel.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.BaseModel.__str__" title="Link to this definition"></a></dt>
 <dd><p>Human-readable string representation.</p>
+<p>Provide a string representation of the model that includes the
+model type and ID, typically used for logging and debugging purposes.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A string representation of the model (e.g., “Document #123”).</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A string representation of the model.</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -653,20 +937,43 @@ matches = doc.matches_dict(api_data)</p>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.abstract.model.</span></span><span class="sig-name descname"><span class="pre">StandardModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#StandardModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.StandardModel" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#paperap.models.abstract.model.BaseModel" title="paperap.models.abstract.model.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
 <p>Standard model for Paperless-ngx API objects with an ID field.</p>
+<p>Extend BaseModel to include a unique identifier and additional functionality
+for API objects that require an ID. Most Paperless-ngx resources are
+represented by StandardModel subclasses.</p>
+<p>This class adds functionality for:
+- Tracking whether an object is new or existing
+- Automatic saving of changes to the server
+- Refreshing data from the server
+- Synchronous and asynchronous save operations</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.StandardModel.id">
 <span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#paperap.models.abstract.model.StandardModel.id" title="Link to this definition"></a></dt>
-<dd><p>Unique identifier for the model.</p>
+<dd><p>Unique identifier for the model from Paperless-ngx.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.abstract.model.StandardModel._resource">
+<span class="sig-name descname"><span class="pre">_resource</span></span><a class="headerlink" href="#paperap.models.abstract.model.StandardModel._resource" title="Link to this definition"></a></dt>
+<dd><p>Associated resource for API interactions.</p>
+</dd></dl>
+
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>StandardModel subclasses are typically accessed through the client:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tag</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Important&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">correspondent</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="o">.</span><span class="n">all</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id7">
-<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id17">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id17" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
@@ -674,16 +981,20 @@ matches = doc.matches_dict(api_data)</p>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#StandardModel.Meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.StandardModel.Meta" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#paperap.models.abstract.model.BaseModel.Meta" title="paperap.models.abstract.model.BaseModel.Meta"><code class="xref py py-class docutils literal notranslate"><span class="pre">Meta</span></code></a></p>
 <p>Metadata for the StandardModel.</p>
+<p>Define metadata specific to StandardModel, including read-only fields
+and filtering parameters common to all standard Paperless-ngx resources.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.StandardModel.Meta.read_only_fields">
 <span class="sig-name descname"><span class="pre">read_only_fields</span></span><a class="headerlink" href="#paperap.models.abstract.model.StandardModel.Meta.read_only_fields" title="Link to this definition"></a></dt>
-<dd><p>Fields that should not be modified.</p>
+<dd><p>Fields that should not be modified,
+including the ‘id’ field which is set by the server.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.StandardModel.Meta.supported_filtering_params">
 <span class="sig-name descname"><span class="pre">supported_filtering_params</span></span><a class="headerlink" href="#paperap.models.abstract.model.StandardModel.Meta.supported_filtering_params" title="Link to this definition"></a></dt>
-<dd><p>Params allowed during queryset filtering.</p>
+<dd><p>Common filtering parameters
+supported for all standard models, including id-based lookups.</p>
 </dd></dl>
 
 <dl class="field-list simple">
@@ -692,13 +1003,13 @@ matches = doc.matches_dict(api_data)</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id8">
-<span class="sig-name descname"><span class="pre">read_only_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[set[str]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'id'}</span></em><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id18">
+<span class="sig-name descname"><span class="pre">read_only_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[set[str]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'id'}</span></em><a class="headerlink" href="#id18" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id9">
-<span class="sig-name descname"><span class="pre">supported_filtering_params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[set[str]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'id',</span> <span class="pre">'id__in',</span> <span class="pre">'limit'}</span></em><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id19">
+<span class="sig-name descname"><span class="pre">supported_filtering_params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[set[str]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'id',</span> <span class="pre">'id__in',</span> <span class="pre">'limit'}</span></em><a class="headerlink" href="#id19" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -735,127 +1046,230 @@ matches = doc.matches_dict(api_data)</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.StandardModel.resource">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resource</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.StandardResource" title="paperap.resources.base.StandardResource"><span class="pre">StandardResource</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.13)"><span class="pre">Self</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="paperap.models.html#paperap.models.StandardQuerySet" title="paperap.models.StandardQuerySet"><span class="pre">StandardQuerySet</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#paperap.models.abstract.model.StandardModel.resource" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resource</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.StandardResource" title="paperap.resources.base.StandardResource"><span class="pre">StandardResource</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#paperap.models.abstract.model.StandardModel.resource" title="Link to this definition"></a></dt>
+<dd><p>Get the resource associated with this model.</p>
+<p>Provide access to the StandardResource instance that handles API
+interactions for this model type, with support for ID-based operations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The resource instance for this model type.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.StandardResource" title="paperap.resources.base.StandardResource">StandardResource</a>[Self]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.StandardModel.update">
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#StandardModel.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.StandardModel.update" title="Link to this definition"></a></dt>
 <dd><p>Update this model with new values and save changes.</p>
-<p>NOTE: new instances will not be saved automatically.
-(I’m not sure if that’s the right design decision or not)</p>
+<p>Update the model with the provided field values and automatically
+save the changes to the server if the model is not new. This method
+combines update_locally and save for convenience.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – New field values.</p>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – New field values to set on the model.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New (unsaved) instances will be updated locally but not saved automatically.
+Use create() to save new instances.</p>
+</div>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;New Title&quot;</span><span class="p">,</span> <span class="n">correspondent_id</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Changes are immediately saved to the server</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.StandardModel.refresh">
 <span class="sig-name descname"><span class="pre">refresh</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#StandardModel.refresh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.StandardModel.refresh" title="Link to this definition"></a></dt>
 <dd><p>Refresh the model with the latest data from the server.</p>
+<p>Retrieve the latest data for the model from the server and update
+the model instance with any changes. This is useful when you suspect
+the server data may have changed due to actions by other users or
+automated processes.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if the model data changes, False on failure or if the data does not change.</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the model is not found on Paperless. (e.g. it was deleted remotely)</p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>True if the model data changed, False if the data is identical</dt><dd><p>or the refresh failed.</p>
 </dd>
 </dl>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the model is not found on the server
+    (e.g., it was deleted remotely).</p>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># After some time or operations by other users</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>  <span class="c1"># Update with latest data from server</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.StandardModel.save">
 <span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#StandardModel.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.StandardModel.save" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Save this model to the Paperless NGX server.</p>
+<p>Send the current model state to the server, creating a new object
+or updating an existing one. This is a convenience method that
+calls save_sync.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>force</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>)</p>
+<dd class="field-odd"><p><strong>force</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Whether to force the save operation even if the model
+is not dirty or is already saving.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the save was successful, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;New Title&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Force save even if no changes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.StandardModel.save_sync">
 <span class="sig-name descname"><span class="pre">save_sync</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#StandardModel.save_sync"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.StandardModel.save_sync" title="Link to this definition"></a></dt>
 <dd><p>Save this model instance synchronously.</p>
-<p>Changes are sent to the server immediately, and the model is updated
-when the server responds.</p>
+<p>Send changes to the server immediately and update the model when
+the server responds. This method blocks until the save operation
+is complete.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>force</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Whether to force the save operation even if the model
+is not dirty or is already saving.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if the save was successful, False otherwise.</p>
 </dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the resource doesn’t exist on the server</p></li>
-<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.RequestError" title="paperap.exceptions.RequestError"><strong>RequestError</strong></a> – If there’s a communication error with the server</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#PermissionError" title="(in Python v3.13)"><strong>PermissionError</strong></a> – If the user doesn’t have permission to update the resource</p></li>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the resource doesn’t exist on the server.</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.RequestError" title="paperap.exceptions.RequestError"><strong>RequestError</strong></a> – If there’s a communication error with the server.</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><strong>APIError</strong></a> – If the server returns an error response.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#PermissionError" title="(in Python v3.13)"><strong>PermissionError</strong></a> – If the user doesn’t have permission to update the resource.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>force</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>)</p>
-</dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;New Title&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">success</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">save_sync</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Save </span><span class="si">{</span><span class="s1">&#39;succeeded&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;failed&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.StandardModel.save_async">
 <span class="sig-name descname"><span class="pre">save_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#StandardModel.save_async"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.StandardModel.save_async" title="Link to this definition"></a></dt>
 <dd><p>Save this model instance asynchronously.</p>
-<p>Changes are sent to the server in a background thread, and the model
-is updated when the server responds.</p>
+<p>Send changes to the server in a background thread, allowing other
+operations to continue while waiting for the server response.
+The model will be updated with the server’s response when the
+save completes.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>force</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Whether to force the save operation even if the model
+is not dirty or is already saving.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if the save was successfully submitted async, False otherwise.</p>
-</dd>
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>force</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>)</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>True if the save was successfully submitted to the background</dt><dd><p>thread, False otherwise (e.g., if there are no changes to save).</p>
 </dd>
 </dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;New Title&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Continue execution immediately while save happens in background</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">save_async</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Do other work...</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.StandardModel.is_new">
 <span class="sig-name descname"><span class="pre">is_new</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#StandardModel.is_new"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.StandardModel.is_new" title="Link to this definition"></a></dt>
 <dd><p>Check if this model represents a new (unsaved) object.</p>
+<p>Determine if the model has been saved to the server by checking
+if it has a valid ID (non-zero). StandardModel implements this
+method by checking the id attribute.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the model is new (not yet saved), False otherwise.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if the model is new, False otherwise.</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
-<p># Check if a Document instance is new
-is_new = doc.is_new()</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Draft&quot;</span><span class="p">)</span>  <span class="c1"># No ID yet</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">is_new</span><span class="p">()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saved_doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saved_doc</span><span class="o">.</span><span class="n">is_new</span><span class="p">()</span>
+<span class="go">False</span>
+</pre></div>
+</div>
 </div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.StandardModel.__setattr__">
 <span class="sig-name descname"><span class="pre">__setattr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#StandardModel.__setattr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.StandardModel.__setattr__" title="Link to this definition"></a></dt>
-<dd><p>Override attribute setting to automatically trigger async save.</p>
+<dd><p>Override attribute setting to automatically trigger save.</p>
+<p>Intercept attribute assignments and trigger an automatic save
+operation if appropriate based on the save_on_write setting.
+This enables the “save on write” functionality that makes the
+model automatically sync changes to the server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Attribute name</p></li>
+<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Attribute name to set</p></li>
 <li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – New attribute value</p></li>
 </ul>
 </dd>
@@ -863,18 +1277,28 @@ is_new = doc.is_new()</p>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
 </dd>
 </dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<ul class="simple">
+<li><p>Private attributes (starting with ‘_’) never trigger autosave</p></li>
+<li><p>Autosave only happens when model status is READY</p></li>
+<li><p>Autosave is skipped for new models or when save_on_write is False</p></li>
+</ul>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.model.StandardModel.__str__">
 <span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/model.html#StandardModel.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.model.StandardModel.__str__" title="Link to this definition"></a></dt>
 <dd><p>Human-readable string representation.</p>
+<p>This method returns a string representation of the model, typically
+used for logging and debugging purposes.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A string representation of the model.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A string representation of the model.</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
 </dd>
 </dl>
 </dd></dl>

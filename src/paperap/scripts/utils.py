@@ -1,26 +1,8 @@
 """
+Utility functions for Paperap command-line scripts.
 
-
-
-
-----------------------------------------------------------------------------
-
-METADATA:
-
-File:    utils.py
-        Project: paperap
-Created: 2025-03-18
-        Version: 0.0.9
-Author:  Jess Mann
-Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
-----------------------------------------------------------------------------
-
-LAST MODIFIED:
-
-2025-03-18     By Jess Mann
-
+This module provides common utilities used across Paperap CLI scripts,
+including logging setup and progress bar interfaces.
 """
 
 import logging
@@ -29,18 +11,60 @@ from typing import Any, Protocol, override
 import colorlog
 
 
-# Define a Protocol for alive_bar()
 class ProgressBar(Protocol):
+    """
+    Protocol defining the interface for progress bar implementations.
+
+    This protocol defines the expected interface for progress bar objects,
+    compatible with libraries like alive-progress. It allows for dependency
+    injection of different progress bar implementations.
+
+    Attributes:
+        total: The total number of items to process.
+
+    """
+
     total: int
 
-    def __call__(self, *args: Any, **kwargs: Any) -> None: ...
+    def __call__(self, *args: Any, **kwargs: Any) -> None:
+        """
+        Update the progress bar.
 
-    def text(self, text: str) -> None: ...
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        """
+        ...
+
+    def text(self, text: str) -> None:
+        """
+        Set the text displayed alongside the progress bar.
+
+        Args:
+            text: The text to display.
+
+        """
+        ...
 
 
 def setup_logging() -> logging.Logger:
     """
-    Set up logging with colored output.
+    Set up logging with colored output for CLI applications.
+
+    Configures a root logger with colored output using the colorlog package.
+    Sets appropriate log levels for the application and third-party libraries.
+
+    Returns:
+        A configured logger instance for the application.
+
+    Example:
+        ```python
+        logger = setup_logging()
+        logger.info("Starting application")
+        logger.error("An error occurred")
+        ```
+
     """
     logging.basicConfig(level=logging.ERROR)
 

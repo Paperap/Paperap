@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/models/document_type/model.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../../_static/readthedocs.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,24 +76,11 @@
              
   <h1>Source code for paperap.models.document_type.model</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">Document type model for Paperless-NgX.</span>
 
-<span class="sd">   METADATA:</span>
-
-<span class="sd">       File:    document_type.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">       Created: 2025-03-04</span>
-<span class="sd">        Version: 0.0.9</span>
-<span class="sd">       Author:  Jess Mann</span>
-<span class="sd">       Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">   LAST MODIFIED:</span>
-
-<span class="sd">       2025-03-04     By Jess Mann</span>
-
+<span class="sd">This module provides the DocumentType model class for interacting with document types</span>
+<span class="sd">in a Paperless-NgX instance. Document types are used to categorize documents and can</span>
+<span class="sd">be configured with matching rules for automatic classification.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -107,27 +98,45 @@
 
 
 <div class="viewcode-block" id="DocumentType">
-<a class="viewcode-back" href="../../../../api/paperap.models.document_type.model.html#paperap.models.DocumentType">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DocumentType</span><span class="p">(</span><span class="n">StandardModel</span><span class="p">,</span> <span class="n">MatcherMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a document type in Paperless-NgX.</span>
 
-<span class="sd">    Attributes:</span>
-<span class="sd">        name: The name of the document type.</span>
-<span class="sd">        slug: A unique identifier for the document type.</span>
-<span class="sd">        match: The pattern used for matching documents.</span>
-<span class="sd">        matching_algorithm: The algorithm used for matching.</span>
-<span class="sd">        is_insensitive: Whether the matching is case insensitive.</span>
-<span class="sd">        document_count: The number of documents of this type.</span>
-<span class="sd">        owner: The owner of the document type.</span>
-<span class="sd">        user_can_change: Whether the user can change the document type.</span>
+<span class="sd">    Document types are used to categorize documents and can be configured with</span>
+<span class="sd">    matching rules for automatic classification of new documents during consumption.</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        A new instance of DocumentType.</span>
+<span class="sd">    The MatcherMixin provides functionality for pattern matching against document</span>
+<span class="sd">    content or metadata.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name (str): The name of the document type.</span>
+<span class="sd">        slug (str, optional): A unique identifier for the document type,</span>
+<span class="sd">            auto-generated from name if not provided.</span>
+<span class="sd">        match (str, optional): The pattern used for matching documents.</span>
+<span class="sd">            Only available when using the MatcherMixin methods.</span>
+<span class="sd">        matching_algorithm (MatchingAlgorithmType, optional): The algorithm used for matching.</span>
+<span class="sd">            Only available when using the MatcherMixin methods.</span>
+<span class="sd">        is_insensitive (bool, optional): Whether the matching is case insensitive.</span>
+<span class="sd">            Only available when using the MatcherMixin methods.</span>
+<span class="sd">        document_count (int): The number of documents of this type (read-only).</span>
+<span class="sd">        owner (int, optional): The ID of the user who owns this document type.</span>
+<span class="sd">        user_can_change (bool, optional): Whether the current user can modify this document type.</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        # Create a new DocumentType instance</span>
-<span class="sd">        doc_type = DocumentType(name=&quot;Invoice&quot;, slug=&quot;invoice&quot;, match=&quot;INV-*&quot;)</span>
+<span class="sd">        Create a new document type:</span>
+
+<span class="sd">        &gt;&gt;&gt; doc_type = client.document_types.create(</span>
+<span class="sd">        ...     name=&quot;Invoice&quot;,</span>
+<span class="sd">        ...     matching_algorithm=&quot;auto&quot;,</span>
+<span class="sd">        ...     match=&quot;invoice&quot;</span>
+<span class="sd">        ... )</span>
+
+<span class="sd">        Update an existing document type:</span>
+
+<span class="sd">        &gt;&gt;&gt; doc_type = client.document_types.get(1)</span>
+<span class="sd">        &gt;&gt;&gt; doc_type.name = &quot;Receipt&quot;</span>
+<span class="sd">        &gt;&gt;&gt; doc_type.save()</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -138,8 +147,14 @@
     <span class="n">user_can_change</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="DocumentType.Meta">
-<a class="viewcode-back" href="../../../../api/paperap.models.document_type.model.html#paperap.models.DocumentType.Meta">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentType.Meta">[docs]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">(</span><span class="n">StandardModel</span><span class="o">.</span><span class="n">Meta</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Metadata for the DocumentType model.</span>
+
+<span class="sd">        Defines read-only fields and the associated queryset class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="c1"># Fields that should not be modified</span>
         <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;slug&quot;</span><span class="p">,</span> <span class="s2">&quot;document_count&quot;</span><span class="p">}</span>
         <span class="n">queryset</span> <span class="o">=</span> <span class="n">DocumentTypeQuerySet</span></div>
@@ -148,15 +163,22 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">documents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DocumentQuerySet&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get documents with this document type.</span>
+<span class="sd">        Get all documents associated with this document type.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            A DocumentQuerySet containing documents of this type.</span>
+<span class="sd">            DocumentQuerySet: A queryset containing all documents that have</span>
+<span class="sd">                this document type assigned.</span>
 
 <span class="sd">        Examples:</span>
-<span class="sd">            # Get all documents of this type</span>
-<span class="sd">            documents = doc_type.documents</span>
-<span class="sd">        Get documents with this document type.</span>
+<span class="sd">            Get all documents of this type:</span>
+
+<span class="sd">            &gt;&gt;&gt; documents = doc_type.documents</span>
+<span class="sd">            &gt;&gt;&gt; for doc in documents:</span>
+<span class="sd">            ...     print(doc.title)</span>
+
+<span class="sd">            Filter documents of this type:</span>
+
+<span class="sd">            &gt;&gt;&gt; recent_docs = doc_type.documents.filter(created__gt=&quot;2023-01-01&quot;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">document_type_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>

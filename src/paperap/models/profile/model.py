@@ -1,22 +1,8 @@
 """
-----------------------------------------------------------------------------
+User profile module for Paperless-NGX.
 
-   METADATA:
-
-       File:    profile.py
-        Project: paperap
-       Created: 2025-03-04
-        Version: 0.0.5
-       Author:  Jess Mann
-       Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
-----------------------------------------------------------------------------
-
-   LAST MODIFIED:
-
-       2025-03-04     By Jess Mann
-
+This module defines the Profile model which represents user profiles in the
+Paperless-NGX system, including personal information and authentication details.
 """
 
 from __future__ import annotations
@@ -31,20 +17,37 @@ from paperap.models.profile.queryset import ProfileQuerySet
 
 class Profile(StandardModel):
     """
-    Represents a user profile in the Paperless NGX system.
+    Represents a user profile in the Paperless-NGX system.
+
+    This model corresponds to the user profile endpoint in the Paperless-NGX API
+    and contains information about users, including their personal details and
+    authentication information.
 
     Attributes:
-        email: The email address of the user.
-        password: The password for the user.
-        first_name: The first name of the user.
-        last_name: The last name of the user.
-        auth_token: The authentication token for the user.
-        social_accounts: A list of social accounts associated with the user.
-        has_usable_password: Indicates if the user has a usable password.
+        email (str, optional): The email address of the user.
+        password (str, optional): The password for the user. This is write-only
+            and will not be returned in API responses.
+        first_name (str, optional): The first name of the user.
+        last_name (str, optional): The last name of the user.
+        auth_token (str, optional): The authentication token for the user.
+            This can be used for API authentication.
+        social_accounts (list): A list of social accounts associated with the user
+            for third-party authentication.
+        has_usable_password (bool): Indicates if the user has a usable password.
+            False if the user can only log in via social authentication or tokens.
 
     Examples:
-        >>> profile = Profile(email="a@google.com", password="abc", first_name="John", last_name="Doe")
-        >>> print(profile.email)
+        >>> # Create a new profile
+        >>> profile = Profile(
+        ...     email="user@example.com",
+        ...     first_name="John",
+        ...     last_name="Doe",
+        ...     has_usable_password=True
+        ... )
+        >>>
+        >>> # Access profile information
+        >>> print(f"{profile.first_name} {profile.last_name} <{profile.email}>")
+        John Doe <user@example.com>
 
     """
 
@@ -57,4 +60,16 @@ class Profile(StandardModel):
     has_usable_password: bool
 
     class Meta(StandardModel.Meta):
+        """
+        Metadata for the Profile model.
+
+        This class defines metadata for the Profile model, including the
+        associated queryset class for performing queries on profiles.
+
+        Attributes:
+            queryset (type[ProfileQuerySet]): The queryset class to use for
+                profile queries.
+
+        """
+
         queryset = ProfileQuerySet

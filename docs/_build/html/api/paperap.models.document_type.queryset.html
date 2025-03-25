@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -77,44 +77,49 @@
              
   <section id="module-paperap.models.document_type.queryset">
 <span id="paperap-models-document-type-queryset-module"></span><h1>paperap.models.document_type.queryset module<a class="headerlink" href="#module-paperap.models.document_type.queryset" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<blockquote>
-<div><p>METADATA:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>File:    queryset.py</dt><dd><p>Project: paperap</p>
-</dd>
-<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.5</p>
-</dd>
-</dl>
-<p>Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
-<blockquote>
-<div><p>Copyright (c) 2025 Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
-</div></blockquote>
-<hr class="docutils" />
-<blockquote>
-<div><p>LAST MODIFIED:</p>
-<blockquote>
-<div><p>2025-03-04     By Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
+<p>Provide query functionality for document types in Paperless-ngx.</p>
+<p>This module contains the DocumentTypeQuerySet class which extends the standard
+queryset functionality with document type specific filtering methods. These
+methods allow for filtering document types by their attributes such as name,
+slug, match pattern, and other properties.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.document_type.queryset.DocumentTypeQuerySet">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.document_type.queryset.</span></span><span class="sig-name descname"><span class="pre">DocumentTypeQuerySet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_fetch_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_next_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_last_response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_urls_fetched</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/document_type/queryset.html#DocumentTypeQuerySet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.document_type.queryset.DocumentTypeQuerySet" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.queryset.html#paperap.models.abstract.queryset.StandardQuerySet" title="paperap.models.abstract.queryset.StandardQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardQuerySet</span></code></a>[DocumentType], <a class="reference internal" href="paperap.models.mixins.queryset.html#paperap.models.mixins.queryset.HasOwner" title="paperap.models.mixins.queryset.HasOwner"><code class="xref py py-class docutils literal notranslate"><span class="pre">HasOwner</span></code></a>, <a class="reference internal" href="paperap.models.mixins.queryset.html#paperap.models.mixins.queryset.HasDocumentCount" title="paperap.models.mixins.queryset.HasDocumentCount"><code class="xref py py-class docutils literal notranslate"><span class="pre">HasDocumentCount</span></code></a></p>
-<p>QuerySet for Paperless-ngx document types with specialized filtering methods.</p>
+<dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.queryset.html#paperap.models.abstract.queryset.StandardQuerySet" title="paperap.models.abstract.queryset.StandardQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardQuerySet</span></code></a>[DocumentType], <a class="reference internal" href="paperap.models.mixins.queryset.html#paperap.models.mixins.queryset.HasOwner" title="paperap.models.mixins.queryset.HasOwner"><code class="xref py py-class docutils literal notranslate"><span class="pre">HasOwner</span></code></a>, <a class="reference internal" href="paperap.models.mixins.queryset.html#paperap.models.mixins.queryset.HasDocumentCount" title="paperap.models.mixins.queryset.HasDocumentCount"><code class="xref py py-class docutils literal notranslate"><span class="pre">HasDocumentCount</span></code></a>, <a class="reference internal" href="paperap.models.abstract.queryset.html#paperap.models.abstract.queryset.SupportsBulkActions" title="paperap.models.abstract.queryset.SupportsBulkActions"><code class="xref py py-class docutils literal notranslate"><span class="pre">SupportsBulkActions</span></code></a></p>
+<p>Implement specialized filtering methods for Paperless-ngx document types.</p>
+<p>Extends StandardQuerySet to provide document type-specific filtering
+capabilities, including filtering by name, slug, match pattern, and other
+document type attributes.</p>
+<dl class="simple">
+<dt>Inherits:</dt><dd><p>StandardQuerySet: Base queryset functionality for standard models
+HasOwner: Adds owner filtering capabilities
+HasDocumentCount: Adds document count filtering capabilities</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A new instance of DocumentTypeQuerySet.</p>
+<dd class="field-odd"><p>A chainable DocumentTypeQuerySet instance</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Self</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
-<p># Create a DocumentTypeQuerySet instance
-queryset = DocumentTypeQuerySet()</p>
+<dl>
+<dt>Get all document types:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">all_types</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_types</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd>
+<dt>Filter by name:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">invoices</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_types</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name__contains</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Chain multiple filters:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_types</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="s2">&quot;Tax&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">matching_algorithm</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -138,21 +143,35 @@ queryset = DocumentTypeQuerySet()</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The document type name to filter by</p></li>
-<li><p><strong>exact</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, match the exact name, otherwise use contains</p></li>
-<li><p><strong>case_insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, ignore case when matching</p></li>
+<li><p><strong>exact</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, match the exact name, otherwise use contains.
+Defaults to True.</p></li>
+<li><p><strong>case_insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, ignore case when matching.
+Defaults to True.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Filtered DocumentTypeQuerySet</p>
+<dd class="field-odd"><p>Filtered DocumentTypeQuerySet with name filter applied</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
-<p># Filter document types by name
-filtered = queryset.name(“Invoice”)</p>
+<dl>
+<dt>Exact match (default):</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">invoice_types</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_types</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="s2">&quot;Invoice&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Contains match:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tax_types</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_types</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="s2">&quot;tax&quot;</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Case sensitive match:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">types</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_types</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="s2">&quot;TAX&quot;</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 </div>
 </dd></dl>
 
@@ -160,96 +179,180 @@ filtered = queryset.name(“Invoice”)</p>
 <dt class="sig sig-object py" id="paperap.models.document_type.queryset.DocumentTypeQuerySet.slug">
 <span class="sig-name descname"><span class="pre">slug</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case_insensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/document_type/queryset.html#DocumentTypeQuerySet.slug"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.document_type.queryset.DocumentTypeQuerySet.slug" title="Link to this definition"></a></dt>
 <dd><p>Filter document types by slug.</p>
+<p>The slug is a URL-friendly version of the document type name, typically
+lowercase with hyphens instead of spaces.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The slug to filter by</p></li>
-<li><p><strong>exact</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, match the exact slug, otherwise use contains</p></li>
-<li><p><strong>case_insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>)</p></li>
+<li><p><strong>exact</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, match the exact slug, otherwise use contains.
+Defaults to True.</p></li>
+<li><p><strong>case_insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, ignore case when matching.
+Defaults to True.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Filtered DocumentTypeQuerySet</p>
+<dd class="field-odd"><p>Filtered DocumentTypeQuerySet with slug filter applied</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Exact match:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">invoice_types</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_types</span><span class="o">.</span><span class="n">slug</span><span class="p">(</span><span class="s2">&quot;invoice-2023&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Contains match:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">types</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_types</span><span class="o">.</span><span class="n">slug</span><span class="p">(</span><span class="s2">&quot;invoice&quot;</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.document_type.queryset.DocumentTypeQuerySet.match">
 <span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case_insensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/document_type/queryset.html#DocumentTypeQuerySet.match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.document_type.queryset.DocumentTypeQuerySet.match" title="Link to this definition"></a></dt>
 <dd><p>Filter document types by match pattern.</p>
+<p>The match pattern is used by Paperless-ngx to automatically assign document types
+to documents based on their content or filename.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The pattern to search for in match</p></li>
-<li><p><strong>exact</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, match the exact pattern, otherwise use contains</p></li>
-<li><p><strong>case_insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>)</p></li>
+<li><p><strong>exact</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, match the exact pattern, otherwise use contains.
+Defaults to True.</p></li>
+<li><p><strong>case_insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, ignore case when matching.
+Defaults to True.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Filtered DocumentTypeQuerySet</p>
+<dd class="field-odd"><p>Filtered DocumentTypeQuerySet with match pattern filter applied</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Find document types that match “invoice”:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">invoice_types</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_types</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;invoice&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Find document types with match patterns containing “tax”:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tax_types</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_types</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;tax&quot;</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.document_type.queryset.DocumentTypeQuerySet.matching_algorithm">
 <span class="sig-name descname"><span class="pre">matching_algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/document_type/queryset.html#DocumentTypeQuerySet.matching_algorithm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.document_type.queryset.DocumentTypeQuerySet.matching_algorithm" title="Link to this definition"></a></dt>
 <dd><p>Filter document types by matching algorithm.</p>
+<p>Paperless-ngx supports different algorithms for matching document types:
+- 1: Any word (default)
+- 2: All words
+- 3: Exact match
+- 4: Regular expression
+- 5: Fuzzy match
+- 6: Auto</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The matching algorithm ID</p>
+<dd class="field-odd"><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The matching algorithm ID (1-6)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Filtered DocumentTypeQuerySet</p>
+<dd class="field-odd"><p>Filtered DocumentTypeQuerySet with matching algorithm filter applied</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Find document types using regex matching:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">regex_types</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_types</span><span class="o">.</span><span class="n">matching_algorithm</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Find document types using fuzzy matching:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fuzzy_types</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_types</span><span class="o">.</span><span class="n">matching_algorithm</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.document_type.queryset.DocumentTypeQuerySet.case_insensitive">
 <span class="sig-name descname"><span class="pre">case_insensitive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/document_type/queryset.html#DocumentTypeQuerySet.case_insensitive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.document_type.queryset.DocumentTypeQuerySet.case_insensitive" title="Link to this definition"></a></dt>
 <dd><p>Filter document types by case sensitivity setting.</p>
+<p>Filter document types based on whether their matching is case insensitive
+or case sensitive.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>insensitive</strong> – If True, get document types with case insensitive matching</p></li>
-<li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>)</p></li>
-</ul>
+<dd class="field-odd"><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, get document types with case insensitive matching.
+If False, get document types with case sensitive matching. Defaults to True.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Filtered DocumentTypeQuerySet</p>
+<dd class="field-odd"><p>Filtered DocumentTypeQuerySet with case sensitivity filter applied</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Find document types with case insensitive matching:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">insensitive_types</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_types</span><span class="o">.</span><span class="n">case_insensitive</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd>
+<dt>Find document types with case sensitive matching:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sensitive_types</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_types</span><span class="o">.</span><span class="n">case_insensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.document_type.queryset.DocumentTypeQuerySet.user_can_change">
 <span class="sig-name descname"><span class="pre">user_can_change</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/document_type/queryset.html#DocumentTypeQuerySet.user_can_change"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.document_type.queryset.DocumentTypeQuerySet.user_can_change" title="Link to this definition"></a></dt>
 <dd><p>Filter document types by user change permission.</p>
+<p>Filter document types based on whether regular users (non-superusers)
+have permission to modify them.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, get document types where users can change</p>
+<dd class="field-odd"><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, get document types where users can change.
+If False, get document types where only superusers can change.
+Defaults to True.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Filtered DocumentTypeQuerySet</p>
+<dd class="field-odd"><p>Filtered DocumentTypeQuerySet with user permission filter applied</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Find document types that regular users can modify:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">user_editable</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_types</span><span class="o">.</span><span class="n">user_can_change</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd>
+<dt>Find document types that only superusers can modify:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">admin_only</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_types</span><span class="o">.</span><span class="n">user_can_change</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 </dd></dl>

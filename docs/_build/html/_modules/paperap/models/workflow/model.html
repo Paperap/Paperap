@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/models/workflow/model.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../../_static/readthedocs.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,24 +76,15 @@
              
   <h1>Source code for paperap.models.workflow.model</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">Models for Paperless-NgX workflow functionality.</span>
 
-<span class="sd">   METADATA:</span>
+<span class="sd">This module contains the data models representing workflows, workflow triggers,</span>
+<span class="sd">workflow actions, and workflow runs in the Paperless-NgX system. These models</span>
+<span class="sd">map directly to the corresponding API resources and provide a Pythonic interface</span>
+<span class="sd">for interacting with the workflow system.</span>
 
-<span class="sd">       File:    workflow.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">       Created: 2025-03-04</span>
-<span class="sd">        Version: 0.0.9</span>
-<span class="sd">       Author:  Jess Mann</span>
-<span class="sd">       Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">   LAST MODIFIED:</span>
-
-<span class="sd">       2025-03-04     By Jess Mann</span>
-
+<span class="sd">Workflows in Paperless-NgX consist of triggers (conditions that start a workflow)</span>
+<span class="sd">and actions (operations performed when a trigger is activated).</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -112,10 +107,38 @@
 
 
 <div class="viewcode-block" id="WorkflowTrigger">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.model.html#paperap.models.WorkflowTrigger">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowTrigger">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WorkflowTrigger</span><span class="p">(</span><span class="n">StandardModel</span><span class="p">,</span> <span class="n">MatcherMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a workflow trigger in Paperless-NgX.</span>
+
+<span class="sd">    A workflow trigger defines the conditions under which a workflow will be executed.</span>
+<span class="sd">    Triggers can be based on document creation, modification, scheduled events, or</span>
+<span class="sd">    other system events.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        sources: List of source types that can activate this trigger.</span>
+<span class="sd">        type: The type of trigger (e.g., document added, scheduled).</span>
+<span class="sd">        filter_path: Path filter for file-based triggers.</span>
+<span class="sd">        filter_filename: Filename filter for file-based triggers.</span>
+<span class="sd">        filter_mailrule: Mail rule filter for email-based triggers.</span>
+<span class="sd">        filter_has_tags: List of tag IDs that documents must have to trigger.</span>
+<span class="sd">        filter_has_correspondent: Correspondent ID that documents must have.</span>
+<span class="sd">        filter_has_document_type: Document type ID that documents must have.</span>
+<span class="sd">        schedule_date_field: Field to use for date-based scheduling.</span>
+<span class="sd">        schedule_date_custom_field: Custom field ID to use for date-based scheduling.</span>
+<span class="sd">        schedule_offset_days: Days to offset from the scheduled date.</span>
+<span class="sd">        schedule_is_recurring: Whether this trigger recurs on a schedule.</span>
+<span class="sd">        schedule_recurring_interval_days: Interval in days for recurring triggers.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; # Create a trigger for new documents with a specific tag</span>
+<span class="sd">        &gt;&gt;&gt; trigger = WorkflowTrigger(</span>
+<span class="sd">        ...     sources=[&quot;source_document&quot;],</span>
+<span class="sd">        ...     type=&quot;document_added&quot;,</span>
+<span class="sd">        ...     filter_has_tags=[5]  # Tag ID 5</span>
+<span class="sd">        ... )</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">sources</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">WorkflowTriggerSourceType</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
@@ -133,18 +156,73 @@
     <span class="n">schedule_recurring_interval_days</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
 
 <div class="viewcode-block" id="WorkflowTrigger.Meta">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.model.html#paperap.models.WorkflowTrigger.Meta">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowTrigger.Meta">[docs]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">(</span><span class="n">StandardModel</span><span class="o">.</span><span class="n">Meta</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Metadata for the WorkflowTrigger model.&quot;&quot;&quot;</span>
+
         <span class="n">queryset</span> <span class="o">=</span> <span class="n">WorkflowTriggerQuerySet</span></div>
 </div>
 
 
 
 <div class="viewcode-block" id="WorkflowAction">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.model.html#paperap.models.WorkflowAction">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowAction">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WorkflowAction</span><span class="p">(</span><span class="n">StandardModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a workflow action in Paperless-NgX.</span>
+
+<span class="sd">    A workflow action defines an operation to be performed when a workflow is triggered.</span>
+<span class="sd">    Actions can include assigning metadata to documents, removing metadata, sending</span>
+<span class="sd">    emails, or triggering webhooks.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        type: The type of action to perform.</span>
+
+<span class="sd">        # Assignment action attributes</span>
+<span class="sd">        assign_title: Title to assign to the document.</span>
+<span class="sd">        assign_tags: List of tag IDs to assign to the document.</span>
+<span class="sd">        assign_correspondent: Correspondent ID to assign to the document.</span>
+<span class="sd">        assign_document_type: Document type ID to assign to the document.</span>
+<span class="sd">        assign_storage_path: Storage path ID to assign to the document.</span>
+<span class="sd">        assign_owner: Owner ID to assign to the document.</span>
+<span class="sd">        assign_view_users: List of user IDs to grant view permissions.</span>
+<span class="sd">        assign_view_groups: List of group IDs to grant view permissions.</span>
+<span class="sd">        assign_change_users: List of user IDs to grant change permissions.</span>
+<span class="sd">        assign_change_groups: List of group IDs to grant change permissions.</span>
+<span class="sd">        assign_custom_fields: List of custom field IDs to assign.</span>
+<span class="sd">        assign_custom_fields_values: Dictionary mapping custom field IDs to values.</span>
+
+<span class="sd">        # Removal action attributes</span>
+<span class="sd">        remove_all_tags: Whether to remove all tags from the document.</span>
+<span class="sd">        remove_tags: List of tag IDs to remove from the document.</span>
+<span class="sd">        remove_all_correspondents: Whether to remove all correspondents.</span>
+<span class="sd">        remove_correspondents: List of correspondent IDs to remove.</span>
+<span class="sd">        remove_all_document_types: Whether to remove all document types.</span>
+<span class="sd">        remove_document_types: List of document type IDs to remove.</span>
+<span class="sd">        remove_all_storage_paths: Whether to remove all storage paths.</span>
+<span class="sd">        remove_storage_paths: List of storage path IDs to remove.</span>
+<span class="sd">        remove_custom_fields: List of custom field IDs to remove.</span>
+<span class="sd">        remove_all_custom_fields: Whether to remove all custom fields.</span>
+<span class="sd">        remove_all_owners: Whether to remove all owners.</span>
+<span class="sd">        remove_owners: List of owner IDs to remove.</span>
+<span class="sd">        remove_all_permissions: Whether to remove all permissions.</span>
+<span class="sd">        remove_view_users: List of user IDs to remove view permissions.</span>
+<span class="sd">        remove_view_groups: List of group IDs to remove view permissions.</span>
+<span class="sd">        remove_change_users: List of user IDs to remove change permissions.</span>
+<span class="sd">        remove_change_groups: List of group IDs to remove change permissions.</span>
+
+<span class="sd">        # Email and webhook action attributes</span>
+<span class="sd">        email: Configuration for email actions.</span>
+<span class="sd">        webhook: Configuration for webhook actions.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; # Create an action to assign tags and a document type</span>
+<span class="sd">        &gt;&gt;&gt; action = WorkflowAction(</span>
+<span class="sd">        ...     type=&quot;assign&quot;,</span>
+<span class="sd">        ...     assign_tags=[1, 2],</span>
+<span class="sd">        ...     assign_document_type=5</span>
+<span class="sd">        ... )</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nb">type</span><span class="p">:</span> <span class="n">WorkflowActionType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -189,18 +267,41 @@
     <span class="n">webhook</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="WorkflowAction.Meta">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.model.html#paperap.models.WorkflowAction.Meta">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowAction.Meta">[docs]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">(</span><span class="n">StandardModel</span><span class="o">.</span><span class="n">Meta</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Metadata for the WorkflowAction model.&quot;&quot;&quot;</span>
+
         <span class="n">queryset</span> <span class="o">=</span> <span class="n">WorkflowActionQuerySet</span></div>
 </div>
 
 
 
 <div class="viewcode-block" id="Workflow">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.model.html#paperap.models.Workflow">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Workflow">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Workflow</span><span class="p">(</span><span class="n">StandardModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a workflow in Paperless-NgX.</span>
+
+<span class="sd">    A workflow is a combination of triggers and actions that automate document</span>
+<span class="sd">    processing in Paperless-NgX. When a trigger condition is met, the associated</span>
+<span class="sd">    actions are executed.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name: The name of the workflow.</span>
+<span class="sd">        order: The execution order of this workflow relative to others.</span>
+<span class="sd">        enabled: Whether this workflow is currently active.</span>
+<span class="sd">        triggers: List of trigger configurations for this workflow.</span>
+<span class="sd">        actions: List of action configurations for this workflow.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; # Create a simple workflow</span>
+<span class="sd">        &gt;&gt;&gt; workflow = Workflow(</span>
+<span class="sd">        ...     name=&quot;Tag Invoices&quot;,</span>
+<span class="sd">        ...     enabled=True,</span>
+<span class="sd">        ...     triggers=[{&quot;type&quot;: &quot;document_added&quot;, &quot;filter_filename&quot;: &quot;invoice&quot;}],</span>
+<span class="sd">        ...     actions=[{&quot;type&quot;: &quot;assign&quot;, &quot;assign_tags&quot;: [5]}]</span>
+<span class="sd">        ... )</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -210,11 +311,9 @@
     <span class="n">actions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Workflow.Meta">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.model.html#paperap.models.Workflow.Meta">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Workflow.Meta">[docs]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">(</span><span class="n">StandardModel</span><span class="o">.</span><span class="n">Meta</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Metadata for the Workflow model.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Metadata for the Workflow model.&quot;&quot;&quot;</span>
 
         <span class="n">queryset</span> <span class="o">=</span> <span class="n">WorkflowQuerySet</span></div>
 </div>
@@ -226,6 +325,28 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">WorkflowRun</span><span class="p">(</span><span class="n">StandardModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a workflow run in Paperless-NgX.</span>
+
+<span class="sd">    A workflow run is a record of a specific execution of a workflow, including</span>
+<span class="sd">    its status, timing information, and any errors that occurred during execution.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        workflow: ID of the workflow that was executed.</span>
+<span class="sd">        document: ID of the document that triggered the workflow.</span>
+<span class="sd">        type: The type of trigger that initiated this workflow run.</span>
+<span class="sd">        run_at: The time when this workflow run was scheduled.</span>
+<span class="sd">        started: The time when this workflow run started execution.</span>
+<span class="sd">        finished: The time when this workflow run completed execution.</span>
+<span class="sd">        status: The current status of this workflow run.</span>
+<span class="sd">        error: Error message if the workflow run failed.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; # Check the status of a workflow run</span>
+<span class="sd">        &gt;&gt;&gt; run = client.workflow_runs.get(123)</span>
+<span class="sd">        &gt;&gt;&gt; if run.status == &quot;SUCCESS&quot;:</span>
+<span class="sd">        ...     print(f&quot;Workflow completed successfully at {run.finished}&quot;)</span>
+<span class="sd">        ... else:</span>
+<span class="sd">        ...     print(f&quot;Workflow failed: {run.error}&quot;)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">workflow</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>

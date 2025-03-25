@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -77,65 +77,133 @@
              
   <section id="module-paperap.resources.correspondents">
 <span id="paperap-resources-correspondents-module"></span><h1>paperap.resources.correspondents module<a class="headerlink" href="#module-paperap.resources.correspondents" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<blockquote>
-<div><p>METADATA:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>File:    correspondents.py</dt><dd><p>Project: paperap</p>
-</dd>
-<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.9</p>
+<p>Correspondent resource module for interacting with Paperless-NgX correspondent endpoints.</p>
+<p>This module provides the CorrespondentResource class which handles all API interactions
+related to correspondents in a Paperless-NgX system. Correspondents represent people or
+organizations that send or receive documents.</p>
+<dl>
+<dt>Typical usage example:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get all correspondents</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">correspondents</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create a new correspondent</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_correspondent</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Electric Company&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get a specific correspondent</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">electric</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd>
 </dl>
-<p>Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
-<blockquote>
-<div><p>Copyright (c) 2025 Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
-</div></blockquote>
-<hr class="docutils" />
-<blockquote>
-<div><p>LAST MODIFIED:</p>
-<blockquote>
-<div><p>2025-03-04     By Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.resources.correspondents.CorrespondentResource">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.resources.correspondents.</span></span><span class="sig-name descname"><span class="pre">CorrespondentResource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/resources/correspondents.html#CorrespondentResource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.resources.correspondents.CorrespondentResource" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.StandardResource" title="paperap.resources.base.StandardResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardResource</span></code></a>[<a class="reference internal" href="paperap.models.correspondent.model.html#paperap.models.correspondent.model.Correspondent" title="paperap.models.correspondent.model.Correspondent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Correspondent</span></code></a>, <a class="reference internal" href="paperap.models.correspondent.queryset.html#paperap.models.correspondent.queryset.CorrespondentQuerySet" title="paperap.models.correspondent.queryset.CorrespondentQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">CorrespondentQuerySet</span></code></a>], <a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.BulkEditing" title="paperap.resources.base.BulkEditing"><code class="xref py py-class docutils literal notranslate"><span class="pre">BulkEditing</span></code></a></p>
-<p>Resource for managing correspondents.</p>
+<p>Resource for managing correspondents in Paperless-NgX.</p>
+<p>This resource provides methods for creating, retrieving, updating, and deleting
+correspondent objects via the Paperless-NgX API. It extends the standard
+resource methods and incorporates bulk editing capabilities for efficient
+processing of multiple correspondent records.</p>
+<p>Correspondents represent people or organizations that send or receive documents
+in a Paperless-NgX system. They can be used to automatically categorize documents
+based on matching rules.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>client</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="paperap.client.html#paperap.client.PaperlessClient" title="paperap.client.PaperlessClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">PaperlessClient</span></code></a></span>)</p>
+<dd class="field-odd"><p><strong>client</strong> (<span class="sphinx_autodoc_typehints-type">PaperlessClient</span>) – The PaperlessClient instance this resource is attached to.</p>
 </dd>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.resources.correspondents.CorrespondentResource.model_class">
 <span class="sig-name descname"><span class="pre">model_class</span></span><a class="headerlink" href="#paperap.resources.correspondents.CorrespondentResource.model_class" title="Link to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="paperap.models.correspondent.model.html#paperap.models.correspondent.model.Correspondent" title="paperap.models.correspondent.model.Correspondent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Correspondent</span></code></a></p>
+<dd><p>Reference to the Correspondent model class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Type[Correspondent]</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.resources.correspondents.CorrespondentResource.queryset_class">
 <span class="sig-name descname"><span class="pre">queryset_class</span></span><a class="headerlink" href="#paperap.resources.correspondents.CorrespondentResource.queryset_class" title="Link to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="paperap.models.correspondent.queryset.html#paperap.models.correspondent.queryset.CorrespondentQuerySet" title="paperap.models.correspondent.queryset.CorrespondentQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">CorrespondentQuerySet</span></code></a></p>
+<dd><p>Reference to the query set class for correspondents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Type[CorrespondentQuerySet]</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.resources.correspondents.CorrespondentResource.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'correspondents'</span></em><a class="headerlink" href="#paperap.resources.correspondents.CorrespondentResource.name" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#paperap.resources.correspondents.CorrespondentResource.name" title="Link to this definition"></a></dt>
+<dd><p>The API endpoint name for managing correspondents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Create a new correspondent:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">new_correspondent</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Electric Company&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">matching_algorithm</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">match</span><span class="o">=</span><span class="s2">&quot;electric&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Retrieve a correspondent by ID:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">correspondent</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">correspondent</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Update a correspondent:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">correspondent</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">correspondent</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Updated Name&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">correspondent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Delete a correspondent:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">correspondent</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">correspondent</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Filter correspondents:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">electric_correspondents</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">name__icontains</span><span class="o">=</span><span class="s2">&quot;electric&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Bulk operations on correspondents:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get all correspondents with &quot;Company&quot; in the name</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">company_correspondents</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name__icontains</span><span class="o">=</span><span class="s2">&quot;Company&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Update all of them at once</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">company_correspondents</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">matching_algorithm</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">model_class</span></span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="paperap.models.correspondent.model.html#paperap.models.correspondent.model.Correspondent" title="paperap.models.correspondent.model.Correspondent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Correspondent</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">queryset_class</span></span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="paperap.models.correspondent.queryset.html#paperap.models.correspondent.queryset.CorrespondentQuerySet" title="paperap.models.correspondent.queryset.CorrespondentQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">CorrespondentQuerySet</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'correspondents'</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.resources.correspondents.CorrespondentResource.endpoints">
 <span class="sig-name descname"><span class="pre">endpoints</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[Endpoints]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'create':</span> <span class="pre">&lt;string.Template</span> <span class="pre">object&gt;,</span> <span class="pre">'delete':</span> <span class="pre">&lt;string.Template</span> <span class="pre">object&gt;,</span> <span class="pre">'detail':</span> <span class="pre">&lt;string.Template</span> <span class="pre">object&gt;,</span> <span class="pre">'list':</span> <span class="pre">&lt;string.Template</span> <span class="pre">object&gt;,</span> <span class="pre">'update':</span> <span class="pre">&lt;string.Template</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#paperap.resources.correspondents.CorrespondentResource.endpoints" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.resources.correspondents.CorrespondentResource.client">
-<span class="sig-name descname"><span class="pre">client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">PaperlessClient</span></em><a class="headerlink" href="#paperap.resources.correspondents.CorrespondentResource.client" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

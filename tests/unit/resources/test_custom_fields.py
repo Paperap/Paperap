@@ -1,23 +1,4 @@
-"""
-----------------------------------------------------------------------------
 
-   METADATA:
-
-       File:    test_custom_fields.py
-        Project: paperap
-       Created: 2025-03-21
-        Version: 0.0.9
-       Author:  Claude
-       Email:
-        Copyright (c) 2025 Jess Mann
-
-----------------------------------------------------------------------------
-
-   DESCRIPTION:
-
-       Unit tests for the CustomFieldResource class.
-
-"""
 
 from __future__ import annotations
 

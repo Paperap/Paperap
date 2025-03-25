@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/models/abstract/meta.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../../_static/readthedocs.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,23 +76,26 @@
              
   <h1>Source code for paperap.models.abstract.meta</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">Provide context management for model status transitions.</span>
 
-<span class="sd">   METADATA:</span>
+<span class="sd">The module implements a context manager that safely handles model status changes</span>
+<span class="sd">during operations like saving or updating. It ensures proper status transitions</span>
+<span class="sd">and resource locking to maintain data integrity throughout the lifecycle of</span>
+<span class="sd">model operations.</span>
 
-<span class="sd">       File:    meta.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">       Created: 2025-03-07</span>
-<span class="sd">        Version: 0.0.9</span>
-<span class="sd">       Author:  Jess Mann</span>
-<span class="sd">       Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
+<span class="sd">Examples:</span>
+<span class="sd">    Basic usage to temporarily change a model&#39;s status:</span>
 
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">    &gt;&gt;&gt; with StatusContext(model, ModelStatus.UPDATING):</span>
+<span class="sd">    ...     # Perform operations that require the model to be in UPDATING status</span>
+<span class="sd">    ...     model.update_field(&quot;value&quot;)</span>
 
-<span class="sd">   LAST MODIFIED:</span>
+<span class="sd">    Using StatusContext in a model method:</span>
 
-<span class="sd">       2025-03-07     By Jess Mann</span>
+<span class="sd">    &gt;&gt;&gt; def save(self):</span>
+<span class="sd">    ...     with StatusContext(self, ModelStatus.SAVING):</span>
+<span class="sd">    ...         # Perform save operation</span>
+<span class="sd">    ...         self._save_to_api()</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -106,18 +113,44 @@
 <a class="viewcode-back" href="../../../../api/paperap.models.abstract.meta.html#paperap.models.abstract.StatusContext">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StatusContext</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Context manager for safely updating model status.</span>
+<span class="sd">    Manage model status changes safely with proper resource locking.</span>
+
+<span class="sd">    Provides a mechanism to temporarily change the status of a model</span>
+<span class="sd">    while ensuring the previous status is restored upon completion.</span>
+<span class="sd">    Handles acquisition and release of save locks to prevent concurrent</span>
+<span class="sd">    modifications that could lead to data inconsistency.</span>
+
+<span class="sd">    When used as a context manager, StatusContext will:</span>
+<span class="sd">    1. Optionally acquire a save lock if the new status is SAVING</span>
+<span class="sd">    2. Store the model&#39;s current status</span>
+<span class="sd">    3. Set the model&#39;s status to the new status</span>
+<span class="sd">    4. Execute the context body</span>
+<span class="sd">    5. Restore the original status when exiting</span>
+<span class="sd">    6. Release any acquired locks</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        model (SomeModel): The model whose status is being updated.</span>
+<span class="sd">        model (BaseModel): The model whose status is being managed.</span>
 <span class="sd">        new_status (ModelStatus): The status to set within the context.</span>
-<span class="sd">        previous_status (ModelStatus): The status before entering the context.</span>
+<span class="sd">        previous_status (ModelStatus | None): The status before entering the context.</span>
 
 <span class="sd">    Examples:</span>
+<span class="sd">        Using StatusContext in a model method:</span>
+
 <span class="sd">        &gt;&gt;&gt; class SomeModel(BaseModel):</span>
 <span class="sd">        ...     def perform_update(self):</span>
 <span class="sd">        ...         with StatusContext(self, ModelStatus.UPDATING):</span>
-<span class="sd">        ...             # Perform an update</span>
+<span class="sd">        ...             # Perform an update operation</span>
+<span class="sd">        ...             self._update_remote_data()</span>
+
+<span class="sd">        Using StatusContext with error handling:</span>
+
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     with StatusContext(model, ModelStatus.SAVING):</span>
+<span class="sd">        ...         # Attempt to save the model</span>
+<span class="sd">        ...         model._save_to_api()</span>
+<span class="sd">        ... except APIError:</span>
+<span class="sd">        ...     # The model&#39;s status will be restored even if an error occurs</span>
+<span class="sd">        ...     print(&quot;Failed to save model&quot;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -128,30 +161,63 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BaseModel&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read-only access to the model.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the model associated with this context.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BaseModel: The model whose status is being managed.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_model_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BaseModel.Meta[Any]&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read-only access to the model&#39;s meta.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the model&#39;s metadata.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BaseModel.Meta[Any]: The metadata associated with the model.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span>  <span class="c1"># pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">new_status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelStatus</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read-only access to the new status.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the status that will be set within this context.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ModelStatus: The status to set within the context.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_new_status</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">previous_status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelStatus</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read-only access to the previous status.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the status that was set before entering this context.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ModelStatus | None: The previous status, or None if not yet entered.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_previous_status</span>
 
 <div class="viewcode-block" id="StatusContext.__init__">
 <a class="viewcode-back" href="../../../../api/paperap.models.abstract.meta.html#paperap.models.abstract.StatusContext.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="s2">&quot;BaseModel&quot;</span><span class="p">,</span> <span class="n">new_status</span><span class="p">:</span> <span class="n">ModelStatus</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the StatusContext with a model and target status.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model (BaseModel): The model whose status will be temporarily changed.</span>
+<span class="sd">            new_status (ModelStatus): The status to set while in this context.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_new_status</span> <span class="o">=</span> <span class="n">new_status</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_previous_status</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_lock_acquired</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span></div>
 
 
@@ -159,9 +225,17 @@
 <a class="viewcode-back" href="../../../../api/paperap.models.abstract.meta.html#paperap.models.abstract.StatusContext.save_lock">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">save_lock</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Acquire the save lock</span>
+<span class="sd">        Acquire the save lock for the model.</span>
+
+<span class="sd">        Acquires the model&#39;s save lock to ensure that no other operations can</span>
+<span class="sd">        modify the model while the status is being updated. The lock is implemented</span>
+<span class="sd">        as a threading.RLock to allow reentrant locking from the same thread.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method sets the internal _save_lock_acquired flag to True when</span>
+<span class="sd">            successful, which is used to determine if unlock is needed later.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Trigger the self.model._save_lock (threading.RLock) to be acquired</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_save_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>  <span class="c1"># type: ignore # allow protected access</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_save_lock_acquired</span> <span class="o">=</span> <span class="kc">True</span></div>
 
@@ -170,31 +244,88 @@
 <a class="viewcode-back" href="../../../../api/paperap.models.abstract.meta.html#paperap.models.abstract.StatusContext.save_unlock">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">save_unlock</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Release the save lock, only if this statuscontext previous acquired it.</span>
+<span class="sd">        Release the save lock for the model.</span>
+
+<span class="sd">        Releases the model&#39;s save lock if it was acquired by this context manager,</span>
+<span class="sd">        allowing other operations to modify the model. The lock is only released</span>
+<span class="sd">        if it was previously acquired by this specific StatusContext instance.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method checks the internal _save_lock_acquired flag to ensure</span>
+<span class="sd">            it only releases locks that it has acquired.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Release the self.model._save_lock (threading.RLock)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_lock_acquired</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_save_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>  <span class="c1"># type: ignore # allow protected access</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_save_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>  <span class="c1"># type: ignore # allow protected access</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_save_lock_acquired</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 
+<div class="viewcode-block" id="StatusContext.__enter__">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.meta.html#paperap.models.abstract.StatusContext.__enter__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Enter the context, updating the model&#39;s status.</span>
+
+<span class="sd">        Performs the following operations:</span>
+<span class="sd">        1. Acquires the save lock if the new status is ModelStatus.SAVING</span>
+<span class="sd">        2. Stores the model&#39;s current status for later restoration</span>
+<span class="sd">        3. Sets the model&#39;s status to the new status</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method intentionally returns None instead of self to prevent</span>
+<span class="sd">            direct access to the context manager, ensuring proper status reversion.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Acquire a save lock</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_status</span> <span class="o">==</span> <span class="n">ModelStatus</span><span class="o">.</span><span class="n">SAVING</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">save_lock</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_previous_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">_status</span>  <span class="c1"># type: ignore # allow private access</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_status</span>  <span class="c1"># type: ignore # allow private access</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_status</span>  <span class="c1"># type: ignore # allow private access</span></div>
+
 
         <span class="c1"># Do NOT return context manager, because we want to guarantee that the status is reverted</span>
         <span class="c1"># so we do not want to allow access to the context manager object</span>
 
+<div class="viewcode-block" id="StatusContext.__exit__">
+<a class="viewcode-back" href="../../../../api/paperap.models.abstract.meta.html#paperap.models.abstract.StatusContext.__exit__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">:</span> <span class="ne">BaseException</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">traceback</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Exit the context, restoring the model&#39;s previous status.</span>
+
+<span class="sd">        Performs the following cleanup operations:</span>
+<span class="sd">        1. Restores the model&#39;s status to its previous value</span>
+<span class="sd">        2. Sets status to ModelStatus.ERROR if no previous status was recorded</span>
+<span class="sd">        3. Releases the save lock if it was acquired</span>
+
+<span class="sd">        Ensures proper cleanup even if an exception occurred within the context.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            exc_type (type[BaseException] | None): The exception type, if any.</span>
+<span class="sd">            exc_value (BaseException | None): The exception value, if any.</span>
+<span class="sd">            traceback (Iterable[Any]): The traceback information, if any.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method does not suppress exceptions; they will propagate normally.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Handling exceptions while using StatusContext:</span>
+
+<span class="sd">            &gt;&gt;&gt; try:</span>
+<span class="sd">            ...     with StatusContext(model, ModelStatus.PROCESSING):</span>
+<span class="sd">            ...         raise ValueError(&quot;Something went wrong&quot;)</span>
+<span class="sd">            ... except ValueError:</span>
+<span class="sd">            ...     # The model&#39;s status will be restored before this exception handler runs</span>
+<span class="sd">            ...     print(&quot;Error occurred, but model status was properly restored&quot;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_status</span>  <span class="c1"># type: ignore # allow private access</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ModelStatus</span><span class="o">.</span><span class="n">ERROR</span>  <span class="c1"># type: ignore # allow private access</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">save_unlock</span><span class="p">()</span></div>
+</div>
 
 </pre></div>
 

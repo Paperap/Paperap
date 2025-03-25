@@ -1,26 +1,8 @@
 """
+Document metadata queryset module for interacting with document metadata in Paperless-ngx.
 
-
-
-
-----------------------------------------------------------------------------
-
-METADATA:
-
-File:    queryset.py
-Project: paperap
-Created: 2025-03-18
-Version: 0.0.8
-Author:  Jess Mann
-Email:   jess@jmann.me
-Copyright (c) 2025 Jess Mann
-
-----------------------------------------------------------------------------
-
-LAST MODIFIED:
-
-2025-03-18     By Jess Mann
-
+This module provides the DocumentMetadataQuerySet class, which extends StandardQuerySet
+to handle document metadata-specific operations and filtering.
 """
 
 from __future__ import annotations
@@ -37,4 +19,27 @@ logger = logging.getLogger(__name__)
 
 
 class DocumentMetadataQuerySet(StandardQuerySet["DocumentMetadata"]):
+    """
+    A specialized queryset for interacting with Paperless-NGX document metadata.
+
+    This queryset extends StandardQuerySet to provide document metadata-specific
+    filtering methods, making it easier to query metadata by their attributes.
+
+    Document metadata contains information about documents such as original filename,
+    media information, archive metadata, and other system-level properties that
+    aren't part of the document's content or user-assigned metadata.
+
+    The queryset is lazy-loaded, meaning API requests are only made when data is
+    actually needed (when iterating, counting, or accessing specific items).
+
+    Examples:
+        >>> # Get metadata for a specific document
+        >>> metadata = client.document_metadata.filter(document=123).first()
+        >>> print(f"Original filename: {metadata.original_filename}")
+        >>>
+        >>> # Get metadata for documents with specific archive information
+        >>> archived = client.document_metadata.filter(archive_checksum__isnull=False)
+
+    """
+
     pass

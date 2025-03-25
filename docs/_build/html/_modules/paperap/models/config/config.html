@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/models/config/config.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../../_static/readthedocs.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,24 +76,11 @@
              
   <h1>Source code for paperap.models.config.config</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">Configuration model for Paperless-NgX system settings.</span>
 
-<span class="sd">   METADATA:</span>
-
-<span class="sd">       File:    config.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">       Created: 2025-03-04</span>
-<span class="sd">        Version: 0.0.9</span>
-<span class="sd">       Author:  Jess Mann</span>
-<span class="sd">       Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">   LAST MODIFIED:</span>
-
-<span class="sd">       2025-03-04     By Jess Mann</span>
-
+<span class="sd">This module provides the Config model class for interacting with the Paperless-NgX</span>
+<span class="sd">configuration API endpoint. It allows retrieving and modifying system-wide settings</span>
+<span class="sd">that control document processing, OCR behavior, and application appearance.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -103,6 +94,49 @@
 <div class="viewcode-block" id="Config">
 <a class="viewcode-back" href="../../../../api/paperap.models.config.config.html#paperap.models.config.config.Config">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">(</span><span class="n">StandardModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model representing Paperless-NgX system configuration settings.</span>
+
+<span class="sd">    This model provides access to system-wide configuration settings that control</span>
+<span class="sd">    document processing, OCR behavior, and application appearance. These settings</span>
+<span class="sd">    correspond to those available in the Paperless-NgX admin interface.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        user_args (str | None): Custom arguments passed to the OCR engine.</span>
+<span class="sd">        output_type (str | None): Default output format for OCR results (e.g., &quot;pdfa&quot;, &quot;pdf&quot;).</span>
+<span class="sd">        pages (str | None): Page range specification for OCR processing (e.g., &quot;1,3-5&quot;).</span>
+<span class="sd">        language (str | None): Default OCR language code (e.g., &quot;eng&quot;, &quot;deu&quot;).</span>
+<span class="sd">        mode (str | None): OCR processing mode (e.g., &quot;skip&quot;, &quot;redo&quot;, &quot;force&quot;).</span>
+<span class="sd">        skip_archive_file (bool | None): Whether to skip creating archive files.</span>
+<span class="sd">        image_dpi (int | None): DPI setting for image processing.</span>
+<span class="sd">        unpaper_clean (bool | None): Whether to use unpaper for document cleaning.</span>
+<span class="sd">        deskew (bool): Whether to automatically deskew (straighten) documents.</span>
+<span class="sd">        rotate_pages (bool): Whether to automatically rotate pages to the correct orientation.</span>
+<span class="sd">        rotate_pages_threshold (int | None): Confidence threshold for automatic page rotation.</span>
+<span class="sd">        max_image_pixels (int | None): Maximum number of pixels to process in images.</span>
+<span class="sd">        color_conversion_strategy (str | None): Strategy for color conversion (e.g., &quot;none&quot;, &quot;grayscale&quot;).</span>
+<span class="sd">        app_title (str): Custom title for the Paperless-NgX web application.</span>
+<span class="sd">        app_logo (str): Custom logo path for the Paperless-NgX web application.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Retrieve current system configuration:</span>
+
+<span class="sd">        ```python</span>
+<span class="sd">        config = client.config.get()</span>
+<span class="sd">        print(f&quot;Current OCR language: {config.language}&quot;)</span>
+<span class="sd">        ```</span>
+
+<span class="sd">        Update system configuration:</span>
+
+<span class="sd">        ```python</span>
+<span class="sd">        config = client.config.get()</span>
+<span class="sd">        config.language = &quot;eng+deu&quot;  # Set OCR to use English and German</span>
+<span class="sd">        config.deskew = True         # Enable automatic document straightening</span>
+<span class="sd">        config.save()</span>
+<span class="sd">        ```</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">user_args</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">output_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">pages</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>

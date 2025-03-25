@@ -1,22 +1,9 @@
 """
-----------------------------------------------------------------------------
+Manage configuration settings for the Paperap library.
 
-METADATA:
-
-File:    settings.py
-        Project: paperap
-Created: 2025-03-09
-        Version: 0.0.9
-Author:  Jess Mann
-Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
-----------------------------------------------------------------------------
-
-LAST MODIFIED:
-
-2025-03-09     By Jess Mann
-
+This module provides classes for configuring the Paperap client's connection
+to a Paperless-NgX server, including authentication, timeouts, and behavior
+settings. Settings can be loaded from environment variables or provided directly.
 """
 
 from __future__ import annotations
@@ -31,7 +18,20 @@ from paperap.exceptions import ConfigurationError
 
 class SettingsArgs(TypedDict, total=False):
     """
-    Arguments for the settings class
+    Define expected arguments for the Settings class constructor.
+
+    All fields are optional in this TypedDict to allow for flexible initialization
+    of Settings objects with any combination of configuration parameters.
+
+    Args:
+        base_url: Base URL of the Paperless-NgX server.
+        token: API token for authentication.
+        username: Username for authentication (alternative to token).
+        password: Password for authentication (used with username).
+        timeout: Request timeout in seconds.
+        require_ssl: Whether to require HTTPS connections.
+        save_on_write: Whether to automatically save models when attributes are changed.
+
     """
 
     base_url: HttpUrl
@@ -45,7 +45,49 @@ class SettingsArgs(TypedDict, total=False):
 
 class Settings(BaseSettings):
     """
-    Settings for the paperap library
+    Configure connection and behavior settings for the Paperap library.
+
+    Manages configuration for connecting to and interacting with a Paperless-NgX server.
+    Settings can be loaded from environment variables with the prefix PAPERLESS_
+    or provided directly through constructor arguments.
+
+    Authentication requires either a token or a username/password pair.
+
+    Args:
+        token: API token for authentication.
+        username: Username for authentication (alternative to token).
+        password: Password for authentication (used with username).
+        base_url: Base URL of the Paperless-NgX server.
+        timeout: Request timeout in seconds. Defaults to 60.
+        require_ssl: Whether to require HTTPS connections. Defaults to False.
+        save_on_write: Whether to automatically save models when attributes are changed.
+            Defaults to True.
+        openai_key: OpenAI API key for AI-powered features.
+        openai_model: OpenAI model name to use.
+        openai_url: Custom OpenAI API endpoint URL.
+
+    Raises:
+        ConfigurationError: If required settings are missing or invalid.
+
+    Examples:
+        Load settings from environment variables:
+
+        ```python
+        # With PAPERLESS_BASE_URL and PAPERLESS_TOKEN set in environment
+        settings = Settings()
+        ```
+
+        Initialize with explicit values:
+
+        ```python
+        settings = Settings(
+            base_url="https://paperless.example.com",
+            token="your_api_token",
+            timeout=30,
+            require_ssl=True
+        )
+        ```
+
     """
 
     token: str | None = None
@@ -64,7 +106,19 @@ class Settings(BaseSettings):
     @field_validator("base_url", mode="after")
     @classmethod
     def validate_url(cls, value: HttpUrl) -> HttpUrl:
-        """Ensure the URL is properly formatted."""
+        """
+        Validate that the URL has both a scheme and host.
+
+        Args:
+            value: URL to validate.
+
+        Returns:
+            The validated URL.
+
+        Raises:
+            ConfigurationError: If the URL is missing a scheme or host.
+
+        """
         # Make sure the URL has a scheme
         if not all([value.scheme, value.host]):
             raise ConfigurationError("Base URL must have a scheme and host")
@@ -74,7 +128,23 @@ class Settings(BaseSettings):
     @field_validator("timeout", mode="before")
     @classmethod
     def validate_timeout(cls, value: Any) -> int:
-        """Ensure the timeout is a positive integer."""
+        """
+        Convert and validate the timeout value as a positive integer.
+
+        Handles string values by converting them to integers and ensures
+        the final value is a positive number.
+
+        Args:
+            value: Timeout value to validate (string or integer).
+
+        Returns:
+            Validated timeout as an integer.
+
+        Raises:
+            TypeError: If the value cannot be converted to an integer.
+            ConfigurationError: If the timeout is negative.
+
+        """
         try:
             if isinstance(value, str):
                 # May raise ValueError
@@ -92,7 +162,19 @@ class Settings(BaseSettings):
     @override
     def model_post_init(self, __context: Any) -> None:
         """
-        Validate the settings after they have been initialized.
+        Perform final validation of settings after initialization.
+
+        Executes additional validation checks after individual field validations:
+        1. Verifies authentication credentials are provided
+        2. Confirms base_url is set
+        3. Ensures HTTPS is used when require_ssl is True
+
+        Args:
+            __context: Context information from Pydantic initialization.
+
+        Raises:
+            ConfigurationError: If any validation checks fail.
+
         """
         if self.token is None and (self.username is None or self.password is None):
             raise ConfigurationError("Provide a token, or a username and password")

@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -77,40 +77,49 @@
              
   <section id="module-paperap.models.document.download.model">
 <span id="paperap-models-document-download-model-module"></span><h1>paperap.models.document.download.model module<a class="headerlink" href="#module-paperap.models.document.download.model" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<p>METADATA:</p>
-<dl class="simple">
-<dt>File:    download.py</dt><dd><p>Project: paperap</p>
-</dd>
-<dt>Created: 2025-03-18</dt><dd><p>Version: 0.0.9</p>
-</dd>
-</dl>
-<p>Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
-<blockquote>
-<div><p>Copyright (c) 2025 Jess Mann</p>
-</div></blockquote>
-<hr class="docutils" />
-<p>LAST MODIFIED:</p>
-<p>2025-03-18     By Jess Mann</p>
+<p>Document download functionality for Paperless-NgX documents.</p>
+<p>This module provides classes for handling document file downloads from a Paperless-NgX
+server, including different retrieval modes (download, preview, thumbnail) and
+metadata about the downloaded files.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.document.download.model.RetrieveFileMode">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.document.download.model.</span></span><span class="sig-name descname"><span class="pre">RetrieveFileMode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/document/download/model.html#RetrieveFileMode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.document.download.model.RetrieveFileMode" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
 <p>Enum for document file retrieval modes.</p>
+<p>This enum defines the different ways a document can be retrieved from
+the Paperless-NgX server, each corresponding to a different endpoint
+and potentially different file format.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.document.download.model.RetrieveFileMode.DOWNLOAD">
-<span class="sig-name descname"><span class="pre">DOWNLOAD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'download'</span></em><a class="headerlink" href="#paperap.models.document.download.model.RetrieveFileMode.DOWNLOAD" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">DOWNLOAD</span></span><a class="headerlink" href="#paperap.models.document.download.model.RetrieveFileMode.DOWNLOAD" title="Link to this definition"></a></dt>
+<dd><p>Retrieve the full document file for downloading.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.document.download.model.RetrieveFileMode.PREVIEW">
-<span class="sig-name descname"><span class="pre">PREVIEW</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'preview'</span></em><a class="headerlink" href="#paperap.models.document.download.model.RetrieveFileMode.PREVIEW" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">PREVIEW</span></span><a class="headerlink" href="#paperap.models.document.download.model.RetrieveFileMode.PREVIEW" title="Link to this definition"></a></dt>
+<dd><p>Retrieve a preview version of the document (typically PDF).</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.document.download.model.RetrieveFileMode.THUMBNAIL">
-<span class="sig-name descname"><span class="pre">THUMBNAIL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'thumbnail'</span></em><a class="headerlink" href="#paperap.models.document.download.model.RetrieveFileMode.THUMBNAIL" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">THUMBNAIL</span></span><a class="headerlink" href="#paperap.models.document.download.model.RetrieveFileMode.THUMBNAIL" title="Link to this definition"></a></dt>
+<dd><p>Retrieve a thumbnail image of the document.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">DOWNLOAD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'download'</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">PREVIEW</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'preview'</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">THUMBNAIL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'thumbnail'</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -120,81 +129,131 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.document.download.model.</span></span><span class="sig-name descname"><span class="pre">DownloadedDocument</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/document/download/model.html#DownloadedDocument"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.document.download.model.DownloadedDocument" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel" title="paperap.models.abstract.model.StandardModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardModel</span></code></a></p>
 <p>Represents a downloaded Paperless-NgX document file.</p>
+<p>This model stores both the binary content of a downloaded document file
+and metadata about the file, such as its content type and suggested filename.
+It is typically used as a return value from document download operations.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.document.download.model.DownloadedDocument.mode">
 <span class="sig-name descname"><span class="pre">mode</span></span><a class="headerlink" href="#paperap.models.document.download.model.DownloadedDocument.mode" title="Link to this definition"></a></dt>
-<dd><p>The retrieval mode (download, preview, thumbnail).</p>
+<dd><p>The retrieval mode used (download, preview,
+or thumbnail). Determines which endpoint was used to retrieve the file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">RetrieveFileMode</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.document.download.model.DownloadedDocument.original">
 <span class="sig-name descname"><span class="pre">original</span></span><a class="headerlink" href="#paperap.models.document.download.model.DownloadedDocument.original" title="Link to this definition"></a></dt>
-<dd><p>Whether to retrieve the original file.</p>
+<dd><p>Whether to retrieve the original file (True) or the archived
+version (False). Only applicable for DOWNLOAD mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.document.download.model.DownloadedDocument.content">
 <span class="sig-name descname"><span class="pre">content</span></span><a class="headerlink" href="#paperap.models.document.download.model.DownloadedDocument.content" title="Link to this definition"></a></dt>
-<dd><p>The binary content of the file.</p>
+<dd><p>The binary content of the downloaded file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.document.download.model.DownloadedDocument.content_type">
 <span class="sig-name descname"><span class="pre">content_type</span></span><a class="headerlink" href="#paperap.models.document.download.model.DownloadedDocument.content_type" title="Link to this definition"></a></dt>
-<dd><p>The MIME type of the file.</p>
+<dd><p>The MIME type of the file (e.g., “application/pdf”).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.document.download.model.DownloadedDocument.disposition_filename">
 <span class="sig-name descname"><span class="pre">disposition_filename</span></span><a class="headerlink" href="#paperap.models.document.download.model.DownloadedDocument.disposition_filename" title="Link to this definition"></a></dt>
-<dd><p>The filename from the Content-Disposition header.</p>
+<dd><p>The suggested filename from the
+Content-Disposition header.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.document.download.model.DownloadedDocument.disposition_type">
 <span class="sig-name descname"><span class="pre">disposition_type</span></span><a class="headerlink" href="#paperap.models.document.download.model.DownloadedDocument.disposition_type" title="Link to this definition"></a></dt>
-<dd><p>The type from the Content-Disposition header.</p>
+<dd><p>The disposition type from the Content-Disposition
+header (typically “attachment” or “inline”).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Download a document</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">downloaded</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">download_content</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Downloaded </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">downloaded</span><span class="o">.</span><span class="n">content</span><span class="p">)</span><span class="si">}</span><span class="s2"> bytes&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File type: </span><span class="si">{</span><span class="n">downloaded</span><span class="o">.</span><span class="n">content_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Filename: </span><span class="si">{</span><span class="n">downloaded</span><span class="o">.</span><span class="n">disposition_filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">RetrieveFileMode</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id1">
-<span class="sig-name descname"><span class="pre">original</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id2">
-<span class="sig-name descname"><span class="pre">content</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bytes</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">content_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">RetrieveFileMode</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id4">
-<span class="sig-name descname"><span class="pre">disposition_filename</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">original</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id5">
-<span class="sig-name descname"><span class="pre">disposition_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">content</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bytes</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">content_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">disposition_filename</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">disposition_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.document.download.model.DownloadedDocument.Meta">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/document/download/model.html#DownloadedDocument.Meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.document.download.model.DownloadedDocument.Meta" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel.Meta" title="paperap.models.abstract.model.StandardModel.Meta"><code class="xref py py-class docutils literal notranslate"><span class="pre">Meta</span></code></a></p>
+<p>Metadata for the DownloadedDocument model.</p>
+<p>Defines which fields are read-only and should not be modified by the client.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>model</strong> (<span class="sphinx_autodoc_typehints-type">type[_Self]</span>)</p>

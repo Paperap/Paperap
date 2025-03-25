@@ -1,22 +1,9 @@
 """
-----------------------------------------------------------------------------
+Document download functionality for Paperless-NgX documents.
 
-METADATA:
-
-File:    download.py
-        Project: paperap
-Created: 2025-03-18
-        Version: 0.0.9
-Author:  Jess Mann
-Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
-----------------------------------------------------------------------------
-
-LAST MODIFIED:
-
-2025-03-18     By Jess Mann
-
+This module provides classes for handling document file downloads from a Paperless-NgX
+server, including different retrieval modes (download, preview, thumbnail) and
+metadata about the downloaded files.
 """
 
 from __future__ import annotations
@@ -29,7 +16,19 @@ from paperap.models.abstract import StandardModel
 
 
 class RetrieveFileMode(str, Enum):
-    """Enum for document file retrieval modes."""
+    """
+    Enum for document file retrieval modes.
+
+    This enum defines the different ways a document can be retrieved from
+    the Paperless-NgX server, each corresponding to a different endpoint
+    and potentially different file format.
+
+    Attributes:
+        DOWNLOAD: Retrieve the full document file for downloading.
+        PREVIEW: Retrieve a preview version of the document (typically PDF).
+        THUMBNAIL: Retrieve a thumbnail image of the document.
+
+    """
 
     DOWNLOAD = "download"
     PREVIEW = "preview"
@@ -40,13 +39,29 @@ class DownloadedDocument(StandardModel):
     """
     Represents a downloaded Paperless-NgX document file.
 
+    This model stores both the binary content of a downloaded document file
+    and metadata about the file, such as its content type and suggested filename.
+    It is typically used as a return value from document download operations.
+
     Attributes:
-        mode: The retrieval mode (download, preview, thumbnail).
-        original: Whether to retrieve the original file.
-        content: The binary content of the file.
-        content_type: The MIME type of the file.
-        disposition_filename: The filename from the Content-Disposition header.
-        disposition_type: The type from the Content-Disposition header.
+        mode (RetrieveFileMode | None): The retrieval mode used (download, preview,
+            or thumbnail). Determines which endpoint was used to retrieve the file.
+        original (bool): Whether to retrieve the original file (True) or the archived
+            version (False). Only applicable for DOWNLOAD mode.
+        content (bytes | None): The binary content of the downloaded file.
+        content_type (str | None): The MIME type of the file (e.g., "application/pdf").
+        disposition_filename (str | None): The suggested filename from the
+            Content-Disposition header.
+        disposition_type (str | None): The disposition type from the Content-Disposition
+            header (typically "attachment" or "inline").
+
+    Examples:
+        >>> # Download a document
+        >>> doc = client.documents.get(123)
+        >>> downloaded = doc.download_content()
+        >>> print(f"Downloaded {len(downloaded.content)} bytes")
+        >>> print(f"File type: {downloaded.content_type}")
+        >>> print(f"Filename: {downloaded.disposition_filename}")
 
     """
 
@@ -58,4 +73,10 @@ class DownloadedDocument(StandardModel):
     disposition_type: str | None = None
 
     class Meta(StandardModel.Meta):
+        """
+        Metadata for the DownloadedDocument model.
+
+        Defines which fields are read-only and should not be modified by the client.
+        """
+
         read_only_fields = {"content", "content_type", "disposition_filename", "disposition_type"}

@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/models/ui_settings/model.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../../_static/readthedocs.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,24 +76,24 @@
              
   <h1>Source code for paperap.models.ui_settings.model</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">UI Settings model for Paperless-NgX.</span>
 
-<span class="sd">   METADATA:</span>
+<span class="sd">This module provides the UISettings model class for interacting with the</span>
+<span class="sd">Paperless-NgX UI settings API endpoint. UI settings control the appearance</span>
+<span class="sd">and behavior of the Paperless-NgX web interface.</span>
 
-<span class="sd">       File:    ui_settings.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">       Created: 2025-03-04</span>
-<span class="sd">        Version: 0.0.5</span>
-<span class="sd">       Author:  Jess Mann</span>
-<span class="sd">       Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
+<span class="sd">Typical usage example:</span>
+<span class="sd">    ```python</span>
+<span class="sd">    # Get the current user&#39;s UI settings</span>
+<span class="sd">    ui_settings = client.ui_settings.get()</span>
 
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">    # Access specific settings</span>
+<span class="sd">    dark_mode = ui_settings.settings.get(&quot;dark_mode&quot;, False)</span>
 
-<span class="sd">   LAST MODIFIED:</span>
-
-<span class="sd">       2025-03-04     By Jess Mann</span>
-
+<span class="sd">    # Update settings</span>
+<span class="sd">    ui_settings.settings[&quot;dark_mode&quot;] = True</span>
+<span class="sd">    ui_settings.save()</span>
+<span class="sd">    ```</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -103,19 +107,61 @@
 
 
 <div class="viewcode-block" id="UISettings">
-<a class="viewcode-back" href="../../../../api/paperap.models.ui_settings.model.html#paperap.models.UISettings">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.UISettings">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UISettings</span><span class="p">(</span><span class="n">StandardModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents UI settings in Paperless-NgX.</span>
+
+<span class="sd">    This model provides access to user-specific UI settings and permissions</span>
+<span class="sd">    in Paperless-NgX. Unlike most other models, there is typically only one</span>
+<span class="sd">    UI settings object per user, and it contains all customizable aspects</span>
+<span class="sd">    of the user interface.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        user: Dictionary containing user information such as username and ID.</span>
+<span class="sd">        settings: Dictionary containing all UI settings like theme preferences,</span>
+<span class="sd">            display options, and other customizable UI elements.</span>
+<span class="sd">        permissions: List of permission strings indicating what actions the</span>
+<span class="sd">            current user is allowed to perform in the Paperless-NgX system.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Get and modify UI settings:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        # Get current UI settings</span>
+<span class="sd">        ui_settings = client.ui_settings.get()</span>
+
+<span class="sd">        # Check if dark mode is enabled</span>
+<span class="sd">        is_dark_mode = ui_settings.settings.get(&quot;dark_mode&quot;, False)</span>
+
+<span class="sd">        # Enable dark mode</span>
+<span class="sd">        ui_settings.settings[&quot;dark_mode&quot;] = True</span>
+<span class="sd">        ui_settings.save()</span>
+
+<span class="sd">        # Check user permissions</span>
+<span class="sd">        if &quot;view_document&quot; in ui_settings.permissions:</span>
+<span class="sd">            print(&quot;User can view documents&quot;)</span>
+<span class="sd">        ```</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">user</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
-    <span class="n">settings</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
-    <span class="n">permissions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">user</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Dictionary containing user information&quot;</span><span class="p">)</span>
+    <span class="n">settings</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Dictionary containing all UI settings&quot;</span><span class="p">)</span>
+    <span class="n">permissions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;List of permission strings for the current user&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="UISettings.Meta">
-<a class="viewcode-back" href="../../../../api/paperap.models.ui_settings.model.html#paperap.models.UISettings.Meta">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.UISettings.Meta">[docs]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">(</span><span class="n">StandardModel</span><span class="o">.</span><span class="n">Meta</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Metadata for the UISettings model.</span>
+
+<span class="sd">        This class defines metadata for the UISettings model, including the</span>
+<span class="sd">        associated queryset class.</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            queryset: The UISettingsQuerySet class used for querying UI settings.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">queryset</span> <span class="o">=</span> <span class="n">UISettingsQuerySet</span></div>
 </div>
 

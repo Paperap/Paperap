@@ -45,7 +45,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
@@ -74,24 +76,11 @@
              
   <h1>Source code for paperap.models.correspondent.model</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">Define the Correspondent model for interacting with Paperless-NgX correspondents.</span>
 
-<span class="sd">   METADATA:</span>
-
-<span class="sd">       File:    correspondent.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">       Created: 2025-03-04</span>
-<span class="sd">        Version: 0.0.10</span>
-<span class="sd">       Author:  Jess Mann</span>
-<span class="sd">       Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">   LAST MODIFIED:</span>
-
-<span class="sd">       2025-03-04     By Jess Mann</span>
-
+<span class="sd">This module provides the Correspondent model class, which represents a person,</span>
+<span class="sd">company, or organization that sends or receives documents in Paperless-NgX.</span>
+<span class="sd">Correspondents help organize documents and make them easier to find.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -114,7 +103,28 @@
 <a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Correspondent">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Correspondent</span><span class="p">(</span><span class="n">StandardModel</span><span class="p">,</span> <span class="n">MatcherMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represents a correspondent in Paperless-NgX.</span>
+<span class="sd">    Represent a correspondent in Paperless-NgX.</span>
+
+<span class="sd">    A correspondent typically represents a person, company, or organization that sends</span>
+<span class="sd">    or receives documents. Correspondents can be assigned to documents to help with</span>
+<span class="sd">    organization and searching.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        slug: URL-friendly identifier for the correspondent, auto-generated.</span>
+<span class="sd">        name: Display name of the correspondent.</span>
+<span class="sd">        document_count: Number of documents associated with this correspondent.</span>
+<span class="sd">        owner: ID of the user who owns this correspondent.</span>
+<span class="sd">        user_can_change: Whether the current user has permission to modify this correspondent.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Create a new correspondent:</span>
+<span class="sd">            &gt;&gt;&gt; correspondent = client.correspondents.create(name=&quot;Electric Company&quot;)</span>
+
+<span class="sd">        Assign a correspondent to a document:</span>
+<span class="sd">            &gt;&gt;&gt; document = client.documents.get(123)</span>
+<span class="sd">            &gt;&gt;&gt; document.correspondent = correspondent.id</span>
+<span class="sd">            &gt;&gt;&gt; document.save()</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">slug</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -126,6 +136,18 @@
 <div class="viewcode-block" id="Correspondent.Meta">
 <a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Correspondent.Meta">[docs]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">(</span><span class="n">StandardModel</span><span class="o">.</span><span class="n">Meta</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Define metadata for the Correspondent model.</span>
+
+<span class="sd">        Specifies read-only fields and the associated queryset class for</span>
+<span class="sd">        the Correspondent model.</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            read_only_fields: Set of field names that cannot be modified.</span>
+<span class="sd">            queryset: The queryset class to use for this model.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="c1"># Fields that should not be modified</span>
         <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;slug&quot;</span><span class="p">,</span>
@@ -137,7 +159,23 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">documents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DocumentQuerySet&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get documents for this correspondent.</span>
+<span class="sd">        Get all documents associated with this correspondent.</span>
+
+<span class="sd">        Provides a convenient way to access all documents that have been</span>
+<span class="sd">        assigned to this correspondent without having to construct a filter.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A queryset containing all documents associated with this correspondent.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Get all documents for a correspondent:</span>
+<span class="sd">                &gt;&gt;&gt; correspondent = client.correspondents.get(5)</span>
+<span class="sd">                &gt;&gt;&gt; docs = correspondent.documents</span>
+<span class="sd">                &gt;&gt;&gt; print(f&quot;Found {docs.count()} documents&quot;)</span>
+
+<span class="sd">            Filter documents further:</span>
+<span class="sd">                &gt;&gt;&gt; recent_docs = correspondent.documents.filter(created__gt=&quot;2023-01-01&quot;)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">correspondent_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
 

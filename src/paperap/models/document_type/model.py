@@ -1,22 +1,9 @@
 """
-----------------------------------------------------------------------------
+Document type model for Paperless-NgX.
 
-   METADATA:
-
-       File:    document_type.py
-        Project: paperap
-       Created: 2025-03-04
-        Version: 0.0.9
-       Author:  Jess Mann
-       Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
-----------------------------------------------------------------------------
-
-   LAST MODIFIED:
-
-       2025-03-04     By Jess Mann
-
+This module provides the DocumentType model class for interacting with document types
+in a Paperless-NgX instance. Document types are used to categorize documents and can
+be configured with matching rules for automatic classification.
 """
 
 from __future__ import annotations
@@ -37,22 +24,40 @@ class DocumentType(StandardModel, MatcherMixin):
     """
     Represents a document type in Paperless-NgX.
 
-    Attributes:
-        name: The name of the document type.
-        slug: A unique identifier for the document type.
-        match: The pattern used for matching documents.
-        matching_algorithm: The algorithm used for matching.
-        is_insensitive: Whether the matching is case insensitive.
-        document_count: The number of documents of this type.
-        owner: The owner of the document type.
-        user_can_change: Whether the user can change the document type.
+    Document types are used to categorize documents and can be configured with
+    matching rules for automatic classification of new documents during consumption.
 
-    Returns:
-        A new instance of DocumentType.
+    The MatcherMixin provides functionality for pattern matching against document
+    content or metadata.
+
+    Attributes:
+        name (str): The name of the document type.
+        slug (str, optional): A unique identifier for the document type,
+            auto-generated from name if not provided.
+        match (str, optional): The pattern used for matching documents.
+            Only available when using the MatcherMixin methods.
+        matching_algorithm (MatchingAlgorithmType, optional): The algorithm used for matching.
+            Only available when using the MatcherMixin methods.
+        is_insensitive (bool, optional): Whether the matching is case insensitive.
+            Only available when using the MatcherMixin methods.
+        document_count (int): The number of documents of this type (read-only).
+        owner (int, optional): The ID of the user who owns this document type.
+        user_can_change (bool, optional): Whether the current user can modify this document type.
 
     Examples:
-        # Create a new DocumentType instance
-        doc_type = DocumentType(name="Invoice", slug="invoice", match="INV-*")
+        Create a new document type:
+
+        >>> doc_type = client.document_types.create(
+        ...     name="Invoice",
+        ...     matching_algorithm="auto",
+        ...     match="invoice"
+        ... )
+
+        Update an existing document type:
+
+        >>> doc_type = client.document_types.get(1)
+        >>> doc_type.name = "Receipt"
+        >>> doc_type.save()
 
     """
 
@@ -63,6 +68,12 @@ class DocumentType(StandardModel, MatcherMixin):
     user_can_change: bool | None = None
 
     class Meta(StandardModel.Meta):
+        """
+        Metadata for the DocumentType model.
+
+        Defines read-only fields and the associated queryset class.
+        """
+
         # Fields that should not be modified
         read_only_fields = {"slug", "document_count"}
         queryset = DocumentTypeQuerySet
@@ -70,15 +81,22 @@ class DocumentType(StandardModel, MatcherMixin):
     @property
     def documents(self) -> "DocumentQuerySet":
         """
-        Get documents with this document type.
+        Get all documents associated with this document type.
 
         Returns:
-            A DocumentQuerySet containing documents of this type.
+            DocumentQuerySet: A queryset containing all documents that have
+                this document type assigned.
 
         Examples:
-            # Get all documents of this type
-            documents = doc_type.documents
-        Get documents with this document type.
+            Get all documents of this type:
+
+            >>> documents = doc_type.documents
+            >>> for doc in documents:
+            ...     print(doc.title)
+
+            Filter documents of this type:
+
+            >>> recent_docs = doc_type.documents.filter(created__gt="2023-01-01")
 
         """
         return self._client.documents().all().document_type_id(self.id)

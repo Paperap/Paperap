@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/models/share_links/queryset.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../../_static/readthedocs.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,24 +76,12 @@
              
   <h1>Source code for paperap.models.share_links.queryset</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">Provide query functionality for ShareLinks resources in Paperless-NgX.</span>
 
-<span class="sd">   METADATA:</span>
-
-<span class="sd">       File:    queryset.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">       Created: 2025-03-04</span>
-<span class="sd">        Version: 0.0.5</span>
-<span class="sd">       Author:  Jess Mann</span>
-<span class="sd">       Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">   LAST MODIFIED:</span>
-
-<span class="sd">       2025-03-04     By Jess Mann</span>
-
+<span class="sd">Contains the ShareLinksQuerySet class, which extends StandardQuerySet</span>
+<span class="sd">to provide specialized filtering methods for ShareLinks resources. Enables</span>
+<span class="sd">efficient querying of share links by various attributes such as expiration date,</span>
+<span class="sd">document association, and creation time.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -107,76 +99,124 @@
 
 
 <div class="viewcode-block" id="ShareLinksQuerySet">
-<a class="viewcode-back" href="../../../../api/paperap.models.share_links.queryset.html#paperap.models.ShareLinksQuerySet">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.ShareLinksQuerySet">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ShareLinksQuerySet</span><span class="p">(</span><span class="n">StandardQuerySet</span><span class="p">[</span><span class="s2">&quot;ShareLinks&quot;</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A lazy-loaded, chainable query interface for Paperless NGX resources.</span>
+<span class="sd">    Implement a lazy-loaded, chainable query interface for ShareLinks resources.</span>
 
-<span class="sd">    BaseQuerySet provides pagination, filtering, and caching functionality similar to Django&#39;s BaseQuerySet.</span>
-<span class="sd">    It&#39;s designed to be lazy - only fetching data when it&#39;s actually needed.</span>
+<span class="sd">    Extends StandardQuerySet to provide ShareLinks-specific filtering methods,</span>
+<span class="sd">    including filtering by expiration date, slug, document, and file version.</span>
+<span class="sd">    Only fetches data when it&#39;s actually needed, providing pagination, filtering,</span>
+<span class="sd">    and caching functionality similar to Django&#39;s QuerySet.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Get all share links:</span>
+<span class="sd">            &gt;&gt;&gt; all_links = client.share_links.all()</span>
+
+<span class="sd">        Filter by document ID:</span>
+<span class="sd">            &gt;&gt;&gt; doc_links = client.share_links.filter(document=123)</span>
+
+<span class="sd">        Find links that expire soon:</span>
+<span class="sd">            &gt;&gt;&gt; import datetime</span>
+<span class="sd">            &gt;&gt;&gt; tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)</span>
+<span class="sd">            &gt;&gt;&gt; expiring_soon = client.share_links.expiration_before(tomorrow)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ShareLinksQuerySet.expiration_before">
-<a class="viewcode-back" href="../../../../api/paperap.models.share_links.queryset.html#paperap.models.ShareLinksQuerySet.expiration_before">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.ShareLinksQuerySet.expiration_before">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">expiration_before</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter ShareLinks where expiration is before value</span>
+<span class="sd">        Filter ShareLinks where expiration date is before the specified value.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value (datetime.datetime | str): The value to compare against</span>
+<span class="sd">            value: The datetime or ISO-formatted string to compare against.</span>
+<span class="sd">                If a string is provided, it should be in ISO format (YYYY-MM-DDTHH:MM:SSZ).</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            ShareLinksQuerySet: The filtered queryset</span>
+<span class="sd">            Self: A filtered queryset containing only ShareLinks that expire before the given date.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find links expiring in the next week:</span>
+<span class="sd">                &gt;&gt;&gt; next_week = datetime.datetime.now() + datetime.timedelta(days=7)</span>
+<span class="sd">                &gt;&gt;&gt; expiring_soon = client.share_links.expiration_before(next_week)</span>
+
+<span class="sd">            Using string format:</span>
+<span class="sd">                &gt;&gt;&gt; expiring_soon = client.share_links.expiration_before(&quot;2023-12-31T23:59:59Z&quot;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">expiration__lt</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ShareLinksQuerySet.expiration_after">
-<a class="viewcode-back" href="../../../../api/paperap.models.share_links.queryset.html#paperap.models.ShareLinksQuerySet.expiration_after">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.ShareLinksQuerySet.expiration_after">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">expiration_after</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter ShareLinks where expiration is after value</span>
+<span class="sd">        Filter ShareLinks where expiration date is after the specified value.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value (datetime.datetime | str): The value to compare against</span>
+<span class="sd">            value: The datetime or ISO-formatted string to compare against.</span>
+<span class="sd">                If a string is provided, it should be in ISO format (YYYY-MM-DDTHH:MM:SSZ).</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            ShareLinksQuerySet: The filtered queryset</span>
+<span class="sd">            Self: A filtered queryset containing only ShareLinks that expire after the given date.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find links that haven&#39;t expired yet:</span>
+<span class="sd">                &gt;&gt;&gt; now = datetime.datetime.now()</span>
+<span class="sd">                &gt;&gt;&gt; valid_links = client.share_links.expiration_after(now)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">expiration__gt</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ShareLinksQuerySet.slug">
-<a class="viewcode-back" href="../../../../api/paperap.models.share_links.queryset.html#paperap.models.ShareLinksQuerySet.slug">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.ShareLinksQuerySet.slug">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">slug</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter ShareLinks where slug is value</span>
+<span class="sd">        Filter ShareLinks by their slug value.</span>
+
+<span class="sd">        The slug is a unique identifier for the share link that appears in the URL.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value (str): The value to compare against</span>
-<span class="sd">            exact (bool): Whether the comparison should be exact</span>
-<span class="sd">            case_sensitive (bool): Whether the comparison should be case insensitive</span>
+<span class="sd">            value: The slug value to filter by.</span>
+<span class="sd">            exact: If True, matches the exact slug. If False, performs a contains search.</span>
+<span class="sd">            case_insensitive: If True, performs case-insensitive matching.</span>
+<span class="sd">                If False, matching is case-sensitive.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            ShareLinksQuerySet: The filtered queryset</span>
+<span class="sd">            Self: A filtered queryset containing ShareLinks matching the slug criteria.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find a specific share link by its exact slug:</span>
+<span class="sd">                &gt;&gt;&gt; link = client.share_links.slug(&quot;abc123def&quot;)</span>
+
+<span class="sd">            Find links containing a substring in their slug:</span>
+<span class="sd">                &gt;&gt;&gt; links = client.share_links.slug(&quot;invoice&quot;, exact=False)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s2">&quot;slug&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="o">=</span><span class="n">case_insensitive</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ShareLinksQuerySet.document">
-<a class="viewcode-back" href="../../../../api/paperap.models.share_links.queryset.html#paperap.models.ShareLinksQuerySet.document">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.ShareLinksQuerySet.document">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter ShareLinks where document is value</span>
+<span class="sd">        Filter ShareLinks by associated document ID(s).</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value (int | list[int]): The value to compare against</span>
+<span class="sd">            value: Either a single document ID or a list of document IDs to filter by.</span>
+<span class="sd">                When a list is provided, links associated with any of the documents will be returned.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            ShareLinksQuerySet: The filtered queryset</span>
+<span class="sd">            Self: A filtered queryset containing ShareLinks associated with the specified document(s).</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find all share links for a specific document:</span>
+<span class="sd">                &gt;&gt;&gt; doc_links = client.share_links.document(123)</span>
+
+<span class="sd">            Find links for multiple documents:</span>
+<span class="sd">                &gt;&gt;&gt; multi_doc_links = client.share_links.document([123, 456, 789])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -185,65 +225,95 @@
 
 
 <div class="viewcode-block" id="ShareLinksQuerySet.file_version">
-<a class="viewcode-back" href="../../../../api/paperap.models.share_links.queryset.html#paperap.models.ShareLinksQuerySet.file_version">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.ShareLinksQuerySet.file_version">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">file_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter ShareLinks where file_version is value</span>
+<span class="sd">        Filter ShareLinks by file version.</span>
+
+<span class="sd">        In Paperless-NgX, share links can be created for specific versions of a document.</span>
+<span class="sd">        This method filters links by their associated file version.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value (str): The value to compare against</span>
+<span class="sd">            value: The file version string to filter by (e.g., &quot;archive&quot;, &quot;original&quot;).</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            ShareLinksQuerySet: The filtered queryset</span>
+<span class="sd">            Self: A filtered queryset containing ShareLinks with the specified file version.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find all share links for original document versions:</span>
+<span class="sd">                &gt;&gt;&gt; original_links = client.share_links.file_version(&quot;original&quot;)</span>
+
+<span class="sd">            Find all share links for archived versions:</span>
+<span class="sd">                &gt;&gt;&gt; archive_links = client.share_links.file_version(&quot;archive&quot;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">file_version</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ShareLinksQuerySet.created_before">
-<a class="viewcode-back" href="../../../../api/paperap.models.share_links.queryset.html#paperap.models.ShareLinksQuerySet.created_before">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.ShareLinksQuerySet.created_before">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">created_before</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter models created before a given date.</span>
+<span class="sd">        Filter ShareLinks created before a given date.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            date: The date to filter by</span>
+<span class="sd">            date: The datetime to compare against. ShareLinks created before this</span>
+<span class="sd">                datetime will be included in the results.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered QuerySet</span>
+<span class="sd">            Self: A filtered queryset containing ShareLinks created before the specified date.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find links created before last month:</span>
+<span class="sd">                &gt;&gt;&gt; last_month = datetime.datetime.now() - datetime.timedelta(days=30)</span>
+<span class="sd">                &gt;&gt;&gt; old_links = client.share_links.created_before(last_month)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">created__lt</span><span class="o">=</span><span class="n">date</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ShareLinksQuerySet.created_after">
-<a class="viewcode-back" href="../../../../api/paperap.models.share_links.queryset.html#paperap.models.ShareLinksQuerySet.created_after">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.ShareLinksQuerySet.created_after">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">created_after</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter models created after a given date.</span>
+<span class="sd">        Filter ShareLinks created after a given date.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            date: The date to filter by</span>
+<span class="sd">            date: The datetime to compare against. ShareLinks created after this</span>
+<span class="sd">                datetime will be included in the results.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered QuerySet</span>
+<span class="sd">            Self: A filtered queryset containing ShareLinks created after the specified date.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find links created in the last week:</span>
+<span class="sd">                &gt;&gt;&gt; last_week = datetime.datetime.now() - datetime.timedelta(days=7)</span>
+<span class="sd">                &gt;&gt;&gt; recent_links = client.share_links.created_after(last_week)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">created__gt</span><span class="o">=</span><span class="n">date</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ShareLinksQuerySet.created_between">
-<a class="viewcode-back" href="../../../../api/paperap.models.share_links.queryset.html#paperap.models.ShareLinksQuerySet.created_between">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.ShareLinksQuerySet.created_between">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">created_between</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter models created between two dates.</span>
+<span class="sd">        Filter ShareLinks created between two dates.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            start: The start date to filter by</span>
-<span class="sd">            end: The end date to filter by</span>
+<span class="sd">            start: The start datetime. ShareLinks created at or after this datetime</span>
+<span class="sd">                will be included in the results.</span>
+<span class="sd">            end: The end datetime. ShareLinks created at or before this datetime</span>
+<span class="sd">                will be included in the results.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered QuerySet</span>
+<span class="sd">            Self: A filtered queryset containing ShareLinks created within the specified date range.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find links created in January 2023:</span>
+<span class="sd">                &gt;&gt;&gt; start = datetime.datetime(2023, 1, 1)</span>
+<span class="sd">                &gt;&gt;&gt; end = datetime.datetime(2023, 1, 31, 23, 59, 59)</span>
+<span class="sd">                &gt;&gt;&gt; jan_links = client.share_links.created_between(start, end)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">created__range</span><span class="o">=</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">))</span></div>

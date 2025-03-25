@@ -15,11 +15,6 @@ help:
 .PHONY: help Makefile
 
 
-latexpdf:
-        @$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
-        @echo "Running LaTeX files through pdflatex..."
-        @$(MAKE) -C $(BUILDDIR)/latex all-pdf
-
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile

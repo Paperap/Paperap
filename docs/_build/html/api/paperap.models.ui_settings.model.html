@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -77,67 +77,110 @@
              
   <section id="module-paperap.models.ui_settings.model">
 <span id="paperap-models-ui-settings-model-module"></span><h1>paperap.models.ui_settings.model module<a class="headerlink" href="#module-paperap.models.ui_settings.model" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<blockquote>
-<div><p>METADATA:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>File:    ui_settings.py</dt><dd><p>Project: paperap</p>
-</dd>
-<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.5</p>
+<p>UI Settings model for Paperless-NgX.</p>
+<p>This module provides the UISettings model class for interacting with the
+Paperless-NgX UI settings API endpoint. UI settings control the appearance
+and behavior of the Paperless-NgX web interface.</p>
+<dl>
+<dt>Typical usage example:</dt><dd><p><a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>python
+# Get the current user’s UI settings
+ui_settings = client.ui_settings.get()</p>
+<p># Access specific settings
+dark_mode = ui_settings.settings.get(“dark_mode”, False)</p>
+<p># Update settings
+ui_settings.settings[“dark_mode”] = True
+ui_settings.save()
+<a href="#id5"><span class="problematic" id="id6">``</span></a><a href="#id7"><span class="problematic" id="id8">`</span></a></p>
 </dd>
 </dl>
-<p>Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
-<blockquote>
-<div><p>Copyright (c) 2025 Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
-</div></blockquote>
-<hr class="docutils" />
-<blockquote>
-<div><p>LAST MODIFIED:</p>
-<blockquote>
-<div><p>2025-03-04     By Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.ui_settings.model.UISettings">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.ui_settings.model.</span></span><span class="sig-name descname"><span class="pre">UISettings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/ui_settings/model.html#UISettings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.ui_settings.model.UISettings" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel" title="paperap.models.abstract.model.StandardModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardModel</span></code></a></p>
 <p>Represents UI settings in Paperless-NgX.</p>
+<p>This model provides access to user-specific UI settings and permissions
+in Paperless-NgX. Unlike most other models, there is typically only one
+UI settings object per user, and it contains all customizable aspects
+of the user interface.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.ui_settings.model.UISettings.user">
+<span class="sig-name descname"><span class="pre">user</span></span><a class="headerlink" href="#paperap.models.ui_settings.model.UISettings.user" title="Link to this definition"></a></dt>
+<dd><p>Dictionary containing user information such as username and ID.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.ui_settings.model.UISettings.settings">
+<span class="sig-name descname"><span class="pre">settings</span></span><a class="headerlink" href="#paperap.models.ui_settings.model.UISettings.settings" title="Link to this definition"></a></dt>
+<dd><p>Dictionary containing all UI settings like theme preferences,
+display options, and other customizable UI elements.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.ui_settings.model.UISettings.permissions">
+<span class="sig-name descname"><span class="pre">permissions</span></span><a class="headerlink" href="#paperap.models.ui_settings.model.UISettings.permissions" title="Link to this definition"></a></dt>
+<dd><p>List of permission strings indicating what actions the
+current user is allowed to perform in the Paperless-NgX system.</p>
+</dd></dl>
+
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Get and modify UI settings:
+<a href="#id9"><span class="problematic" id="id10">``</span></a><a href="#id11"><span class="problematic" id="id12">`</span></a>python
+# Get current UI settings
+ui_settings = client.ui_settings.get()</p>
+<p># Check if dark mode is enabled
+is_dark_mode = ui_settings.settings.get(“dark_mode”, False)</p>
+<p># Enable dark mode
+ui_settings.settings[“dark_mode”] = True
+ui_settings.save()</p>
+<p># Check user permissions
+if “view_document” in ui_settings.permissions:</p>
+<blockquote>
+<div><p>print(“User can view documents”)</p>
+</div></blockquote>
+<p><a href="#id13"><span class="problematic" id="id14">``</span></a><a href="#id15"><span class="problematic" id="id16">`</span></a></p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.ui_settings.model.UISettings.user">
-<span class="sig-name descname"><span class="pre">user</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict[str,</span> <span class="pre">Any]</span></em><a class="headerlink" href="#paperap.models.ui_settings.model.UISettings.user" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">user</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict[str,</span> <span class="pre">Any]</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.ui_settings.model.UISettings.settings">
-<span class="sig-name descname"><span class="pre">settings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict[str,</span> <span class="pre">Any]</span></em><a class="headerlink" href="#paperap.models.ui_settings.model.UISettings.settings" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id17">
+<span class="sig-name descname"><span class="pre">settings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict[str,</span> <span class="pre">Any]</span></em><a class="headerlink" href="#id17" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.ui_settings.model.UISettings.permissions">
-<span class="sig-name descname"><span class="pre">permissions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[str]</span></em><a class="headerlink" href="#paperap.models.ui_settings.model.UISettings.permissions" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id18">
+<span class="sig-name descname"><span class="pre">permissions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[str]</span></em><a class="headerlink" href="#id18" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.ui_settings.model.UISettings.Meta">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/ui_settings/model.html#UISettings.Meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.ui_settings.model.UISettings.Meta" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel.Meta" title="paperap.models.abstract.model.StandardModel.Meta"><code class="xref py py-class docutils literal notranslate"><span class="pre">Meta</span></code></a></p>
+<p>Metadata for the UISettings model.</p>
+<p>This class defines metadata for the UISettings model, including the
+associated queryset class.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.ui_settings.model.UISettings.Meta.queryset">
+<span class="sig-name descname"><span class="pre">queryset</span></span><a class="headerlink" href="#paperap.models.ui_settings.model.UISettings.Meta.queryset" title="Link to this definition"></a></dt>
+<dd><p>The UISettingsQuerySet class used for querying UI settings.</p>
+</dd></dl>
+
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>model</strong> (<span class="sphinx_autodoc_typehints-type">type[_Self]</span>)</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.ui_settings.model.UISettings.Meta.queryset">
-<span class="sig-name descname"><span class="pre">queryset</span></span><a class="headerlink" href="#paperap.models.ui_settings.model.UISettings.Meta.queryset" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id19">
+<span class="sig-name descname"><span class="pre">queryset</span></span><a class="headerlink" href="#id19" title="Link to this definition"></a></dt>
 <dd><p>alias of <a class="reference internal" href="paperap.models.ui_settings.queryset.html#paperap.models.ui_settings.queryset.UISettingsQuerySet" title="paperap.models.ui_settings.queryset.UISettingsQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">UISettingsQuerySet</span></code></a></p>
 </dd></dl>
 

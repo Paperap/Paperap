@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/models/document/metadata/queryset.html" />
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../../../_static/readthedocs.js"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,28 +76,10 @@
              
   <h1>Source code for paperap.models.document.metadata.queryset</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Document metadata queryset module for interacting with document metadata in Paperless-ngx.</span>
 
-
-
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">METADATA:</span>
-
-<span class="sd">File:    queryset.py</span>
-<span class="sd">Project: paperap</span>
-<span class="sd">Created: 2025-03-18</span>
-<span class="sd">Version: 0.0.8</span>
-<span class="sd">Author:  Jess Mann</span>
-<span class="sd">Email:   jess@jmann.me</span>
-<span class="sd">Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">LAST MODIFIED:</span>
-
-<span class="sd">2025-03-18     By Jess Mann</span>
-
+<span class="sd">This module provides the DocumentMetadataQuerySet class, which extends StandardQuerySet</span>
+<span class="sd">to handle document metadata-specific operations and filtering.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -112,6 +98,29 @@
 <div class="viewcode-block" id="DocumentMetadataQuerySet">
 <a class="viewcode-back" href="../../../../../api/paperap.models.document.metadata.queryset.html#paperap.models.document.DocumentMetadataQuerySet">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DocumentMetadataQuerySet</span><span class="p">(</span><span class="n">StandardQuerySet</span><span class="p">[</span><span class="s2">&quot;DocumentMetadata&quot;</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A specialized queryset for interacting with Paperless-NGX document metadata.</span>
+
+<span class="sd">    This queryset extends StandardQuerySet to provide document metadata-specific</span>
+<span class="sd">    filtering methods, making it easier to query metadata by their attributes.</span>
+
+<span class="sd">    Document metadata contains information about documents such as original filename,</span>
+<span class="sd">    media information, archive metadata, and other system-level properties that</span>
+<span class="sd">    aren&#39;t part of the document&#39;s content or user-assigned metadata.</span>
+
+<span class="sd">    The queryset is lazy-loaded, meaning API requests are only made when data is</span>
+<span class="sd">    actually needed (when iterating, counting, or accessing specific items).</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; # Get metadata for a specific document</span>
+<span class="sd">        &gt;&gt;&gt; metadata = client.document_metadata.filter(document=123).first()</span>
+<span class="sd">        &gt;&gt;&gt; print(f&quot;Original filename: {metadata.original_filename}&quot;)</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; # Get metadata for documents with specific archive information</span>
+<span class="sd">        &gt;&gt;&gt; archived = client.document_metadata.filter(archive_checksum__isnull=False)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">pass</span></div>
 
 </pre></div>

@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -77,92 +77,127 @@
              
   <section id="module-paperap.models.document_type.model">
 <span id="paperap-models-document-type-model-module"></span><h1>paperap.models.document_type.model module<a class="headerlink" href="#module-paperap.models.document_type.model" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<blockquote>
-<div><p>METADATA:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>File:    document_type.py</dt><dd><p>Project: paperap</p>
-</dd>
-<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.9</p>
-</dd>
-</dl>
-<p>Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
-<blockquote>
-<div><p>Copyright (c) 2025 Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
-</div></blockquote>
-<hr class="docutils" />
-<blockquote>
-<div><p>LAST MODIFIED:</p>
-<blockquote>
-<div><p>2025-03-04     By Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
+<p>Document type model for Paperless-NgX.</p>
+<p>This module provides the DocumentType model class for interacting with document types
+in a Paperless-NgX instance. Document types are used to categorize documents and can
+be configured with matching rules for automatic classification.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.document_type.model.DocumentType">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.document_type.model.</span></span><span class="sig-name descname"><span class="pre">DocumentType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/document_type/model.html#DocumentType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.document_type.model.DocumentType" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel" title="paperap.models.abstract.model.StandardModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardModel</span></code></a>, <a class="reference internal" href="paperap.models.mixins.models.html#paperap.models.mixins.models.MatcherMixin" title="paperap.models.mixins.models.MatcherMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatcherMixin</span></code></a></p>
 <p>Represents a document type in Paperless-NgX.</p>
+<p>Document types are used to categorize documents and can be configured with
+matching rules for automatic classification of new documents during consumption.</p>
+<p>The MatcherMixin provides functionality for pattern matching against document
+content or metadata.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.document_type.model.DocumentType.name">
 <span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#paperap.models.document_type.model.DocumentType.name" title="Link to this definition"></a></dt>
 <dd><p>The name of the document type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.document_type.model.DocumentType.slug">
 <span class="sig-name descname"><span class="pre">slug</span></span><a class="headerlink" href="#paperap.models.document_type.model.DocumentType.slug" title="Link to this definition"></a></dt>
-<dd><p>A unique identifier for the document type.</p>
+<dd><p>A unique identifier for the document type,
+auto-generated from name if not provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <em>optional</em></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.document_type.model.DocumentType.match">
 <span class="sig-name descname"><span class="pre">match</span></span><a class="headerlink" href="#paperap.models.document_type.model.DocumentType.match" title="Link to this definition"></a></dt>
-<dd><p>The pattern used for matching documents.</p>
+<dd><p>The pattern used for matching documents.
+Only available when using the MatcherMixin methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <em>optional</em></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.document_type.model.DocumentType.matching_algorithm">
 <span class="sig-name descname"><span class="pre">matching_algorithm</span></span><a class="headerlink" href="#paperap.models.document_type.model.DocumentType.matching_algorithm" title="Link to this definition"></a></dt>
-<dd><p>The algorithm used for matching.</p>
+<dd><p>The algorithm used for matching.
+Only available when using the MatcherMixin methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">MatchingAlgorithmType</span></code>, <em>optional</em></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.document_type.model.DocumentType.is_insensitive">
 <span class="sig-name descname"><span class="pre">is_insensitive</span></span><a class="headerlink" href="#paperap.models.document_type.model.DocumentType.is_insensitive" title="Link to this definition"></a></dt>
-<dd><p>Whether the matching is case insensitive.</p>
+<dd><p>Whether the matching is case insensitive.
+Only available when using the MatcherMixin methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>, <em>optional</em></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.document_type.model.DocumentType.document_count">
 <span class="sig-name descname"><span class="pre">document_count</span></span><a class="headerlink" href="#paperap.models.document_type.model.DocumentType.document_count" title="Link to this definition"></a></dt>
-<dd><p>The number of documents of this type.</p>
+<dd><p>The number of documents of this type (read-only).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.document_type.model.DocumentType.owner">
 <span class="sig-name descname"><span class="pre">owner</span></span><a class="headerlink" href="#paperap.models.document_type.model.DocumentType.owner" title="Link to this definition"></a></dt>
-<dd><p>The owner of the document type.</p>
+<dd><p>The ID of the user who owns this document type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <em>optional</em></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.document_type.model.DocumentType.user_can_change">
 <span class="sig-name descname"><span class="pre">user_can_change</span></span><a class="headerlink" href="#paperap.models.document_type.model.DocumentType.user_can_change" title="Link to this definition"></a></dt>
-<dd><p>Whether the user can change the document type.</p>
-</dd></dl>
-
+<dd><p>Whether the current user can modify this document type.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A new instance of DocumentType.</p>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>, <em>optional</em></p>
 </dd>
 </dl>
+</dd></dl>
+
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
-<p># Create a new DocumentType instance
-doc_type = DocumentType(name=”Invoice”, slug=”invoice”, match=”INV-<a href="#id1"><span class="problematic" id="id2">*</span></a>”)</p>
+<p>Create a new document type:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc_type</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_types</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Invoice&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">matching_algorithm</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">match</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Update an existing document type:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc_type</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc_type</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Receipt&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc_type</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</pre></div>
+</div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -175,29 +210,31 @@ doc_type = DocumentType(name=”Invoice”, slug=”invoice”, match=”INV-<a 
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">slug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">document_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">slug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">owner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id4">
-<span class="sig-name descname"><span class="pre">document_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id5">
-<span class="sig-name descname"><span class="pre">owner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id6">
-<span class="sig-name descname"><span class="pre">user_can_change</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">user_can_change</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.document_type.model.DocumentType.Meta">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/document_type/model.html#DocumentType.Meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.document_type.model.DocumentType.Meta" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel.Meta" title="paperap.models.abstract.model.StandardModel.Meta"><code class="xref py py-class docutils literal notranslate"><span class="pre">Meta</span></code></a></p>
+<p>Metadata for the DocumentType model.</p>
+<p>Defines read-only fields and the associated queryset class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>model</strong> (<span class="sphinx_autodoc_typehints-type">type[_Self]</span>)</p>
@@ -254,18 +291,32 @@ doc_type = DocumentType(name=”Invoice”, slug=”invoice”, match=”INV-<a 
 <dl class="py property">
 <dt class="sig sig-object py" id="paperap.models.document_type.model.DocumentType.documents">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">documents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.models.document.queryset.html#paperap.models.document.queryset.DocumentQuerySet" title="paperap.models.document.queryset.DocumentQuerySet"><span class="pre">DocumentQuerySet</span></a></em><a class="headerlink" href="#paperap.models.document_type.model.DocumentType.documents" title="Link to this definition"></a></dt>
-<dd><p>Get documents with this document type.</p>
+<dd><p>Get all documents associated with this document type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A DocumentQuerySet containing documents of this type.</p>
+<dd class="field-odd"><p><dl class="simple">
+<dt>A queryset containing all documents that have</dt><dd><p>this document type assigned.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="paperap.models.html#paperap.models.DocumentQuerySet" title="paperap.models.DocumentQuerySet">DocumentQuerySet</a></p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
-<p># Get all documents of this type
-documents = doc_type.documents</p>
+<p>Get all documents of this type:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">documents</span> <span class="o">=</span> <span class="n">doc_type</span><span class="o">.</span><span class="n">documents</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+</pre></div>
 </div>
-<p>Get documents with this document type.</p>
+<p>Filter documents of this type:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">recent_docs</span> <span class="o">=</span> <span class="n">doc_type</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">created__gt</span><span class="o">=</span><span class="s2">&quot;2023-01-01&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py attribute">

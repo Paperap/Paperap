@@ -1,25 +1,9 @@
 """
+Response models for list-based API responses from Paperless-ngx.
 
-
-
-----------------------------------------------------------------------------
-
-METADATA:
-
-File:    list.py
-Project: paperap
-Created: 2025-03-11
-Version: 0.0.5
-Author:  Jess Mann
-Email:   jess@jmann.me
-Copyright (c) 2025 Jess Mann
-
-----------------------------------------------------------------------------
-
-LAST MODIFIED:
-
-2025-03-11     By Jess Mann
-
+This module contains models that represent paginated list responses from the
+Paperless-ngx API. These models handle the standard response format for
+collections of resources, including pagination metadata.
 """
 
 from __future__ import annotations
@@ -29,9 +13,39 @@ from paperap.models.abstract import StandardModel
 
 class ListResponse(StandardModel):
     """
-    Not currently used, but kept for documentation or future expansion.
+    Model representing a paginated list response from the Paperless-ngx API.
 
-    The structure of an api response from paperless ngx for a list of models.
+    This class models the standard structure of list responses returned by the
+    Paperless-ngx API, which include pagination metadata and the actual results.
+    While not currently used in the main codebase, it's maintained for documentation
+    and potential future implementation.
+
+    Attributes:
+        count (int): Total number of items across all pages.
+        next (str | None): URL to fetch the next page of results, or None if this is the last page.
+        previous (str | None): URL to fetch the previous page of results, or None if this is the first page.
+        all (list[int]): List of IDs for all items matching the query, across all pages.
+        results (list[StandardModel]): List of model instances for the current page.
+
+    Example:
+        ```python
+        # Example of what a ListResponse might look like when implemented
+        response = ListResponse(
+            count=150,
+            next="https://paperless.example.com/api/documents/?page=2",
+            previous=None,
+            all=[1, 2, 3, 4, ...],
+            results=[Document(...), Document(...), ...]
+        )
+
+        # Access total count
+        total = response.count
+
+        # Iterate through current page results
+        for document in response.results:
+            print(document.title)
+        ```
+
     """
 
     count: int

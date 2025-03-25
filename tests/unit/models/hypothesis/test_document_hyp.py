@@ -1,27 +1,5 @@
-"""
 
 
-
-
-----------------------------------------------------------------------------
-
-METADATA:
-
-File:    test_document.py
-        Project: paperap
-Created: 2025-03-12
-        Version: 0.0.9
-Author:  Jess Mann
-Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
-----------------------------------------------------------------------------
-
-LAST MODIFIED:
-
-2025-03-12     By Jess Mann
-
-"""
 import datetime
 import json
 from typing import Union
@@ -67,6 +45,10 @@ custom_field_strategy = st.fixed_dictionaries(
     added=st.one_of(st.none(), st.datetimes()),
     archive_serial_number=st.one_of(st.none(), st.integers(min_value=0, max_value=10**6)),
     archived_file_name=st.one_of(st.none(), st.text(min_size=0, max_size=255)),
+    archive_checksum=st.one_of(st.none(), st.text(min_size=0, max_size=255)),
+    archive_filename=st.one_of(st.none(), st.text(min_size=0, max_size=255)),
+    filename=st.one_of(st.none(), st.text(min_size=0, max_size=255)),
+    storage_type=st.one_of(st.none(), st.text(min_size=0, max_size=255)),
     content=st.text(min_size=0, max_size=100000),
     is_shared_by_requester=st.booleans(),
     notes=st.lists(
@@ -89,7 +71,6 @@ custom_field_strategy = st.fixed_dictionaries(
     user_can_change=st.one_of(st.none(), st.booleans()),
     created_date=st.one_of(st.none(), st.text().map(lambda x: x[:10] if x else None)),  # Limit to YYYY-MM-DD
     created=st.one_of(st.none(), st.datetimes()),
-    updated=st.one_of(st.none(), st.datetimes()),
     deleted_at=st.one_of(st.none(), st.datetimes()),
     custom_field_dicts=st.one_of(st.lists(custom_field_strategy), st.none()),
     correspondent_id=st.one_of(st.none(), st.integers(min_value=0)),

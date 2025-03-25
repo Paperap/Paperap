@@ -2,25 +2,6 @@
 
 Usage: python -m tests.first_run
 
-
- ----------------------------------------------------------------------------
-
-    METADATA:
-
-        File:    first_run.py
-        Project: paperap
-        Created: 2025-03-21
-        Version: 0.0.10
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
- ----------------------------------------------------------------------------
-
-    LAST MODIFIED:
-
-        2025-03-21     By Jess Mann
-
 """
 
 from __future__ import annotations
@@ -33,7 +14,7 @@ import re
 import tempfile
 from pathlib import Path
 from typing import Any, List
-
+import sys
 import requests
 from alive_progress import alive_bar, alive_it
 from dotenv import load_dotenv
@@ -136,14 +117,12 @@ class PaperlessManager:
             logger.error(f"Refusing to delete data from a non-local server: {self.client.base_url}")
             return
 
-        """
         print(f"This will delete all data in the {self.client.base_url} server. Do you want to continue? Type 'delete everything' to continue.")
 
         confirmation = input()
         if confirmation.lower() != 'delete everything':
             logger.info("Cleanup operation cancelled.")
-            return
-        """
+            sys.exit(1)
 
         resources = [
             DocumentResource,

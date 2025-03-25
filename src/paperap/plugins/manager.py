@@ -1,22 +1,10 @@
 """
-----------------------------------------------------------------------------
+Plugin management system for Paperap.
 
-   METADATA:
-
-       File:    manager.py
-        Project: paperap
-       Created: 2025-03-04
-        Version: 0.0.9
-       Author:  Jess Mann
-       Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
-----------------------------------------------------------------------------
-
-   LAST MODIFIED:
-
-       2025-03-04     By Jess Mann
-
+This module provides the infrastructure for discovering, configuring, and
+initializing plugins that extend the functionality of the Paperap client.
+Plugins can hook into various parts of the application lifecycle through
+the signal system.
 """
 
 from __future__ import annotations
@@ -38,7 +26,17 @@ logger = logging.getLogger(__name__)
 
 class PluginConfig(TypedDict):
     """
-    Configuration settings for a plugin.
+    Configuration settings for plugins.
+
+    This TypedDict defines the structure of the configuration dictionary
+    used to configure the plugin manager and individual plugins.
+
+    Attributes:
+        enabled_plugins: List of plugin names to enable. If empty, all discovered
+            plugins will be enabled.
+        settings: Dictionary mapping plugin names to their specific configuration
+            settings.
+
     """
 
     enabled_plugins: list[str]
@@ -46,7 +44,21 @@ class PluginConfig(TypedDict):
 
 
 class PluginManager(pydantic.BaseModel):
-    """Manages the discovery, configuration and initialization of plugins."""
+    """
+    Manages the discovery, configuration and initialization of plugins.
+
+    This class is responsible for discovering available plugins, configuring them
+    with user-provided settings, and initializing them when needed. It maintains
+    a registry of available plugin classes and their instances.
+
+    Attributes:
+        plugins: Dictionary mapping plugin names to their class definitions.
+        instances: Dictionary mapping plugin names to their initialized instances.
+        config: Configuration settings for plugins, including which plugins are enabled
+            and their individual settings.
+        client: The PaperlessClient instance that this plugin manager is associated with.
+
+    """
 
     plugins: dict[str, type[Plugin]] = {}
     instances: dict[str, Plugin] = {}
@@ -65,10 +77,18 @@ class PluginManager(pydantic.BaseModel):
     @property
     def enabled_plugins(self) -> list[str]:
         """
-        Get the list of enabled plugins.
+        Get the list of enabled plugin names.
+
+        If no plugins are explicitly enabled in the configuration, all discovered
+        plugins are considered enabled.
 
         Returns:
-            List of enabled plugin names
+            List of enabled plugin names.
+
+        Note:
+            There's a known issue where if the enabled_plugins list is empty,
+            all plugins will be enabled, which may not be the intended behavior
+            if the user explicitly wanted to disable all plugins.
 
         """
         # TODO: There's a bug here... disabling every plugin will then enable every plugin
@@ -81,8 +101,21 @@ class PluginManager(pydantic.BaseModel):
         """
         Discover available plugins in the specified package.
 
+        This method recursively searches the specified package for classes that
+        inherit from the Plugin base class. Discovered plugins are registered
+        in the plugins dictionary.
+
         Args:
             package_name: Dotted path to the package containing plugins.
+
+        Example:
+            ```python
+            # Discover plugins in the default package
+            plugin_manager.discover_plugins()
+
+            # Discover plugins in a custom package
+            plugin_manager.discover_plugins("myapp.custom_plugins")
+            ```
 
         """
         try:
@@ -114,8 +147,34 @@ class PluginManager(pydantic.BaseModel):
         """
         Configure the plugin manager with plugin-specific configurations.
 
+        This method updates the plugin manager's configuration with the provided
+        settings. Configuration can be provided either as a PluginConfig dictionary
+        or as keyword arguments.
+
         Args:
-            config: dictionary mapping plugin names to their configurations.
+            config: Dictionary containing plugin configuration. If provided, it
+                replaces the current configuration.
+            **kwargs: Additional configuration options. Supported keys are:
+                - enabled_plugins: List of plugin names to enable.
+                - settings: Dictionary mapping plugin names to their configurations.
+
+        Example:
+            ```python
+            # Configure with a complete config dictionary
+            plugin_manager.configure({
+                "enabled_plugins": ["LoggingPlugin", "MetricsPlugin"],
+                "settings": {
+                    "LoggingPlugin": {"log_level": "DEBUG"},
+                    "MetricsPlugin": {"collect_interval": 60}
+                }
+            })
+
+            # Configure with keyword arguments
+            plugin_manager.configure(
+                enabled_plugins=["LoggingPlugin"],
+                settings={"LoggingPlugin": {"log_level": "INFO"}}
+            )
+            ```
 
         """
         if config:
@@ -130,18 +189,49 @@ class PluginManager(pydantic.BaseModel):
                 logger.warning("Unexpected configuration keys: %s", kwargs.keys())
 
     def get_plugin_config(self, plugin_name: str) -> dict[str, Any]:
-        """Get the configuration for a specific plugin."""
+        """
+        Get the configuration for a specific plugin.
+
+        Retrieves the configuration settings for the specified plugin from the
+        plugin manager's configuration.
+
+        Args:
+            plugin_name: Name of the plugin to get configuration for.
+
+        Returns:
+            Dictionary containing the plugin's configuration settings.
+            Returns an empty dictionary if no configuration exists for the plugin.
+
+        """
         return self.config["settings"].get(plugin_name, {})  # type: ignore # mypy can't infer the return type correctly
 
     def initialize_plugin(self, plugin_name: str) -> Plugin | None:
         """
         Initialize a specific plugin.
 
+        Creates an instance of the specified plugin using its class definition and
+        configuration settings. If the plugin is already initialized, returns the
+        existing instance.
+
+        This method handles exceptions during plugin initialization to prevent
+        plugin errors from disrupting the application.
+
         Args:
             plugin_name: Name of the plugin to initialize.
 
         Returns:
-            The initialized plugin instance or None if initialization failed.
+            The initialized plugin instance, or None if initialization failed or
+            the plugin was not found.
+
+        Example:
+            ```python
+            # Initialize a specific plugin
+            logging_plugin = plugin_manager.initialize_plugin("LoggingPlugin")
+            if logging_plugin:
+                print(f"Plugin {logging_plugin.__class__.__name__} initialized")
+            else:
+                print("Failed to initialize plugin")
+            ```
 
         """
         if plugin_name in self.instances:
@@ -167,10 +257,22 @@ class PluginManager(pydantic.BaseModel):
 
     def initialize_all_plugins(self) -> dict[str, Plugin]:
         """
-        Initialize all discovered plugins.
+        Initialize all enabled plugins.
+
+        Initializes all plugins that are enabled according to the configuration.
+        If no plugins are explicitly enabled, initializes all discovered plugins.
 
         Returns:
             Dictionary mapping plugin names to their initialized instances.
+            Only successfully initialized plugins are included in the result.
+
+        Example:
+            ```python
+            # Discover and initialize all enabled plugins
+            plugin_manager.discover_plugins()
+            initialized_plugins = plugin_manager.initialize_all_plugins()
+            print(f"Initialized {len(initialized_plugins)} plugins")
+            ```
 
         """
         # Get enabled plugins from config

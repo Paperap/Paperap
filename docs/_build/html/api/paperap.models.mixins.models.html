@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -77,39 +77,86 @@
              
   <section id="module-paperap.models.mixins.models">
 <span id="paperap-models-mixins-models-module"></span><h1>paperap.models.mixins.models module<a class="headerlink" href="#module-paperap.models.mixins.models" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<p>METADATA:</p>
-<dl class="simple">
-<dt>File:    models.py</dt><dd><p>Project: paperap</p>
-</dd>
-<dt>Created: 2025-03-09</dt><dd><p>Version: 0.0.9</p>
-</dd>
-</dl>
-<p>Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
-<blockquote>
-<div><p>Copyright (c) 2025 Jess Mann</p>
-</div></blockquote>
-<hr class="docutils" />
-<p>LAST MODIFIED:</p>
-<p>2025-03-09     By Jess Mann</p>
+<p>Model mixins for Paperless-ngx models.</p>
+<p>This module provides mixins that can be used to add common functionality to models
+that interact with the Paperless-ngx API.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.mixins.models.MatcherMixin">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.mixins.models.</span></span><span class="sig-name descname"><span class="pre">MatcherMixin</span></span><a class="reference internal" href="../_modules/paperap/models/mixins/models.html#MatcherMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.mixins.models.MatcherMixin" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Mixin for models that support automatic matching functionality.</p>
+<p>This mixin provides fields and functionality for models that can be automatically
+matched against documents using Paperless-ngx’s matching algorithms. Models like
+Correspondent, DocumentType, and StoragePath use this mixin to implement their
+matching behavior.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.mixins.models.MatcherMixin.match">
-<span class="sig-name descname"><span class="pre">match</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> <span class="pre">|</span> <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#paperap.models.mixins.models.MatcherMixin.match" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">match</span></span><a class="headerlink" href="#paperap.models.mixins.models.MatcherMixin.match" title="Link to this definition"></a></dt>
+<dd><p>The text pattern to match against document content or metadata.
+When a document is processed, this pattern is used to determine if the document
+should be associated with this model instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.mixins.models.MatcherMixin.matching_algorithm">
-<span class="sig-name descname"><span class="pre">matching_algorithm</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.const.html#paperap.const.MatchingAlgorithmType" title="paperap.const.MatchingAlgorithmType"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatchingAlgorithmType</span></code></a> <span class="pre">|</span> <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">FieldInfo(annotation=Union[MatchingAlgorithmType,</span> <span class="pre">NoneType],</span> <span class="pre">required=False,</span> <span class="pre">default=None,</span> <span class="pre">metadata=[Ge(ge=&lt;MatchingAlgorithmType.UNKNOWN:</span> <span class="pre">-1&gt;),</span> <span class="pre">Le(le=7)])</span></em><a class="headerlink" href="#paperap.models.mixins.models.MatcherMixin.matching_algorithm" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">matching_algorithm</span></span><a class="headerlink" href="#paperap.models.mixins.models.MatcherMixin.matching_algorithm" title="Link to this definition"></a></dt>
+<dd><p>The algorithm to use for matching.
+Possible values are defined in the MatchingAlgorithmType enum, including options
+like exact match, regular expression, fuzzy match, etc. Defaults to None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">MatchingAlgorithmType</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.models.mixins.models.MatcherMixin.is_insensitive">
-<span class="sig-name descname"><span class="pre">is_insensitive</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> <span class="pre">|</span> <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#paperap.models.mixins.models.MatcherMixin.is_insensitive" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">is_insensitive</span></span><a class="headerlink" href="#paperap.models.mixins.models.MatcherMixin.is_insensitive" title="Link to this definition"></a></dt>
+<dd><p>Whether the matching should be case-insensitive.
+If True, the match pattern will be applied without considering letter case.
+If None, the system default will be used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p><a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>python
+# Creating a correspondent with matching rules
+correspondent = Correspondent(</p>
+<blockquote>
+<div><p>name=”Electric Company”,
+match=”electric bill”,
+matching_algorithm=MatchingAlgorithmType.ANY_WORD,
+is_insensitive=True</p>
+</div></blockquote>
+<p>)</p>
+<p># This correspondent will be automatically assigned to documents
+# containing any of the words “electric” or “bill” (case-insensitive)
+<a href="#id5"><span class="problematic" id="id6">``</span></a><a href="#id7"><span class="problematic" id="id8">`</span></a></p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">match</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> <span class="pre">|</span> <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">matching_algorithm</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.const.html#paperap.const.MatchingAlgorithmType" title="paperap.const.MatchingAlgorithmType"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatchingAlgorithmType</span></code></a> <span class="pre">|</span> <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">FieldInfo(annotation=Union[MatchingAlgorithmType,</span> <span class="pre">NoneType],</span> <span class="pre">required=False,</span> <span class="pre">default=None,</span> <span class="pre">description='Algorithm</span> <span class="pre">used</span> <span class="pre">for</span> <span class="pre">matching</span> <span class="pre">documents</span> <span class="pre">to</span> <span class="pre">this</span> <span class="pre">entity',</span> <span class="pre">metadata=[Ge(ge=&lt;MatchingAlgorithmType.UNKNOWN:</span> <span class="pre">-1&gt;),</span> <span class="pre">Le(le=7)])</span></em><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">is_insensitive</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> <span class="pre">|</span> <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

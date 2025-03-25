@@ -1,25 +1,11 @@
 """
+Provide document models for interacting with Paperless-ngx documents.
 
-
-
-----------------------------------------------------------------------------
-
-METADATA:
-
-File:    model.py
-        Project: paperap
-Created: 2025-03-09
-        Version: 0.0.10
-Author:  Jess Mann
-Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
-----------------------------------------------------------------------------
-
-LAST MODIFIED:
-
-2025-03-09     By Jess Mann
-
+This module contains the Document and DocumentNote models, which represent
+documents and their associated notes in the Paperless-ngx system. These models
+provide methods for retrieving, updating, and managing document metadata,
+content, and relationships with other entities like tags, correspondents,
+and custom fields.
 """
 
 from __future__ import annotations
@@ -61,7 +47,28 @@ logger = logging.getLogger(__name__)
 
 class DocumentNote(StandardModel):
     """
-    Represents a note on a Paperless-NgX document.
+    Represent a note on a Paperless-ngx document.
+
+    This class models user-created notes that can be attached to documents in the
+    Paperless-ngx system. Notes include information about when they were created,
+    who created them, and their content.
+
+    Attributes:
+        deleted_at (datetime | None): Timestamp when the note was deleted, or None if not deleted.
+        restored_at (datetime | None): Timestamp when the note was restored after deletion, or None.
+        transaction_id (int | None): ID of the transaction that created or modified this note.
+        note (str): The text content of the note.
+        created (datetime): Timestamp when the note was created.
+        document (int): ID of the document this note is attached to.
+        user (int): ID of the user who created this note.
+
+    Examples:
+        >>> note = client.document_notes().get(1)
+        >>> print(note.note)
+        'This is an important document'
+        >>> print(note.created)
+        2023-01-15 14:30:22
+
     """
 
     deleted_at: datetime | None = None
@@ -80,11 +87,14 @@ class DocumentNote(StandardModel):
         """
         Serialize datetime fields to ISO format.
 
+        Converts datetime objects to ISO 8601 formatted strings for JSON serialization.
+        Returns None if the input value is None.
+
         Args:
-            value: The datetime value to serialize.
+            value (datetime | None): The datetime value to serialize.
 
         Returns:
-            The serialized datetime value or None if the value is None.
+            str | None: The serialized datetime value as an ISO 8601 string, or None if the value is None.
 
         """
         return value.isoformat() if value else None
@@ -93,8 +103,17 @@ class DocumentNote(StandardModel):
         """
         Get the document associated with this note.
 
+        Retrieves the full Document object that this note is attached to
+        by making an API request using the document ID.
+
         Returns:
-            The document associated with this note.
+            Document: The document associated with this note.
+
+        Example:
+            >>> note = client.document_notes().get(1)
+            >>> document = note.get_document()
+            >>> print(document.title)
+            'Invoice #12345'
 
         """
         return self._client.documents().get(self.document)
@@ -103,8 +122,17 @@ class DocumentNote(StandardModel):
         """
         Get the user who created this note.
 
+        Retrieves the full User object for the user who created this note
+        by making an API request using the user ID.
+
         Returns:
-            The user who created this note.
+            User: The user who created this note.
+
+        Example:
+            >>> note = client.document_notes().get(1)
+            >>> user = note.get_user()
+            >>> print(user.username)
+            'admin'
 
         """
         return self._client.users().get(self.user)
@@ -112,30 +140,37 @@ class DocumentNote(StandardModel):
 
 class Document(StandardModel):
     """
-    Represents a Paperless-NgX document.
+    Represent a Paperless-ngx document.
+
+    This class models documents stored in the Paperless-ngx system, providing access
+    to document metadata, content, and related objects. It supports operations like
+    downloading, updating metadata, and managing tags and custom fields.
 
     Attributes:
-        added: The timestamp when the document was added to the system.
-        archive_serial_number: The serial number of the archive.
-        archived_file_name: The name of the archived file.
-        content: The content of the document.
-        correspondent: The correspondent associated with the document.
-        created: The timestamp when the document was created.
-        created_date: The date when the document was created.
-        updated: The timestamp when the document was last updated.
-        custom_fields: Custom fields associated with the document.
-        deleted_at: The timestamp when the document was deleted.
-        document_type: The document type associated with the document.
-        is_shared_by_requester: Whether the document is shared by the requester.
-        notes: Notes associated with the document.
-        original_filename: The original file name of the document.
-        owner: The owner of the document.
-        page_count: The number of pages in the document.
-        storage_path: The storage path of the document.
-        tags: The tags associated with the document.
-        title: The title of the document.
-        user_can_change: Whether the user can change the document.
-        checksum: The checksum of the document.
+        added (datetime | None): Timestamp when the document was added to the system.
+        archive_checksum (str | None): Checksum of the archived version of the document.
+        archive_filename (str | None): Filename of the archived version.
+        archive_serial_number (int | None): Serial number in the archive system.
+        archived_file_name (str | None): Original name of the archived file.
+        checksum (str | None): Checksum of the original document.
+        content (str): Full text content of the document.
+        correspondent_id (int | None): ID of the associated correspondent.
+        created (datetime | None): Timestamp when the document was created.
+        created_date (str | None): Creation date as a string.
+        custom_field_dicts (list[CustomFieldValues]): Custom fields associated with the document.
+        deleted_at (datetime | None): Timestamp when the document was deleted, or None.
+        document_type_id (int | None): ID of the document type.
+        filename (str | None): Current filename in the system.
+        is_shared_by_requester (bool): Whether the document is shared by the requester.
+        notes (list[DocumentNote]): Notes attached to this document.
+        original_filename (str | None): Original filename when uploaded.
+        owner (int | None): ID of the document owner.
+        page_count (int | None): Number of pages in the document.
+        storage_path_id (int | None): ID of the storage path.
+        storage_type (DocumentStorageType | None): Type of storage used.
+        tag_ids (list[int]): List of tag IDs associated with this document.
+        title (str): Title of the document.
+        user_can_change (bool | None): Whether the current user can modify this document.
 
     Examples:
         >>> document = client.documents().get(pk=1)
@@ -147,6 +182,7 @@ class Document(StandardModel):
         # Get document metadata
         >>> metadata = document.get_metadata()
         >>> print(metadata.original_mime_type)
+        'application/pdf'
 
         # Download document
         >>> download = document.download()
@@ -156,6 +192,7 @@ class Document(StandardModel):
         # Get document suggestions
         >>> suggestions = document.get_suggestions()
         >>> print(suggestions.tags)
+        ['Invoice', 'Tax', '2023']
 
     """
 
@@ -210,11 +247,14 @@ class Document(StandardModel):
         """
         Serialize datetime fields to ISO format.
 
+        Converts datetime objects to ISO 8601 formatted strings for JSON serialization.
+        Returns None if the input value is None.
+
         Args:
-            value: The datetime value to serialize.
+            value (datetime | None): The datetime value to serialize.
 
         Returns:
-            The serialized datetime value.
+            str | None: The serialized datetime value as an ISO 8601 string, or None.
 
         """
         return value.isoformat() if value else None
@@ -224,11 +264,14 @@ class Document(StandardModel):
         """
         Serialize notes to a list of dictionaries.
 
+        Converts DocumentNote objects to dictionaries for JSON serialization.
+        Returns an empty list if the input value is None or empty.
+
         Args:
-            value: The list of DocumentNote objects to serialize.
+            value (list[DocumentNote]): The list of DocumentNote objects to serialize.
 
         Returns:
-            A list of dictionaries representing the notes.
+            list[dict[str, Any]]: A list of dictionaries representing the notes.
 
         """
         return [note.to_dict() for note in value] if value else []
@@ -239,11 +282,25 @@ class Document(StandardModel):
         """
         Validate and convert tag IDs to a list of integers.
 
+        Ensures tag IDs are properly formatted as a list of integers.
+        Handles various input formats including None, single integers, and lists.
+
         Args:
-            value: The list of tag IDs to validate.
+            value (Any): The tag IDs to validate, which can be None, an integer, or a list.
 
         Returns:
-            A list of validated tag IDs.
+            list[int]: A list of validated tag IDs.
+
+        Raises:
+            TypeError: If the input value is not None, an integer, or a list.
+
+        Examples:
+            >>> Document.validate_tags(None)
+            []
+            >>> Document.validate_tags(5)
+            [5]
+            >>> Document.validate_tags([1, 2, 3])
+            [1, 2, 3]
 
         """
         if value is None:
@@ -263,11 +320,17 @@ class Document(StandardModel):
         """
         Validate and return custom field dictionaries.
 
+        Ensures custom fields are properly formatted as a list of CustomFieldValues.
+        Returns an empty list if the input value is None.
+
         Args:
-            value: The list of custom field dictionaries to validate.
+            value (Any): The list of custom field dictionaries to validate.
 
         Returns:
-            A list of validated custom field dictionaries.
+            list[CustomFieldValues]: A list of validated custom field dictionaries.
+
+        Raises:
+            TypeError: If the input value is not None or a list.
 
         """
         if value is None:
@@ -284,11 +347,25 @@ class Document(StandardModel):
         """
         Validate and return a text field.
 
+        Ensures text fields are properly formatted as strings.
+        Converts integers to strings and returns an empty string if the input value is None.
+
         Args:
-            value: The value of the text field to validate.
+            value (Any): The value of the text field to validate.
 
         Returns:
-            The validated text value.
+            str: The validated text value.
+
+        Raises:
+            TypeError: If the input value is not None, a string, or an integer.
+
+        Examples:
+            >>> Document.validate_text(None)
+            ''
+            >>> Document.validate_text("Hello")
+            'Hello'
+            >>> Document.validate_text(123)
+            '123'
 
         """
         if value is None:
@@ -305,11 +382,17 @@ class Document(StandardModel):
         """
         Validate and return the list of notes.
 
+        Ensures notes are properly formatted as a list of DocumentNote objects.
+        Handles various input formats including None, single DocumentNote objects, and lists.
+
         Args:
-            value: The list of notes to validate.
+            value (Any): The list of notes to validate.
 
         Returns:
-            The validated list of notes.
+            list[Any]: The validated list of notes.
+
+        Raises:
+            TypeError: If the input value is not None, a DocumentNote, or a list.
 
         """
         if value is None:
@@ -329,11 +412,17 @@ class Document(StandardModel):
         """
         Validate and return the is_shared_by_requester flag.
 
+        Ensures the is_shared_by_requester flag is properly formatted as a boolean.
+        Returns False if the input value is None.
+
         Args:
-            value: The flag to validate.
+            value (Any): The flag to validate.
 
         Returns:
-            The validated flag.
+            bool: The validated flag.
+
+        Raises:
+            TypeError: If the input value is not None or a boolean.
 
         """
         if value is None:
@@ -348,6 +437,16 @@ class Document(StandardModel):
     def custom_field_ids(self) -> list[int]:
         """
         Get the IDs of the custom fields for this document.
+
+        Returns:
+            list[int]: A list of custom field IDs associated with this document.
+
+        Example:
+            >>> document = client.documents().get(1)
+            >>> field_ids = document.custom_field_ids
+            >>> print(field_ids)
+            [1, 3, 5]
+
         """
         return [element.field for element in self.custom_field_dicts]
 
@@ -355,6 +454,16 @@ class Document(StandardModel):
     def custom_field_values(self) -> list[Any]:
         """
         Get the values of the custom fields for this document.
+
+        Returns:
+            list[Any]: A list of values for the custom fields associated with this document.
+
+        Example:
+            >>> document = client.documents().get(1)
+            >>> values = document.custom_field_values
+            >>> print(values)
+            ['2023-01-15', 'INV-12345', True]
+
         """
         return [element.value for element in self.custom_field_dicts]
 
@@ -362,6 +471,16 @@ class Document(StandardModel):
     def tag_names(self) -> list[str]:
         """
         Get the names of the tags for this document.
+
+        Returns:
+            list[str]: A list of tag names associated with this document.
+
+        Example:
+            >>> document = client.documents().get(1)
+            >>> names = document.tag_names
+            >>> print(names)
+            ['Invoice', 'Tax', 'Important']
+
         """
         return [tag.name for tag in self.tags if tag.name]
 
@@ -370,16 +489,20 @@ class Document(StandardModel):
         """
         Get the tags for this document.
 
+        Returns a QuerySet of Tag objects associated with this document.
+        The QuerySet is lazily loaded, so API requests are only made when
+        the tags are actually accessed.
+
         Returns:
-            List of tags associated with this document.
+            TagQuerySet: QuerySet of tags associated with this document.
 
         Examples:
             >>> document = client.documents().get(pk=1)
             >>> for tag in document.tags:
             ...     print(f'{tag.name} # {tag.id}')
-            'Tag 1 # 1'
-            'Tag 2 # 2'
-            'Tag 3 # 3'
+            Tag 1 # 1
+            Tag 2 # 2
+            Tag 3 # 3
 
             >>> if 5 in document.tags:
             ...     print('Tag ID #5 is associated with this document')
@@ -405,8 +528,26 @@ class Document(StandardModel):
         """
         Set the tags for this document.
 
+        Updates the document's tag_ids list based on the provided tags.
+        Accepts None (to clear all tags), an iterable of Tag objects,
+        or an iterable of tag IDs.
+
         Args:
-            value: The tags to set.
+            value (Iterable[Tag | int] | None): The tags to set. Can be None, an iterable of Tag objects,
+                  or an iterable of tag IDs.
+
+        Raises:
+            TypeError: If the input value is not None, an iterable of Tag objects,
+                      or an iterable of integers.
+
+        Example:
+            >>> document = client.documents().get(1)
+            >>> # Set tags by ID
+            >>> document.tags = [1, 2, 3]
+            >>> # Set tags by Tag objects
+            >>> document.tags = client.tags().filter(name__icontains='invoice')
+            >>> # Clear all tags
+            >>> document.tags = None
 
         """
         if value is None:
@@ -437,13 +578,18 @@ class Document(StandardModel):
         """
         Get the correspondent for this document.
 
+        Retrieves the Correspondent object associated with this document.
+        Uses caching to minimize API requests when accessing the same correspondent
+        multiple times.
+
         Returns:
-            The correspondent or None if not set.
+            Correspondent | None: The correspondent object or None if not set.
 
         Examples:
             >>> document = client.documents().get(pk=1)
-            >>> document.correspondent.name
-            'Example Correspondent'
+            >>> if document.correspondent:
+            ...     print(document.correspondent.name)
+            Example Correspondent
 
         """
         # Return cache
@@ -466,8 +612,26 @@ class Document(StandardModel):
         """
         Set the correspondent for this document.
 
+        Updates the document's correspondent_id based on the provided correspondent.
+        Accepts None (to clear the correspondent), a Correspondent object,
+        or a correspondent ID.
+
         Args:
-            value: The correspondent to set.
+            value (Correspondent | int | None): The correspondent to set. Can be None, a Correspondent object,
+                  or a correspondent ID.
+
+        Raises:
+            TypeError: If the input value is not None, a Correspondent object,
+                      or an integer.
+
+        Example:
+            >>> document = client.documents().get(1)
+            >>> # Set correspondent by ID
+            >>> document.correspondent = 5
+            >>> # Set correspondent by object
+            >>> document.correspondent = client.correspondents().get(5)
+            >>> # Clear correspondent
+            >>> document.correspondent = None
 
         """
         if value is None:
@@ -495,13 +659,18 @@ class Document(StandardModel):
         """
         Get the document type for this document.
 
+        Retrieves the DocumentType object associated with this document.
+        Uses caching to minimize API requests when accessing the same document type
+        multiple times.
+
         Returns:
-            The document type or None if not set.
+            DocumentType | None: The document type object or None if not set.
 
         Examples:
             >>> document = client.documents().get(pk=1)
-            >>> document.document_type.name
-            'Example Document Type
+            >>> if document.document_type:
+            ...     print(document.document_type.name)
+            Example Document Type
 
         """
         # Return cache
@@ -524,8 +693,26 @@ class Document(StandardModel):
         """
         Set the document type for this document.
 
+        Updates the document's document_type_id based on the provided document type.
+        Accepts None (to clear the document type), a DocumentType object,
+        or a document type ID.
+
         Args:
-            value: The document type to set.
+            value (DocumentType | int | None): The document type to set. Can be None, a DocumentType object,
+                  or a document type ID.
+
+        Raises:
+            TypeError: If the input value is not None, a DocumentType object,
+                      or an integer.
+
+        Example:
+            >>> document = client.documents().get(1)
+            >>> # Set document type by ID
+            >>> document.document_type = 3
+            >>> # Set document type by object
+            >>> document.document_type = client.document_types().get(3)
+            >>> # Clear document type
+            >>> document.document_type = None
 
         """
         if value is None:
@@ -553,13 +740,18 @@ class Document(StandardModel):
         """
         Get the storage path for this document.
 
+        Retrieves the StoragePath object associated with this document.
+        Uses caching to minimize API requests when accessing the same storage path
+        multiple times.
+
         Returns:
-            The storage path or None if not set.
+            StoragePath | None: The storage path object or None if not set.
 
         Examples:
             >>> document = client.documents().get(pk=1)
-            >>> document.storage_path.name
-            'Example Storage Path'
+            >>> if document.storage_path:
+            ...     print(document.storage_path.name)
+            Example Storage Path
 
         """
         # Return cache
@@ -582,8 +774,26 @@ class Document(StandardModel):
         """
         Set the storage path for this document.
 
+        Updates the document's storage_path_id based on the provided storage path.
+        Accepts None (to clear the storage path), a StoragePath object,
+        or a storage path ID.
+
         Args:
-            value: The storage path to set.
+            value (StoragePath | int | None): The storage path to set. Can be None, a StoragePath object,
+                  or a storage path ID.
+
+        Raises:
+            TypeError: If the input value is not None, a StoragePath object,
+                      or an integer.
+
+        Example:
+            >>> document = client.documents().get(1)
+            >>> # Set storage path by ID
+            >>> document.storage_path = 2
+            >>> # Set storage path by object
+            >>> document.storage_path = client.storage_paths().get(2)
+            >>> # Clear storage path
+            >>> document.storage_path = None
 
         """
         if value is None:
@@ -611,8 +821,19 @@ class Document(StandardModel):
         """
         Get the custom fields for this document.
 
+        Returns a QuerySet of CustomField objects associated with this document.
+        The QuerySet is lazily loaded, so API requests are only made when
+        the custom fields are actually accessed.
+
         Returns:
-            List of custom fields associated with this document.
+            CustomFieldQuerySet: QuerySet of custom fields associated with this document.
+
+        Example:
+            >>> document = client.documents().get(1)
+            >>> for field in document.custom_fields:
+            ...     print(f'{field.name}: {field.value}')
+            Due Date: 2023-04-15
+            Reference: INV-12345
 
         """
         if not self.custom_field_dicts:
@@ -627,8 +848,26 @@ class Document(StandardModel):
         """
         Set the custom fields for this document.
 
+        Updates the document's custom_field_dicts list based on the provided custom fields.
+        Accepts None (to clear all custom fields), an iterable of CustomField objects,
+        CustomFieldValues objects, or dictionaries with field and value keys.
+
         Args:
-            value: The custom fields to set.
+            value (Iterable[CustomField | CustomFieldValues | CustomFieldTypedDict] | None): The custom fields to set.
+                Can be None, an iterable of CustomField objects, CustomFieldValues objects, or dictionaries.
+
+        Raises:
+            TypeError: If the input value is not None, an iterable of CustomField objects,
+                      CustomFieldValues objects, or dictionaries.
+
+        Example:
+            >>> document = client.documents().get(1)
+            >>> # Set custom fields by dictionary
+            >>> document.custom_fields = [{'field': 1, 'value': '2023-04-15'}, {'field': 2, 'value': 'INV-12345'}]
+            >>> # Set custom fields by CustomField objects
+            >>> document.custom_fields = client.custom_fields().filter(name__icontains='date')
+            >>> # Clear all custom fields
+            >>> document.custom_fields = None
 
         """
         if value is None:
@@ -662,23 +901,58 @@ class Document(StandardModel):
 
     @property
     def has_search_hit(self) -> bool:
+        """
+        Check if this document has search hit information.
+
+        Returns:
+            bool: True if this document was returned as part of a search result
+                 and has search hit information, False otherwise.
+
+        """
         return self.__search_hit__ is not None
 
     @property
     def search_hit(self) -> dict[str, Any] | None:
+        """
+        Get the search hit information for this document.
+
+        When a document is returned as part of a search result, this property
+        contains additional information about the search match.
+
+        Returns:
+            dict[str, Any] | None: Dictionary with search hit information or None
+                                  if this document was not part of a search result.
+
+        """
         return self.__search_hit__
 
     def custom_field_value(self, field_id: int, default: Any = None, *, raise_errors: bool = False) -> Any:
         """
         Get the value of a custom field by ID.
 
+        Retrieves the value of a specific custom field associated with this document.
+
         Args:
-            field_id: The ID of the custom field.
-            default: The value to return if the field is not found.
-            raise_errors: Whether to raise an error if the field is not found.
+            field_id (int): The ID of the custom field to retrieve.
+            default (Any, optional): The value to return if the field is not found. Defaults to None.
+            raise_errors (bool, optional): Whether to raise an error if the field is not found. Defaults to False.
 
         Returns:
-            The value of the custom field or the default value if not found.
+            Any: The value of the custom field or the default value if not found.
+
+        Raises:
+            ValueError: If raise_errors is True and the field is not found.
+
+        Example:
+            >>> document = client.documents().get(1)
+            >>> # Get value with default
+            >>> due_date = document.custom_field_value(3, default="Not set")
+            >>> # Get value with error handling
+            >>> try:
+            ...     reference = document.custom_field_value(5, raise_errors=True)
+            ... except ValueError:
+            ...     print("Reference field not found")
+            Reference field not found
 
         """
         for field in self.custom_field_dicts:
@@ -703,8 +977,26 @@ class Document(StandardModel):
         """
         Add a tag to the document.
 
+        Adds a tag to the document's tag_ids list. The tag can be specified as a Tag object,
+        a tag ID, or a tag name. If a tag name is provided, the method will look up the
+        corresponding tag ID.
+
         Args:
-            tag: The tag to add.
+            tag (Tag | int | str): The tag to add. Can be a Tag object, a tag ID, or a tag name.
+
+        Raises:
+            TypeError: If the input value is not a Tag object, an integer, or a string.
+            ResourceNotFoundError: If a tag name is provided but no matching tag is found.
+
+        Example:
+            >>> document = client.documents().get(1)
+            >>> # Add tag by ID
+            >>> document.add_tag(5)
+            >>> # Add tag by object
+            >>> tag = client.tags().get(3)
+            >>> document.add_tag(tag)
+            >>> # Add tag by name
+            >>> document.add_tag("Invoice")
 
         """
         if isinstance(tag, int):
@@ -727,8 +1019,27 @@ class Document(StandardModel):
         """
         Remove a tag from the document.
 
+        Removes a tag from the document's tag_ids list. The tag can be specified as a Tag object,
+        a tag ID, or a tag name. If a tag name is provided, the method will look up the
+        corresponding tag ID.
+
         Args:
-            tag: The tag to remove.
+            tag (Tag | int | str): The tag to remove. Can be a Tag object, a tag ID, or a tag name.
+
+        Raises:
+            TypeError: If the input value is not a Tag object, an integer, or a string.
+            ResourceNotFoundError: If a tag name is provided but no matching tag is found.
+            ValueError: If the tag is not associated with this document.
+
+        Example:
+            >>> document = client.documents().get(1)
+            >>> # Remove tag by ID
+            >>> document.remove_tag(5)
+            >>> # Remove tag by object
+            >>> tag = client.tags().get(3)
+            >>> document.remove_tag(tag)
+            >>> # Remove tag by name
+            >>> document.remove_tag("Invoice")
 
         """
         if isinstance(tag, int):
@@ -754,12 +1065,19 @@ class Document(StandardModel):
         """
         Get the metadata for this document.
 
+        Retrieves detailed metadata about the document from the Paperless-ngx API.
+        This includes information like the original file format, creation date,
+        modification date, and other technical details.
+
         Returns:
-            The document metadata.
+            DocumentMetadata: The document metadata object.
 
         Examples:
             >>> metadata = document.get_metadata()
             >>> print(metadata.original_mime_type)
+            application/pdf
+            >>> print(metadata.media_filename)
+            document.pdf
 
         """
         raise NotImplementedError()
@@ -768,16 +1086,27 @@ class Document(StandardModel):
         """
         Download the document file.
 
+        Downloads either the archived version (default) or the original version
+        of the document from the Paperless-ngx server.
+
         Args:
-            original: Whether to download the original file instead of the archived version.
+            original (bool, optional): Whether to download the original file instead of the archived version.
+                     Defaults to False (download the archived version).
 
         Returns:
-            The downloaded document.
+            DownloadedDocument: An object containing the downloaded document content
+                               and metadata.
 
         Examples:
+            >>> # Download archived version
             >>> download = document.download()
             >>> with open(download.disposition_filename, 'wb') as f:
             ...     f.write(download.content)
+
+            >>> # Download original version
+            >>> original = document.download(original=True)
+            >>> print(f"Downloaded {len(original.content)} bytes")
+            Downloaded 245367 bytes
 
         """
         raise NotImplementedError()
@@ -786,11 +1115,22 @@ class Document(StandardModel):
         """
         Get a preview of the document.
 
+        Retrieves a preview version of the document from the Paperless-ngx server.
+        This is typically a web-friendly version (e.g., PDF) that can be displayed
+        in a browser.
+
         Args:
-            original: Whether to preview the original file instead of the archived version.
+            original (bool, optional): Whether to preview the original file instead of the archived version.
+                     Defaults to False (preview the archived version).
 
         Returns:
-            The document preview.
+            DownloadedDocument: An object containing the preview document content
+                               and metadata.
+
+        Example:
+            >>> preview = document.preview()
+            >>> with open('preview.pdf', 'wb') as f:
+            ...     f.write(preview.content)
 
         """
         raise NotImplementedError()
@@ -799,11 +1139,21 @@ class Document(StandardModel):
         """
         Get the document thumbnail.
 
+        Retrieves a thumbnail image of the document from the Paperless-ngx server.
+        This is typically a small image representation of the first page.
+
         Args:
-            original: Whether to get the thumbnail of the original file.
+            original (bool, optional): Whether to get the thumbnail of the original file instead of
+                     the archived version. Defaults to False (get thumbnail of archived version).
 
         Returns:
-            The document thumbnail.
+            DownloadedDocument: An object containing the thumbnail image content
+                               and metadata.
+
+        Example:
+            >>> thumbnail = document.thumbnail()
+            >>> with open('thumbnail.png', 'wb') as f:
+            ...     f.write(thumbnail.content)
 
         """
         raise NotImplementedError()
@@ -812,12 +1162,21 @@ class Document(StandardModel):
         """
         Get suggestions for this document.
 
+        Retrieves AI-generated suggestions for document metadata from the Paperless-ngx server.
+        This can include suggested tags, correspondent, document type, and other metadata
+        based on the document's content.
+
         Returns:
-            The document suggestions.
+            DocumentSuggestions: An object containing suggested metadata for the document.
 
         Examples:
             >>> suggestions = document.get_suggestions()
-            >>> print(suggestions.tags)
+            >>> print(f"Suggested tags: {suggestions.tags}")
+            Suggested tags: [{'name': 'Invoice', 'score': 0.95}, {'name': 'Utility', 'score': 0.87}]
+            >>> print(f"Suggested correspondent: {suggestions.correspondent}")
+            Suggested correspondent: {'name': 'Electric Company', 'score': 0.92}
+            >>> print(f"Suggested document type: {suggestions.document_type}")
+            Suggested document type: {'name': 'Bill', 'score': 0.89}
 
         """
         raise NotImplementedError()
@@ -826,8 +1185,16 @@ class Document(StandardModel):
         """
         Append content to the document.
 
+        Adds the specified text to the end of the document's content,
+        separated by a newline.
+
         Args:
-            value: The content to append.
+            value (str): The content to append.
+
+        Example:
+            >>> document = client.documents().get(1)
+            >>> document.append_content("Additional notes about this document")
+            >>> document.save()
 
         """
         self.content = f"{self.content}\n{value}"
@@ -837,12 +1204,23 @@ class Document(StandardModel):
         """
         Update the document locally with the provided data.
 
+        Updates the document's attributes with the provided data without sending
+        an API request. Handles special cases for notes and tags, which cannot be
+        set to None in Paperless-ngx if they already have values.
+
         Args:
-            from_db: Whether to update from the database.
+            from_db (bool | None, optional): Whether the update is coming from the database. If True,
+                    bypasses certain validation checks. Defaults to None.
             **kwargs: Additional data to update the document with.
 
         Raises:
-            NotImplementedError: If attempting to set notes or tags to None when they are not already None.
+            NotImplementedError: If attempting to set notes or tags to None when
+                                they are not already None and from_db is False.
+
+        Example:
+            >>> document = client.documents().get(1)
+            >>> document.update_locally(title="New Title", correspondent_id=5)
+            >>> document.save()
 
         """
         if not from_db:

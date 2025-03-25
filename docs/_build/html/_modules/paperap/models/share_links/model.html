@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/models/share_links/model.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../../_static/readthedocs.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,24 +76,11 @@
              
   <h1>Source code for paperap.models.share_links.model</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">Module for managing share links in Paperless-NgX.</span>
 
-<span class="sd">   METADATA:</span>
-
-<span class="sd">       File:    share_links.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">       Created: 2025-03-04</span>
-<span class="sd">        Version: 0.0.8</span>
-<span class="sd">       Author:  Jess Mann</span>
-<span class="sd">       Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">   LAST MODIFIED:</span>
-
-<span class="sd">       2025-03-04     By Jess Mann</span>
-
+<span class="sd">This module provides the ShareLinks model for creating, retrieving, and managing</span>
+<span class="sd">document share links in Paperless-NgX. Share links allow documents to be shared</span>
+<span class="sd">with users who don&#39;t have access to the Paperless-NgX instance.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -112,8 +103,38 @@
 
 
 <div class="viewcode-block" id="ShareLinks">
-<a class="viewcode-back" href="../../../../api/paperap.models.share_links.model.html#paperap.models.ShareLinks">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.ShareLinks">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ShareLinks</span><span class="p">(</span><span class="n">StandardModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model representing a share link in Paperless-NgX.</span>
+
+<span class="sd">    Share links allow documents to be shared with users who don&#39;t have access to the</span>
+<span class="sd">    Paperless-NgX instance. Each share link has a unique slug that can be used to access</span>
+<span class="sd">    the document without authentication.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        expiration (datetime | None): When the share link expires. If None, the link never expires.</span>
+<span class="sd">        slug (str | None): Unique identifier for the share link URL.</span>
+<span class="sd">        document (int | None): ID of the document being shared.</span>
+<span class="sd">        created (datetime | None): When the share link was created.</span>
+<span class="sd">        file_version (ShareLinkFileVersionType | None): Which version of the document to share.</span>
+<span class="sd">        owner (int | None): ID of the user who created the share link.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; # Create a new share link for document with ID 123</span>
+<span class="sd">        &gt;&gt;&gt; share_link = client.share_links.create(document=123)</span>
+<span class="sd">        &gt;&gt;&gt; print(f&quot;Share link created: {share_link.slug}&quot;)</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; # Create a share link that expires in 7 days</span>
+<span class="sd">        &gt;&gt;&gt; from datetime import datetime, timedelta</span>
+<span class="sd">        &gt;&gt;&gt; expiry = datetime.now() + timedelta(days=7)</span>
+<span class="sd">        &gt;&gt;&gt; share_link = client.share_links.create(</span>
+<span class="sd">        ...     document=123,</span>
+<span class="sd">        ...     expiration=expiry</span>
+<span class="sd">        ... )</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">expiration</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">slug</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">document</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -122,36 +143,68 @@
     <span class="n">owner</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="ShareLinks.Meta">
-<a class="viewcode-back" href="../../../../api/paperap.models.share_links.model.html#paperap.models.ShareLinks.Meta">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.ShareLinks.Meta">[docs]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">(</span><span class="n">StandardModel</span><span class="o">.</span><span class="n">Meta</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Metadata for the ShareLinks model.</span>
+
+<span class="sd">        This class defines the queryset class to use for ShareLinks queries.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">queryset</span> <span class="o">=</span> <span class="n">ShareLinksQuerySet</span></div>
 
 
 <div class="viewcode-block" id="ShareLinks.serialize_datetime">
-<a class="viewcode-back" href="../../../../api/paperap.models.share_links.model.html#paperap.models.ShareLinks.serialize_datetime">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.ShareLinks.serialize_datetime">[docs]</a>
     <span class="nd">@field_serializer</span><span class="p">(</span><span class="s2">&quot;expiration&quot;</span><span class="p">,</span> <span class="s2">&quot;created&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize_datetime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Serialize a datetime object to an ISO 8601 formatted string</span>
+<span class="sd">        Serialize a datetime object to an ISO 8601 formatted string.</span>
+
+<span class="sd">        This serializer converts datetime objects to ISO 8601 formatted strings</span>
+<span class="sd">        for JSON serialization when sending data to the Paperless-NgX API.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value (datetime): The datetime object to serialize</span>
+<span class="sd">            value (datetime | None): The datetime object to serialize.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            str: The serialized datetime</span>
+<span class="sd">            str | None: The ISO 8601 formatted string representation of the datetime,</span>
+<span class="sd">                or None if the input is None.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; share_link = ShareLinks()</span>
+<span class="sd">            &gt;&gt;&gt; from datetime import datetime</span>
+<span class="sd">            &gt;&gt;&gt; dt = datetime(2023, 1, 15, 12, 30, 45)</span>
+<span class="sd">            &gt;&gt;&gt; share_link.serialize_datetime(dt)</span>
+<span class="sd">            &#39;2023-01-15T12:30:45&#39;</span>
+<span class="sd">            &gt;&gt;&gt; share_link.serialize_datetime(None)</span>
+<span class="sd">            None</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="ShareLinks.get_document">
-<a class="viewcode-back" href="../../../../api/paperap.models.share_links.model.html#paperap.models.ShareLinks.get_document">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.ShareLinks.get_document">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_document</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Document&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the document associated with this share link</span>
+<span class="sd">        Get the document associated with this share link.</span>
+
+<span class="sd">        Retrieves the full Document object associated with this share link</span>
+<span class="sd">        by querying the Paperless-NgX API using the document ID stored in</span>
+<span class="sd">        this share link.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Document: The document object</span>
+<span class="sd">            Document: The document object associated with this share link.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the document ID is not set on this share link.</span>
+<span class="sd">            ResourceNotFoundError: If the document doesn&#39;t exist in Paperless-NgX.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; share_link = client.share_links.get(5)</span>
+<span class="sd">            &gt;&gt;&gt; document = share_link.get_document()</span>
+<span class="sd">            &gt;&gt;&gt; print(f&quot;Shared document title: {document.title}&quot;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="p">:</span>

@@ -1,29 +1,4 @@
-"""
-Paperless-ngx API Sample Data Collector.
 
-This tool collects sample data from a Paperless-ngx instance for testing and development.
-
-Typically called from first_run.py, not directly.
-
- ----------------------------------------------------------------------------
-
-    METADATA:
-
-        File:    create_samples.py
-        Project: paperap
-        Created: 2025-03-11
-        Version: 0.0.10
-        Author:  Jess Mann
-        Email:   jess@jmann.me
-        Copyright (c) 2025 Jess Mann
-
- ----------------------------------------------------------------------------
-
-    LAST MODIFIED:
-
-        2025-03-22     By Jess Mann
-
-"""
 from __future__ import annotations
 
 import argparse

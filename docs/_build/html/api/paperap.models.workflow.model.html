@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -77,109 +77,185 @@
              
   <section id="module-paperap.models.workflow.model">
 <span id="paperap-models-workflow-model-module"></span><h1>paperap.models.workflow.model module<a class="headerlink" href="#module-paperap.models.workflow.model" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<blockquote>
-<div><p>METADATA:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>File:    workflow.py</dt><dd><p>Project: paperap</p>
-</dd>
-<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.9</p>
-</dd>
-</dl>
-<p>Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
-<blockquote>
-<div><p>Copyright (c) 2025 Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
-</div></blockquote>
-<hr class="docutils" />
-<blockquote>
-<div><p>LAST MODIFIED:</p>
-<blockquote>
-<div><p>2025-03-04     By Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
+<p>Models for Paperless-NgX workflow functionality.</p>
+<p>This module contains the data models representing workflows, workflow triggers,
+workflow actions, and workflow runs in the Paperless-NgX system. These models
+map directly to the corresponding API resources and provide a Pythonic interface
+for interacting with the workflow system.</p>
+<p>Workflows in Paperless-NgX consist of triggers (conditions that start a workflow)
+and actions (operations performed when a trigger is activated).</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.workflow.model.</span></span><span class="sig-name descname"><span class="pre">WorkflowTrigger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/workflow/model.html#WorkflowTrigger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel" title="paperap.models.abstract.model.StandardModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardModel</span></code></a>, <a class="reference internal" href="paperap.models.mixins.models.html#paperap.models.mixins.models.MatcherMixin" title="paperap.models.mixins.models.MatcherMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatcherMixin</span></code></a></p>
 <p>Represents a workflow trigger in Paperless-NgX.</p>
+<p>A workflow trigger defines the conditions under which a workflow will be executed.
+Triggers can be based on document creation, modification, scheduled events, or
+other system events.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.sources">
+<span class="sig-name descname"><span class="pre">sources</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.sources" title="Link to this definition"></a></dt>
+<dd><p>List of source types that can activate this trigger.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.type">
+<span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.type" title="Link to this definition"></a></dt>
+<dd><p>The type of trigger (e.g., document added, scheduled).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.filter_path">
+<span class="sig-name descname"><span class="pre">filter_path</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.filter_path" title="Link to this definition"></a></dt>
+<dd><p>Path filter for file-based triggers.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.filter_filename">
+<span class="sig-name descname"><span class="pre">filter_filename</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.filter_filename" title="Link to this definition"></a></dt>
+<dd><p>Filename filter for file-based triggers.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.filter_mailrule">
+<span class="sig-name descname"><span class="pre">filter_mailrule</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.filter_mailrule" title="Link to this definition"></a></dt>
+<dd><p>Mail rule filter for email-based triggers.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.filter_has_tags">
+<span class="sig-name descname"><span class="pre">filter_has_tags</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.filter_has_tags" title="Link to this definition"></a></dt>
+<dd><p>List of tag IDs that documents must have to trigger.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.filter_has_correspondent">
+<span class="sig-name descname"><span class="pre">filter_has_correspondent</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.filter_has_correspondent" title="Link to this definition"></a></dt>
+<dd><p>Correspondent ID that documents must have.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.filter_has_document_type">
+<span class="sig-name descname"><span class="pre">filter_has_document_type</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.filter_has_document_type" title="Link to this definition"></a></dt>
+<dd><p>Document type ID that documents must have.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.schedule_date_field">
+<span class="sig-name descname"><span class="pre">schedule_date_field</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.schedule_date_field" title="Link to this definition"></a></dt>
+<dd><p>Field to use for date-based scheduling.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.schedule_date_custom_field">
+<span class="sig-name descname"><span class="pre">schedule_date_custom_field</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.schedule_date_custom_field" title="Link to this definition"></a></dt>
+<dd><p>Custom field ID to use for date-based scheduling.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.schedule_offset_days">
+<span class="sig-name descname"><span class="pre">schedule_offset_days</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.schedule_offset_days" title="Link to this definition"></a></dt>
+<dd><p>Days to offset from the scheduled date.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.schedule_is_recurring">
+<span class="sig-name descname"><span class="pre">schedule_is_recurring</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.schedule_is_recurring" title="Link to this definition"></a></dt>
+<dd><p>Whether this trigger recurs on a schedule.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.schedule_recurring_interval_days">
+<span class="sig-name descname"><span class="pre">schedule_recurring_interval_days</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.schedule_recurring_interval_days" title="Link to this definition"></a></dt>
+<dd><p>Interval in days for recurring triggers.</p>
+</dd></dl>
+
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create a trigger for new documents with a specific tag</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">trigger</span> <span class="o">=</span> <span class="n">WorkflowTrigger</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">sources</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;source_document&quot;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;document_added&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">filter_has_tags</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>  <span class="c1"># Tag ID 5</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.sources">
-<span class="sig-name descname"><span class="pre">sources</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[WorkflowTriggerSourceType]</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.sources" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">sources</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[WorkflowTriggerSourceType]</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.type">
-<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">WorkflowTriggerType</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.type" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">WorkflowTriggerType</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.filter_path">
-<span class="sig-name descname"><span class="pre">filter_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.filter_path" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">filter_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.filter_filename">
-<span class="sig-name descname"><span class="pre">filter_filename</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.filter_filename" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">filter_filename</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.filter_mailrule">
-<span class="sig-name descname"><span class="pre">filter_mailrule</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.filter_mailrule" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">filter_mailrule</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.filter_has_tags">
-<span class="sig-name descname"><span class="pre">filter_has_tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.filter_has_tags" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">filter_has_tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.filter_has_correspondent">
-<span class="sig-name descname"><span class="pre">filter_has_correspondent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.filter_has_correspondent" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">filter_has_correspondent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.filter_has_document_type">
-<span class="sig-name descname"><span class="pre">filter_has_document_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.filter_has_document_type" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">filter_has_document_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.schedule_date_field">
-<span class="sig-name descname"><span class="pre">schedule_date_field</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ScheduleDateFieldType</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.schedule_date_field" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">schedule_date_field</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ScheduleDateFieldType</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.schedule_date_custom_field">
-<span class="sig-name descname"><span class="pre">schedule_date_custom_field</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.schedule_date_custom_field" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">schedule_date_custom_field</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.schedule_offset_days">
-<span class="sig-name descname"><span class="pre">schedule_offset_days</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.schedule_offset_days" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">schedule_offset_days</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.schedule_is_recurring">
-<span class="sig-name descname"><span class="pre">schedule_is_recurring</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.schedule_is_recurring" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">schedule_is_recurring</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.schedule_recurring_interval_days">
-<span class="sig-name descname"><span class="pre">schedule_recurring_interval_days</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.schedule_recurring_interval_days" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id12">
+<span class="sig-name descname"><span class="pre">schedule_recurring_interval_days</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id12" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowTrigger.Meta">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/workflow/model.html#WorkflowTrigger.Meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.workflow.model.WorkflowTrigger.Meta" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel.Meta" title="paperap.models.abstract.model.StandardModel.Meta"><code class="xref py py-class docutils literal notranslate"><span class="pre">Meta</span></code></a></p>
+<p>Metadata for the WorkflowTrigger model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>model</strong> (<span class="sphinx_autodoc_typehints-type">type[_Self]</span>)</p>
@@ -269,175 +345,397 @@ method.</p>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.workflow.model.</span></span><span class="sig-name descname"><span class="pre">WorkflowAction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/workflow/model.html#WorkflowAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel" title="paperap.models.abstract.model.StandardModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardModel</span></code></a></p>
 <p>Represents a workflow action in Paperless-NgX.</p>
+<p>A workflow action defines an operation to be performed when a workflow is triggered.
+Actions can include assigning metadata to documents, removing metadata, sending
+emails, or triggering webhooks.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.type">
+<span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.type" title="Link to this definition"></a></dt>
+<dd><p>The type of action to perform.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">#</span> <span class="pre">Assignment</span> <span class="pre">action</span> <span class="pre">attributes</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_title">
+<span class="sig-name descname"><span class="pre">assign_title</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_title" title="Link to this definition"></a></dt>
+<dd><p>Title to assign to the document.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_tags">
+<span class="sig-name descname"><span class="pre">assign_tags</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_tags" title="Link to this definition"></a></dt>
+<dd><p>List of tag IDs to assign to the document.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_correspondent">
+<span class="sig-name descname"><span class="pre">assign_correspondent</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_correspondent" title="Link to this definition"></a></dt>
+<dd><p>Correspondent ID to assign to the document.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_document_type">
+<span class="sig-name descname"><span class="pre">assign_document_type</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_document_type" title="Link to this definition"></a></dt>
+<dd><p>Document type ID to assign to the document.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_storage_path">
+<span class="sig-name descname"><span class="pre">assign_storage_path</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_storage_path" title="Link to this definition"></a></dt>
+<dd><p>Storage path ID to assign to the document.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_owner">
+<span class="sig-name descname"><span class="pre">assign_owner</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_owner" title="Link to this definition"></a></dt>
+<dd><p>Owner ID to assign to the document.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_view_users">
+<span class="sig-name descname"><span class="pre">assign_view_users</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_view_users" title="Link to this definition"></a></dt>
+<dd><p>List of user IDs to grant view permissions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_view_groups">
+<span class="sig-name descname"><span class="pre">assign_view_groups</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_view_groups" title="Link to this definition"></a></dt>
+<dd><p>List of group IDs to grant view permissions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_change_users">
+<span class="sig-name descname"><span class="pre">assign_change_users</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_change_users" title="Link to this definition"></a></dt>
+<dd><p>List of user IDs to grant change permissions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_change_groups">
+<span class="sig-name descname"><span class="pre">assign_change_groups</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_change_groups" title="Link to this definition"></a></dt>
+<dd><p>List of group IDs to grant change permissions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_custom_fields">
+<span class="sig-name descname"><span class="pre">assign_custom_fields</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_custom_fields" title="Link to this definition"></a></dt>
+<dd><p>List of custom field IDs to assign.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_custom_fields_values">
+<span class="sig-name descname"><span class="pre">assign_custom_fields_values</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_custom_fields_values" title="Link to this definition"></a></dt>
+<dd><p>Dictionary mapping custom field IDs to values.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">#</span> <span class="pre">Removal</span> <span class="pre">action</span> <span class="pre">attributes</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_all_tags">
+<span class="sig-name descname"><span class="pre">remove_all_tags</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_all_tags" title="Link to this definition"></a></dt>
+<dd><p>Whether to remove all tags from the document.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_tags">
+<span class="sig-name descname"><span class="pre">remove_tags</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_tags" title="Link to this definition"></a></dt>
+<dd><p>List of tag IDs to remove from the document.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_all_correspondents">
+<span class="sig-name descname"><span class="pre">remove_all_correspondents</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_all_correspondents" title="Link to this definition"></a></dt>
+<dd><p>Whether to remove all correspondents.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_correspondents">
+<span class="sig-name descname"><span class="pre">remove_correspondents</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_correspondents" title="Link to this definition"></a></dt>
+<dd><p>List of correspondent IDs to remove.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_all_document_types">
+<span class="sig-name descname"><span class="pre">remove_all_document_types</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_all_document_types" title="Link to this definition"></a></dt>
+<dd><p>Whether to remove all document types.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_document_types">
+<span class="sig-name descname"><span class="pre">remove_document_types</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_document_types" title="Link to this definition"></a></dt>
+<dd><p>List of document type IDs to remove.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_all_storage_paths">
+<span class="sig-name descname"><span class="pre">remove_all_storage_paths</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_all_storage_paths" title="Link to this definition"></a></dt>
+<dd><p>Whether to remove all storage paths.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_storage_paths">
+<span class="sig-name descname"><span class="pre">remove_storage_paths</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_storage_paths" title="Link to this definition"></a></dt>
+<dd><p>List of storage path IDs to remove.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_custom_fields">
+<span class="sig-name descname"><span class="pre">remove_custom_fields</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_custom_fields" title="Link to this definition"></a></dt>
+<dd><p>List of custom field IDs to remove.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_all_custom_fields">
+<span class="sig-name descname"><span class="pre">remove_all_custom_fields</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_all_custom_fields" title="Link to this definition"></a></dt>
+<dd><p>Whether to remove all custom fields.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_all_owners">
+<span class="sig-name descname"><span class="pre">remove_all_owners</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_all_owners" title="Link to this definition"></a></dt>
+<dd><p>Whether to remove all owners.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_owners">
+<span class="sig-name descname"><span class="pre">remove_owners</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_owners" title="Link to this definition"></a></dt>
+<dd><p>List of owner IDs to remove.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_all_permissions">
+<span class="sig-name descname"><span class="pre">remove_all_permissions</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_all_permissions" title="Link to this definition"></a></dt>
+<dd><p>Whether to remove all permissions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_view_users">
+<span class="sig-name descname"><span class="pre">remove_view_users</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_view_users" title="Link to this definition"></a></dt>
+<dd><p>List of user IDs to remove view permissions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_view_groups">
+<span class="sig-name descname"><span class="pre">remove_view_groups</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_view_groups" title="Link to this definition"></a></dt>
+<dd><p>List of group IDs to remove view permissions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_change_users">
+<span class="sig-name descname"><span class="pre">remove_change_users</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_change_users" title="Link to this definition"></a></dt>
+<dd><p>List of user IDs to remove change permissions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_change_groups">
+<span class="sig-name descname"><span class="pre">remove_change_groups</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_change_groups" title="Link to this definition"></a></dt>
+<dd><p>List of group IDs to remove change permissions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">#</span> <span class="pre">Email</span> <span class="pre">and</span> <span class="pre">webhook</span> <span class="pre">action</span> <span class="pre">attributes</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.email">
+<span class="sig-name descname"><span class="pre">email</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.email" title="Link to this definition"></a></dt>
+<dd><p>Configuration for email actions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.webhook">
+<span class="sig-name descname"><span class="pre">webhook</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.webhook" title="Link to this definition"></a></dt>
+<dd><p>Configuration for webhook actions.</p>
+</dd></dl>
+
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create an action to assign tags and a document type</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">action</span> <span class="o">=</span> <span class="n">WorkflowAction</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;assign&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">assign_tags</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">assign_document_type</span><span class="o">=</span><span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.type">
-<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">WorkflowActionType</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.type" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id13">
+<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">WorkflowActionType</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id13" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_title">
-<span class="sig-name descname"><span class="pre">assign_title</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_title" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id14">
+<span class="sig-name descname"><span class="pre">assign_title</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id14" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_tags">
-<span class="sig-name descname"><span class="pre">assign_tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_tags" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id15">
+<span class="sig-name descname"><span class="pre">assign_tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#id15" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_correspondent">
-<span class="sig-name descname"><span class="pre">assign_correspondent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_correspondent" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id16">
+<span class="sig-name descname"><span class="pre">assign_correspondent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id16" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_document_type">
-<span class="sig-name descname"><span class="pre">assign_document_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_document_type" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id17">
+<span class="sig-name descname"><span class="pre">assign_document_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id17" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_storage_path">
-<span class="sig-name descname"><span class="pre">assign_storage_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_storage_path" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id18">
+<span class="sig-name descname"><span class="pre">assign_storage_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id18" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_owner">
-<span class="sig-name descname"><span class="pre">assign_owner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_owner" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id19">
+<span class="sig-name descname"><span class="pre">assign_owner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id19" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_view_users">
-<span class="sig-name descname"><span class="pre">assign_view_users</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_view_users" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id20">
+<span class="sig-name descname"><span class="pre">assign_view_users</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#id20" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_view_groups">
-<span class="sig-name descname"><span class="pre">assign_view_groups</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_view_groups" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id21">
+<span class="sig-name descname"><span class="pre">assign_view_groups</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#id21" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_change_users">
-<span class="sig-name descname"><span class="pre">assign_change_users</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_change_users" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id22">
+<span class="sig-name descname"><span class="pre">assign_change_users</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#id22" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_change_groups">
-<span class="sig-name descname"><span class="pre">assign_change_groups</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_change_groups" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id23">
+<span class="sig-name descname"><span class="pre">assign_change_groups</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#id23" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_custom_fields">
-<span class="sig-name descname"><span class="pre">assign_custom_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_custom_fields" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id24">
+<span class="sig-name descname"><span class="pre">assign_custom_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#id24" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.assign_custom_fields_values">
-<span class="sig-name descname"><span class="pre">assign_custom_fields_values</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict[str,</span> <span class="pre">Any]</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.assign_custom_fields_values" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id25">
+<span class="sig-name descname"><span class="pre">assign_custom_fields_values</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict[str,</span> <span class="pre">Any]</span></em><a class="headerlink" href="#id25" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_all_tags">
-<span class="sig-name descname"><span class="pre">remove_all_tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_all_tags" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id26">
+<span class="sig-name descname"><span class="pre">remove_all_tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id26" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_tags">
-<span class="sig-name descname"><span class="pre">remove_tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_tags" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id27">
+<span class="sig-name descname"><span class="pre">remove_tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#id27" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_all_correspondents">
-<span class="sig-name descname"><span class="pre">remove_all_correspondents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_all_correspondents" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id28">
+<span class="sig-name descname"><span class="pre">remove_all_correspondents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id28" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_correspondents">
-<span class="sig-name descname"><span class="pre">remove_correspondents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_correspondents" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id29">
+<span class="sig-name descname"><span class="pre">remove_correspondents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#id29" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_all_document_types">
-<span class="sig-name descname"><span class="pre">remove_all_document_types</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_all_document_types" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id30">
+<span class="sig-name descname"><span class="pre">remove_all_document_types</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id30" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_document_types">
-<span class="sig-name descname"><span class="pre">remove_document_types</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_document_types" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id31">
+<span class="sig-name descname"><span class="pre">remove_document_types</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#id31" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_all_storage_paths">
-<span class="sig-name descname"><span class="pre">remove_all_storage_paths</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_all_storage_paths" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id32">
+<span class="sig-name descname"><span class="pre">remove_all_storage_paths</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id32" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_storage_paths">
-<span class="sig-name descname"><span class="pre">remove_storage_paths</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_storage_paths" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id33">
+<span class="sig-name descname"><span class="pre">remove_storage_paths</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#id33" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_custom_fields">
-<span class="sig-name descname"><span class="pre">remove_custom_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_custom_fields" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id34">
+<span class="sig-name descname"><span class="pre">remove_custom_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#id34" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_all_custom_fields">
-<span class="sig-name descname"><span class="pre">remove_all_custom_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_all_custom_fields" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id35">
+<span class="sig-name descname"><span class="pre">remove_all_custom_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id35" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_all_owners">
-<span class="sig-name descname"><span class="pre">remove_all_owners</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_all_owners" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id36">
+<span class="sig-name descname"><span class="pre">remove_all_owners</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id36" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_owners">
-<span class="sig-name descname"><span class="pre">remove_owners</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_owners" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id37">
+<span class="sig-name descname"><span class="pre">remove_owners</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#id37" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_all_permissions">
-<span class="sig-name descname"><span class="pre">remove_all_permissions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_all_permissions" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id38">
+<span class="sig-name descname"><span class="pre">remove_all_permissions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id38" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_view_users">
-<span class="sig-name descname"><span class="pre">remove_view_users</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_view_users" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id39">
+<span class="sig-name descname"><span class="pre">remove_view_users</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#id39" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_view_groups">
-<span class="sig-name descname"><span class="pre">remove_view_groups</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_view_groups" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id40">
+<span class="sig-name descname"><span class="pre">remove_view_groups</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#id40" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_change_users">
-<span class="sig-name descname"><span class="pre">remove_change_users</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_change_users" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id41">
+<span class="sig-name descname"><span class="pre">remove_change_users</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#id41" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.remove_change_groups">
-<span class="sig-name descname"><span class="pre">remove_change_groups</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.remove_change_groups" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id42">
+<span class="sig-name descname"><span class="pre">remove_change_groups</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[int]</span></em><a class="headerlink" href="#id42" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.email">
-<span class="sig-name descname"><span class="pre">email</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict[str,</span> <span class="pre">Any]</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.email" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id43">
+<span class="sig-name descname"><span class="pre">email</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict[str,</span> <span class="pre">Any]</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id43" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.webhook">
-<span class="sig-name descname"><span class="pre">webhook</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict[str,</span> <span class="pre">Any]</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.webhook" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id44">
+<span class="sig-name descname"><span class="pre">webhook</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict[str,</span> <span class="pre">Any]</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id44" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowAction.Meta">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/workflow/model.html#WorkflowAction.Meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.workflow.model.WorkflowAction.Meta" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel.Meta" title="paperap.models.abstract.model.StandardModel.Meta"><code class="xref py py-class docutils literal notranslate"><span class="pre">Meta</span></code></a></p>
+<p>Metadata for the WorkflowAction model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>model</strong> (<span class="sphinx_autodoc_typehints-type">type[_Self]</span>)</p>
@@ -527,34 +825,79 @@ method.</p>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.workflow.model.</span></span><span class="sig-name descname"><span class="pre">Workflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/workflow/model.html#Workflow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.workflow.model.Workflow" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel" title="paperap.models.abstract.model.StandardModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardModel</span></code></a></p>
 <p>Represents a workflow in Paperless-NgX.</p>
+<p>A workflow is a combination of triggers and actions that automate document
+processing in Paperless-NgX. When a trigger condition is met, the associated
+actions are executed.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.Workflow.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#paperap.models.workflow.model.Workflow.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the workflow.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.Workflow.order">
+<span class="sig-name descname"><span class="pre">order</span></span><a class="headerlink" href="#paperap.models.workflow.model.Workflow.order" title="Link to this definition"></a></dt>
+<dd><p>The execution order of this workflow relative to others.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.Workflow.enabled">
+<span class="sig-name descname"><span class="pre">enabled</span></span><a class="headerlink" href="#paperap.models.workflow.model.Workflow.enabled" title="Link to this definition"></a></dt>
+<dd><p>Whether this workflow is currently active.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.Workflow.triggers">
+<span class="sig-name descname"><span class="pre">triggers</span></span><a class="headerlink" href="#paperap.models.workflow.model.Workflow.triggers" title="Link to this definition"></a></dt>
+<dd><p>List of trigger configurations for this workflow.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.Workflow.actions">
+<span class="sig-name descname"><span class="pre">actions</span></span><a class="headerlink" href="#paperap.models.workflow.model.Workflow.actions" title="Link to this definition"></a></dt>
+<dd><p>List of action configurations for this workflow.</p>
+</dd></dl>
+
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create a simple workflow</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">workflow</span> <span class="o">=</span> <span class="n">Workflow</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Tag Invoices&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">triggers</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;document_added&quot;</span><span class="p">,</span> <span class="s2">&quot;filter_filename&quot;</span><span class="p">:</span> <span class="s2">&quot;invoice&quot;</span><span class="p">}],</span>
+<span class="gp">... </span>    <span class="n">actions</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;assign&quot;</span><span class="p">,</span> <span class="s2">&quot;assign_tags&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">]}]</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.Workflow.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#paperap.models.workflow.model.Workflow.name" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id45">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id45" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.Workflow.order">
-<span class="sig-name descname"><span class="pre">order</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.Workflow.order" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id46">
+<span class="sig-name descname"><span class="pre">order</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id46" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.Workflow.enabled">
-<span class="sig-name descname"><span class="pre">enabled</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.Workflow.enabled" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id47">
+<span class="sig-name descname"><span class="pre">enabled</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id47" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.Workflow.triggers">
-<span class="sig-name descname"><span class="pre">triggers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[dict[str,</span> <span class="pre">Any]]</span></em><a class="headerlink" href="#paperap.models.workflow.model.Workflow.triggers" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id48">
+<span class="sig-name descname"><span class="pre">triggers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[dict[str,</span> <span class="pre">Any]]</span></em><a class="headerlink" href="#id48" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.Workflow.actions">
-<span class="sig-name descname"><span class="pre">actions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[dict[str,</span> <span class="pre">Any]]</span></em><a class="headerlink" href="#paperap.models.workflow.model.Workflow.actions" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id49">
+<span class="sig-name descname"><span class="pre">actions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list[dict[str,</span> <span class="pre">Any]]</span></em><a class="headerlink" href="#id49" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
@@ -651,49 +994,110 @@ method.</p>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.workflow.model.</span></span><span class="sig-name descname"><span class="pre">WorkflowRun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/workflow/model.html#WorkflowRun"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.workflow.model.WorkflowRun" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel" title="paperap.models.abstract.model.StandardModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardModel</span></code></a></p>
 <p>Represents a workflow run in Paperless-NgX.</p>
+<p>A workflow run is a record of a specific execution of a workflow, including
+its status, timing information, and any errors that occurred during execution.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowRun.workflow">
+<span class="sig-name descname"><span class="pre">workflow</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowRun.workflow" title="Link to this definition"></a></dt>
+<dd><p>ID of the workflow that was executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowRun.document">
+<span class="sig-name descname"><span class="pre">document</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowRun.document" title="Link to this definition"></a></dt>
+<dd><p>ID of the document that triggered the workflow.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowRun.type">
+<span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowRun.type" title="Link to this definition"></a></dt>
+<dd><p>The type of trigger that initiated this workflow run.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowRun.run_at">
+<span class="sig-name descname"><span class="pre">run_at</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowRun.run_at" title="Link to this definition"></a></dt>
+<dd><p>The time when this workflow run was scheduled.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowRun.started">
+<span class="sig-name descname"><span class="pre">started</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowRun.started" title="Link to this definition"></a></dt>
+<dd><p>The time when this workflow run started execution.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowRun.finished">
+<span class="sig-name descname"><span class="pre">finished</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowRun.finished" title="Link to this definition"></a></dt>
+<dd><p>The time when this workflow run completed execution.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowRun.status">
+<span class="sig-name descname"><span class="pre">status</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowRun.status" title="Link to this definition"></a></dt>
+<dd><p>The current status of this workflow run.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowRun.error">
+<span class="sig-name descname"><span class="pre">error</span></span><a class="headerlink" href="#paperap.models.workflow.model.WorkflowRun.error" title="Link to this definition"></a></dt>
+<dd><p>Error message if the workflow run failed.</p>
+</dd></dl>
+
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Check the status of a workflow run</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">run</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">workflow_runs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">run</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;SUCCESS&quot;</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Workflow completed successfully at </span><span class="si">{</span><span class="n">run</span><span class="o">.</span><span class="n">finished</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Workflow failed: </span><span class="si">{</span><span class="n">run</span><span class="o">.</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowRun.workflow">
-<span class="sig-name descname"><span class="pre">workflow</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowRun.workflow" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id50">
+<span class="sig-name descname"><span class="pre">workflow</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id50" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowRun.document">
-<span class="sig-name descname"><span class="pre">document</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowRun.document" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id51">
+<span class="sig-name descname"><span class="pre">document</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id51" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowRun.type">
-<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">WorkflowTriggerType</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowRun.type" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id52">
+<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">WorkflowTriggerType</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id52" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowRun.run_at">
-<span class="sig-name descname"><span class="pre">run_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowRun.run_at" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id53">
+<span class="sig-name descname"><span class="pre">run_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#id53" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowRun.started">
-<span class="sig-name descname"><span class="pre">started</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowRun.started" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id54">
+<span class="sig-name descname"><span class="pre">started</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id54" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowRun.finished">
-<span class="sig-name descname"><span class="pre">finished</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowRun.finished" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id55">
+<span class="sig-name descname"><span class="pre">finished</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id55" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowRun.status">
-<span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowRun.status" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id56">
+<span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id56" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.workflow.model.WorkflowRun.error">
-<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.workflow.model.WorkflowRun.error" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id57">
+<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id57" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">

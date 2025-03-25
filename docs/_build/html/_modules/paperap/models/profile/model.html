@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/models/profile/model.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../../_static/readthedocs.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,24 +76,10 @@
              
   <h1>Source code for paperap.models.profile.model</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">User profile module for Paperless-NGX.</span>
 
-<span class="sd">   METADATA:</span>
-
-<span class="sd">       File:    profile.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">       Created: 2025-03-04</span>
-<span class="sd">        Version: 0.0.5</span>
-<span class="sd">       Author:  Jess Mann</span>
-<span class="sd">       Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">   LAST MODIFIED:</span>
-
-<span class="sd">       2025-03-04     By Jess Mann</span>
-
+<span class="sd">This module defines the Profile model which represents user profiles in the</span>
+<span class="sd">Paperless-NGX system, including personal information and authentication details.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -103,23 +93,40 @@
 
 
 <div class="viewcode-block" id="Profile">
-<a class="viewcode-back" href="../../../../api/paperap.models.profile.model.html#paperap.models.Profile">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Profile">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Profile</span><span class="p">(</span><span class="n">StandardModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represents a user profile in the Paperless NGX system.</span>
+<span class="sd">    Represents a user profile in the Paperless-NGX system.</span>
+
+<span class="sd">    This model corresponds to the user profile endpoint in the Paperless-NGX API</span>
+<span class="sd">    and contains information about users, including their personal details and</span>
+<span class="sd">    authentication information.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        email: The email address of the user.</span>
-<span class="sd">        password: The password for the user.</span>
-<span class="sd">        first_name: The first name of the user.</span>
-<span class="sd">        last_name: The last name of the user.</span>
-<span class="sd">        auth_token: The authentication token for the user.</span>
-<span class="sd">        social_accounts: A list of social accounts associated with the user.</span>
-<span class="sd">        has_usable_password: Indicates if the user has a usable password.</span>
+<span class="sd">        email (str, optional): The email address of the user.</span>
+<span class="sd">        password (str, optional): The password for the user. This is write-only</span>
+<span class="sd">            and will not be returned in API responses.</span>
+<span class="sd">        first_name (str, optional): The first name of the user.</span>
+<span class="sd">        last_name (str, optional): The last name of the user.</span>
+<span class="sd">        auth_token (str, optional): The authentication token for the user.</span>
+<span class="sd">            This can be used for API authentication.</span>
+<span class="sd">        social_accounts (list): A list of social accounts associated with the user</span>
+<span class="sd">            for third-party authentication.</span>
+<span class="sd">        has_usable_password (bool): Indicates if the user has a usable password.</span>
+<span class="sd">            False if the user can only log in via social authentication or tokens.</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; profile = Profile(email=&quot;a@google.com&quot;, password=&quot;abc&quot;, first_name=&quot;John&quot;, last_name=&quot;Doe&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; print(profile.email)</span>
+<span class="sd">        &gt;&gt;&gt; # Create a new profile</span>
+<span class="sd">        &gt;&gt;&gt; profile = Profile(</span>
+<span class="sd">        ...     email=&quot;user@example.com&quot;,</span>
+<span class="sd">        ...     first_name=&quot;John&quot;,</span>
+<span class="sd">        ...     last_name=&quot;Doe&quot;,</span>
+<span class="sd">        ...     has_usable_password=True</span>
+<span class="sd">        ... )</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; # Access profile information</span>
+<span class="sd">        &gt;&gt;&gt; print(f&quot;{profile.first_name} {profile.last_name} &lt;{profile.email}&gt;&quot;)</span>
+<span class="sd">        John Doe &lt;user@example.com&gt;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -132,8 +139,20 @@
     <span class="n">has_usable_password</span><span class="p">:</span> <span class="nb">bool</span>
 
 <div class="viewcode-block" id="Profile.Meta">
-<a class="viewcode-back" href="../../../../api/paperap.models.profile.model.html#paperap.models.Profile.Meta">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Profile.Meta">[docs]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">(</span><span class="n">StandardModel</span><span class="o">.</span><span class="n">Meta</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Metadata for the Profile model.</span>
+
+<span class="sd">        This class defines metadata for the Profile model, including the</span>
+<span class="sd">        associated queryset class for performing queries on profiles.</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            queryset (type[ProfileQuerySet]): The queryset class to use for</span>
+<span class="sd">                profile queries.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">queryset</span> <span class="o">=</span> <span class="n">ProfileQuerySet</span></div>
 </div>
 
