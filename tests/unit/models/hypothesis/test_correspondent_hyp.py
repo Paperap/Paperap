@@ -29,7 +29,7 @@ correspondent_data = CorrespondentFactory.to_dict()
     user_can_change=st.one_of(st.none(), st.booleans()),
     is_insensitive=st.booleans(),
     match=st.one_of(st.none(), st.text(min_size=0, max_size=255)),
-    matching_algorithm=st.one_of(st.none(), st.integers(min_value=0)),
+    matching_algorithm=st.one_of(st.none(), st.integers(min_value=-1, max_value=6)),
 )
 @example(**d(correspondent_data, id=1, name="Test Correspondent", document_count=0, owner=None))
 @example(**d(correspondent_data, id=10**6, name="X" * 255, document_count=10**6, owner=10**6))
