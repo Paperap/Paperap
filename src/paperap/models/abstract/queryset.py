@@ -1220,7 +1220,7 @@ class SupportsBulkActions:
         return fn(ids, **kwargs)
 
     def bulk_assign_tags(
-        self : BaseQuerySetProtocol,
+        self: BaseQuerySetProtocol,
         tag_ids: list[int],
         remove_existing: bool = False,
     ) -> ClientResponse:
