@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -77,37 +77,39 @@
              
   <section id="module-paperap.models.share_links.queryset">
 <span id="paperap-models-share-links-queryset-module"></span><h1>paperap.models.share_links.queryset module<a class="headerlink" href="#module-paperap.models.share_links.queryset" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<blockquote>
-<div><p>METADATA:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>File:    queryset.py</dt><dd><p>Project: paperap</p>
-</dd>
-<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.5</p>
-</dd>
-</dl>
-<p>Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
-<blockquote>
-<div><p>Copyright (c) 2025 Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
-</div></blockquote>
-<hr class="docutils" />
-<blockquote>
-<div><p>LAST MODIFIED:</p>
-<blockquote>
-<div><p>2025-03-04     By Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
+<p>Provide query functionality for ShareLinks resources in Paperless-NgX.</p>
+<p>Contains the ShareLinksQuerySet class, which extends StandardQuerySet
+to provide specialized filtering methods for ShareLinks resources. Enables
+efficient querying of share links by various attributes such as expiration date,
+document association, and creation time.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.share_links.queryset.ShareLinksQuerySet">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.share_links.queryset.</span></span><span class="sig-name descname"><span class="pre">ShareLinksQuerySet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_fetch_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_next_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_last_response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_urls_fetched</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/share_links/queryset.html#ShareLinksQuerySet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.share_links.queryset.ShareLinksQuerySet" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.queryset.html#paperap.models.abstract.queryset.StandardQuerySet" title="paperap.models.abstract.queryset.StandardQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardQuerySet</span></code></a>[ShareLinks]</p>
-<p>A lazy-loaded, chainable query interface for Paperless NGX resources.</p>
-<p>BaseQuerySet provides pagination, filtering, and caching functionality similar to Django’s BaseQuerySet.
-It’s designed to be lazy - only fetching data when it’s actually needed.</p>
+<p>Implement a lazy-loaded, chainable query interface for ShareLinks resources.</p>
+<p>Extends StandardQuerySet to provide ShareLinks-specific filtering methods,
+including filtering by expiration date, slug, document, and file version.
+Only fetches data when it’s actually needed, providing pagination, filtering,
+and caching functionality similar to Django’s QuerySet.</p>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Get all share links:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">all_links</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">share_links</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd>
+<dt>Filter by document ID:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc_links</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">share_links</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">document</span><span class="o">=</span><span class="mi">123</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Find links that expire soon:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tomorrow</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">expiring_soon</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">share_links</span><span class="o">.</span><span class="n">expiration_before</span><span class="p">(</span><span class="n">tomorrow</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -125,145 +127,249 @@ It’s designed to be lazy - only fetching data when it’s actually needed.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.share_links.queryset.ShareLinksQuerySet.expiration_before">
 <span class="sig-name descname"><span class="pre">expiration_before</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/share_links/queryset.html#ShareLinksQuerySet.expiration_before"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.share_links.queryset.ShareLinksQuerySet.expiration_before" title="Link to this definition"></a></dt>
-<dd><p>Filter ShareLinks where expiration is before value</p>
+<dd><p>Filter ShareLinks where expiration date is before the specified value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span> <span class="pre">|</span> <span class="pre">str</span></code>) – The value to compare against</p>
+<dd class="field-odd"><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The datetime or ISO-formatted string to compare against.
+If a string is provided, it should be in ISO format (YYYY-MM-DDTHH:MM:SSZ).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The filtered queryset</p>
+<dd class="field-even"><p>A filtered queryset containing only ShareLinks that expire before the given date.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#paperap.models.share_links.queryset.ShareLinksQuerySet" title="paperap.models.share_links.queryset.ShareLinksQuerySet">ShareLinksQuerySet</a></p>
+<dd class="field-odd"><p>Self</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Find links expiring in the next week:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">next_week</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">expiring_soon</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">share_links</span><span class="o">.</span><span class="n">expiration_before</span><span class="p">(</span><span class="n">next_week</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Using string format:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">expiring_soon</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">share_links</span><span class="o">.</span><span class="n">expiration_before</span><span class="p">(</span><span class="s2">&quot;2023-12-31T23:59:59Z&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.share_links.queryset.ShareLinksQuerySet.expiration_after">
 <span class="sig-name descname"><span class="pre">expiration_after</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/share_links/queryset.html#ShareLinksQuerySet.expiration_after"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.share_links.queryset.ShareLinksQuerySet.expiration_after" title="Link to this definition"></a></dt>
-<dd><p>Filter ShareLinks where expiration is after value</p>
+<dd><p>Filter ShareLinks where expiration date is after the specified value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span> <span class="pre">|</span> <span class="pre">str</span></code>) – The value to compare against</p>
+<dd class="field-odd"><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The datetime or ISO-formatted string to compare against.
+If a string is provided, it should be in ISO format (YYYY-MM-DDTHH:MM:SSZ).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The filtered queryset</p>
+<dd class="field-even"><p>A filtered queryset containing only ShareLinks that expire after the given date.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#paperap.models.share_links.queryset.ShareLinksQuerySet" title="paperap.models.share_links.queryset.ShareLinksQuerySet">ShareLinksQuerySet</a></p>
+<dd class="field-odd"><p>Self</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Find links that haven’t expired yet:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">valid_links</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">share_links</span><span class="o">.</span><span class="n">expiration_after</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.share_links.queryset.ShareLinksQuerySet.slug">
 <span class="sig-name descname"><span class="pre">slug</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case_insensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/share_links/queryset.html#ShareLinksQuerySet.slug"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.share_links.queryset.ShareLinksQuerySet.slug" title="Link to this definition"></a></dt>
-<dd><p>Filter ShareLinks where slug is value</p>
+<dd><p>Filter ShareLinks by their slug value.</p>
+<p>The slug is a unique identifier for the share link that appears in the URL.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – The value to compare against</p></li>
-<li><p><strong>exact</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – Whether the comparison should be exact</p></li>
-<li><p><strong>case_sensitive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – Whether the comparison should be case insensitive</p></li>
-<li><p><strong>case_insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>)</p></li>
+<li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The slug value to filter by.</p></li>
+<li><p><strong>exact</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, matches the exact slug. If False, performs a contains search.</p></li>
+<li><p><strong>case_insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, performs case-insensitive matching.
+If False, matching is case-sensitive.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The filtered queryset</p>
+<dd class="field-even"><p>A filtered queryset containing ShareLinks matching the slug criteria.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#paperap.models.share_links.queryset.ShareLinksQuerySet" title="paperap.models.share_links.queryset.ShareLinksQuerySet">ShareLinksQuerySet</a></p>
+<dd class="field-odd"><p>Self</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Find a specific share link by its exact slug:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">link</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">share_links</span><span class="o">.</span><span class="n">slug</span><span class="p">(</span><span class="s2">&quot;abc123def&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Find links containing a substring in their slug:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">links</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">share_links</span><span class="o">.</span><span class="n">slug</span><span class="p">(</span><span class="s2">&quot;invoice&quot;</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.share_links.queryset.ShareLinksQuerySet.document">
 <span class="sig-name descname"><span class="pre">document</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/share_links/queryset.html#ShareLinksQuerySet.document"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.share_links.queryset.ShareLinksQuerySet.document" title="Link to this definition"></a></dt>
-<dd><p>Filter ShareLinks where document is value</p>
+<dd><p>Filter ShareLinks by associated document ID(s).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span> <span class="pre">|</span> <span class="pre">list[int]</span></code>) – The value to compare against</p>
+<dd class="field-odd"><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</span>) – Either a single document ID or a list of document IDs to filter by.
+When a list is provided, links associated with any of the documents will be returned.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The filtered queryset</p>
+<dd class="field-even"><p>A filtered queryset containing ShareLinks associated with the specified document(s).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#paperap.models.share_links.queryset.ShareLinksQuerySet" title="paperap.models.share_links.queryset.ShareLinksQuerySet">ShareLinksQuerySet</a></p>
+<dd class="field-odd"><p>Self</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Find all share links for a specific document:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc_links</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">share_links</span><span class="o">.</span><span class="n">document</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Find links for multiple documents:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">multi_doc_links</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">share_links</span><span class="o">.</span><span class="n">document</span><span class="p">([</span><span class="mi">123</span><span class="p">,</span> <span class="mi">456</span><span class="p">,</span> <span class="mi">789</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.share_links.queryset.ShareLinksQuerySet.file_version">
 <span class="sig-name descname"><span class="pre">file_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/share_links/queryset.html#ShareLinksQuerySet.file_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.share_links.queryset.ShareLinksQuerySet.file_version" title="Link to this definition"></a></dt>
-<dd><p>Filter ShareLinks where file_version is value</p>
+<dd><p>Filter ShareLinks by file version.</p>
+<p>In Paperless-NgX, share links can be created for specific versions of a document.
+This method filters links by their associated file version.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – The value to compare against</p>
+<dd class="field-odd"><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The file version string to filter by (e.g., “archive”, “original”).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The filtered queryset</p>
+<dd class="field-even"><p>A filtered queryset containing ShareLinks with the specified file version.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#paperap.models.share_links.queryset.ShareLinksQuerySet" title="paperap.models.share_links.queryset.ShareLinksQuerySet">ShareLinksQuerySet</a></p>
+<dd class="field-odd"><p>Self</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Find all share links for original document versions:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">original_links</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">share_links</span><span class="o">.</span><span class="n">file_version</span><span class="p">(</span><span class="s2">&quot;original&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Find all share links for archived versions:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">archive_links</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">share_links</span><span class="o">.</span><span class="n">file_version</span><span class="p">(</span><span class="s2">&quot;archive&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.share_links.queryset.ShareLinksQuerySet.created_before">
 <span class="sig-name descname"><span class="pre">created_before</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/share_links/queryset.html#ShareLinksQuerySet.created_before"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.share_links.queryset.ShareLinksQuerySet.created_before" title="Link to this definition"></a></dt>
-<dd><p>Filter models created before a given date.</p>
+<dd><p>Filter ShareLinks created before a given date.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>date</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a></span>) – The date to filter by</p>
+<dd class="field-odd"><p><strong>date</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a></span>) – The datetime to compare against. ShareLinks created before this
+datetime will be included in the results.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A filtered queryset containing ShareLinks created before the specified date.</p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Filtered QuerySet</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Self</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Find links created before last month:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">last_month</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">old_links</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">share_links</span><span class="o">.</span><span class="n">created_before</span><span class="p">(</span><span class="n">last_month</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.share_links.queryset.ShareLinksQuerySet.created_after">
 <span class="sig-name descname"><span class="pre">created_after</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/share_links/queryset.html#ShareLinksQuerySet.created_after"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.share_links.queryset.ShareLinksQuerySet.created_after" title="Link to this definition"></a></dt>
-<dd><p>Filter models created after a given date.</p>
+<dd><p>Filter ShareLinks created after a given date.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>date</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a></span>) – The date to filter by</p>
+<dd class="field-odd"><p><strong>date</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a></span>) – The datetime to compare against. ShareLinks created after this
+datetime will be included in the results.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A filtered queryset containing ShareLinks created after the specified date.</p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Filtered QuerySet</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Self</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Find links created in the last week:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">last_week</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recent_links</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">share_links</span><span class="o">.</span><span class="n">created_after</span><span class="p">(</span><span class="n">last_week</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.share_links.queryset.ShareLinksQuerySet.created_between">
 <span class="sig-name descname"><span class="pre">created_between</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/share_links/queryset.html#ShareLinksQuerySet.created_between"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.share_links.queryset.ShareLinksQuerySet.created_between" title="Link to this definition"></a></dt>
-<dd><p>Filter models created between two dates.</p>
+<dd><p>Filter ShareLinks created between two dates.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>start</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a></span>) – The start date to filter by</p></li>
-<li><p><strong>end</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a></span>) – The end date to filter by</p></li>
+<li><p><strong>start</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a></span>) – The start datetime. ShareLinks created at or after this datetime
+will be included in the results.</p></li>
+<li><p><strong>end</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a></span>) – The end datetime. ShareLinks created at or before this datetime
+will be included in the results.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A filtered queryset containing ShareLinks created within the specified date range.</p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Filtered QuerySet</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Self</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Find links created in January 2023:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">start</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2023</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">end</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2023</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">59</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">jan_links</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">share_links</span><span class="o">.</span><span class="n">created_between</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 </dd></dl>

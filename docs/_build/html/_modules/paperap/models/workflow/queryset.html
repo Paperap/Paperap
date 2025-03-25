@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/models/workflow/queryset.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../../_static/readthedocs.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,24 +76,11 @@
              
   <h1>Source code for paperap.models.workflow.queryset</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">Provide specialized querysets for interacting with Paperless-NGX workflow resources.</span>
 
-<span class="sd">   METADATA:</span>
-
-<span class="sd">       File:    queryset.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">       Created: 2025-03-04</span>
-<span class="sd">        Version: 0.0.5</span>
-<span class="sd">       Author:  Jess Mann</span>
-<span class="sd">       Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">   LAST MODIFIED:</span>
-
-<span class="sd">       2025-03-04     By Jess Mann</span>
-
+<span class="sd">This module contains queryset implementations for workflows, workflow actions, and</span>
+<span class="sd">workflow triggers. Each queryset extends the standard queryset functionality with</span>
+<span class="sd">specialized filtering methods specific to workflow-related resources.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -106,60 +97,89 @@
 
 
 <div class="viewcode-block" id="WorkflowQuerySet">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.queryset.html#paperap.models.WorkflowQuerySet">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowQuerySet">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WorkflowQuerySet</span><span class="p">(</span><span class="n">StandardQuerySet</span><span class="p">[</span><span class="s2">&quot;Workflow&quot;</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A lazy-loaded, chainable query interface for Paperless NGX resources.</span>
+<span class="sd">    Specialized queryset for interacting with Paperless-NGX workflows.</span>
 
-<span class="sd">    BaseQuerySet provides pagination, filtering, and caching functionality similar to Django&#39;s BaseQuerySet.</span>
-<span class="sd">    It&#39;s designed to be lazy - only fetching data when it&#39;s actually needed.</span>
+<span class="sd">    Extends StandardQuerySet to provide workflow-specific filtering methods,</span>
+<span class="sd">    making it easier to query workflows by attributes such as name, order,</span>
+<span class="sd">    and enabled status. The queryset is lazy-loaded, meaning API requests</span>
+<span class="sd">    are only made when data is actually needed.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Get all enabled workflows:</span>
+<span class="sd">            &gt;&gt;&gt; enabled_workflows = client.workflows.filter(enabled=True)</span>
+<span class="sd">            &gt;&gt;&gt; # Or using the specialized method</span>
+<span class="sd">            &gt;&gt;&gt; enabled_workflows = client.workflows.enabled()</span>
+
+<span class="sd">        Filter workflows by name:</span>
+<span class="sd">            &gt;&gt;&gt; tax_workflows = client.workflows.name(&quot;tax&quot;)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="WorkflowQuerySet.name">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.queryset.html#paperap.models.WorkflowQuerySet.name">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowQuerySet.name">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter workflows by name.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value: The workflow name to filter by</span>
-<span class="sd">            exact: If True, match the exact name, otherwise use contains</span>
-<span class="sd">            case_insensitive: If True, ignore case when matching</span>
+<span class="sd">            value: The workflow name to filter by.</span>
+<span class="sd">            exact: If True, match the exact name; if False, use contains matching.</span>
+<span class="sd">            case_insensitive: If True, ignore case when matching.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered WorkflowQuerySet</span>
+<span class="sd">            A filtered WorkflowQuerySet containing matching workflows.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find workflows with exact name:</span>
+<span class="sd">                &gt;&gt;&gt; invoice_workflows = client.workflows.name(&quot;Invoice Processing&quot;)</span>
+
+<span class="sd">            Find workflows containing a string (case-insensitive):</span>
+<span class="sd">                &gt;&gt;&gt; invoice_workflows = client.workflows.name(&quot;invoice&quot;, exact=False)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="o">=</span><span class="n">case_insensitive</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="WorkflowQuerySet.order">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.queryset.html#paperap.models.WorkflowQuerySet.order">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowQuerySet.order">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter workflows by order.</span>
+<span class="sd">        Filter workflows by their execution order.</span>
+
+<span class="sd">        Paperless-NGX workflows have an order value that determines their</span>
+<span class="sd">        execution sequence. This method finds workflows with a specific order value.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value: The order value to filter by</span>
+<span class="sd">            value: The order value to filter by.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered WorkflowQuerySet</span>
+<span class="sd">            A filtered WorkflowQuerySet containing workflows with the specified order.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="WorkflowQuerySet.enabled">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.queryset.html#paperap.models.WorkflowQuerySet.enabled">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowQuerySet.enabled">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter workflows by enabled status.</span>
+<span class="sd">        Filter workflows by their enabled status.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value: If True, get enabled workflows, otherwise disabled</span>
+<span class="sd">            value: If True, return only enabled workflows; if False, return only disabled workflows.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered WorkflowQuerySet</span>
+<span class="sd">            A filtered WorkflowQuerySet containing workflows with the specified enabled status.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Get all enabled workflows:</span>
+<span class="sd">                &gt;&gt;&gt; active_workflows = client.workflows.enabled()</span>
+
+<span class="sd">            Get all disabled workflows:</span>
+<span class="sd">                &gt;&gt;&gt; inactive_workflows = client.workflows.enabled(False)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
@@ -168,62 +188,95 @@
 
 
 <div class="viewcode-block" id="WorkflowActionQuerySet">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.queryset.html#paperap.models.WorkflowActionQuerySet">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowActionQuerySet">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WorkflowActionQuerySet</span><span class="p">(</span><span class="n">StandardQuerySet</span><span class="p">[</span><span class="s2">&quot;WorkflowAction&quot;</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A lazy-loaded, chainable query interface for Paperless NGX resources.</span>
+<span class="sd">    Specialized queryset for interacting with Paperless-NGX workflow actions.</span>
 
-<span class="sd">    BaseQuerySet provides pagination, filtering, and caching functionality similar to Django&#39;s BaseQuerySet.</span>
-<span class="sd">    It&#39;s designed to be lazy - only fetching data when it&#39;s actually needed.</span>
+<span class="sd">    Extends StandardQuerySet to provide workflow action-specific filtering methods,</span>
+<span class="sd">    making it easier to query actions by attributes such as type and assigned metadata.</span>
+<span class="sd">    Workflow actions define what happens when a workflow is triggered, such as</span>
+<span class="sd">    assigning tags, correspondents, or document types to documents.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Get actions that assign a specific tag:</span>
+<span class="sd">            &gt;&gt;&gt; tag_actions = client.workflow_actions.assign_tags(5)</span>
+
+<span class="sd">        Find actions that set a specific title:</span>
+<span class="sd">            &gt;&gt;&gt; title_actions = client.workflow_actions.assign_title(&quot;Invoice&quot;)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="WorkflowActionQuerySet.type">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.queryset.html#paperap.models.WorkflowActionQuerySet.type">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowActionQuerySet.type">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter workflow actions by type.</span>
+<span class="sd">        Filter workflow actions by their type.</span>
+
+<span class="sd">        Workflow actions in Paperless-NGX have different types that determine</span>
+<span class="sd">        what they do (e.g., assign metadata, move document, etc.).</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value: The action type to filter by</span>
-<span class="sd">            exact: If True, match the exact type, otherwise use contains</span>
-<span class="sd">            case_insensitive: If True, ignore case when matching</span>
+<span class="sd">            value: The action type to filter by.</span>
+<span class="sd">            exact: If True, match the exact type; if False, use contains matching.</span>
+<span class="sd">            case_insensitive: If True, ignore case when matching.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered WorkflowActionQuerySet</span>
+<span class="sd">            A filtered WorkflowActionQuerySet containing actions of the specified type.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find all actions that assign metadata:</span>
+<span class="sd">                &gt;&gt;&gt; assign_actions = client.workflow_actions.type(&quot;assign&quot;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="o">=</span><span class="n">case_insensitive</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="WorkflowActionQuerySet.assign_title">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.queryset.html#paperap.models.WorkflowActionQuerySet.assign_title">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowActionQuerySet.assign_title">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">assign_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter workflow actions by assigned title.</span>
+<span class="sd">        Filter workflow actions by the title they assign to documents.</span>
+
+<span class="sd">        Find workflow actions that set a specific document title when triggered.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value: The title to filter by</span>
-<span class="sd">            exact: If True, match the exact title, otherwise use contains</span>
-<span class="sd">            case_insensitive: If True, ignore case when matching</span>
+<span class="sd">            value: The title text to filter by.</span>
+<span class="sd">            exact: If True, match the exact title; if False, use contains matching.</span>
+<span class="sd">            case_insensitive: If True, ignore case when matching.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered WorkflowActionQuerySet</span>
+<span class="sd">            A filtered WorkflowActionQuerySet containing actions that assign the specified title.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find actions that set titles containing &quot;Invoice&quot;:</span>
+<span class="sd">                &gt;&gt;&gt; invoice_actions = client.workflow_actions.assign_title(&quot;Invoice&quot;, exact=False)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s2">&quot;assign_title&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="o">=</span><span class="n">case_insensitive</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="WorkflowActionQuerySet.assign_tags">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.queryset.html#paperap.models.WorkflowActionQuerySet.assign_tags">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowActionQuerySet.assign_tags">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">assign_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter workflow actions by assigned tags.</span>
+<span class="sd">        Filter workflow actions by the tags they assign to documents.</span>
+
+<span class="sd">        Find workflow actions that assign specific tags to documents when triggered.</span>
+<span class="sd">        Can filter by a single tag ID or multiple tag IDs.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value: The tag ID or list of tag IDs to filter by</span>
+<span class="sd">            value: The tag ID or list of tag IDs to filter by.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered WorkflowActionQuerySet</span>
+<span class="sd">            A filtered WorkflowActionQuerySet containing actions that assign the specified tags.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find actions that assign a specific tag:</span>
+<span class="sd">                &gt;&gt;&gt; tax_tag_actions = client.workflow_actions.assign_tags(5)</span>
+
+<span class="sd">            Find actions that assign any of several tags:</span>
+<span class="sd">                &gt;&gt;&gt; financial_tag_actions = client.workflow_actions.assign_tags([5, 8, 12])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -232,64 +285,88 @@
 
 
 <div class="viewcode-block" id="WorkflowActionQuerySet.assign_correspondent">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.queryset.html#paperap.models.WorkflowActionQuerySet.assign_correspondent">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowActionQuerySet.assign_correspondent">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">assign_correspondent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter workflow actions by assigned correspondent.</span>
+<span class="sd">        Filter workflow actions by the correspondent they assign to documents.</span>
+
+<span class="sd">        Find workflow actions that assign a specific correspondent to documents when triggered.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value: The correspondent ID to filter by</span>
+<span class="sd">            value: The correspondent ID to filter by.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered WorkflowActionQuerySet</span>
+<span class="sd">            A filtered WorkflowActionQuerySet containing actions that assign the specified correspondent.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find actions that assign a specific correspondent:</span>
+<span class="sd">                &gt;&gt;&gt; vendor_actions = client.workflow_actions.assign_correspondent(3)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">assign_correspondent</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="WorkflowActionQuerySet.assign_document_type">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.queryset.html#paperap.models.WorkflowActionQuerySet.assign_document_type">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowActionQuerySet.assign_document_type">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">assign_document_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter workflow actions by assigned document type.</span>
+<span class="sd">        Filter workflow actions by the document type they assign.</span>
+
+<span class="sd">        Find workflow actions that assign a specific document type to documents when triggered.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value: The document type ID to filter by</span>
+<span class="sd">            value: The document type ID to filter by.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered WorkflowActionQuerySet</span>
+<span class="sd">            A filtered WorkflowActionQuerySet containing actions that assign the specified document type.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find actions that assign a specific document type:</span>
+<span class="sd">                &gt;&gt;&gt; invoice_type_actions = client.workflow_actions.assign_document_type(2)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">assign_document_type</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="WorkflowActionQuerySet.assign_storage_path">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.queryset.html#paperap.models.WorkflowActionQuerySet.assign_storage_path">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowActionQuerySet.assign_storage_path">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">assign_storage_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter workflow actions by assigned storage path.</span>
+<span class="sd">        Filter workflow actions by the storage path they assign to documents.</span>
+
+<span class="sd">        Find workflow actions that assign a specific storage path to documents when triggered.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value: The storage path ID to filter by</span>
+<span class="sd">            value: The storage path ID to filter by.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered WorkflowActionQuerySet</span>
+<span class="sd">            A filtered WorkflowActionQuerySet containing actions that assign the specified storage path.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find actions that assign a specific storage path:</span>
+<span class="sd">                &gt;&gt;&gt; tax_path_actions = client.workflow_actions.assign_storage_path(4)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">assign_storage_path</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="WorkflowActionQuerySet.assign_owner">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.queryset.html#paperap.models.WorkflowActionQuerySet.assign_owner">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowActionQuerySet.assign_owner">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">assign_owner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter workflow actions by assigned owner.</span>
+<span class="sd">        Filter workflow actions by the owner they assign to documents.</span>
+
+<span class="sd">        Find workflow actions that assign a specific owner (user) to documents when triggered.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value: The owner ID to filter by</span>
+<span class="sd">            value: The owner (user) ID to filter by.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered WorkflowActionQuerySet</span>
+<span class="sd">            A filtered WorkflowActionQuerySet containing actions that assign the specified owner.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find actions that assign documents to a specific user:</span>
+<span class="sd">                &gt;&gt;&gt; admin_actions = client.workflow_actions.assign_owner(1)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">assign_owner</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
@@ -298,96 +375,153 @@
 
 
 <div class="viewcode-block" id="WorkflowTriggerQuerySet">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.queryset.html#paperap.models.WorkflowTriggerQuerySet">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowTriggerQuerySet">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WorkflowTriggerQuerySet</span><span class="p">(</span><span class="n">StandardQuerySet</span><span class="p">[</span><span class="s2">&quot;WorkflowTrigger&quot;</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A lazy-loaded, chainable query interface for Paperless NGX resources.</span>
+<span class="sd">    Specialized queryset for interacting with Paperless-NGX workflow triggers.</span>
 
-<span class="sd">    BaseQuerySet provides pagination, filtering, and caching functionality similar to Django&#39;s BaseQuerySet.</span>
-<span class="sd">    It&#39;s designed to be lazy - only fetching data when it&#39;s actually needed.</span>
+<span class="sd">    Extends StandardQuerySet to provide workflow trigger-specific filtering methods,</span>
+<span class="sd">    making it easier to query triggers by attributes such as type and filter conditions.</span>
+<span class="sd">    Workflow triggers define when a workflow should be executed, such as when a document</span>
+<span class="sd">    is added with specific attributes or matches certain criteria.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Get all triggers of a specific type:</span>
+<span class="sd">            &gt;&gt;&gt; consumption_triggers = client.workflow_triggers.type(1)  # Type 1 might be &quot;document added&quot;</span>
+
+<span class="sd">        Find triggers that look for specific tags:</span>
+<span class="sd">            &gt;&gt;&gt; tax_triggers = client.workflow_triggers.has_tags(5)  # Tag ID 5 might be &quot;Tax&quot;</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="WorkflowTriggerQuerySet.type">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.queryset.html#paperap.models.WorkflowTriggerQuerySet.type">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowTriggerQuerySet.type">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter workflow triggers by type.</span>
+<span class="sd">        Filter workflow triggers by their type.</span>
+
+<span class="sd">        Workflow triggers in Paperless-NGX have different types that determine</span>
+<span class="sd">        when they activate (e.g., document added, document consumed, etc.).</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value: The trigger type to filter by</span>
+<span class="sd">            value: The trigger type ID to filter by.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered WorkflowTriggerQuerySet</span>
+<span class="sd">            A filtered WorkflowTriggerQuerySet containing triggers of the specified type.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find all triggers that activate when documents are consumed:</span>
+<span class="sd">                &gt;&gt;&gt; consumption_triggers = client.workflow_triggers.type(1)  # Assuming 1 is consumption type</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="WorkflowTriggerQuerySet.filter_path">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.queryset.html#paperap.models.WorkflowTriggerQuerySet.filter_path">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowTriggerQuerySet.filter_path">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">filter_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter workflow triggers by path filter.</span>
+<span class="sd">        Filter workflow triggers by their path filter condition.</span>
+
+<span class="sd">        Find workflow triggers that activate based on a document&#39;s source path</span>
+<span class="sd">        matching specific criteria.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value: The path filter to match</span>
-<span class="sd">            exact: If True, match the exact path, otherwise use contains</span>
-<span class="sd">            case_insensitive: If True, ignore case when matching</span>
+<span class="sd">            value: The path filter text to match.</span>
+<span class="sd">            exact: If True, match the exact path; if False, use contains matching.</span>
+<span class="sd">            case_insensitive: If True, ignore case when matching.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered WorkflowTriggerQuerySet</span>
+<span class="sd">            A filtered WorkflowTriggerQuerySet containing triggers with the specified path filter.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find triggers that look for documents from a specific directory:</span>
+<span class="sd">                &gt;&gt;&gt; inbox_triggers = client.workflow_triggers.filter_path(&quot;/inbox/&quot;)</span>
+
+<span class="sd">            Find triggers that look for documents from any path containing a string:</span>
+<span class="sd">                &gt;&gt;&gt; invoice_triggers = client.workflow_triggers.filter_path(&quot;invoices&quot;, exact=False)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s2">&quot;filter_path&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="o">=</span><span class="n">case_insensitive</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="WorkflowTriggerQuerySet.filter_filename">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.queryset.html#paperap.models.WorkflowTriggerQuerySet.filter_filename">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowTriggerQuerySet.filter_filename">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">filter_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter workflow triggers by filename filter.</span>
+<span class="sd">        Filter workflow triggers by their filename filter condition.</span>
+
+<span class="sd">        Find workflow triggers that activate based on a document&#39;s original</span>
+<span class="sd">        filename matching specific criteria.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value: The filename filter to match</span>
-<span class="sd">            exact: If True, match the exact filename, otherwise use contains</span>
-<span class="sd">            case_insensitive: If True, ignore case when matching</span>
+<span class="sd">            value: The filename filter text to match.</span>
+<span class="sd">            exact: If True, match the exact filename; if False, use contains matching.</span>
+<span class="sd">            case_insensitive: If True, ignore case when matching.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered WorkflowTriggerQuerySet</span>
+<span class="sd">            A filtered WorkflowTriggerQuerySet containing triggers with the specified filename filter.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find triggers that look for documents with specific text in filenames:</span>
+<span class="sd">                &gt;&gt;&gt; invoice_triggers = client.workflow_triggers.filter_filename(&quot;invoice&quot;, exact=False)</span>
+
+<span class="sd">            Find triggers that look for specific file types:</span>
+<span class="sd">                &gt;&gt;&gt; pdf_triggers = client.workflow_triggers.filter_filename(&quot;.pdf&quot;, exact=False)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s2">&quot;filter_filename&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="o">=</span><span class="n">case_insensitive</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="WorkflowTriggerQuerySet.filter_mailrule">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.queryset.html#paperap.models.WorkflowTriggerQuerySet.filter_mailrule">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowTriggerQuerySet.filter_mailrule">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">filter_mailrule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter workflow triggers by mail rule filter.</span>
+<span class="sd">        Filter workflow triggers by their mail rule filter condition.</span>
+
+<span class="sd">        Find workflow triggers that activate based on a document&#39;s associated</span>
+<span class="sd">        mail rule matching specific criteria.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value: The mail rule filter to match</span>
-<span class="sd">            exact: If True, match the exact mail rule, otherwise use contains</span>
-<span class="sd">            case_insensitive: If True, ignore case when matching</span>
+<span class="sd">            value: The mail rule filter text to match.</span>
+<span class="sd">            exact: If True, match the exact mail rule; if False, use contains matching.</span>
+<span class="sd">            case_insensitive: If True, ignore case when matching.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered WorkflowTriggerQuerySet</span>
+<span class="sd">            A filtered WorkflowTriggerQuerySet containing triggers with the specified mail rule filter.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find triggers that look for documents from a specific mail rule:</span>
+<span class="sd">                &gt;&gt;&gt; vendor_mail_triggers = client.workflow_triggers.filter_mailrule(&quot;vendor@example.com&quot;)</span>
+
+<span class="sd">            Find triggers that look for documents from mail rules containing specific text:</span>
+<span class="sd">                &gt;&gt;&gt; invoice_mail_triggers = client.workflow_triggers.filter_mailrule(&quot;invoice&quot;, exact=False)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s2">&quot;filter_mailrule&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="o">=</span><span class="n">case_insensitive</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="WorkflowTriggerQuerySet.has_tags">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.queryset.html#paperap.models.WorkflowTriggerQuerySet.has_tags">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowTriggerQuerySet.has_tags">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">has_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter workflow triggers by tags filter.</span>
+<span class="sd">        Filter workflow triggers by their tag filter condition.</span>
+
+<span class="sd">        Find workflow triggers that activate based on a document having specific tags.</span>
+<span class="sd">        Can filter by a single tag ID or multiple tag IDs.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value: The tag ID or list of tag IDs to filter by</span>
+<span class="sd">            value: The tag ID or list of tag IDs to filter by.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered WorkflowTriggerQuerySet</span>
+<span class="sd">            A filtered WorkflowTriggerQuerySet containing triggers with the specified tag filter.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find triggers that look for documents with a specific tag:</span>
+<span class="sd">                &gt;&gt;&gt; tax_triggers = client.workflow_triggers.has_tags(5)</span>
+
+<span class="sd">            Find triggers that look for documents with any of several tags:</span>
+<span class="sd">                &gt;&gt;&gt; financial_triggers = client.workflow_triggers.has_tags([5, 8, 12])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -396,32 +530,44 @@
 
 
 <div class="viewcode-block" id="WorkflowTriggerQuerySet.has_correspondent">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.queryset.html#paperap.models.WorkflowTriggerQuerySet.has_correspondent">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowTriggerQuerySet.has_correspondent">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">has_correspondent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter workflow triggers by correspondent filter.</span>
+<span class="sd">        Filter workflow triggers by their correspondent filter condition.</span>
+
+<span class="sd">        Find workflow triggers that activate based on a document having a specific correspondent.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value: The correspondent ID to filter by</span>
+<span class="sd">            value: The correspondent ID to filter by.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered WorkflowTriggerQuerySet</span>
+<span class="sd">            A filtered WorkflowTriggerQuerySet containing triggers with the specified correspondent filter.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find triggers that look for documents from a specific correspondent:</span>
+<span class="sd">                &gt;&gt;&gt; vendor_triggers = client.workflow_triggers.has_correspondent(3)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">filter_has_correspondent</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="WorkflowTriggerQuerySet.has_document_type">
-<a class="viewcode-back" href="../../../../api/paperap.models.workflow.queryset.html#paperap.models.WorkflowTriggerQuerySet.has_document_type">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.WorkflowTriggerQuerySet.has_document_type">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">has_document_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter workflow triggers by document type filter.</span>
+<span class="sd">        Filter workflow triggers by their document type filter condition.</span>
+
+<span class="sd">        Find workflow triggers that activate based on a document having a specific document type.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value: The document type ID to filter by</span>
+<span class="sd">            value: The document type ID to filter by.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered WorkflowTriggerQuerySet</span>
+<span class="sd">            A filtered WorkflowTriggerQuerySet containing triggers with the specified document type filter.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find triggers that look for documents of a specific type:</span>
+<span class="sd">                &gt;&gt;&gt; invoice_triggers = client.workflow_triggers.has_document_type(2)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">filter_has_document_type</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>

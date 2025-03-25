@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -77,29 +77,64 @@
              
   <section id="module-paperap.models.ui_settings.queryset">
 <span id="paperap-models-ui-settings-queryset-module"></span><h1>paperap.models.ui_settings.queryset module<a class="headerlink" href="#module-paperap.models.ui_settings.queryset" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<p>METADATA:</p>
-<dl class="simple">
-<dt>File:    queryset.py</dt><dd><p>Project: paperap</p>
-</dd>
-<dt>Created: 2025-03-21</dt><dd><p>Version: 0.0.9</p>
-</dd>
-</dl>
-<p>Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
-<blockquote>
-<div><p>Copyright (c) 2025 Jess Mann</p>
-</div></blockquote>
-<hr class="docutils" />
-<p>LAST MODIFIED:</p>
-<p>2025-03-21     By Jess Mann</p>
+<p>Provide query functionality for UI settings in Paperless-NGX.</p>
+<p>This module contains the specialized queryset implementation for interacting
+with the UI settings endpoint of Paperless-NGX. Unlike most resources that
+can return multiple objects, UI settings is a singleton resource that always
+returns exactly one object containing all UI configuration settings.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.ui_settings.queryset.UISettingsQuerySet">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.ui_settings.queryset.</span></span><span class="sig-name descname"><span class="pre">UISettingsQuerySet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_fetch_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_next_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_last_response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_urls_fetched</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/ui_settings/queryset.html#UISettingsQuerySet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.ui_settings.queryset.UISettingsQuerySet" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.queryset.html#paperap.models.abstract.queryset.StandardQuerySet" title="paperap.models.abstract.queryset.StandardQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardQuerySet</span></code></a>[UISettings]</p>
-<p>A lazy-loaded, chainable query interface for Paperless NGX resources.</p>
-<p>BaseQuerySet provides pagination, filtering, and caching functionality similar to Django’s BaseQuerySet.
-It’s designed to be lazy - only fetching data when it’s actually needed.</p>
+<p>Manage queries for UI settings in Paperless-NGX.</p>
+<p>Extends StandardQuerySet to handle the singleton nature of UI settings,
+which always returns exactly one object containing all UI configuration.
+Unlike typical querysets that can return multiple objects, this queryset
+is specialized for the unique characteristics of the UI settings endpoint.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.ui_settings.queryset.UISettingsQuerySet._result_cache">
+<span class="sig-name descname"><span class="pre">_result_cache</span></span><a class="headerlink" href="#paperap.models.ui_settings.queryset.UISettingsQuerySet._result_cache" title="Link to this definition"></a></dt>
+<dd><p>Cache of fetched UI settings objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">list[UISettings]</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.ui_settings.queryset.UISettingsQuerySet._last_response">
+<span class="sig-name descname"><span class="pre">_last_response</span></span><a class="headerlink" href="#paperap.models.ui_settings.queryset.UISettingsQuerySet._last_response" title="Link to this definition"></a></dt>
+<dd><p>The last response received from the API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientResponse</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.ui_settings.queryset.UISettingsQuerySet.resource">
+<span class="sig-name descname"><span class="pre">resource</span></span><a class="headerlink" href="#paperap.models.ui_settings.queryset.UISettingsQuerySet.resource" title="Link to this definition"></a></dt>
+<dd><p>The resource instance associated with the queryset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Resource</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.ui_settings.queryset.UISettingsQuerySet.filters">
+<span class="sig-name descname"><span class="pre">filters</span></span><a class="headerlink" href="#paperap.models.ui_settings.queryset.UISettingsQuerySet.filters" title="Link to this definition"></a></dt>
+<dd><p>Dictionary of filters to apply to the API request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dict[str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Any]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -117,33 +152,60 @@ It’s designed to be lazy - only fetching data when it’s actually needed.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.ui_settings.queryset.UISettingsQuerySet.count">
 <span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/ui_settings/queryset.html#UISettingsQuerySet.count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.ui_settings.queryset.UISettingsQuerySet.count" title="Link to this definition"></a></dt>
-<dd><p>Count the number of UI settings.</p>
-<p>UISettings only ever returns one element.</p>
+<dd><p>Return the count of UI settings objects.</p>
+<p>Overrides the standard count method to always return 1 because the UI settings
+endpoint in Paperless-NGX always returns exactly one object containing
+all UI configuration settings.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The number of UI settings</p>
+<dd class="field-odd"><p>Always returns 1, as there is only one UI settings object.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+<dd class="field-even"><p>Literal[1]</p>
 </dd>
 </dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<p><code class="docutils literal notranslate"><span class="pre">`python</span>
+<span class="pre">settings_count</span> <span class="pre">=</span> <span class="pre">client.ui_settings().count()</span>
+<span class="pre">print(settings_count)</span>&#160; <span class="pre">#</span> <span class="pre">Output:</span> <span class="pre">1</span>
+<span class="pre">`</span></code></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.ui_settings.queryset.UISettingsQuerySet.has_permission">
 <span class="sig-name descname"><span class="pre">has_permission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/ui_settings/queryset.html#UISettingsQuerySet.has_permission"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.ui_settings.queryset.UISettingsQuerySet.has_permission" title="Link to this definition"></a></dt>
-<dd><p>Filter UI settings by permissions.</p>
+<dd><p>Filter UI settings by checking if a specific permission exists.</p>
+<p>Creates a filtered queryset that checks whether a specific permission
+is included in the permissions list. This method is useful for determining
+if the current user has a particular permission in the Paperless-NGX system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – The permissions to filter by</p>
+<dd class="field-odd"><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – The permission string to check for in the permissions list.
+Common permissions include “view_document”, “change_document”, etc.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The filtered queryset</p>
+<dd class="field-even"><p>A new queryset filtered to include only settings with the specified permission.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#paperap.models.ui_settings.queryset.UISettingsQuerySet" title="paperap.models.ui_settings.queryset.UISettingsQuerySet">UISettingsQuerySet</a></p>
+<dd class="field-odd"><p>Self</p>
 </dd>
 </dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<p><a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>python
+# Check if the current user has permission to add documents
+if client.ui_settings().has_permission(“add_document”).exists():</p>
+<blockquote>
+<div><p>print(“User can add documents”)</p>
+</div></blockquote>
+<dl class="simple">
+<dt>else:</dt><dd><p>print(“User cannot add documents”)</p>
+</dd>
+</dl>
+<p><a href="#id5"><span class="problematic" id="id6">``</span></a><a href="#id7"><span class="problematic" id="id8">`</span></a></p>
+</div>
 </dd></dl>
 
 </dd></dl>

@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -75,66 +75,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-paperap.resources.document_notes">
-<span id="paperap-resources-document-notes-module"></span><h1>paperap.resources.document_notes module<a class="headerlink" href="#module-paperap.resources.document_notes" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<blockquote>
-<div><p>METADATA:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>File:    document_notes.py</dt><dd><p>Project: paperap</p>
-</dd>
-<dt>Created: 2025-03-21</dt><dd><p>Version: 0.0.9</p>
-</dd>
-</dl>
-<p>Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
-<blockquote>
-<div><p>Copyright (c) 2025 Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
-</div></blockquote>
-<hr class="docutils" />
-<blockquote>
-<div><p>LAST MODIFIED:</p>
-<blockquote>
-<div><p>2025-03-21     By Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
-<dl class="py class">
-<dt class="sig sig-object py" id="paperap.resources.document_notes.DocumentNoteResource">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.resources.document_notes.</span></span><span class="sig-name descname"><span class="pre">DocumentNoteResource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/resources/document_notes.html#DocumentNoteResource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.resources.document_notes.DocumentNoteResource" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.StandardResource" title="paperap.resources.base.StandardResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardResource</span></code></a>[<a class="reference internal" href="paperap.models.document.model.html#paperap.models.document.model.DocumentNote" title="paperap.models.document.model.DocumentNote"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentNote</span></code></a>, <a class="reference internal" href="paperap.models.document.queryset.html#paperap.models.document.queryset.DocumentNoteQuerySet" title="paperap.models.document.queryset.DocumentNoteQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentNoteQuerySet</span></code></a>]</p>
-<p>Resource for managing document notes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>client</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="paperap.client.html#paperap.client.PaperlessClient" title="paperap.client.PaperlessClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">PaperlessClient</span></code></a></span>)</p>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.resources.document_notes.DocumentNoteResource.model_class">
-<span class="sig-name descname"><span class="pre">model_class</span></span><a class="headerlink" href="#paperap.resources.document_notes.DocumentNoteResource.model_class" title="Link to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="paperap.models.document.model.html#paperap.models.document.model.DocumentNote" title="paperap.models.document.model.DocumentNote"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentNote</span></code></a></p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.resources.document_notes.DocumentNoteResource.queryset_class">
-<span class="sig-name descname"><span class="pre">queryset_class</span></span><a class="headerlink" href="#paperap.resources.document_notes.DocumentNoteResource.queryset_class" title="Link to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="paperap.models.document.queryset.html#paperap.models.document.queryset.DocumentNoteQuerySet" title="paperap.models.document.queryset.DocumentNoteQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentNoteQuerySet</span></code></a></p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.resources.document_notes.DocumentNoteResource.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'document_notes'</span></em><a class="headerlink" href="#paperap.resources.document_notes.DocumentNoteResource.name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.resources.document_notes.DocumentNoteResource.endpoints">
-<span class="sig-name descname"><span class="pre">endpoints</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[Endpoints]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'create':</span> <span class="pre">&lt;string.Template</span> <span class="pre">object&gt;,</span> <span class="pre">'delete':</span> <span class="pre">&lt;string.Template</span> <span class="pre">object&gt;,</span> <span class="pre">'detail':</span> <span class="pre">&lt;string.Template</span> <span class="pre">object&gt;,</span> <span class="pre">'list':</span> <span class="pre">&lt;string.Template</span> <span class="pre">object&gt;,</span> <span class="pre">'update':</span> <span class="pre">&lt;string.Template</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#paperap.resources.document_notes.DocumentNoteResource.endpoints" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+  <section id="paperap-resources-document-notes-module">
+<h1>paperap.resources.document_notes module<a class="headerlink" href="#paperap-resources-document-notes-module" title="Link to this heading"></a></h1>
 </section>
 
 

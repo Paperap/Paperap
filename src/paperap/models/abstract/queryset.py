@@ -170,7 +170,9 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         for key, _value in values.items():
             if not self._meta.filter_allowed(key):
-                raise FilterDisabledError(f"Filtering by {key} for {self.resource.name} does not appear to be supported by the API.")
+                raise FilterDisabledError(
+                    f"Filtering by {key} for {self.resource.name} does not appear to be supported by the API."
+                )
 
         if values:
             # Reset the cache if filters change
@@ -346,7 +348,9 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
             return len(self._result_cache)
 
         # If we've tried everything and still can't get a count, raise an error
-        raise NotImplementedError(f"Unexpected Error: Could not determine count of objects. Last response: {self._last_response}")
+        raise NotImplementedError(
+            f"Unexpected Error: Could not determine count of objects. Last response: {self._last_response}"
+        )
 
     def count_this_page(self) -> int:
         """

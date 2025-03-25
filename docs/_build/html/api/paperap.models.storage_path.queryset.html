@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -77,35 +77,36 @@
              
   <section id="module-paperap.models.storage_path.queryset">
 <span id="paperap-models-storage-path-queryset-module"></span><h1>paperap.models.storage_path.queryset module<a class="headerlink" href="#module-paperap.models.storage_path.queryset" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<blockquote>
-<div><p>METADATA:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>File:    queryset.py</dt><dd><p>Project: paperap</p>
-</dd>
-<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.8</p>
-</dd>
-</dl>
-<p>Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
-<blockquote>
-<div><p>Copyright (c) 2025 Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
-</div></blockquote>
-<hr class="docutils" />
-<blockquote>
-<div><p>LAST MODIFIED:</p>
-<blockquote>
-<div><p>2025-03-04     By Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
+<p>Provide query functionality for storage paths in Paperless-ngx.</p>
+<p>This module contains the StoragePathQuerySet class, which enables filtering and
+querying storage path objects from the Paperless-ngx API. It extends the standard
+queryset functionality with storage path-specific filtering methods.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.storage_path.queryset.StoragePathQuerySet">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.storage_path.queryset.</span></span><span class="sig-name descname"><span class="pre">StoragePathQuerySet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_fetch_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_next_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_last_response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_urls_fetched</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/storage_path/queryset.html#StoragePathQuerySet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.storage_path.queryset.StoragePathQuerySet" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.queryset.html#paperap.models.abstract.queryset.StandardQuerySet" title="paperap.models.abstract.queryset.StandardQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardQuerySet</span></code></a>[StoragePath], <a class="reference internal" href="paperap.models.mixins.queryset.html#paperap.models.mixins.queryset.HasStandard" title="paperap.models.mixins.queryset.HasStandard"><code class="xref py py-class docutils literal notranslate"><span class="pre">HasStandard</span></code></a></p>
 <p>QuerySet for Paperless-ngx storage paths with specialized filtering methods.</p>
+<p>Extends StandardQuerySet to provide storage path-specific filtering
+capabilities, including filtering by path value, match criteria, matching algorithm,
+and permission settings. This queryset enables efficient querying and filtering
+of storage path objects from the Paperless-ngx API.</p>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Get all storage paths:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">all_paths</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">storage_paths</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd>
+<dt>Filter by path:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tax_paths</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">storage_paths</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">&quot;/documents/taxes/&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Filter by matching algorithm:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">auto_paths</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">storage_paths</span><span class="o">.</span><span class="n">matching_algorithm</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 1 = Auto</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -127,89 +128,171 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The path to filter by</p></li>
-<li><p><strong>exact</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, match the exact path, otherwise use contains</p></li>
-<li><p><strong>case_insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, ignore case when matching</p></li>
+<li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The path string to filter by.</p></li>
+<li><p><strong>exact</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, match the exact path string. If False, match paths
+containing the value string. Defaults to True.</p></li>
+<li><p><strong>case_insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, ignore case when matching. Defaults to True.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Filtered StoragePathQuerySet</p>
+<dd class="field-odd"><p>A filtered StoragePathQuerySet containing only matching storage paths.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Find exact path match:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tax_paths</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">storage_paths</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">&quot;/documents/taxes/&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Find paths containing “invoice” (case insensitive):</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">invoice_paths</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">storage_paths</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">&quot;invoice&quot;</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.storage_path.queryset.StoragePathQuerySet.match">
 <span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/storage_path/queryset.html#StoragePathQuerySet.match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.storage_path.queryset.StoragePathQuerySet.match" title="Link to this definition"></a></dt>
-<dd><p>Filter storage paths by match value.</p>
+<dd><p>Filter storage paths by their match pattern value.</p>
+<p>Filter storage paths based on the match pattern used for automatic
+document routing in Paperless-ngx.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The match value to filter by</p></li>
-<li><p><strong>exact</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, match the exact match value, otherwise use contains</p></li>
+<li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The match pattern string to filter by.</p></li>
+<li><p><strong>exact</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, match the exact pattern string. If False, match
+patterns containing the value string. Defaults to True.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Filtered StoragePathQuerySet</p>
+<dd class="field-odd"><p>A filtered StoragePathQuerySet containing only matching storage paths.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Find paths with exact match pattern:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">invoice_paths</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">storage_paths</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;invoice&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Find paths with match patterns containing “tax”:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tax_paths</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">storage_paths</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;tax&quot;</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.storage_path.queryset.StoragePathQuerySet.matching_algorithm">
 <span class="sig-name descname"><span class="pre">matching_algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/storage_path/queryset.html#StoragePathQuerySet.matching_algorithm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.storage_path.queryset.StoragePathQuerySet.matching_algorithm" title="Link to this definition"></a></dt>
-<dd><p>Filter storage paths by matching algorithm.</p>
+<dd><p>Filter storage paths by their matching algorithm.</p>
+<p>Filter storage paths based on the algorithm used for matching
+documents to storage paths in Paperless-ngx.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The matching algorithm to filter by</p>
+<dd class="field-odd"><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The matching algorithm ID to filter by. Common values are:
+1: Auto (let Paperless decide)
+2: Exact (exact string matching)
+3: Regular expression
+4: Fuzzy match</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Filtered StoragePathQuerySet</p>
+<dd class="field-odd"><p>A filtered StoragePathQuerySet containing only storage paths
+using the specified matching algorithm.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Find paths using regular expressions:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">regex_paths</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">storage_paths</span><span class="o">.</span><span class="n">matching_algorithm</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.storage_path.queryset.StoragePathQuerySet.case_insensitive">
 <span class="sig-name descname"><span class="pre">case_insensitive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">insensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/storage_path/queryset.html#StoragePathQuerySet.case_insensitive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.storage_path.queryset.StoragePathQuerySet.case_insensitive" title="Link to this definition"></a></dt>
-<dd><p>Filter storage paths by case sensitivity setting.</p>
+<dd><p>Filter storage paths by their case sensitivity setting.</p>
+<p>Filter storage paths based on whether they use case-insensitive
+matching for document routing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, get storage paths with case insensitive matching</p>
+<dd class="field-odd"><p><strong>insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, return storage paths configured for
+case-insensitive matching. If False, return paths with
+case-sensitive matching. Defaults to True.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Filtered StoragePathQuerySet</p>
+<dd class="field-odd"><p>A filtered StoragePathQuerySet containing only storage paths
+with the specified case sensitivity setting.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Find case-insensitive paths:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">insensitive_paths</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">storage_paths</span><span class="o">.</span><span class="n">case_insensitive</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd>
+<dt>Find case-sensitive paths:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sensitive_paths</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">storage_paths</span><span class="o">.</span><span class="n">case_insensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.storage_path.queryset.StoragePathQuerySet.user_can_change">
 <span class="sig-name descname"><span class="pre">user_can_change</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">can_change</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/storage_path/queryset.html#StoragePathQuerySet.user_can_change"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.storage_path.queryset.StoragePathQuerySet.user_can_change" title="Link to this definition"></a></dt>
-<dd><p>Filter storage paths by user change permission.</p>
+<dd><p>Filter storage paths by user modification permissions.</p>
+<p>Filter storage paths based on whether the current user has
+permission to modify them in the Paperless-ngx system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>can_change</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, get storage paths that can be changed by user</p>
+<dd class="field-odd"><p><strong>can_change</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, return storage paths that the current user
+can modify. If False, return paths that the user cannot modify.
+Defaults to True.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Filtered StoragePathQuerySet</p>
+<dd class="field-odd"><p>A filtered StoragePathQuerySet containing only storage paths
+with the specified permission setting.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Find paths the current user can modify:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">editable_paths</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">storage_paths</span><span class="o">.</span><span class="n">user_can_change</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd>
+<dt>Find paths the current user cannot modify:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">readonly_paths</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">storage_paths</span><span class="o">.</span><span class="n">user_can_change</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 </dd></dl>

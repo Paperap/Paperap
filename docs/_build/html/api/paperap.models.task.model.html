@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -77,99 +77,161 @@
              
   <section id="module-paperap.models.task.model">
 <span id="paperap-models-task-model-module"></span><h1>paperap.models.task.model module<a class="headerlink" href="#module-paperap.models.task.model" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<blockquote>
-<div><p>METADATA:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>File:    task.py</dt><dd><p>Project: paperap</p>
-</dd>
-<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.9</p>
-</dd>
-</dl>
-<p>Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
-<blockquote>
-<div><p>Copyright (c) 2025 Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
-</div></blockquote>
-<hr class="docutils" />
-<blockquote>
-<div><p>LAST MODIFIED:</p>
-<blockquote>
-<div><p>2025-03-04     By Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
+<p>Task model module for interacting with Paperless-NgX tasks.</p>
+<p>This module provides the Task model class for representing and interacting
+with background tasks in the Paperless-NgX system.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.task.model.Task">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.task.model.</span></span><span class="sig-name descname"><span class="pre">Task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/task/model.html#Task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.task.model.Task" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel" title="paperap.models.abstract.model.StandardModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardModel</span></code></a></p>
-<p>Represents a task in Paperless-NgX.</p>
+<p>Represents a background task in Paperless-NgX.</p>
+<p>Tasks are used for tracking long-running operations in Paperless-NgX,
+such as document processing, OCR, classification, and bulk operations.
+This model provides access to task status, progress, and results.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.task.model.Task.task_id">
+<span class="sig-name descname"><span class="pre">task_id</span></span><a class="headerlink" href="#paperap.models.task.model.Task.task_id" title="Link to this definition"></a></dt>
+<dd><p>Unique identifier for the task in the task queue system.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.task.model.Task.task_file_name">
+<span class="sig-name descname"><span class="pre">task_file_name</span></span><a class="headerlink" href="#paperap.models.task.model.Task.task_file_name" title="Link to this definition"></a></dt>
+<dd><p>Name of the file being processed, if applicable.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.task.model.Task.task_name">
+<span class="sig-name descname"><span class="pre">task_name</span></span><a class="headerlink" href="#paperap.models.task.model.Task.task_name" title="Link to this definition"></a></dt>
+<dd><p>Human-readable name of the task type.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.task.model.Task.date_created">
+<span class="sig-name descname"><span class="pre">date_created</span></span><a class="headerlink" href="#paperap.models.task.model.Task.date_created" title="Link to this definition"></a></dt>
+<dd><p>When the task was created.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.task.model.Task.date_started">
+<span class="sig-name descname"><span class="pre">date_started</span></span><a class="headerlink" href="#paperap.models.task.model.Task.date_started" title="Link to this definition"></a></dt>
+<dd><p>When the task started execution.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.task.model.Task.date_done">
+<span class="sig-name descname"><span class="pre">date_done</span></span><a class="headerlink" href="#paperap.models.task.model.Task.date_done" title="Link to this definition"></a></dt>
+<dd><p>When the task completed (successfully or with error).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.task.model.Task.type">
+<span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#paperap.models.task.model.Task.type" title="Link to this definition"></a></dt>
+<dd><p>The type of task being performed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.task.model.Task.status">
+<span class="sig-name descname"><span class="pre">status</span></span><a class="headerlink" href="#paperap.models.task.model.Task.status" title="Link to this definition"></a></dt>
+<dd><p>Current status of the task (pending, running, success, failure).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.task.model.Task.result">
+<span class="sig-name descname"><span class="pre">result</span></span><a class="headerlink" href="#paperap.models.task.model.Task.result" title="Link to this definition"></a></dt>
+<dd><p>Result data from the task, often a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.task.model.Task.acknowledged">
+<span class="sig-name descname"><span class="pre">acknowledged</span></span><a class="headerlink" href="#paperap.models.task.model.Task.acknowledged" title="Link to this definition"></a></dt>
+<dd><p>Whether the task has been acknowledged by a user.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.task.model.Task.related_document">
+<span class="sig-name descname"><span class="pre">related_document</span></span><a class="headerlink" href="#paperap.models.task.model.Task.related_document" title="Link to this definition"></a></dt>
+<dd><p>ID of the document related to this task, if any.</p>
+</dd></dl>
+
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get a specific task</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">task</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Task status: </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Wait for a task to complete</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">document</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">wait_for_task</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">task_id</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Document </span><span class="si">{</span><span class="n">document</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> ready&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.task.model.Task.task_id">
-<span class="sig-name descname"><span class="pre">task_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#paperap.models.task.model.Task.task_id" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">task_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.task.model.Task.task_file_name">
-<span class="sig-name descname"><span class="pre">task_file_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.task.model.Task.task_file_name" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">task_file_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.task.model.Task.task_name">
-<span class="sig-name descname"><span class="pre">task_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">TaskNameType</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.task.model.Task.task_name" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">task_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">TaskNameType</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.task.model.Task.date_created">
-<span class="sig-name descname"><span class="pre">date_created</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.task.model.Task.date_created" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">date_created</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.task.model.Task.date_started">
-<span class="sig-name descname"><span class="pre">date_started</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.task.model.Task.date_started" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">date_started</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.task.model.Task.date_done">
-<span class="sig-name descname"><span class="pre">date_done</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.task.model.Task.date_done" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">date_done</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.task.model.Task.type">
-<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">TaskTypeType</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.task.model.Task.type" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">TaskTypeType</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.task.model.Task.status">
-<span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">TaskStatusType</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.task.model.Task.status" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">TaskStatusType</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.task.model.Task.result">
-<span class="sig-name descname"><span class="pre">result</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.task.model.Task.result" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">result</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.task.model.Task.acknowledged">
-<span class="sig-name descname"><span class="pre">acknowledged</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#paperap.models.task.model.Task.acknowledged" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">acknowledged</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.task.model.Task.related_document">
-<span class="sig-name descname"><span class="pre">related_document</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.task.model.Task.related_document" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">related_document</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.task.model.Task.Meta">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/task/model.html#Task.Meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.task.model.Task.Meta" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel.Meta" title="paperap.models.abstract.model.StandardModel.Meta"><code class="xref py py-class docutils literal notranslate"><span class="pre">Meta</span></code></a></p>
+<p>Metadata for the Task model.</p>
+<p>Defines the queryset class to use for task queries.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>model</strong> (<span class="sphinx_autodoc_typehints-type">type[_Self]</span>)</p>

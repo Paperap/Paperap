@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/models/custom_field/model.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../../_static/readthedocs.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,24 +76,11 @@
              
   <h1>Source code for paperap.models.custom_field.model</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">Module for working with custom fields in Paperless-NgX.</span>
 
-<span class="sd">   METADATA:</span>
-
-<span class="sd">       File:    custom_field.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">       Created: 2025-03-04</span>
-<span class="sd">        Version: 0.0.9</span>
-<span class="sd">       Author:  Jess Mann</span>
-<span class="sd">       Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">   LAST MODIFIED:</span>
-
-<span class="sd">       2025-03-04     By Jess Mann</span>
-
+<span class="sd">This module provides the CustomField model class for interacting with custom fields</span>
+<span class="sd">in a Paperless-NgX instance. Custom fields allow users to add additional metadata</span>
+<span class="sd">to documents beyond the standard fields provided by Paperless-NgX.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -107,28 +98,54 @@
 
 
 <div class="viewcode-block" id="CustomField">
-<a class="viewcode-back" href="../../../../api/paperap.models.custom_field.model.html#paperap.models.CustomField">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.CustomField">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CustomField</span><span class="p">(</span><span class="n">StandardModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a custom field in Paperless-NgX.</span>
+
+<span class="sd">    Custom fields allow adding additional metadata to documents beyond the standard</span>
+<span class="sd">    fields provided by Paperless-NgX. Each custom field has a name, data type, and</span>
+<span class="sd">    can be applied to multiple documents.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name: The display name of the custom field.</span>
+<span class="sd">        data_type: The data type of the custom field (string, integer, boolean, etc.).</span>
+<span class="sd">        extra_data: Additional data associated with the custom field.</span>
+<span class="sd">        document_count: Number of documents using this custom field.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; # Create a new custom field</span>
+<span class="sd">        &gt;&gt;&gt; date_field = client.custom_fields.create(</span>
+<span class="sd">        ...     name=&quot;Due Date&quot;,</span>
+<span class="sd">        ...     data_type=&quot;date&quot;</span>
+<span class="sd">        ... )</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; # Set custom field on a document</span>
+<span class="sd">        &gt;&gt;&gt; doc = client.documents.get(123)</span>
+<span class="sd">        &gt;&gt;&gt; doc.custom_fields = {date_field.id: &quot;2023-04-15&quot;}</span>
+<span class="sd">        &gt;&gt;&gt; doc.save()</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">data_type</span><span class="p">:</span> <span class="n">CustomFieldTypes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="CustomField.validate_data_type">
-<a class="viewcode-back" href="../../../../api/paperap.models.custom_field.model.html#paperap.models.CustomField.validate_data_type">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.CustomField.validate_data_type">[docs]</a>
     <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;data_type&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_data_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CustomFieldTypes</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validate the data_type field.</span>
 
+<span class="sd">        Converts string values to the appropriate CustomFieldTypes enum value</span>
+<span class="sd">        and validates that the data type is supported.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            v: The value to validate.</span>
+<span class="sd">            v: The value to validate, can be a string, CustomFieldTypes enum, or None.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The validated value.</span>
+<span class="sd">            The validated CustomFieldTypes enum value or None.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: If the value is not a valid data type.</span>
@@ -160,8 +177,18 @@
     <span class="p">}</span>
 
 <div class="viewcode-block" id="CustomField.Meta">
-<a class="viewcode-back" href="../../../../api/paperap.models.custom_field.model.html#paperap.models.CustomField.Meta">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.CustomField.Meta">[docs]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">(</span><span class="n">StandardModel</span><span class="o">.</span><span class="n">Meta</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Metadata for the CustomField model.</span>
+
+<span class="sd">        Defines read-only fields and other metadata for the CustomField model.</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            read_only_fields: Set of field names that should not be modified by the client.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="c1"># Fields that should not be modified</span>
         <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;slug&quot;</span><span class="p">}</span></div>
 
@@ -169,7 +196,17 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">documents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DocumentQuerySet&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get documents with this custom field.</span>
+<span class="sd">        Get documents that have this custom field.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A DocumentQuerySet containing all documents that have this custom field.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; # Get all documents with a specific custom field</span>
+<span class="sd">            &gt;&gt;&gt; field = client.custom_fields.get(5)</span>
+<span class="sd">            &gt;&gt;&gt; for doc in field.documents:</span>
+<span class="sd">            ...     print(doc.title)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">has_custom_field_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
 

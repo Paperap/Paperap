@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -77,87 +77,152 @@
              
   <section id="module-paperap.models.storage_path.model">
 <span id="paperap-models-storage-path-model-module"></span><h1>paperap.models.storage_path.model module<a class="headerlink" href="#module-paperap.models.storage_path.model" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<blockquote>
-<div><p>METADATA:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>File:    storage_path.py</dt><dd><p>Project: paperap</p>
-</dd>
-<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.7</p>
-</dd>
-</dl>
-<p>Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
-<blockquote>
-<div><p>Copyright (c) 2025 Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
-</div></blockquote>
-<hr class="docutils" />
-<blockquote>
-<div><p>LAST MODIFIED:</p>
-<blockquote>
-<div><p>2025-03-04     By Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
+<p>Define the StoragePath model for managing document storage locations in Paperless-NgX.</p>
+<p>This module provides the StoragePath model class, which represents physical storage
+locations where documents are stored in the Paperless-NgX file system. Storage paths
+allow for organizing documents into different directories based on document type,
+date, or other criteria.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.storage_path.model.StoragePath">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.storage_path.model.</span></span><span class="sig-name descname"><span class="pre">StoragePath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/storage_path/model.html#StoragePath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.storage_path.model.StoragePath" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel" title="paperap.models.abstract.model.StandardModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardModel</span></code></a>, <a class="reference internal" href="paperap.models.mixins.models.html#paperap.models.mixins.models.MatcherMixin" title="paperap.models.mixins.models.MatcherMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatcherMixin</span></code></a></p>
-<p>Represents a storage path in Paperless-NgX.</p>
+<p>Represent a storage path in Paperless-NgX.</p>
+<p>A storage path defines where documents are physically stored in the Paperless-NgX
+file system. Each document can be assigned to a specific storage path, allowing
+for organized file storage based on document type, date, or other criteria.</p>
+<p>Storage paths can also be configured with matching rules to automatically assign
+documents to specific paths based on their content or metadata.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.storage_path.model.StoragePath.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#paperap.models.storage_path.model.StoragePath.name" title="Link to this definition"></a></dt>
+<dd><p>The display name of the storage path.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.storage_path.model.StoragePath.slug">
+<span class="sig-name descname"><span class="pre">slug</span></span><a class="headerlink" href="#paperap.models.storage_path.model.StoragePath.slug" title="Link to this definition"></a></dt>
+<dd><p>The URL-friendly version of the name (auto-generated, read-only).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.storage_path.model.StoragePath.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#paperap.models.storage_path.model.StoragePath.path" title="Link to this definition"></a></dt>
+<dd><p>The actual filesystem path where documents will be stored.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.storage_path.model.StoragePath.document_count">
+<span class="sig-name descname"><span class="pre">document_count</span></span><a class="headerlink" href="#paperap.models.storage_path.model.StoragePath.document_count" title="Link to this definition"></a></dt>
+<dd><p>The number of documents using this storage path (read-only).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.storage_path.model.StoragePath.owner">
+<span class="sig-name descname"><span class="pre">owner</span></span><a class="headerlink" href="#paperap.models.storage_path.model.StoragePath.owner" title="Link to this definition"></a></dt>
+<dd><p>The ID of the user who owns this storage path, if applicable.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.storage_path.model.StoragePath.user_can_change">
+<span class="sig-name descname"><span class="pre">user_can_change</span></span><a class="headerlink" href="#paperap.models.storage_path.model.StoragePath.user_can_change" title="Link to this definition"></a></dt>
+<dd><p>Whether the current user has permission to modify this path.</p>
+</dd></dl>
+
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Create a new storage path:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tax_path</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">storage_paths</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Tax Documents&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/documents/taxes/&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Assign a storage path to a document:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">storage_path</span> <span class="o">=</span> <span class="n">tax_path</span><span class="o">.</span><span class="n">id</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd>
+<dt>Create a storage path with automatic matching:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">invoice_path</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">storage_paths</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Invoices&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/documents/invoices/&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">matching_algorithm</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">match</span><span class="o">=</span><span class="s2">&quot;invoice bill receipt&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.storage_path.model.StoragePath.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#paperap.models.storage_path.model.StoragePath.name" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.storage_path.model.StoragePath.slug">
-<span class="sig-name descname"><span class="pre">slug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.storage_path.model.StoragePath.slug" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">slug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.storage_path.model.StoragePath.path">
-<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.storage_path.model.StoragePath.path" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.storage_path.model.StoragePath.document_count">
-<span class="sig-name descname"><span class="pre">document_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#paperap.models.storage_path.model.StoragePath.document_count" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">document_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.storage_path.model.StoragePath.owner">
-<span class="sig-name descname"><span class="pre">owner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.storage_path.model.StoragePath.owner" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">owner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.storage_path.model.StoragePath.user_can_change">
-<span class="sig-name descname"><span class="pre">user_can_change</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.storage_path.model.StoragePath.user_can_change" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">user_can_change</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.storage_path.model.StoragePath.Meta">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/storage_path/model.html#StoragePath.Meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.storage_path.model.StoragePath.Meta" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel.Meta" title="paperap.models.abstract.model.StandardModel.Meta"><code class="xref py py-class docutils literal notranslate"><span class="pre">Meta</span></code></a></p>
+<p>Define metadata for the StoragePath model.</p>
+<p>This class defines metadata properties that control how the StoragePath
+model interacts with the Paperless-NgX API, including which fields are
+read-only and which QuerySet class to use for queries.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.storage_path.model.StoragePath.Meta.read_only_fields">
+<span class="sig-name descname"><span class="pre">read_only_fields</span></span><a class="headerlink" href="#paperap.models.storage_path.model.StoragePath.Meta.read_only_fields" title="Link to this definition"></a></dt>
+<dd><p>Set of field names that cannot be modified by the client.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.storage_path.model.StoragePath.Meta.queryset">
+<span class="sig-name descname"><span class="pre">queryset</span></span><a class="headerlink" href="#paperap.models.storage_path.model.StoragePath.Meta.queryset" title="Link to this definition"></a></dt>
+<dd><p>The QuerySet class to use for this model.</p>
+</dd></dl>
+
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>model</strong> (<span class="sphinx_autodoc_typehints-type">type[_Self]</span>)</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.storage_path.model.StoragePath.Meta.read_only_fields">
-<span class="sig-name descname"><span class="pre">read_only_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[set[str]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'document_count',</span> <span class="pre">'id',</span> <span class="pre">'slug'}</span></em><a class="headerlink" href="#paperap.models.storage_path.model.StoragePath.Meta.read_only_fields" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">read_only_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[set[str]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'document_count',</span> <span class="pre">'id',</span> <span class="pre">'slug'}</span></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.storage_path.model.StoragePath.Meta.queryset">
-<span class="sig-name descname"><span class="pre">queryset</span></span><a class="headerlink" href="#paperap.models.storage_path.model.StoragePath.Meta.queryset" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">queryset</span></span><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
 <dd><p>alias of <a class="reference internal" href="paperap.models.storage_path.queryset.html#paperap.models.storage_path.queryset.StoragePathQuerySet" title="paperap.models.storage_path.queryset.StoragePathQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoragePathQuerySet</span></code></a></p>
 </dd></dl>
 
@@ -201,7 +266,42 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="py property">
 <dt class="sig sig-object py" id="paperap.models.storage_path.model.StoragePath.documents">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">documents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.models.document.queryset.html#paperap.models.document.queryset.DocumentQuerySet" title="paperap.models.document.queryset.DocumentQuerySet"><span class="pre">DocumentQuerySet</span></a></em><a class="headerlink" href="#paperap.models.storage_path.model.StoragePath.documents" title="Link to this definition"></a></dt>
-<dd><p>Get documents in this storage path.</p>
+<dd><p>Get all documents assigned to this storage path.</p>
+<p>Retrieve a queryset containing all documents that use this storage path.
+The queryset is lazy-loaded, meaning API requests are only made when the
+results are actually needed (when iterating, slicing, or calling terminal
+methods like count() or get()).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>A queryset containing all documents that use this</dt><dd><p>storage path. The queryset can be further filtered or ordered.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="paperap.models.html#paperap.models.DocumentQuerySet" title="paperap.models.DocumentQuerySet">DocumentQuerySet</a></p>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Get all documents in a storage path:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tax_path</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">storage_paths</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tax_docs</span> <span class="o">=</span> <span class="n">tax_path</span><span class="o">.</span><span class="n">documents</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">tax_docs</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="si">}</span><span class="s2"> tax documents&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Filter documents in a storage path:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">recent_tax_docs</span> <span class="o">=</span> <span class="n">tax_path</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">created__gt</span><span class="o">=</span><span class="s2">&quot;2023-01-01&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">recent_tax_docs</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">created</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py attribute">

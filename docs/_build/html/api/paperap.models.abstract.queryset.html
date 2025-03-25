@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -77,72 +77,75 @@
              
   <section id="module-paperap.models.abstract.queryset">
 <span id="paperap-models-abstract-queryset-module"></span><h1>paperap.models.abstract.queryset module<a class="headerlink" href="#module-paperap.models.abstract.queryset" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<blockquote>
-<div><p>METADATA:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>File:    queryset.py</dt><dd><p>Project: paperap</p>
-</dd>
-<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.10</p>
-</dd>
-</dl>
-<p>Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
-<blockquote>
-<div><p>Copyright (c) 2025 Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
-</div></blockquote>
-<hr class="docutils" />
-<blockquote>
-<div><p>LAST MODIFIED:</p>
-<blockquote>
-<div><p>2025-03-04     By Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
+<p>Provide query interfaces for interacting with Paperless-ngx API resources.</p>
+<p>This module implements QuerySet classes that offer a Django-like interface for
+querying, filtering, and manipulating Paperless-ngx resources. The QuerySets
+are lazy-loaded and chainable, allowing for efficient API interactions.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.abstract.queryset.</span></span><span class="sig-name descname"><span class="pre">BaseQuerySet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_fetch_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_next_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_last_response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_urls_fetched</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a></p>
-<p>A lazy-loaded, chainable query interface for Paperless NGX resources.</p>
-<p>BaseQuerySet provides pagination, filtering, and caching functionality similar to Django’s QuerySet.
-It’s designed to be lazy - only fetching data when it’s actually needed.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>resource</strong> (<span class="sphinx_autodoc_typehints-type">BaseResource[_Model, Self]</span>) – The BaseResource instance.</p></li>
-<li><p><strong>filters</strong> (<span class="sphinx_autodoc_typehints-type">dict[str, Any] | None</span>) – Initial filter parameters.</p></li>
-<li><p><strong>_cache</strong> (<span class="sphinx_autodoc_typehints-type">list[_Model] | None</span>) – Optional internal result cache.</p></li>
-<li><p><strong>_fetch_all</strong> (<span class="sphinx_autodoc_typehints-type">bool</span>) – Whether all results have been fetched.</p></li>
-<li><p><strong>_next_url</strong> (<span class="sphinx_autodoc_typehints-type">str | None</span>) – URL for the next page of results.</p></li>
-<li><p><strong>_last_response</strong> (<span class="sphinx_autodoc_typehints-type">ClientResponse</span>) – Optional last response from the API.</p></li>
-<li><p><strong>_iter</strong> (<span class="sphinx_autodoc_typehints-type">Iterator[_Model] | None</span>) – Optional iterator for the results.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A new instance of BaseQuerySet.</p>
-</dd>
-</dl>
+<p>A lazy-loaded, chainable query interface for Paperless-ngx resources.</p>
+<p>Provides pagination, filtering, and caching functionality similar to Django’s QuerySet.
+Only fetches data when it’s actually needed, optimizing API requests and performance.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet.resource">
+<span class="sig-name descname"><span class="pre">resource</span></span><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet.resource" title="Link to this definition"></a></dt>
+<dd><p>The resource instance associated with the queryset.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet.filters">
+<span class="sig-name descname"><span class="pre">filters</span></span><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet.filters" title="Link to this definition"></a></dt>
+<dd><p>Dictionary of filters to apply to the API request.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet._last_response">
+<span class="sig-name descname"><span class="pre">_last_response</span></span><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet._last_response" title="Link to this definition"></a></dt>
+<dd><p>The last response received from the API.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet._result_cache">
+<span class="sig-name descname"><span class="pre">_result_cache</span></span><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet._result_cache" title="Link to this definition"></a></dt>
+<dd><p>List of model instances already fetched.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet._fetch_all">
+<span class="sig-name descname"><span class="pre">_fetch_all</span></span><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet._fetch_all" title="Link to this definition"></a></dt>
+<dd><p>Whether all results have been fetched.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet._next_url">
+<span class="sig-name descname"><span class="pre">_next_url</span></span><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet._next_url" title="Link to this definition"></a></dt>
+<dd><p>URL for the next page of results, if any.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet._urls_fetched">
+<span class="sig-name descname"><span class="pre">_urls_fetched</span></span><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet._urls_fetched" title="Link to this definition"></a></dt>
+<dd><p>List of URLs already fetched to prevent loops.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet._iter">
+<span class="sig-name descname"><span class="pre">_iter</span></span><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet._iter" title="Link to this definition"></a></dt>
+<dd><p>Current iterator over results, if any.</p>
+</dd></dl>
+
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
-<p># Create a QuerySet for documents
-&gt;&gt;&gt; docs = client.documents()
-&gt;&gt;&gt; for doc in docs:
-…    print(doc.id)
-1
-2
-3</p>
+<p>Basic usage:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span>  <span class="c1"># Returns a BaseQuerySet</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>_urls_fetched</strong> (<span class="sphinx_autodoc_typehints-type">list[str] | None</span>)</p>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_fetch_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_next_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_last_response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_urls_fetched</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySet.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet.__init__" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>resource</strong> (<span class="sphinx_autodoc_typehints-type">BaseResource[_Model, Self]</span>)</p></li>
@@ -156,16 +159,34 @@ It’s designed to be lazy - only fetching data when it’s actually needed.</p>
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_fetch_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_next_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_last_response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_urls_fetched</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySet.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize a new BaseQuerySet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>resource</strong> (<span class="sphinx_autodoc_typehints-type">BaseResource[_Model, Self]</span>) – The resource instance that will handle API requests.</p></li>
+<li><p><strong>filters</strong> (<span class="sphinx_autodoc_typehints-type">dict[str, Any] | None</span>) – Initial filters to apply to the queryset.</p></li>
+<li><p><strong>_cache</strong> (<span class="sphinx_autodoc_typehints-type">list[_Model] | None</span>) – Pre-populated result cache (internal use).</p></li>
+<li><p><strong>_fetch_all</strong> (<span class="sphinx_autodoc_typehints-type">bool</span>) – Whether all results have been fetched (internal use).</p></li>
+<li><p><strong>_next_url</strong> (<span class="sphinx_autodoc_typehints-type">str | None</span>) – URL for the next page of results (internal use).</p></li>
+<li><p><strong>_last_response</strong> (<span class="sphinx_autodoc_typehints-type">ClientResponse</span>) – Last API response received (internal use).</p></li>
+<li><p><strong>_iter</strong> (<span class="sphinx_autodoc_typehints-type">Iterator[_Model] | None</span>) – Current iterator over results (internal use).</p></li>
+<li><p><strong>_urls_fetched</strong> (<span class="sphinx_autodoc_typehints-type">list[str] | None</span>) – List of URLs already fetched (internal use).</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet.resource">
-<span class="sig-name descname"><span class="pre">resource</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.BaseResource" title="paperap.resources.base.BaseResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseResource</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeVar" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a><span class="pre">(</span><code class="docutils literal notranslate"><span class="pre">_Model</span></code><span class="pre">,</span> <span class="pre">bound=</span> <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.BaseModel" title="paperap.models.abstract.model.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a><span class="pre">),</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code><span class="pre">]</span></em><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet.resource" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">resource</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.BaseResource" title="paperap.resources.base.BaseResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseResource</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeVar" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a><span class="pre">(</span><code class="docutils literal notranslate"><span class="pre">_Model</span></code><span class="pre">,</span> <span class="pre">bound=</span> <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.BaseModel" title="paperap.models.abstract.model.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a><span class="pre">),</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code><span class="pre">]</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet.filters">
-<span class="sig-name descname"><span class="pre">filters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet.filters" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">filters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -174,26 +195,30 @@ It’s designed to be lazy - only fetching data when it’s actually needed.</p>
 <dd><p>Return a new QuerySet with the given filters applied.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Filters to apply, where keys are field names and values are desired values.
-Supports Django-style lookups like field__contains, field__in, etc.</p>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Filters to apply, where keys are field names and values are
+desired values. Supports Django-style lookups like field__contains,
+field__in, etc.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A new QuerySet with the additional filters applied</p>
+<dd class="field-odd"><p>A new QuerySet with the additional filters applied.</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
-<p># Get documents with specific correspondent
-docs = client.documents.filter(correspondent=1)</p>
-<p># Get documents with specific correspondent and document type
-docs = client.documents.filter(correspondent=1, document_type=2)</p>
-<p># Get documents with title containing “invoice”
-docs = client.documents.filter(title__contains=”invoice”)</p>
-<p># Get documents with IDs in a list
-docs = client.documents.filter(id__in=[1, 2, 3])</p>
+<p>Get documents with specific correspondent:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">correspondent</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Filter with multiple conditions:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">created__gt</span><span class="o">=</span><span class="s2">&quot;2023-01-01&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </dd></dl>
 
@@ -203,19 +228,26 @@ docs = client.documents.filter(id__in=[1, 2, 3])</p>
 <dd><p>Return a new QuerySet excluding objects with the given filters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Filters to exclude, where keys are field names and values are excluded values</p>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Filters to exclude, where keys are field names and values are
+excluded values. Supports the same lookup syntax as filter().</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A new QuerySet excluding objects that match the filters</p>
+<dd class="field-odd"><p>A new QuerySet excluding objects that match the filters.</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
-<p># Get documents with any correspondent except ID 1
-docs = client.documents.exclude(correspondent=1)</p>
+<p>Get documents with any correspondent except ID 1:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">correspondent</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Exclude documents with specific words in title:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;draft&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </dd></dl>
 
@@ -223,28 +255,32 @@ docs = client.documents.exclude(correspondent=1)</p>
 <dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet.get">
 <span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySet.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet.get" title="Link to this definition"></a></dt>
 <dd><p>Retrieve a single object from the API.</p>
-<p>Raises NotImplementedError. Subclasses may implement this.</p>
+<p>This base implementation raises NotImplementedError. Subclasses like
+StandardQuerySet implement this method for models with ID fields.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pk</strong> (<span class="sphinx_autodoc_typehints-type">Any</span>) – The primary key (e.g. the id) of the object to retrieve</p>
+<dd class="field-odd"><p><strong>pk</strong> (<span class="sphinx_autodoc_typehints-type">Any</span>) – The primary key (e.g., the id) of the object to retrieve.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type">_Model</span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A single object matching the query</p>
+<dd class="field-odd"><p>A single object matching the query.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.13)"><strong>NotImplementedError</strong></a> – If the method is not implemented by the subclass</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object is found.</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.MultipleObjectsFoundError" title="paperap.exceptions.MultipleObjectsFoundError"><strong>MultipleObjectsFoundError</strong></a> – If multiple objects match the query.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.13)"><strong>NotImplementedError</strong></a> – If the method is not implemented by the subclass.</p></li>
 </ul>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
-<p># Get document with ID 123
-doc = client.documents.get(123)</p>
+<p>Get document with ID 123:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </dd></dl>
 
@@ -252,48 +288,85 @@ doc = client.documents.get(123)</p>
 <dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet.count">
 <span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySet.count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet.count" title="Link to this definition"></a></dt>
 <dd><p>Return the total number of objects in the queryset.</p>
+<p>Makes an API request if necessary to determine the total count
+of objects matching the current filters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The total count of objects matching the filters</p>
+<dd class="field-even"><p>The total count of objects matching the filters.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.13)"><strong>NotImplementedError</strong></a> – If the response does not have a count attribute</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.13)"><strong>NotImplementedError</strong></a> – If the count cannot be determined from the API response.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Count all documents:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">total</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total documents: </span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Count filtered documents:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">invoice_count</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet.count_this_page">
 <span class="sig-name descname"><span class="pre">count_this_page</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySet.count_this_page"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet.count_this_page" title="Link to this definition"></a></dt>
 <dd><p>Return the number of objects on the current page.</p>
+<p>Counts only the objects on the current page of results,
+without fetching additional pages. Useful for pagination displays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The count of objects on the current page</p>
+<dd class="field-even"><p>The count of objects on the current page.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.13)"><strong>NotImplementedError</strong></a> – If _last_response is not set</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.13)"><strong>NotImplementedError</strong></a> – If the current page count cannot be determined.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Get count of current page:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">page_count</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">count_this_page</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Items on this page: </span><span class="si">{</span><span class="n">page_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet.all">
 <span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySet.all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet.all" title="Link to this definition"></a></dt>
 <dd><p>Return a new QuerySet that copies the current one.</p>
+<p>Creates a copy of the current queryset with the same filters.
+Often used to create a new queryset instance for method chaining.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A copy of the current BaseQuerySet</p>
+<dd class="field-even"><p>A copy of the current QuerySet.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Create a copy of a queryset:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">all_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Chain with other methods:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">recent_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-created&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -302,21 +375,26 @@ doc = client.documents.get(123)</p>
 <dd><p>Return a new QuerySet ordered by the specified fields.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>*fields</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Field names to order by. Prefix with ‘-’ for descending order.</p>
+<dd class="field-odd"><p><strong>*fields</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Field names to order by. Prefix with ‘-’ for descending order.
+Multiple fields can be specified for multi-level sorting.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A new QuerySet with the ordering applied</p>
+<dd class="field-odd"><p>A new QuerySet with the ordering applied.</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
-<p># Order documents by title ascending
-docs = client.documents.order_by(‘title’)</p>
-<p># Order documents by added date descending
-docs = client.documents.order_by(‘-added’)</p>
+<p>Order documents by title ascending:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Order by multiple fields (created date descending, then title ascending):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-created&#39;</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </dd></dl>
 
@@ -324,70 +402,134 @@ docs = client.documents.order_by(‘-added’)</p>
 <dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet.first">
 <span class="sig-name descname"><span class="pre">first</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySet.first"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet.first" title="Link to this definition"></a></dt>
 <dd><p>Return the first object in the QuerySet, or None if empty.</p>
+<p>Optimizes the API request by limiting to a single result when possible.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type">_Model | None</span></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The first object or None if no objects match</p>
+<dd class="field-even"><p>The first object or None if no objects match.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Get the first document:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">first_doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">first_doc</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;First document: </span><span class="si">{</span><span class="n">first_doc</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Get the first document matching a filter:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">first_invoice</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet.last">
 <span class="sig-name descname"><span class="pre">last</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySet.last"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet.last" title="Link to this definition"></a></dt>
 <dd><p>Return the last object in the QuerySet, or None if empty.</p>
-<p>Note: This requires fetching all results to determine the last one.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method requires fetching all results to determine the last one,
+which may be inefficient for large result sets.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type">_Model | None</span></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The last object or None if no objects match</p>
+<dd class="field-even"><p>The last object or None if no objects match.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Get the last document:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">last_doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">last</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">last_doc</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Last document: </span><span class="si">{</span><span class="n">last_doc</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Get the last document in a specific order:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oldest_doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;created&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">last</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet.exists">
 <span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySet.exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet.exists" title="Link to this definition"></a></dt>
 <dd><p>Return True if the QuerySet contains any results.</p>
+<p>Optimizes the API request by checking for at least one result
+rather than fetching all results.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if there are any objects matching the filters</p>
+<dd class="field-even"><p>True if there are any objects matching the filters.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Check if any documents exist:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Documents found&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Check if specific documents exist:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">has_invoices</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet.none">
 <span class="sig-name descname"><span class="pre">none</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySet.none"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet.none" title="Link to this definition"></a></dt>
 <dd><p>Return an empty QuerySet.</p>
+<p>Creates a queryset that will always return no results,
+which is useful for conditional queries.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An empty QuerySet</p>
+<dd class="field-even"><p>An empty QuerySet.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Create an empty queryset:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">empty_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">empty_docs</span><span class="p">)</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+<p>Conditional query:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">condition</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet.filter_field_by_str">
 <span class="sig-name descname"><span class="pre">filter_field_by_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case_insensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySet.filter_field_by_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet.filter_field_by_str" title="Link to this definition"></a></dt>
-<dd><p>Filter a queryset based on a given field.</p>
-<p>This allows subclasses to easily implement custom filter methods.</p>
+<dd><p>Filter a queryset based on a given string field.</p>
+<p>Allows subclasses to easily implement custom filter methods
+for string fields with consistent behavior.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>field</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The field name to filter by.</p></li>
-<li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The value to filter against.</p></li>
-<li><p><strong>exact</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Whether to filter by an exact match.</p></li>
+<li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The string value to filter against.</p></li>
+<li><p><strong>exact</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Whether to filter by an exact match (True) or contains (False).</p></li>
 <li><p><strong>case_insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Whether the filter should be case-insensitive.</p></li>
 </ul>
 </dd>
@@ -398,85 +540,149 @@ docs = client.documents.order_by(‘-added’)</p>
 <dd class="field-odd"><p>A new QuerySet instance with the filter applied.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Filter documents by title (case-insensitive exact match):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;Invoice&#39;</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Filter documents by title containing text (case-insensitive):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;invoice&#39;</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet.__iter__">
 <span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySet.__iter__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet.__iter__" title="Link to this definition"></a></dt>
 <dd><p>Iterate over the objects in the QuerySet.</p>
+<p>Implements lazy loading of results, fetching additional pages
+as needed when iterating through the queryset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type">Iterator[_Model]</span></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An iterator over the objects</p>
+<dd class="field-even"><p>An iterator over the model instances.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Iterate through documents:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet.__len__">
 <span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySet.__len__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet.__len__" title="Link to this definition"></a></dt>
 <dd><p>Return the number of objects in the QuerySet.</p>
+<p>Calls count() to determine the total number of objects
+matching the current filters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The count of objects</p>
+<dd class="field-even"><p>The count of objects.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Get the number of documents:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">num_docs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total documents: </span><span class="si">{</span><span class="n">num_docs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet.__bool__">
 <span class="sig-name descname"><span class="pre">__bool__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySet.__bool__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet.__bool__" title="Link to this definition"></a></dt>
 <dd><p>Return True if the QuerySet has any results.</p>
+<p>Calls exists() to check if any objects match the current filters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if there are any objects matching the filters</p>
+<dd class="field-even"><p>True if there are any objects matching the filters.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Check if any documents exist:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Documents found&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet.__getitem__">
 <span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySet.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet.__getitem__" title="Link to this definition"></a></dt>
 <dd><p>Retrieve an item or slice of items from the QuerySet.</p>
+<p>Supports both integer indexing and slicing, optimizing
+API requests when possible by using limit and offset parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type">int | slice</span>) – An integer index or slice</p>
+<dd class="field-odd"><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type">int | slice</span>) – An integer index or slice object.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type">_Model | list[_Model]</span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A single object or list of objects</p>
+<dd class="field-odd"><p>A single object or list of objects.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#IndexError" title="(in Python v3.13)"><strong>IndexError</strong></a> – If the index is out of range</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#IndexError" title="(in Python v3.13)"><strong>IndexError</strong></a> – If the index is out of range.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Get a single document by position:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">first_doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Get a slice of documents:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">recent_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-created&#39;</span><span class="p">)[:</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySet.__contains__">
 <span class="sig-name descname"><span class="pre">__contains__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySet.__contains__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySet.__contains__" title="Link to this definition"></a></dt>
 <dd><p>Return True if the QuerySet contains the given object.</p>
+<p>Checks if the given object is present in the queryset
+by comparing it with each object in the queryset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>item</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – The object to check for</p>
+<dd class="field-odd"><p><strong>item</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – The object to check for.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True if the object is in the QuerySet</p>
+<dd class="field-odd"><p>True if the object is in the QuerySet.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Check if a document is in a queryset:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Document is an invoice&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -485,42 +691,36 @@ docs = client.documents.order_by(‘-added’)</p>
 <dt class="sig sig-object py" id="paperap.models.abstract.queryset.StandardQuerySet">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.abstract.queryset.</span></span><span class="sig-name descname"><span class="pre">StandardQuerySet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_fetch_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_next_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_last_response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_urls_fetched</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#StandardQuerySet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.StandardQuerySet" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#paperap.models.abstract.queryset.BaseQuerySet" title="paperap.models.abstract.queryset.BaseQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseQuerySet</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a></p>
-<p>A queryset for StandardModel instances (i.e. BaseModels with standard fields, like id).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A new instance of StandardModel.</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If resource is not provided.</p>
-</dd>
-</dl>
+<p>A queryset for StandardModel instances with ID fields.</p>
+<p>Extends BaseQuerySet to provide additional functionality specific
+to models with standard fields like ‘id’, including direct lookups by ID,
+bulk operations, and specialized filtering methods.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.StandardQuerySet.resource">
+<span class="sig-name descname"><span class="pre">resource</span></span><a class="headerlink" href="#paperap.models.abstract.queryset.StandardQuerySet.resource" title="Link to this definition"></a></dt>
+<dd><p>The StandardResource instance associated with the queryset.</p>
+</dd></dl>
+
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
-<p># Create a StandardModel instance
-model = StandardModel(id=1)</p>
+<p>Get documents by ID:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Filter documents by ID:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">id</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Perform bulk operations:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;draft&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</pre></div>
+</div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>resource</strong> (<span class="sphinx_autodoc_typehints-type">BaseResource[_Model, Self]</span>) – The BaseResource instance.</p></li>
-<li><p><strong>filters</strong> (<span class="sphinx_autodoc_typehints-type">dict[str, Any] | None</span>) – Initial filter parameters.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A new instance of StandardQuerySet.</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found.</p>
-</dd>
-</dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p># Create a StandardQuerySet for documents
-docs = StandardQuerySet(resource=client.documents)</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
+<li><p><strong>resource</strong> (<span class="sphinx_autodoc_typehints-type">BaseResource[_Model, Self]</span>)</p></li>
+<li><p><strong>filters</strong> (<span class="sphinx_autodoc_typehints-type">dict[str, Any] | None</span>)</p></li>
 <li><p><strong>_cache</strong> (<span class="sphinx_autodoc_typehints-type">list[_Model] | None</span>)</p></li>
 <li><p><strong>_fetch_all</strong> (<span class="sphinx_autodoc_typehints-type">bool</span>)</p></li>
 <li><p><strong>_next_url</strong> (<span class="sphinx_autodoc_typehints-type">str | None</span>)</p></li>
@@ -531,32 +731,37 @@ docs = StandardQuerySet(resource=client.documents)</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.abstract.queryset.StandardQuerySet.resource">
-<span class="sig-name descname"><span class="pre">resource</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.StandardResource" title="paperap.resources.base.StandardResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardResource</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeVar" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a><span class="pre">(</span><code class="docutils literal notranslate"><span class="pre">_Model</span></code><span class="pre">,</span> <span class="pre">bound=</span> <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel" title="paperap.models.abstract.model.StandardModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardModel</span></code></a><span class="pre">),</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code><span class="pre">]</span></em><a class="headerlink" href="#paperap.models.abstract.queryset.StandardQuerySet.resource" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">resource</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.StandardResource" title="paperap.resources.base.StandardResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardResource</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeVar" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a><span class="pre">(</span><code class="docutils literal notranslate"><span class="pre">_Model</span></code><span class="pre">,</span> <span class="pre">bound=</span> <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel" title="paperap.models.abstract.model.StandardModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardModel</span></code></a><span class="pre">),</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code><span class="pre">]</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.queryset.StandardQuerySet.get">
 <span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#StandardQuerySet.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.StandardQuerySet.get" title="Link to this definition"></a></dt>
-<dd><p>Retrieve a single object from the API.</p>
+<dd><p>Retrieve a single object from the API by its ID.</p>
+<p>First checks the result cache for an object with the given ID,
+then falls back to making a direct API request if not found.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pk</strong> (<span class="sphinx_autodoc_typehints-type">int</span>) – The ID of the object to retrieve</p>
+<dd class="field-odd"><p><strong>pk</strong> (<span class="sphinx_autodoc_typehints-type">int</span>) – The ID of the object to retrieve.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type">_Model</span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A single object matching the query</p>
+<dd class="field-odd"><p>A single object matching the ID.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object or multiple objects are found</p>
+<dd class="field-even"><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ObjectNotFoundError" title="paperap.exceptions.ObjectNotFoundError"><strong>ObjectNotFoundError</strong></a> – If no object with the given ID exists.</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
-<p># Get document with ID 123
-doc = client.documents.get(123)</p>
+<p>Get document with ID 123:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Retrieved: </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </dd></dl>
 
@@ -564,60 +769,70 @@ doc = client.documents.get(123)</p>
 <dt class="sig sig-object py" id="paperap.models.abstract.queryset.StandardQuerySet.id">
 <span class="sig-name descname"><span class="pre">id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#StandardQuerySet.id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.StandardQuerySet.id" title="Link to this definition"></a></dt>
 <dd><p>Filter models by ID.</p>
+<p>Provides a convenient way to filter objects by their ID
+or a list of IDs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</span>) – The ID or list of IDs to filter by</p>
+<dd class="field-odd"><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</span>) – The ID or list of IDs to filter by.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Filtered QuerySet</p>
+<dd class="field-odd"><p>Filtered QuerySet containing only objects with the specified ID(s).</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Get document with ID 123:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">id</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Get multiple documents by ID:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">id</span><span class="p">([</span><span class="mi">123</span><span class="p">,</span> <span class="mi">456</span><span class="p">,</span> <span class="mi">789</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.abstract.queryset.StandardQuerySet.__contains__">
 <span class="sig-name descname"><span class="pre">__contains__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#StandardQuerySet.__contains__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.StandardQuerySet.__contains__" title="Link to this definition"></a></dt>
 <dd><p>Return True if the QuerySet contains the given object.</p>
-<p>NOTE: This method only ensures a match by ID, not by full object equality.
+<p>Checks if an object with the same ID is in the queryset.
+Can accept either a model instance or an integer ID.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method only ensures a match by ID, not by full object equality.
 This is intentional, as the object may be outdated or not fully populated.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>item</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – The object or ID to check for</p>
+<dd class="field-odd"><p><strong>item</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – The object or ID to check for.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True if the object is in the QuerySet</p>
+<dd class="field-odd"><p>True if an object with the matching ID is in the QuerySet.</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="paperap.models.abstract.queryset.StandardQuerySet.bulk_action">
-<span class="sig-name descname"><span class="pre">bulk_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#StandardQuerySet.bulk_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.StandardQuerySet.bulk_action" title="Link to this definition"></a></dt>
-<dd><p>Perform a bulk action on all objects in the queryset.</p>
-<p>This method fetches all IDs in the queryset and passes them to the resource’s bulk_action method.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>action</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The action to perform</p></li>
-<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Additional parameters for the action</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeAliasType</span></code></span></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The API response</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.13)"><strong>NotImplementedError</strong></a> – If the resource doesn’t support bulk actions</p>
-</dd>
-</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Check if a document is in a queryset:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Document is an invoice&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Check if a document ID is in a queryset:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="mi">123</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Document 123 is an invoice&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -625,123 +840,450 @@ This is intentional, as the object may be outdated or not fully populated.</p>
 <span class="sig-name descname"><span class="pre">filters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#paperap.models.abstract.queryset.StandardQuerySet.filters" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="paperap.models.abstract.queryset.StandardQuerySet.delete">
-<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#StandardQuerySet.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.StandardQuerySet.delete" title="Link to this definition"></a></dt>
-<dd><p>Delete all objects in the queryset.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeAliasType</span></code></span></p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The API response</p>
-</dd>
-</dl>
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySetProtocol">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.abstract.queryset.</span></span><span class="sig-name descname"><span class="pre">BaseQuerySetProtocol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySetProtocol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySetProtocol" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySetProtocol.resource">
+<span class="sig-name descname"><span class="pre">resource</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.BaseResource" title="paperap.resources.base.BaseResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseResource</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeVar" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a><span class="pre">(</span><code class="docutils literal notranslate"><span class="pre">_Model</span></code><span class="pre">,</span> <span class="pre">bound=</span> <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.BaseModel" title="paperap.models.abstract.model.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a><span class="pre">),</span> <span class="pre">BaseQuerySet]</span></em><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySetProtocol.resource" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySetProtocol.filters">
+<span class="sig-name descname"><span class="pre">filters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySetProtocol.filters" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
-<dt class="sig sig-object py" id="paperap.models.abstract.queryset.StandardQuerySet.bulk_update">
-<span class="sig-name descname"><span class="pre">bulk_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#StandardQuerySet.bulk_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.StandardQuerySet.bulk_update" title="Link to this definition"></a></dt>
-<dd><p>Update all objects in the queryset with the given values.</p>
-<dl class="field-list simple">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySetProtocol.filter">
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySetProtocol.filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySetProtocol.filter" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Fields to update</p>
+<dd class="field-odd"><p><strong>kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeAliasType</span></code></span></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The API response</p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="paperap.models.abstract.queryset.StandardQuerySet.bulk_assign_tags">
-<span class="sig-name descname"><span class="pre">bulk_assign_tags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_existing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#StandardQuerySet.bulk_assign_tags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.StandardQuerySet.bulk_assign_tags" title="Link to this definition"></a></dt>
-<dd><p>Assign tags to all objects in the queryset.</p>
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySetProtocol.exclude">
+<span class="sig-name descname"><span class="pre">exclude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySetProtocol.exclude"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySetProtocol.exclude" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySetProtocol.all">
+<span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySetProtocol.all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySetProtocol.all" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySetProtocol.order_by">
+<span class="sig-name descname"><span class="pre">order_by</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fields</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySetProtocol.order_by"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySetProtocol.order_by" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fields</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySetProtocol.first">
+<span class="sig-name descname"><span class="pre">first</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySetProtocol.first"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySetProtocol.first" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type">_Model | None</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySetProtocol.last">
+<span class="sig-name descname"><span class="pre">last</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySetProtocol.last"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySetProtocol.last" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type">_Model | None</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySetProtocol.exists">
+<span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySetProtocol.exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySetProtocol.exists" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySetProtocol.none">
+<span class="sig-name descname"><span class="pre">none</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySetProtocol.none"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySetProtocol.none" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySetProtocol.filter_field_by_str">
+<span class="sig-name descname"><span class="pre">filter_field_by_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case_insensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySetProtocol.filter_field_by_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySetProtocol.filter_field_by_str" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+<li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+<li><p><strong>exact</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>)</p></li>
+<li><p><strong>case_insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySetProtocol.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySetProtocol.count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySetProtocol.count" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySetProtocol.count_this_page">
+<span class="sig-name descname"><span class="pre">count_this_page</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#BaseQuerySetProtocol.count_this_page"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySetProtocol.count_this_page" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.BaseQuerySetProtocol.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#paperap.models.abstract.queryset.BaseQuerySetProtocol.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.StandardQuerySetProtocol">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.abstract.queryset.</span></span><span class="sig-name descname"><span class="pre">StandardQuerySetProtocol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#StandardQuerySetProtocol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.StandardQuerySetProtocol" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#paperap.models.abstract.queryset.BaseQuerySetProtocol" title="paperap.models.abstract.queryset.BaseQuerySetProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseQuerySetProtocol</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.StandardQuerySetProtocol.resource">
+<span class="sig-name descname"><span class="pre">resource</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.StandardResource" title="paperap.resources.base.StandardResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardResource</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeVar" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a><span class="pre">(</span><code class="docutils literal notranslate"><span class="pre">_Model</span></code><span class="pre">,</span> <span class="pre">bound=</span> <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel" title="paperap.models.abstract.model.StandardModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardModel</span></code></a><span class="pre">),</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code><span class="pre">]</span></em><a class="headerlink" href="#paperap.models.abstract.queryset.StandardQuerySetProtocol.resource" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.StandardQuerySetProtocol.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#StandardQuerySetProtocol.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.StandardQuerySetProtocol.get" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pk</strong> (<span class="sphinx_autodoc_typehints-type">int</span>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type">_Model</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.StandardQuerySetProtocol.id">
+<span class="sig-name descname"><span class="pre">id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#StandardQuerySetProtocol.id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.StandardQuerySetProtocol.id" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</span>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.SupportsBulkActions">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.abstract.queryset.</span></span><span class="sig-name descname"><span class="pre">SupportsBulkActions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#SupportsBulkActions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.SupportsBulkActions" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#paperap.models.abstract.queryset.StandardQuerySetProtocol" title="paperap.models.abstract.queryset.StandardQuerySetProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardQuerySetProtocol</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.SupportsBulkActions.bulk_action">
+<span class="sig-name descname"><span class="pre">bulk_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#SupportsBulkActions.bulk_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.SupportsBulkActions.bulk_action" title="Link to this definition"></a></dt>
+<dd><p>Perform a bulk action on all objects in the queryset.</p>
+<p>Fetches all IDs in the queryset and passes them to the
+resource’s bulk_action method, allowing operations to be performed
+on multiple objects in a single API request.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>tag_ids</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</span>) – List of tag IDs to assign</p></li>
-<li><p><strong>remove_existing</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, remove existing tags before assigning new ones</p></li>
+<li><p><strong>action</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The action to perform (e.g., “delete”, “merge”).</p></li>
+<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Additional parameters for the action.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeAliasType</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The API response</p>
+<dd class="field-odd"><p>The API response containing results of the bulk action.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.13)"><strong>NotImplementedError</strong></a> – If the resource doesn’t support bulk actions.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Delete all documents with “draft” in the title:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;draft&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">bulk_action</span><span class="p">(</span><span class="s2">&quot;delete&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Merge documents with custom parameters:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">correspondent_id</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">bulk_action</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="s2">&quot;merge&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">metadata_document_id</span><span class="o">=</span><span class="mi">123</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="paperap.models.abstract.queryset.StandardQuerySet.bulk_assign_correspondent">
-<span class="sig-name descname"><span class="pre">bulk_assign_correspondent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">correspondent_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#StandardQuerySet.bulk_assign_correspondent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.StandardQuerySet.bulk_assign_correspondent" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.SupportsBulkActions.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#SupportsBulkActions.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.SupportsBulkActions.delete" title="Link to this definition"></a></dt>
+<dd><p>Delete all objects in the queryset.</p>
+<p>This is a convenience method that calls bulk_action(“delete”).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeAliasType</span></code></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The API response containing results of the delete operation.</p>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Delete all documents with “draft” in the title:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;draft&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Delete old documents:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">one_year_ago</span> <span class="o">=</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">365</span><span class="p">))</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">created__lt</span><span class="o">=</span><span class="n">one_year_ago</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.SupportsBulkActions.bulk_update">
+<span class="sig-name descname"><span class="pre">bulk_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#SupportsBulkActions.bulk_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.SupportsBulkActions.bulk_update" title="Link to this definition"></a></dt>
+<dd><p>Update all objects in the queryset with the given values.</p>
+<p>Allows updating multiple objects with the same field values
+in a single API request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Fields to update and their new values.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeAliasType</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The API response containing results of the update operation.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.13)"><strong>NotImplementedError</strong></a> – If the resource doesn’t support bulk updates.</p>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Update the correspondent for all documents with “invoice” in the title:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">bulk_update</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">correspondent</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">document_type</span><span class="o">=</span><span class="mi">3</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.SupportsBulkActions.bulk_assign_tags">
+<span class="sig-name descname"><span class="pre">bulk_assign_tags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_existing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#SupportsBulkActions.bulk_assign_tags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.SupportsBulkActions.bulk_assign_tags" title="Link to this definition"></a></dt>
+<dd><p>Assign tags to all objects in the queryset.</p>
+<p>Adds the specified tags to all objects in the queryset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tag_ids</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</span>) – List of tag IDs to assign.</p></li>
+<li><p><strong>remove_existing</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, remove existing tags before assigning new ones.
+If False (default), add the new tags to any existing tags.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeAliasType</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The API response containing results of the operation.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.13)"><strong>NotImplementedError</strong></a> – If the resource doesn’t support bulk tag assignment.</p>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Add tags to all invoices:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">bulk_assign_tags</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Replace all tags on tax documents:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;tax&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">bulk_assign_tags</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">remove_existing</span><span class="o">=</span><span class="kc">True</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.SupportsBulkActions.bulk_assign_correspondent">
+<span class="sig-name descname"><span class="pre">bulk_assign_correspondent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">correspondent_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#SupportsBulkActions.bulk_assign_correspondent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.SupportsBulkActions.bulk_assign_correspondent" title="Link to this definition"></a></dt>
 <dd><p>Assign a correspondent to all objects in the queryset.</p>
+<p>Sets the correspondent for all objects in the queryset
+to the specified correspondent ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>correspondent_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Correspondent ID to assign</p>
+<dd class="field-odd"><p><strong>correspondent_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Correspondent ID to assign.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeAliasType</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The API response</p>
+<dd class="field-odd"><p>The API response containing results of the operation.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.13)"><strong>NotImplementedError</strong></a> – If the resource doesn’t support bulk correspondent assignment.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Set correspondent for all invoices:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">bulk_assign_correspondent</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="paperap.models.abstract.queryset.StandardQuerySet.bulk_assign_document_type">
-<span class="sig-name descname"><span class="pre">bulk_assign_document_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">document_type_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#StandardQuerySet.bulk_assign_document_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.StandardQuerySet.bulk_assign_document_type" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.SupportsBulkActions.bulk_assign_document_type">
+<span class="sig-name descname"><span class="pre">bulk_assign_document_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">document_type_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#SupportsBulkActions.bulk_assign_document_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.SupportsBulkActions.bulk_assign_document_type" title="Link to this definition"></a></dt>
 <dd><p>Assign a document type to all objects in the queryset.</p>
+<p>Sets the document type for all objects in the queryset
+to the specified document type ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>document_type_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Document type ID to assign</p>
+<dd class="field-odd"><p><strong>document_type_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Document type ID to assign.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeAliasType</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The API response</p>
+<dd class="field-odd"><p>The API response containing results of the operation.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.13)"><strong>NotImplementedError</strong></a> – If the resource doesn’t support bulk document type assignment.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Set document type for all invoices:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">bulk_assign_document_type</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="paperap.models.abstract.queryset.StandardQuerySet.bulk_assign_storage_path">
-<span class="sig-name descname"><span class="pre">bulk_assign_storage_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">storage_path_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#StandardQuerySet.bulk_assign_storage_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.StandardQuerySet.bulk_assign_storage_path" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.SupportsBulkActions.bulk_assign_storage_path">
+<span class="sig-name descname"><span class="pre">bulk_assign_storage_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">storage_path_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#SupportsBulkActions.bulk_assign_storage_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.SupportsBulkActions.bulk_assign_storage_path" title="Link to this definition"></a></dt>
 <dd><p>Assign a storage path to all objects in the queryset.</p>
+<p>Sets the storage path for all objects in the queryset
+to the specified storage path ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>storage_path_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Storage path ID to assign</p>
+<dd class="field-odd"><p><strong>storage_path_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Storage path ID to assign.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeAliasType</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The API response</p>
+<dd class="field-odd"><p>The API response containing results of the operation.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.13)"><strong>NotImplementedError</strong></a> – If the resource doesn’t support bulk storage path assignment.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Set storage path for all tax documents:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;tax&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">bulk_assign_storage_path</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="paperap.models.abstract.queryset.StandardQuerySet.bulk_assign_owner">
-<span class="sig-name descname"><span class="pre">bulk_assign_owner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">owner_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#StandardQuerySet.bulk_assign_owner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.StandardQuerySet.bulk_assign_owner" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="paperap.models.abstract.queryset.SupportsBulkActions.bulk_assign_owner">
+<span class="sig-name descname"><span class="pre">bulk_assign_owner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">owner_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/abstract/queryset.html#SupportsBulkActions.bulk_assign_owner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.abstract.queryset.SupportsBulkActions.bulk_assign_owner" title="Link to this definition"></a></dt>
 <dd><p>Assign an owner to all objects in the queryset.</p>
+<p>Sets the owner for all objects in the queryset
+to the specified owner ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>owner_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Owner ID to assign</p>
+<dd class="field-odd"><p><strong>owner_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Owner ID to assign.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeAliasType</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The API response</p>
+<dd class="field-odd"><p>The API response containing results of the operation.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.13)"><strong>NotImplementedError</strong></a> – If the resource doesn’t support bulk owner assignment.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Set owner for all personal documents:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;personal&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">bulk_assign_owner</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 </dd></dl>

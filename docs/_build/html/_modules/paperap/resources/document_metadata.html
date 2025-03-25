@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/resources/document_metadata.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../_static/readthedocs.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,28 +76,19 @@
              
   <h1>Source code for paperap.resources.document_metadata</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Provide resources for interacting with document metadata in the Paperless-NgX API.</span>
 
+<span class="sd">The document metadata endpoints expose additional information about documents</span>
+<span class="sd">that isn&#39;t included in standard document responses, such as detailed OCR text,</span>
+<span class="sd">archive metadata, and system-level information.</span>
 
+<span class="sd">Classes:</span>
+<span class="sd">    DocumentMetadataResource: Resource for retrieving and managing document metadata.</span>
 
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">METADATA:</span>
-
-<span class="sd">File:    document_metadata.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">Created: 2025-03-18</span>
-<span class="sd">        Version: 0.0.9</span>
-<span class="sd">Author:  Jess Mann</span>
-<span class="sd">Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">LAST MODIFIED:</span>
-
-<span class="sd">2025-03-18     By Jess Mann</span>
-
+<span class="sd">Exceptions:</span>
+<span class="sd">    ResourceNotFoundError: Raised when requested metadata is not found.</span>
+<span class="sd">    APIError: Raised when the API returns an error response.</span>
+<span class="sd">    BadResponseError: Raised when the API response cannot be parsed.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -109,8 +104,33 @@
 
 
 <div class="viewcode-block" id="DocumentMetadataResource">
-<a class="viewcode-back" href="../../../api/paperap.resources.document_metadata.html#paperap.resources.DocumentMetadataResource">[docs]</a>
+<a class="viewcode-back" href="../../../api/paperap.resources.document_metadata.html#paperap.resources.document_metadata.DocumentMetadataResource">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DocumentMetadataResource</span><span class="p">(</span><span class="n">StandardResource</span><span class="p">[</span><span class="n">DocumentMetadata</span><span class="p">,</span> <span class="n">DocumentMetadataQuerySet</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Manage document metadata in Paperless-NgX.</span>
+
+<span class="sd">    Provides methods to interact with document metadata API endpoints,</span>
+<span class="sd">    allowing retrieval of extended metadata associated with documents. Document metadata</span>
+<span class="sd">    includes information such as OCR text, archive metadata, and system-level details</span>
+<span class="sd">    that aren&#39;t included in standard document responses.</span>
+
+<span class="sd">    Unlike most resources, DocumentMetadataResource uses a specialized endpoint</span>
+<span class="sd">    structure that retrieves metadata for a specific document by ID.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        model_class (Type[DocumentMetadata]): The model class for document metadata.</span>
+<span class="sd">        queryset_class (Type[DocumentMetadataQuerySet]): The queryset class for metadata queries.</span>
+<span class="sd">        name (str): The resource name identifier.</span>
+<span class="sd">        endpoints (dict): Mapping of endpoint names to their URL patterns.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; client = PaperlessClient()</span>
+<span class="sd">        &gt;&gt;&gt; metadata_resource = client.document_metadata</span>
+<span class="sd">        &gt;&gt;&gt; # or directly</span>
+<span class="sd">        &gt;&gt;&gt; metadata_resource = DocumentMetadataResource(client)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">model_class</span> <span class="o">=</span> <span class="n">DocumentMetadata</span>
     <span class="n">queryset_class</span> <span class="o">=</span> <span class="n">DocumentMetadataQuerySet</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;document_metadata&quot;</span>
@@ -120,8 +140,33 @@
     <span class="p">}</span>
 
 <div class="viewcode-block" id="DocumentMetadataResource.get_metadata">
-<a class="viewcode-back" href="../../../api/paperap.resources.document_metadata.html#paperap.resources.DocumentMetadataResource.get_metadata">[docs]</a>
+<a class="viewcode-back" href="../../../api/paperap.resources.document_metadata.html#paperap.resources.document_metadata.DocumentMetadataResource.get_metadata">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocumentMetadata</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve metadata for a specific document.</span>
+
+<span class="sd">        Fetches extended metadata for a document that isn&#39;t included</span>
+<span class="sd">        in the standard document response, such as detailed OCR text, archive</span>
+<span class="sd">        metadata, and system-level information.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            document_id (int): The ID of the document for which to retrieve metadata.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DocumentMetadata: A model containing the document&#39;s metadata.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ResourceNotFoundError: If the document or its metadata doesn&#39;t exist.</span>
+<span class="sd">            APIError: If the API returns an error response.</span>
+<span class="sd">            BadResponseError: If the API response cannot be parsed.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; client = PaperlessClient()</span>
+<span class="sd">            &gt;&gt;&gt; metadata = client.document_metadata.get_metadata(123)</span>
+<span class="sd">            &gt;&gt;&gt; print(f&quot;Original filename: {metadata.original_filename}&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; print(f&quot;Archive Size: {metadata.archive_size} bytes&quot;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_endpoint</span><span class="p">(</span><span class="s2">&quot;detail&quot;</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">document_id</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="p">:</span>

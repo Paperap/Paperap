@@ -4,7 +4,7 @@
 
 Before installing Paperap, ensure you have:
 
-- Python 3.10 or higher
+- Python 3.12 or higher
 - A running instance of Paperless-NgX (version 1.14.0 or later recommended)
 - API access to your Paperless-NgX instance
 

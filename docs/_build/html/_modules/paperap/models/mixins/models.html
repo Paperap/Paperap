@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/models/mixins/models.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../../_static/readthedocs.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,27 +76,10 @@
              
   <h1>Source code for paperap.models.mixins.models</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Model mixins for Paperless-ngx models.</span>
 
-
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">METADATA:</span>
-
-<span class="sd">File:    models.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">Created: 2025-03-09</span>
-<span class="sd">        Version: 0.0.9</span>
-<span class="sd">Author:  Jess Mann</span>
-<span class="sd">Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">LAST MODIFIED:</span>
-
-<span class="sd">2025-03-09     By Jess Mann</span>
-
+<span class="sd">This module provides mixins that can be used to add common functionality to models</span>
+<span class="sd">that interact with the Paperless-ngx API.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -105,8 +92,47 @@
 <div class="viewcode-block" id="MatcherMixin">
 <a class="viewcode-back" href="../../../../api/paperap.models.mixins.models.html#paperap.models.mixins.models.MatcherMixin">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MatcherMixin</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mixin for models that support automatic matching functionality.</span>
+
+<span class="sd">    This mixin provides fields and functionality for models that can be automatically</span>
+<span class="sd">    matched against documents using Paperless-ngx&#39;s matching algorithms. Models like</span>
+<span class="sd">    Correspondent, DocumentType, and StoragePath use this mixin to implement their</span>
+<span class="sd">    matching behavior.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        match (str | None): The text pattern to match against document content or metadata.</span>
+<span class="sd">            When a document is processed, this pattern is used to determine if the document</span>
+<span class="sd">            should be associated with this model instance.</span>
+
+<span class="sd">        matching_algorithm (MatchingAlgorithmType | None): The algorithm to use for matching.</span>
+<span class="sd">            Possible values are defined in the MatchingAlgorithmType enum, including options</span>
+<span class="sd">            like exact match, regular expression, fuzzy match, etc. Defaults to None.</span>
+
+<span class="sd">        is_insensitive (bool | None): Whether the matching should be case-insensitive.</span>
+<span class="sd">            If True, the match pattern will be applied without considering letter case.</span>
+<span class="sd">            If None, the system default will be used.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        # Creating a correspondent with matching rules</span>
+<span class="sd">        correspondent = Correspondent(</span>
+<span class="sd">            name=&quot;Electric Company&quot;,</span>
+<span class="sd">            match=&quot;electric bill&quot;,</span>
+<span class="sd">            matching_algorithm=MatchingAlgorithmType.ANY_WORD,</span>
+<span class="sd">            is_insensitive=True</span>
+<span class="sd">        )</span>
+
+<span class="sd">        # This correspondent will be automatically assigned to documents</span>
+<span class="sd">        # containing any of the words &quot;electric&quot; or &quot;bill&quot; (case-insensitive)</span>
+<span class="sd">        ```</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">match</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">matching_algorithm</span><span class="p">:</span> <span class="n">MatchingAlgorithmType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="n">MatchingAlgorithmType</span><span class="o">.</span><span class="n">UNKNOWN</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+    <span class="n">matching_algorithm</span><span class="p">:</span> <span class="n">MatchingAlgorithmType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="n">MatchingAlgorithmType</span><span class="o">.</span><span class="n">UNKNOWN</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Algorithm used for matching documents to this entity&quot;</span>
+    <span class="p">)</span>
     <span class="n">is_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 </pre></div>

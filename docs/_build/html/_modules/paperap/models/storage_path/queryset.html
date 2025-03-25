@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/models/storage_path/queryset.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../../_static/readthedocs.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,24 +76,11 @@
              
   <h1>Source code for paperap.models.storage_path.queryset</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">Provide query functionality for storage paths in Paperless-ngx.</span>
 
-<span class="sd">   METADATA:</span>
-
-<span class="sd">       File:    queryset.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">       Created: 2025-03-04</span>
-<span class="sd">        Version: 0.0.8</span>
-<span class="sd">       Author:  Jess Mann</span>
-<span class="sd">       Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">   LAST MODIFIED:</span>
-
-<span class="sd">       2025-03-04     By Jess Mann</span>
-
+<span class="sd">This module contains the StoragePathQuerySet class, which enables filtering and</span>
+<span class="sd">querying storage path objects from the Paperless-ngx API. It extends the standard</span>
+<span class="sd">queryset functionality with storage path-specific filtering methods.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -107,90 +98,163 @@
 
 
 <div class="viewcode-block" id="StoragePathQuerySet">
-<a class="viewcode-back" href="../../../../api/paperap.models.storage_path.queryset.html#paperap.models.StoragePathQuerySet">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.StoragePathQuerySet">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StoragePathQuerySet</span><span class="p">(</span><span class="n">StandardQuerySet</span><span class="p">[</span><span class="s2">&quot;StoragePath&quot;</span><span class="p">],</span> <span class="n">HasStandard</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    QuerySet for Paperless-ngx storage paths with specialized filtering methods.</span>
+
+<span class="sd">    Extends StandardQuerySet to provide storage path-specific filtering</span>
+<span class="sd">    capabilities, including filtering by path value, match criteria, matching algorithm,</span>
+<span class="sd">    and permission settings. This queryset enables efficient querying and filtering</span>
+<span class="sd">    of storage path objects from the Paperless-ngx API.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Get all storage paths:</span>
+<span class="sd">            &gt;&gt;&gt; all_paths = client.storage_paths.all()</span>
+
+<span class="sd">        Filter by path:</span>
+<span class="sd">            &gt;&gt;&gt; tax_paths = client.storage_paths.path(&quot;/documents/taxes/&quot;)</span>
+
+<span class="sd">        Filter by matching algorithm:</span>
+<span class="sd">            &gt;&gt;&gt; auto_paths = client.storage_paths.matching_algorithm(1)  # 1 = Auto</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="StoragePathQuerySet.path">
-<a class="viewcode-back" href="../../../../api/paperap.models.storage_path.queryset.html#paperap.models.StoragePathQuerySet.path">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.StoragePathQuerySet.path">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter storage paths by their actual path value.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value: The path to filter by</span>
-<span class="sd">            exact: If True, match the exact path, otherwise use contains</span>
-<span class="sd">            case_insensitive: If True, ignore case when matching</span>
+<span class="sd">            value: The path string to filter by.</span>
+<span class="sd">            exact: If True, match the exact path string. If False, match paths</span>
+<span class="sd">                containing the value string. Defaults to True.</span>
+<span class="sd">            case_insensitive: If True, ignore case when matching. Defaults to True.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered StoragePathQuerySet</span>
+<span class="sd">            A filtered StoragePathQuerySet containing only matching storage paths.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find exact path match:</span>
+<span class="sd">                &gt;&gt;&gt; tax_paths = client.storage_paths.path(&quot;/documents/taxes/&quot;)</span>
+
+<span class="sd">            Find paths containing &quot;invoice&quot; (case insensitive):</span>
+<span class="sd">                &gt;&gt;&gt; invoice_paths = client.storage_paths.path(&quot;invoice&quot;, exact=False)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="o">=</span><span class="n">case_insensitive</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="StoragePathQuerySet.match">
-<a class="viewcode-back" href="../../../../api/paperap.models.storage_path.queryset.html#paperap.models.StoragePathQuerySet.match">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.StoragePathQuerySet.match">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter storage paths by match value.</span>
+<span class="sd">        Filter storage paths by their match pattern value.</span>
+
+<span class="sd">        Filter storage paths based on the match pattern used for automatic</span>
+<span class="sd">        document routing in Paperless-ngx.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value: The match value to filter by</span>
-<span class="sd">            exact: If True, match the exact match value, otherwise use contains</span>
+<span class="sd">            value: The match pattern string to filter by.</span>
+<span class="sd">            exact: If True, match the exact pattern string. If False, match</span>
+<span class="sd">                patterns containing the value string. Defaults to True.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered StoragePathQuerySet</span>
+<span class="sd">            A filtered StoragePathQuerySet containing only matching storage paths.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find paths with exact match pattern:</span>
+<span class="sd">                &gt;&gt;&gt; invoice_paths = client.storage_paths.match(&quot;invoice&quot;)</span>
+
+<span class="sd">            Find paths with match patterns containing &quot;tax&quot;:</span>
+<span class="sd">                &gt;&gt;&gt; tax_paths = client.storage_paths.match(&quot;tax&quot;, exact=False)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s2">&quot;match&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="StoragePathQuerySet.matching_algorithm">
-<a class="viewcode-back" href="../../../../api/paperap.models.storage_path.queryset.html#paperap.models.StoragePathQuerySet.matching_algorithm">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.StoragePathQuerySet.matching_algorithm">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">matching_algorithm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter storage paths by matching algorithm.</span>
+<span class="sd">        Filter storage paths by their matching algorithm.</span>
+
+<span class="sd">        Filter storage paths based on the algorithm used for matching</span>
+<span class="sd">        documents to storage paths in Paperless-ngx.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value: The matching algorithm to filter by</span>
+<span class="sd">            value: The matching algorithm ID to filter by. Common values are:</span>
+<span class="sd">                1: Auto (let Paperless decide)</span>
+<span class="sd">                2: Exact (exact string matching)</span>
+<span class="sd">                3: Regular expression</span>
+<span class="sd">                4: Fuzzy match</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered StoragePathQuerySet</span>
+<span class="sd">            A filtered StoragePathQuerySet containing only storage paths</span>
+<span class="sd">            using the specified matching algorithm.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find paths using regular expressions:</span>
+<span class="sd">                &gt;&gt;&gt; regex_paths = client.storage_paths.matching_algorithm(3)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">matching_algorithm</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="StoragePathQuerySet.case_insensitive">
-<a class="viewcode-back" href="../../../../api/paperap.models.storage_path.queryset.html#paperap.models.StoragePathQuerySet.case_insensitive">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.StoragePathQuerySet.case_insensitive">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">case_insensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter storage paths by case sensitivity setting.</span>
+<span class="sd">        Filter storage paths by their case sensitivity setting.</span>
+
+<span class="sd">        Filter storage paths based on whether they use case-insensitive</span>
+<span class="sd">        matching for document routing.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            insensitive: If True, get storage paths with case insensitive matching</span>
+<span class="sd">            insensitive: If True, return storage paths configured for</span>
+<span class="sd">                case-insensitive matching. If False, return paths with</span>
+<span class="sd">                case-sensitive matching. Defaults to True.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered StoragePathQuerySet</span>
+<span class="sd">            A filtered StoragePathQuerySet containing only storage paths</span>
+<span class="sd">            with the specified case sensitivity setting.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find case-insensitive paths:</span>
+<span class="sd">                &gt;&gt;&gt; insensitive_paths = client.storage_paths.case_insensitive()</span>
+
+<span class="sd">            Find case-sensitive paths:</span>
+<span class="sd">                &gt;&gt;&gt; sensitive_paths = client.storage_paths.case_insensitive(False)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_insensitive</span><span class="o">=</span><span class="n">insensitive</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="StoragePathQuerySet.user_can_change">
-<a class="viewcode-back" href="../../../../api/paperap.models.storage_path.queryset.html#paperap.models.StoragePathQuerySet.user_can_change">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.StoragePathQuerySet.user_can_change">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">user_can_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">can_change</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter storage paths by user change permission.</span>
+<span class="sd">        Filter storage paths by user modification permissions.</span>
+
+<span class="sd">        Filter storage paths based on whether the current user has</span>
+<span class="sd">        permission to modify them in the Paperless-ngx system.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            can_change: If True, get storage paths that can be changed by user</span>
+<span class="sd">            can_change: If True, return storage paths that the current user</span>
+<span class="sd">                can modify. If False, return paths that the user cannot modify.</span>
+<span class="sd">                Defaults to True.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered StoragePathQuerySet</span>
+<span class="sd">            A filtered StoragePathQuerySet containing only storage paths</span>
+<span class="sd">            with the specified permission setting.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find paths the current user can modify:</span>
+<span class="sd">                &gt;&gt;&gt; editable_paths = client.storage_paths.user_can_change()</span>
+
+<span class="sd">            Find paths the current user cannot modify:</span>
+<span class="sd">                &gt;&gt;&gt; readonly_paths = client.storage_paths.user_can_change(False)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user_can_change</span><span class="o">=</span><span class="n">can_change</span><span class="p">)</span></div>

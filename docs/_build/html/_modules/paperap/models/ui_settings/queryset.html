@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/models/ui_settings/queryset.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../../_static/readthedocs.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,28 +76,12 @@
              
   <h1>Source code for paperap.models.ui_settings.queryset</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Provide query functionality for UI settings in Paperless-NGX.</span>
 
-
-
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">METADATA:</span>
-
-<span class="sd">File:    queryset.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">Created: 2025-03-21</span>
-<span class="sd">        Version: 0.0.9</span>
-<span class="sd">Author:  Jess Mann</span>
-<span class="sd">Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">LAST MODIFIED:</span>
-
-<span class="sd">2025-03-21     By Jess Mann</span>
-
+<span class="sd">This module contains the specialized queryset implementation for interacting</span>
+<span class="sd">with the UI settings endpoint of Paperless-NGX. Unlike most resources that</span>
+<span class="sd">can return multiple objects, UI settings is a singleton resource that always</span>
+<span class="sd">returns exactly one object containing all UI configuration settings.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -110,42 +98,73 @@
 
 
 <div class="viewcode-block" id="UISettingsQuerySet">
-<a class="viewcode-back" href="../../../../api/paperap.models.ui_settings.queryset.html#paperap.models.UISettingsQuerySet">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.UISettingsQuerySet">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UISettingsQuerySet</span><span class="p">(</span><span class="n">StandardQuerySet</span><span class="p">[</span><span class="s2">&quot;UISettings&quot;</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A lazy-loaded, chainable query interface for Paperless NGX resources.</span>
+<span class="sd">    Manage queries for UI settings in Paperless-NGX.</span>
 
-<span class="sd">    BaseQuerySet provides pagination, filtering, and caching functionality similar to Django&#39;s BaseQuerySet.</span>
-<span class="sd">    It&#39;s designed to be lazy - only fetching data when it&#39;s actually needed.</span>
+<span class="sd">    Extends StandardQuerySet to handle the singleton nature of UI settings,</span>
+<span class="sd">    which always returns exactly one object containing all UI configuration.</span>
+<span class="sd">    Unlike typical querysets that can return multiple objects, this queryset</span>
+<span class="sd">    is specialized for the unique characteristics of the UI settings endpoint.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        _result_cache (list[UISettings] | None): Cache of fetched UI settings objects.</span>
+<span class="sd">        _last_response (ClientResponse | None): The last response received from the API.</span>
+<span class="sd">        resource (Resource): The resource instance associated with the queryset.</span>
+<span class="sd">        filters (dict[str, Any]): Dictionary of filters to apply to the API request.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="UISettingsQuerySet.count">
-<a class="viewcode-back" href="../../../../api/paperap.models.ui_settings.queryset.html#paperap.models.UISettingsQuerySet.count">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.UISettingsQuerySet.count">[docs]</a>
     <span class="nd">@override</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Count the number of UI settings.</span>
+<span class="sd">        Return the count of UI settings objects.</span>
 
-<span class="sd">        UISettings only ever returns one element.</span>
+<span class="sd">        Overrides the standard count method to always return 1 because the UI settings</span>
+<span class="sd">        endpoint in Paperless-NGX always returns exactly one object containing</span>
+<span class="sd">        all UI configuration settings.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            int: The number of UI settings</span>
+<span class="sd">            Literal[1]: Always returns 1, as there is only one UI settings object.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            ```python</span>
+<span class="sd">            settings_count = client.ui_settings().count()</span>
+<span class="sd">            print(settings_count)  # Output: 1</span>
+<span class="sd">            ```</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="mi">1</span></div>
 
 
 <div class="viewcode-block" id="UISettingsQuerySet.has_permission">
-<a class="viewcode-back" href="../../../../api/paperap.models.ui_settings.queryset.html#paperap.models.UISettingsQuerySet.has_permission">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.UISettingsQuerySet.has_permission">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">has_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter UI settings by permissions.</span>
+<span class="sd">        Filter UI settings by checking if a specific permission exists.</span>
+
+<span class="sd">        Creates a filtered queryset that checks whether a specific permission</span>
+<span class="sd">        is included in the permissions list. This method is useful for determining</span>
+<span class="sd">        if the current user has a particular permission in the Paperless-NGX system.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value (str): The permissions to filter by</span>
+<span class="sd">            value (str): The permission string to check for in the permissions list.</span>
+<span class="sd">                Common permissions include &quot;view_document&quot;, &quot;change_document&quot;, etc.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            UISettingsQuerySet: The filtered queryset</span>
+<span class="sd">            Self: A new queryset filtered to include only settings with the specified permission.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            ```python</span>
+<span class="sd">            # Check if the current user has permission to add documents</span>
+<span class="sd">            if client.ui_settings().has_permission(&quot;add_document&quot;).exists():</span>
+<span class="sd">                print(&quot;User can add documents&quot;)</span>
+<span class="sd">            else:</span>
+<span class="sd">                print(&quot;User cannot add documents&quot;)</span>
+<span class="sd">            ```</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">permissions__contains</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>

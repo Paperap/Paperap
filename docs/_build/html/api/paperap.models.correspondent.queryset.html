@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -77,35 +77,38 @@
              
   <section id="module-paperap.models.correspondent.queryset">
 <span id="paperap-models-correspondent-queryset-module"></span><h1>paperap.models.correspondent.queryset module<a class="headerlink" href="#module-paperap.models.correspondent.queryset" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<blockquote>
-<div><p>METADATA:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>File:    queryset.py</dt><dd><p>Project: paperap</p>
-</dd>
-<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.10</p>
-</dd>
-</dl>
-<p>Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
-<blockquote>
-<div><p>Copyright (c) 2025 Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
-</div></blockquote>
-<hr class="docutils" />
-<blockquote>
-<div><p>LAST MODIFIED:</p>
-<blockquote>
-<div><p>2025-03-04     By Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
+<p>Provide queryset functionality for Paperless-ngx correspondents.</p>
+<p>This module implements the CorrespondentQuerySet class, which enables
+filtering and querying correspondent objects from the Paperless-ngx API.
+It extends the standard queryset functionality with correspondent-specific
+filtering methods.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.correspondent.queryset.CorrespondentQuerySet">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.correspondent.queryset.</span></span><span class="sig-name descname"><span class="pre">CorrespondentQuerySet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_fetch_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_next_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_last_response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_urls_fetched</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/correspondent/queryset.html#CorrespondentQuerySet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.correspondent.queryset.CorrespondentQuerySet" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.queryset.html#paperap.models.abstract.queryset.StandardQuerySet" title="paperap.models.abstract.queryset.StandardQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardQuerySet</span></code></a>[Correspondent], <a class="reference internal" href="paperap.models.mixins.queryset.html#paperap.models.mixins.queryset.HasOwner" title="paperap.models.mixins.queryset.HasOwner"><code class="xref py py-class docutils literal notranslate"><span class="pre">HasOwner</span></code></a>, <a class="reference internal" href="paperap.models.mixins.queryset.html#paperap.models.mixins.queryset.HasDocumentCount" title="paperap.models.mixins.queryset.HasDocumentCount"><code class="xref py py-class docutils literal notranslate"><span class="pre">HasDocumentCount</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.queryset.html#paperap.models.abstract.queryset.StandardQuerySet" title="paperap.models.abstract.queryset.StandardQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardQuerySet</span></code></a>[Correspondent], <a class="reference internal" href="paperap.models.mixins.queryset.html#paperap.models.mixins.queryset.HasOwner" title="paperap.models.mixins.queryset.HasOwner"><code class="xref py py-class docutils literal notranslate"><span class="pre">HasOwner</span></code></a>, <a class="reference internal" href="paperap.models.mixins.queryset.html#paperap.models.mixins.queryset.HasDocumentCount" title="paperap.models.mixins.queryset.HasDocumentCount"><code class="xref py py-class docutils literal notranslate"><span class="pre">HasDocumentCount</span></code></a>, <a class="reference internal" href="paperap.models.abstract.queryset.html#paperap.models.abstract.queryset.SupportsBulkActions" title="paperap.models.abstract.queryset.SupportsBulkActions"><code class="xref py py-class docutils literal notranslate"><span class="pre">SupportsBulkActions</span></code></a></p>
 <p>QuerySet for Paperless-ngx correspondents with specialized filtering methods.</p>
+<p>Extends StandardQuerySet to provide correspondent-specific filtering
+capabilities, including filtering by name, matching algorithm, and other
+correspondent attributes.</p>
+<p>Inherits document counting capabilities from HasDocumentCount
+and owner-related filtering from HasOwner.</p>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Get all correspondents:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">correspondents</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd>
+<dt>Filter by name:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">electric</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="p">()</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="s2">&quot;Electric Company&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Find correspondents with case-insensitive matching:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">insensitive</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="p">()</span><span class="o">.</span><span class="n">case_insensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -127,34 +130,55 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – The correspondent name to filter by</p></li>
-<li><p><strong>exact</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, match the exact name, otherwise use contains</p></li>
-<li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
-<li><p><strong>case_insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>)</p></li>
+<li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The correspondent name to filter by.</p></li>
+<li><p><strong>exact</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, match the exact name, otherwise use contains.</p></li>
+<li><p><strong>case_insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, ignore case when matching.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Filtered CorrespondentQuerySet</p>
+<dd class="field-odd"><p>Filtered CorrespondentQuerySet.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Find correspondents with exact name:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">exact_match</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="p">()</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="s2">&quot;Electric Company&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Find correspondents with name containing “electric”:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contains</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="p">()</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="s2">&quot;electric&quot;</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.correspondent.queryset.CorrespondentQuerySet.matching_algorithm">
 <span class="sig-name descname"><span class="pre">matching_algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/correspondent/queryset.html#CorrespondentQuerySet.matching_algorithm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.correspondent.queryset.CorrespondentQuerySet.matching_algorithm" title="Link to this definition"></a></dt>
 <dd><p>Filter correspondents by their matching algorithm.</p>
+<p>Paperless-ngx supports different algorithms for matching documents to
+correspondents. This method filters correspondents by the algorithm they use.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The matching algorithm ID to filter by</p>
+<dd class="field-odd"><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The matching algorithm ID to filter by.
+Common values include:
+1: Any word
+2: All words
+3: Exact match
+4: Regular expression
+5: Fuzzy match
+6: Auto</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Filtered CorrespondentQuerySet</p>
+<dd class="field-odd"><p>Filtered CorrespondentQuerySet.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -162,37 +186,51 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.correspondent.queryset.CorrespondentQuerySet.match">
 <span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">match</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case_insensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/correspondent/queryset.html#CorrespondentQuerySet.match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.correspondent.queryset.CorrespondentQuerySet.match" title="Link to this definition"></a></dt>
-<dd><p>Filter correspondents by match.</p>
+<dd><p>Filter correspondents by their match pattern.</p>
+<p>The match pattern is the text pattern used by Paperless-ngx to automatically
+assign documents to this correspondent.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>match</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The match to filter by</p></li>
-<li><p><strong>exact</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, match the exact match, otherwise use contains</p></li>
-<li><p><strong>case_insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>)</p></li>
+<li><p><strong>match</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The match pattern to filter by.</p></li>
+<li><p><strong>exact</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, match the exact pattern, otherwise use contains.</p></li>
+<li><p><strong>case_insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, ignore case when matching.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Filtered CorrespondentQuerySet</p>
+<dd class="field-odd"><p>Filtered CorrespondentQuerySet.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Find correspondents with match pattern containing “invoice”:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">invoice_matchers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="p">()</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;invoice&quot;</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.correspondent.queryset.CorrespondentQuerySet.case_insensitive">
 <span class="sig-name descname"><span class="pre">case_insensitive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">insensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/correspondent/queryset.html#CorrespondentQuerySet.case_insensitive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.correspondent.queryset.CorrespondentQuerySet.case_insensitive" title="Link to this definition"></a></dt>
 <dd><p>Filter correspondents by case sensitivity setting.</p>
+<p>Paperless-ngx allows correspondents to have case-sensitive or case-insensitive
+matching. This method filters correspondents based on that setting.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, get correspondents with case insensitive matching</p>
+<dd class="field-odd"><p><strong>insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, get correspondents with case-insensitive matching.
+If False, get correspondents with case-sensitive matching.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Filtered CorrespondentQuerySet</p>
+<dd class="field-odd"><p>Filtered CorrespondentQuerySet.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -201,15 +239,19 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dt class="sig sig-object py" id="paperap.models.correspondent.queryset.CorrespondentQuerySet.user_can_change">
 <span class="sig-name descname"><span class="pre">user_can_change</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/correspondent/queryset.html#CorrespondentQuerySet.user_can_change"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.correspondent.queryset.CorrespondentQuerySet.user_can_change" title="Link to this definition"></a></dt>
 <dd><p>Filter correspondents by user change permission.</p>
+<p>In Paperless-ngx, some correspondents may be restricted from modification
+by certain users based on permissions. This method filters correspondents
+based on whether the current user can change them.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, get correspondents that can be changed by user</p>
+<dd class="field-odd"><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, get correspondents that can be changed by the current user.
+If False, get correspondents that cannot be changed by the current user.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Filtered CorrespondentQuerySet</p>
+<dd class="field-odd"><p>Filtered CorrespondentQuerySet.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -218,21 +260,33 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dt class="sig sig-object py" id="paperap.models.correspondent.queryset.CorrespondentQuerySet.slug">
 <span class="sig-name descname"><span class="pre">slug</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case_insensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/correspondent/queryset.html#CorrespondentQuerySet.slug"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.correspondent.queryset.CorrespondentQuerySet.slug" title="Link to this definition"></a></dt>
 <dd><p>Filter correspondents by slug.</p>
+<p>Slugs are URL-friendly versions of the correspondent name used in the
+Paperless-ngx web interface and API. This method filters correspondents
+based on their slug value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The slug to filter by</p></li>
-<li><p><strong>exact</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, match the exact slug, otherwise use contains</p></li>
-<li><p><strong>case_insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, ignore case when matching</p></li>
+<li><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The slug to filter by.</p></li>
+<li><p><strong>exact</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, match the exact slug, otherwise use contains.</p></li>
+<li><p><strong>case_insensitive</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, ignore case when matching.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Filtered CorrespondentQuerySet</p>
+<dd class="field-odd"><p>Filtered CorrespondentQuerySet.</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<dl>
+<dt>Find correspondent with slug “electric-company”:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">electric</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="p">()</span><span class="o">.</span><span class="n">slug</span><span class="p">(</span><span class="s2">&quot;electric-company&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 </dd></dl>

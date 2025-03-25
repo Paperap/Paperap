@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/models/tag/queryset.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../../_static/readthedocs.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,24 +76,12 @@
              
   <h1>Source code for paperap.models.tag.queryset</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">Provide specialized query capabilities for Paperless-ngx tag resources.</span>
 
-<span class="sd">   METADATA:</span>
-
-<span class="sd">       File:    queryset.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">       Created: 2025-03-04</span>
-<span class="sd">        Version: 0.0.9</span>
-<span class="sd">       Author:  Jess Mann</span>
-<span class="sd">       Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">   LAST MODIFIED:</span>
-
-<span class="sd">       2025-03-04     By Jess Mann</span>
-
+<span class="sd">This module implements the TagQuerySet class, which extends the standard</span>
+<span class="sd">queryset functionality with tag-specific filtering methods. These methods</span>
+<span class="sd">enable efficient and intuitive querying of tag resources based on their</span>
+<span class="sd">unique attributes such as color, matching algorithm, and inbox status.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -97,7 +89,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Self</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.abstract.queryset</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseQuerySet</span><span class="p">,</span> <span class="n">StandardQuerySet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.abstract.queryset</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseQuerySet</span><span class="p">,</span> <span class="n">StandardQuerySet</span><span class="p">,</span> <span class="n">SupportsBulkActions</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.mixins.queryset</span><span class="w"> </span><span class="kn">import</span> <span class="n">HasStandard</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
@@ -107,25 +99,55 @@
 
 
 <div class="viewcode-block" id="TagQuerySet">
-<a class="viewcode-back" href="../../../../api/paperap.models.tag.queryset.html#paperap.models.TagQuerySet">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">TagQuerySet</span><span class="p">(</span><span class="n">StandardQuerySet</span><span class="p">[</span><span class="s2">&quot;Tag&quot;</span><span class="p">],</span> <span class="n">HasStandard</span><span class="p">):</span>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.TagQuerySet">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TagQuerySet</span><span class="p">(</span><span class="n">StandardQuerySet</span><span class="p">[</span><span class="s2">&quot;Tag&quot;</span><span class="p">],</span> <span class="n">HasStandard</span><span class="p">,</span> <span class="n">SupportsBulkActions</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    QuerySet for Paperless-ngx tags with specialized filtering methods.</span>
+<span class="sd">    Implement specialized filtering methods for Paperless-ngx tags.</span>
+
+<span class="sd">    Extends StandardQuerySet to provide tag-specific filtering capabilities,</span>
+<span class="sd">    including filtering by color, matching algorithm, inbox status, and other</span>
+<span class="sd">    tag-specific attributes.</span>
+
+<span class="sd">    The TagQuerySet provides a fluent interface for building complex queries</span>
+<span class="sd">    against tag resources in the Paperless-ngx API.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Get all inbox tags:</span>
+<span class="sd">            &gt;&gt;&gt; inbox_tags = client.tags.all().is_inbox_tag()</span>
+
+<span class="sd">        Find tags with a specific color:</span>
+<span class="sd">            &gt;&gt;&gt; red_tags = client.tags.all().colour(&quot;#ff0000&quot;)</span>
+
+<span class="sd">        Find tags that can be changed by the user:</span>
+<span class="sd">            &gt;&gt;&gt; editable_tags = client.tags.all().user_can_change()</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="TagQuerySet.colour">
-<a class="viewcode-back" href="../../../../api/paperap.models.tag.queryset.html#paperap.models.TagQuerySet.colour">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.TagQuerySet.colour">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">colour</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter tags by color.</span>
 
+<span class="sd">        Allows filtering tags based on their color attribute. The color can be specified</span>
+<span class="sd">        as either a string (e.g., &quot;#ff0000&quot; for red) or an integer representation.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: The color to filter by (string or integer)</span>
-<span class="sd">            exact: If True, match the exact color, otherwise use contains</span>
-<span class="sd">            case_insensitive: If True, ignore case when matching (for string values)</span>
+<span class="sd">            value: The color to filter by (string or integer).</span>
+<span class="sd">            exact: If True, match the exact color, otherwise use contains matching.</span>
+<span class="sd">                Defaults to True.</span>
+<span class="sd">            case_insensitive: If True, ignore case when matching (for string values).</span>
+<span class="sd">                Defaults to True.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered TagQuerySet</span>
+<span class="sd">            A filtered TagQuerySet containing only tags with matching colors.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find tags with red color:</span>
+<span class="sd">                &gt;&gt;&gt; red_tags = client.tags.all().colour(&quot;#ff0000&quot;)</span>
+
+<span class="sd">            Find tags with colors containing &quot;blue&quot; (case insensitive):</span>
+<span class="sd">                &gt;&gt;&gt; blue_tags = client.tags.all().colour(&quot;blue&quot;, exact=False)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -134,82 +156,143 @@
 
 
 <div class="viewcode-block" id="TagQuerySet.match">
-<a class="viewcode-back" href="../../../../api/paperap.models.tag.queryset.html#paperap.models.TagQuerySet.match">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.TagQuerySet.match">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter tags by match value.</span>
 
+<span class="sd">        Filters tags based on their match pattern, which is used by Paperless-ngx</span>
+<span class="sd">        for automatic tag assignment.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: The value to filter by</span>
-<span class="sd">            exact: If True, match the exact value, otherwise use contains</span>
-<span class="sd">            case_insensitive: If True, ignore case when matching</span>
+<span class="sd">            value: The match pattern value to filter by.</span>
+<span class="sd">            exact: If True, match the exact value, otherwise use contains matching.</span>
+<span class="sd">                Defaults to True.</span>
+<span class="sd">            case_insensitive: If True, ignore case when matching. Defaults to True.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered TagQuerySet</span>
+<span class="sd">            A filtered TagQuerySet containing only tags with matching patterns.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find tags that match &quot;invoice&quot;:</span>
+<span class="sd">                &gt;&gt;&gt; invoice_tags = client.tags.all().match(&quot;invoice&quot;)</span>
+
+<span class="sd">            Find tags with match patterns containing &quot;tax&quot;:</span>
+<span class="sd">                &gt;&gt;&gt; tax_tags = client.tags.all().match(&quot;tax&quot;, exact=False)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s2">&quot;match&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="o">=</span><span class="n">case_insensitive</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TagQuerySet.matching_algorithm">
-<a class="viewcode-back" href="../../../../api/paperap.models.tag.queryset.html#paperap.models.TagQuerySet.matching_algorithm">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.TagQuerySet.matching_algorithm">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">matching_algorithm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter tags by matching algorithm.</span>
 
+<span class="sd">        Filters tags based on the algorithm used for automatic tag assignment.</span>
+<span class="sd">        Paperless-ngx supports different matching algorithms like exact, regex,</span>
+<span class="sd">        fuzzy matching, etc., each represented by an integer value.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value (int): The matching algorithm to filter by</span>
+<span class="sd">            value: The matching algorithm ID to filter by. Common values include:</span>
+<span class="sd">                1 (any), 2 (all), 3 (literal), 4 (regex), 5 (fuzzy match).</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered TagQuerySet</span>
+<span class="sd">            A filtered TagQuerySet containing only tags using the specified</span>
+<span class="sd">            matching algorithm.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find tags using regex matching:</span>
+<span class="sd">                &gt;&gt;&gt; regex_tags = client.tags.all().matching_algorithm(4)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">matching_algorithm</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TagQuerySet.case_insensitive">
-<a class="viewcode-back" href="../../../../api/paperap.models.tag.queryset.html#paperap.models.TagQuerySet.case_insensitive">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.TagQuerySet.case_insensitive">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">case_insensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter tags by case insensitivity.</span>
+<span class="sd">        Filter tags by case insensitivity setting.</span>
+
+<span class="sd">        Filters tags based on whether their matching is case insensitive or not.</span>
+<span class="sd">        This affects how Paperless-ngx performs automatic tag assignment.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value: If True, filter tags that are case insensitive</span>
+<span class="sd">            value: If True, returns tags configured for case-insensitive matching.</span>
+<span class="sd">                If False, returns tags configured for case-sensitive matching.</span>
+<span class="sd">                Defaults to True.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered TagQuerySet</span>
+<span class="sd">            A filtered TagQuerySet containing only tags with the specified</span>
+<span class="sd">            case sensitivity setting.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find case-insensitive tags:</span>
+<span class="sd">                &gt;&gt;&gt; insensitive_tags = client.tags.all().case_insensitive()</span>
+
+<span class="sd">            Find case-sensitive tags:</span>
+<span class="sd">                &gt;&gt;&gt; sensitive_tags = client.tags.all().case_insensitive(False)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_insensitive</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TagQuerySet.is_inbox_tag">
-<a class="viewcode-back" href="../../../../api/paperap.models.tag.queryset.html#paperap.models.TagQuerySet.is_inbox_tag">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.TagQuerySet.is_inbox_tag">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_inbox_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter tags by inbox status.</span>
 
+<span class="sd">        In Paperless-ngx, inbox tags are special tags that mark documents as needing</span>
+<span class="sd">        attention or processing. This method filters tags based on whether they are</span>
+<span class="sd">        designated as inbox tags.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: If True, get inbox tags, otherwise non-inbox tags</span>
+<span class="sd">            value: If True, returns only inbox tags. If False, returns only non-inbox tags.</span>
+<span class="sd">                Defaults to True.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered TagQuerySet</span>
+<span class="sd">            A filtered TagQuerySet containing only tags with the specified</span>
+<span class="sd">            inbox status.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Get all inbox tags:</span>
+<span class="sd">                &gt;&gt;&gt; inbox_tags = client.tags.all().is_inbox_tag()</span>
+
+<span class="sd">            Get all non-inbox tags:</span>
+<span class="sd">                &gt;&gt;&gt; regular_tags = client.tags.all().is_inbox_tag(False)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_inbox_tag</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TagQuerySet.user_can_change">
-<a class="viewcode-back" href="../../../../api/paperap.models.tag.queryset.html#paperap.models.TagQuerySet.user_can_change">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.TagQuerySet.user_can_change">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">user_can_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter tags by user change permission.</span>
 
+<span class="sd">        Filters tags based on whether the current authenticated user has permission</span>
+<span class="sd">        to modify them. This is useful for identifying which tags can be edited</span>
+<span class="sd">        in user interfaces.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: If True, get tags that can be changed by user</span>
+<span class="sd">            value: If True, returns tags that can be changed by the current user.</span>
+<span class="sd">                If False, returns tags that cannot be changed by the current user.</span>
+<span class="sd">                Defaults to True.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered TagQuerySet</span>
+<span class="sd">            A filtered TagQuerySet containing only tags with the specified</span>
+<span class="sd">            change permission.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Get tags the current user can modify:</span>
+<span class="sd">                &gt;&gt;&gt; editable_tags = client.tags.all().user_can_change()</span>
+
+<span class="sd">            Get tags the current user cannot modify:</span>
+<span class="sd">                &gt;&gt;&gt; readonly_tags = client.tags.all().user_can_change(False)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user_can_change</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>

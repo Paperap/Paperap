@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Usage &mdash; Paperap 0.0.8 documentation</title>
+  <title>Usage Guide &mdash; Paperap 0.0.8 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -48,10 +48,33 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#basic-usage">Basic Usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#working-with-documents">Working with Documents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#working-with-other-resources">Working with Other Resources</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#client-setup">Client Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#resources-models-and-querysets">Resources, Models, and QuerySets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-documents">Working with Documents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#retrieving-documents">Retrieving Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#searching-and-filtering">Searching and Filtering</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#uploading-documents">Uploading Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#updating-documents">Updating Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deleting-documents">Deleting Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bulk-operations">Bulk Operations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-tags">Working with Tags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-correspondents">Working with Correspondents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#document-types">Document Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#storage-paths">Storage Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#custom-fields">Custom Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#saved-views">Saved Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tasks-and-workflows">Tasks and Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-features">Advanced Features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#using-signals">Using Signals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#asynchronous-operations">Asynchronous Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-plugins">Using Plugins</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#error-handling">Error Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pagination-and-performance">Pagination and Performance</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
@@ -72,7 +95,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Usage</li>
+      <li class="breadcrumb-item active">Usage Guide</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/usage.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -82,73 +105,602 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="usage">
-<h1>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h1>
-<section id="basic-usage">
-<h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Link to this heading"></a></h2>
+  <section id="usage-guide">
+<h1>Usage Guide<a class="headerlink" href="#usage-guide" title="Link to this heading"></a></h1>
+<p>This guide covers how to use Paperap to interact with your Paperless-NgX instance, from basic setup to advanced operations.</p>
+<section id="client-setup">
+<h2>Client Setup<a class="headerlink" href="#client-setup" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">PaperlessClient</span></code> class is your entry point to the Paperless-NgX API:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">paperap</span><span class="w"> </span><span class="kn">import</span> <span class="n">PaperlessClient</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Settings</span>
 
-<span class="c1"># Initialize the client with your Paperless-ngx instance settings</span>
+<span class="c1"># Token-based authentication from environment variables (recommended)</span>
+<span class="c1"># Set PAPERLESS_BASE_URL and PAPERLESS_TOKEN in your environment</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">PaperlessClient</span><span class="p">()</span>
+
+<span class="c1"># Alternatively, specify credentials directly</span>
 <span class="n">client</span> <span class="o">=</span> <span class="n">PaperlessClient</span><span class="p">(</span>
-    <span class="n">Settings</span><span class="p">(</span>
-        <span class="n">host</span><span class="o">=</span><span class="s2">&quot;http://localhost:8000&quot;</span><span class="p">,</span>
-        <span class="n">token</span><span class="o">=</span><span class="s2">&quot;your_api_token&quot;</span>
-    <span class="p">)</span>
+    <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;http://paperless.local:8000&quot;</span><span class="p">,</span>  <span class="c1"># Your Paperless-NgX URL</span>
+    <span class="n">token</span><span class="o">=</span><span class="s2">&quot;your_api_token&quot;</span>                   <span class="c1"># API token from admin interface</span>
 <span class="p">)</span>
 
-<span class="c1"># Get all documents</span>
-<span class="n">documents</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="c1"># Username and password authentication</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">PaperlessClient</span><span class="p">(</span>
+    <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;http://paperless.local:8000&quot;</span><span class="p">,</span>
+    <span class="n">username</span><span class="o">=</span><span class="s2">&quot;your_username&quot;</span><span class="p">,</span>
+    <span class="n">password</span><span class="o">=</span><span class="s2">&quot;your_password&quot;</span>
+<span class="p">)</span>
 
-<span class="c1"># Filter documents</span>
-<span class="n">pdf_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">mime_type</span><span class="o">=</span><span class="s2">&quot;application/pdf&quot;</span><span class="p">)</span>
+<span class="c1"># With custom options</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">PaperlessClient</span><span class="p">(</span>
+    <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://paperless.example.com&quot;</span><span class="p">,</span>
+    <span class="n">token</span><span class="o">=</span><span class="s2">&quot;your_api_token&quot;</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>                  <span class="c1"># Request timeout in seconds</span>
+    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">MyCustomPlugin</span><span class="p">()],</span>  <span class="c1"># Custom plugins</span>
+    <span class="n">save_on_write</span><span class="o">=</span><span class="kc">False</span>          <span class="c1"># Require explicit save() calls</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="resources-models-and-querysets">
+<h2>Resources, Models, and QuerySets<a class="headerlink" href="#resources-models-and-querysets" title="Link to this heading"></a></h2>
+<p>Paperap works very similarly to django, and syntax is largely interchangeable.</p>
+<p>Each endpoint exposed by paperless NGX has a corresponding Model, Resource, and QuerySet.</p>
+<ul class="simple">
+<li><p>Resources serve as a gateway for sending requests to the API, and parsing its responses.</p></li>
+<li><p>Models work just like a typical ORM model, but loaded from the Paperless NGX REST API, instead of a database.</p></li>
+<li><p>QuerySets are a lazy-loaded iterator of Models that can be filtered, ordered, and sliced.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Access resources from the client</span>
+<span class="n">client</span><span class="o">.</span><span class="n">documents</span>  <span class="c1"># DocumentResource</span>
+<span class="n">client</span><span class="o">.</span><span class="n">tags</span>       <span class="c1"># TagResource</span>
 
-<span class="c1"># Get a specific document by ID</span>
-<span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># Access querysets by calling the resource</span>
+<span class="n">all_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span>           <span class="c1"># DocumentQuerySet</span>
+<span class="n">all_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>       <span class="c1"># Equivalent to above</span>
+<span class="n">tags</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">tags</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;tax&quot;</span><span class="p">)</span> <span class="c1"># TagQuerySet</span>
 
-<span class="c1"># Download a document</span>
-<span class="n">doc</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s2">&quot;my_document.pdf&quot;</span><span class="p">)</span>
+<span class="c1"># QuerySets are chainable</span>
+<span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;tax&quot;</span><span class="p">)</span>
+<span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;tax&quot;</span><span class="p">)</span>
+<span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;tax&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;created&quot;</span><span class="p">)</span>
+
+<span class="c1"># Access models by iterating over querysets</span>
+<span class="n">document</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>    <span class="c1"># DocumentModel</span>
+<span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">tags</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name__icontains</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="working-with-documents">
 <h2>Working with Documents<a class="headerlink" href="#working-with-documents" title="Link to this heading"></a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a new document (upload a file)</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;example.pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span>
-        <span class="n">file</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Example Document&quot;</span><span class="p">,</span>
-        <span class="n">correspondent</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># ID of correspondent</span>
-        <span class="n">document_type</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># ID of document type</span>
-    <span class="p">)</span>
+<p>Documents are the core resource in Paperless-NgX. Paperap provides a rich interface for managing them:</p>
+<section id="retrieving-documents">
+<h3>Retrieving Documents<a class="headerlink" href="#retrieving-documents" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get all documents (lazy-loaded)</span>
+<span class="n">all_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span>
 
-<span class="c1"># Update a document</span>
-<span class="n">doc</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Updated Title&quot;</span>
-<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<span class="c1"># Get a specific document by ID</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
 
-<span class="c1"># Delete a document</span>
-<span class="n">doc</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+<span class="c1"># Access document properties</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Title: </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Added: </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">added</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Content: </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Count documents</span>
+<span class="n">total</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total documents: </span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="working-with-other-resources">
-<h2>Working with Other Resources<a class="headerlink" href="#working-with-other-resources" title="Link to this heading"></a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get all correspondents</span>
-<span class="n">correspondents</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-
-<span class="c1"># Create a new correspondent</span>
-<span class="n">new_correspondent</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Example Company&quot;</span>
+<section id="searching-and-filtering">
+<h3>Searching and Filtering<a class="headerlink" href="#searching-and-filtering" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Basic filtering</span>
+<span class="n">invoices</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+    <span class="n">title__icontains</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span><span class="p">,</span>
+    <span class="n">correspondent__id</span><span class="o">=</span><span class="mi">5</span>
 <span class="p">)</span>
 
-<span class="c1"># Get all tags</span>
-<span class="n">tags</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="c1"># Filter by date range</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="n">last_month</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">recent_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+    <span class="n">added__gt</span><span class="o">=</span><span class="n">last_month</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+<span class="p">)</span>
+
+<span class="c1"># Filter by specific tag</span>
+<span class="n">tagged_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="p">(</span><span class="n">tags__id</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># Complex filtering</span>
+<span class="n">complex_query</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+    <span class="n">title__icontains</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span><span class="p">,</span>
+    <span class="n">correspondent__name__icontains</span><span class="o">=</span><span class="s2">&quot;electric&quot;</span><span class="p">,</span>
+    <span class="n">created__gt</span><span class="o">=</span><span class="s2">&quot;2023-01-01T00:00:00Z&quot;</span>
+<span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span>
+    <span class="n">tags__name</span><span class="o">=</span><span class="s2">&quot;archived&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Chain filters for more complex queries</span>
+<span class="n">from_2023</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">created__gte</span><span class="o">=</span><span class="s2">&quot;2023-01-01&quot;</span><span class="p">)</span>
+<span class="n">tax_docs</span> <span class="o">=</span> <span class="n">from_2023</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">tags__name</span><span class="o">=</span><span class="s2">&quot;tax&quot;</span><span class="p">)</span>
+<span class="n">important_tax_docs</span> <span class="o">=</span> <span class="n">tax_docs</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">tags__name</span><span class="o">=</span><span class="s2">&quot;important&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="uploading-documents">
+<h3>Uploading Documents<a class="headerlink" href="#uploading-documents" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Basic document upload with a file path</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="s2">&quot;path/to/document.pdf&quot;</span><span class="p">)</span>
+
+<span class="c1"># Upload with metadata</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span>
+    <span class="s2">&quot;path/to/invoice.pdf&quot;</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Electric Bill March 2023&quot;</span><span class="p">,</span>
+    <span class="n">correspondent</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>               <span class="c1"># ID of correspondent </span>
+    <span class="n">document_type</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>               <span class="c1"># ID of document type</span>
+    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>                   <span class="c1"># List of tag IDs</span>
+    <span class="n">created</span><span class="o">=</span><span class="s2">&quot;2023-03-15&quot;</span><span class="p">,</span>          <span class="c1"># Custom created date</span>
+    <span class="n">archive_serial_number</span><span class="o">=</span><span class="s2">&quot;INV-123&quot;</span> <span class="c1"># Custom reference number</span>
+<span class="p">)</span>
+
+<span class="c1"># Upload with file object</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span>
+        <span class="n">file</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;My Document&quot;</span>
+    <span class="p">)</span>
+
+<span class="c1"># Asynchronous upload (returns task_id instead of document)</span>
+<span class="n">task_id</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">upload_async</span><span class="p">(</span><span class="s2">&quot;path/to/large_document.pdf&quot;</span><span class="p">)</span>
+
+<span class="c1"># Wait for the task to complete and get the document</span>
+<span class="n">document</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">wait_for_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span>
+
+<span class="c1">### Downloading Documents</span>
+
+<span class="err">```</span><span class="n">python</span>
+<span class="c1"># Download original document</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s2">&quot;my_document.pdf&quot;</span><span class="p">)</span>
+
+<span class="c1"># Download original to a specific path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;/tmp&quot;</span><span class="p">,</span> <span class="s2">&quot;download.pdf&quot;</span><span class="p">))</span>
+
+<span class="c1"># Access the raw bytes</span>
+<span class="n">original_content</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">download_content</span><span class="p">()</span>
+
+<span class="c1"># Download the archive version (if available)</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s2">&quot;my_document.pdf&quot;</span><span class="p">,</span> <span class="n">archive_version</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Download a thumbnail</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">download_thumbnail</span><span class="p">(</span><span class="s2">&quot;thumbnail.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="updating-documents">
+<h3>Updating Documents<a class="headerlink" href="#updating-documents" title="Link to this heading"></a></h3>
+<p>The setting PAPERLESS_SAVE_ON_WRITE can be set to True to automatically save changes to the server when an attribute is set on a model, or False to require an explicit call to the save method. <code class="docutils literal notranslate"><span class="pre">save_on_write</span></code> can be passed to the PaperlessClient constructor to set the value without environment variables.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># With save_on_write set to True</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;New Title&quot;</span> <span class="c1"># Sends a request to Paperless NGX to save the model</span>
+
+<span class="c1"># With save_on_write set to False</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;New Title&quot;</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">()</span> <span class="c1"># Sends a request to Paperless NGX to save the model</span>
+
+<span class="c1"># Update with dictionary</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Updated Title&quot;</span><span class="p">,</span>
+    <span class="n">archive_serial_number</span><span class="o">=</span><span class="s2">&quot;NEW-123&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Bulk update multiple documents</span>
+<span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">correspondent__name</span><span class="o">=</span><span class="s2">&quot;Old Company&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">correspondent</span><span class="o">=</span><span class="mi">123</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="deleting-documents">
+<h3>Deleting Documents<a class="headerlink" href="#deleting-documents" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Delete a document</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+
+<span class="c1"># Bulk delete</span>
+<span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">created__lt</span><span class="o">=</span><span class="s2">&quot;2020-01-01&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="bulk-operations">
+<h3>Bulk Operations<a class="headerlink" href="#bulk-operations" title="Link to this heading"></a></h3>
+<p>Perform operations on multiple documents efficiently:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Bulk add tags to documents</span>
+<span class="n">tax_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__icontains</span><span class="o">=</span><span class="s2">&quot;tax&quot;</span><span class="p">)</span>
+<span class="n">tax_docs</span><span class="o">.</span><span class="n">add_tag</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># Add tag with ID 5</span>
+
+<span class="c1"># Bulk remove tags</span>
+<span class="n">old_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">created_before</span><span class="o">=</span><span class="s2">&quot;2020-01-01&quot;</span><span class="p">)</span>
+<span class="n">old_docs</span><span class="o">.</span><span class="n">remove_tag</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>  <span class="c1"># Remove tag with ID 7</span>
+
+<span class="c1"># Bulk update document metadata</span>
+<span class="n">invoices</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__icontains</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span><span class="p">)</span>
+<span class="n">invoices</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+    <span class="n">correspondent</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>    <span class="c1"># Set correspondent ID </span>
+    <span class="n">document_type</span><span class="o">=</span><span class="mi">3</span>      <span class="c1"># Set document type ID</span>
+<span class="p">)</span>
+
+<span class="c1"># Bulk modify custom fields</span>
+<span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">correspondent_id</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">docs</span><span class="o">.</span><span class="n">modify_custom_fields</span><span class="p">(</span>
+    <span class="n">add_custom_fields</span><span class="o">=</span><span class="p">{</span><span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;High&quot;</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;2023-04-15&quot;</span><span class="p">},</span>
+    <span class="n">remove_custom_fields</span><span class="o">=</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="c1"># Bulk delete</span>
+<span class="n">temp_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">tags__name</span><span class="o">=</span><span class="s2">&quot;temporary&quot;</span><span class="p">)</span>
+<span class="n">temp_docs</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+
+<span class="c1"># Bulk reprocess documents</span>
+<span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">reprocess</span><span class="p">()</span>
+
+<span class="c1"># Merge multiple documents</span>
+<span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">correspondent_id</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+    <span class="n">metadata_document_id</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span>  <span class="c1"># Use metadata from this document</span>
+    <span class="n">delete_originals</span><span class="o">=</span><span class="kc">True</span>      <span class="c1"># Delete original documents after merging</span>
+<span class="p">)</span>
+
+<span class="c1"># Bulk rotate documents</span>
+<span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__contains</span><span class="o">=</span><span class="s2">&quot;sideways&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="working-with-tags">
+<h2>Working with Tags<a class="headerlink" href="#working-with-tags" title="Link to this heading"></a></h2>
+<p>Tags help organize documents in Paperless-NgX:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get all tags</span>
+<span class="n">all_tags</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 
 <span class="c1"># Create a new tag</span>
 <span class="n">new_tag</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Important&quot;</span><span class="p">,</span>
-    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#ff0000&quot;</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Tax Documents&quot;</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#00ff00&quot;</span><span class="p">,</span>
+    <span class="n">is_inbox_tag</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">)</span>
+
+<span class="c1"># Get tag by ID</span>
+<span class="n">tax_tag</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># Update a tag</span>
+<span class="n">tax_tag</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;#ff0000&quot;</span>
+<span class="n">tax_tag</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="c1"># Find documents with a specific tag</span>
+<span class="n">docs_with_tag</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">tags__id</span><span class="o">=</span><span class="n">tax_tag</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+<span class="c1"># Add a tag to a document</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tax_tag</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="c1"># Delete a tag</span>
+<span class="n">tax_tag</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="working-with-correspondents">
+<h2>Working with Correspondents<a class="headerlink" href="#working-with-correspondents" title="Link to this heading"></a></h2>
+<p>Correspondents represent people or organizations that send or receive documents:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get all correspondents</span>
+<span class="n">all_correspondents</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Create a new correspondent</span>
+<span class="n">new_correspondent</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Electric Company&quot;</span><span class="p">)</span>
+
+<span class="c1"># Get correspondent by ID</span>
+<span class="n">electric</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">correspondents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># Update a correspondent</span>
+<span class="n">electric</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;City Power &amp; Light&quot;</span>
+<span class="n">electric</span><span class="o">.</span><span class="n">matching_algorithm</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+<span class="n">electric</span><span class="o">.</span><span class="n">match</span> <span class="o">=</span> <span class="s2">&quot;city power&quot;</span>
+<span class="n">electric</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="c1"># Find documents from a specific correspondent</span>
+<span class="n">docs_from_electric</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">correspondent__id</span><span class="o">=</span><span class="n">electric</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+<span class="c1"># Delete a correspondent</span>
+<span class="n">electric</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="document-types">
+<h2>Document Types<a class="headerlink" href="#document-types" title="Link to this heading"></a></h2>
+<p>Document types categorize your documents:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get all document types</span>
+<span class="n">all_types</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_types</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Create a new document type</span>
+<span class="n">new_type</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_types</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Invoice&quot;</span><span class="p">,</span>
+    <span class="n">matching_algorithm</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+    <span class="n">match</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Get document type by ID</span>
+<span class="n">invoice_type</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># Update a document type</span>
+<span class="n">invoice_type</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Bill or Invoice&quot;</span>
+<span class="n">invoice_type</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="c1"># Find documents of a specific type</span>
+<span class="n">invoices</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">document_type__id</span><span class="o">=</span><span class="n">invoice_type</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+<span class="c1"># Delete a document type</span>
+<span class="n">invoice_type</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="storage-paths">
+<h2>Storage Paths<a class="headerlink" href="#storage-paths" title="Link to this heading"></a></h2>
+<p>Storage paths control where documents are stored in Paperless-NgX:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get all storage paths</span>
+<span class="n">all_paths</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">storage_paths</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Create a new storage path</span>
+<span class="n">new_path</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">storage_paths</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Tax Documents&quot;</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/documents/taxes/&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Get storage path by ID</span>
+<span class="n">tax_path</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">storage_paths</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="c1"># Update a storage path</span>
+<span class="n">tax_path</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/documents/finance/taxes/&quot;</span>
+<span class="n">tax_path</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="c1"># Assign storage path to a document</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">storage_path</span> <span class="o">=</span> <span class="n">tax_path</span><span class="o">.</span><span class="n">id</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="c1"># Delete a storage path</span>
+<span class="n">tax_path</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="custom-fields">
+<h2>Custom Fields<a class="headerlink" href="#custom-fields" title="Link to this heading"></a></h2>
+<p>Paperless-NgX supports custom fields for documents:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get all custom fields</span>
+<span class="n">all_fields</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">custom_fields</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Create a new custom field</span>
+<span class="n">date_field</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">custom_fields</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Due Date&quot;</span><span class="p">,</span>
+    <span class="n">data_type</span><span class="o">=</span><span class="s2">&quot;date&quot;</span>
+<span class="p">)</span>
+
+<span class="n">string_field</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">custom_fields</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Reference Number&quot;</span><span class="p">,</span>
+    <span class="n">data_type</span><span class="o">=</span><span class="s2">&quot;string&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Set custom field on a document</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">custom_fields</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">date_field</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="s2">&quot;2023-04-15&quot;</span><span class="p">,</span>
+    <span class="n">string_field</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="s2">&quot;REF-12345&quot;</span>
+<span class="p">}</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="c1"># Query by custom field</span>
+<span class="n">docs_due_soon</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="p">{</span>
+    <span class="sa">f</span><span class="s2">&quot;custom_fields__</span><span class="si">{</span><span class="n">date_field</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">__lt&quot;</span><span class="p">:</span> <span class="s2">&quot;2023-04-01&quot;</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</section>
+<section id="saved-views">
+<h2>Saved Views<a class="headerlink" href="#saved-views" title="Link to this heading"></a></h2>
+<p>Saved views let you recall frequently used filters:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get all saved views</span>
+<span class="n">all_views</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">saved_views</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Create a new saved view</span>
+<span class="n">tax_view</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">saved_views</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Tax Documents&quot;</span><span class="p">,</span>
+    <span class="n">show_on_dashboard</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_in_sidebar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">filter_rules</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;rule_type&quot;</span><span class="p">:</span> <span class="s2">&quot;document_type&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;5&quot;</span><span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="c1"># Get a saved view by ID</span>
+<span class="n">view</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">saved_views</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># Update a saved view</span>
+<span class="n">view</span><span class="o">.</span><span class="n">filter_rules</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;rule_type&quot;</span><span class="p">:</span> <span class="s2">&quot;correspondent&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;7&quot;</span><span class="p">})</span>
+<span class="n">view</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="c1"># Delete a saved view</span>
+<span class="n">view</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="tasks-and-workflows">
+<h2>Tasks and Workflows<a class="headerlink" href="#tasks-and-workflows" title="Link to this heading"></a></h2>
+<p>Interact with the Paperless-NgX task system:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get running tasks</span>
+<span class="n">tasks</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># Get a specific task</span>
+<span class="n">task</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Task status: </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Wait for a task to complete and get the resulting document</span>
+<span class="n">document</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">wait_for_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Document </span><span class="si">{</span><span class="n">document</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> ready: </span><span class="si">{</span><span class="n">document</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Upload a series of documents asynchronously, then wait for all of them</span>
+<span class="n">task_ids</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">task_id</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">upload_async</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;doc_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.pdf&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Document </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">task_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span>
+<span class="n">documents</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">wait_for_tasks</span><span class="p">(</span><span class="n">task_ids</span><span class="p">)</span>
+
+<span class="c1"># Monitor tasks with callbacks</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">on_task_success</span><span class="p">(</span><span class="n">task</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> completed successfully&quot;</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">on_task_failure</span><span class="p">(</span><span class="n">task</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> failed: </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">status_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">client</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">wait_for_task</span><span class="p">(</span>
+    <span class="n">task_id</span><span class="p">,</span>
+    <span class="n">success_callback</span><span class="o">=</span><span class="n">on_task_success</span><span class="p">,</span>
+    <span class="n">failure_callback</span><span class="o">=</span><span class="n">on_task_failure</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="advanced-features">
+<h2>Advanced Features<a class="headerlink" href="#advanced-features" title="Link to this heading"></a></h2>
+<section id="using-signals">
+<h3>Using Signals<a class="headerlink" href="#using-signals" title="Link to this heading"></a></h3>
+<p>Paperap has a signal system that lets you hook into client events:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">paperap.signals</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalRegistry</span>
+
+<span class="c1"># Connect to a signal</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">on_document_save</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Document </span><span class="si">{</span><span class="n">document</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> saved: </span><span class="si">{</span><span class="n">document</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">SignalRegistry</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;document.save:success&quot;</span><span class="p">,</span> <span class="n">on_document_save</span><span class="p">)</span>
+
+<span class="c1"># Now this function will be called whenever a document is saved</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Updated Title&quot;</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>  <span class="c1"># Will trigger on_document_save</span>
+</pre></div>
+</div>
+</section>
+<section id="asynchronous-operations">
+<h3>Asynchronous Operations<a class="headerlink" href="#asynchronous-operations" title="Link to this heading"></a></h3>
+<p>Paperap handles long-running operations asynchronously:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Start a document upload and get a task ID</span>
+<span class="n">task_id</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">upload_async</span><span class="p">(</span>
+    <span class="s2">&quot;large_document.pdf&quot;</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Large Document&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Do other work while upload happens in background</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Doing other work...&quot;</span><span class="p">)</span>
+
+<span class="c1"># Wait for the task to complete when needed</span>
+<span class="n">document</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">wait_for_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Uploaded document: </span><span class="si">{</span><span class="n">document</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2"> (ID: </span><span class="si">{</span><span class="n">document</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+<span class="c1"># Upload multiple documents in parallel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">concurrent.futures</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">upload_document</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">upload_async</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+
+<span class="n">documents_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;documents_to_upload&quot;</span><span class="p">)</span>
+<span class="n">filepaths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">documents_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.pdf&quot;</span><span class="p">))</span>
+
+<span class="c1"># Upload all documents in parallel (up to 5 at a time)</span>
+<span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+    <span class="n">task_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">executor</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">upload_document</span><span class="p">,</span> <span class="n">filepaths</span><span class="p">))</span>
+
+<span class="c1"># Wait for all uploads to complete</span>
+<span class="n">documents</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">wait_for_tasks</span><span class="p">(</span><span class="n">task_ids</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Uploaded </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">documents</span><span class="p">)</span><span class="si">}</span><span class="s2"> documents&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="using-plugins">
+<h3>Using Plugins<a class="headerlink" href="#using-plugins" title="Link to this heading"></a></h3>
+<p>Extend Paperap with custom plugins:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">paperap.plugins.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plugin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.signals</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalRegistry</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">LoggingPlugin</span><span class="p">(</span><span class="n">Plugin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plugin that logs all API calls&quot;&quot;&quot;</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="n">SignalRegistry</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;request:before&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_request</span><span class="p">)</span>
+        <span class="n">SignalRegistry</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;request:after&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_response</span><span class="p">)</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;API Request: </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">kwargs</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;API Response: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+<span class="c1"># Use the plugin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap</span><span class="w"> </span><span class="kn">import</span> <span class="n">PaperlessClient</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">PaperlessClient</span><span class="p">(</span><span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">LoggingPlugin</span><span class="p">()])</span>
+</pre></div>
+</div>
+<p>See src/paperap/plugins/collect_test_data.py for an example plugin that intercepts API calls to save data for unit testing.</p>
+</section>
+</section>
+<section id="error-handling">
+<h2>Error Handling<a class="headerlink" href="#error-handling" title="Link to this heading"></a></h2>
+<p>Paperap provides detailed error information through a hierarchy of exception classes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">paperap.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">PaperapError</span><span class="p">,</span> <span class="n">ResourceNotFoundError</span><span class="p">,</span> <span class="n">APIError</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># Non-existent document</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">99999</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">ResourceNotFoundError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Document not found&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">APIError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;API Error: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">detail</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">PaperapError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="c1"># Base exception for all Paperap errors</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;General error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># Invalid operation</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Test&quot;</span><span class="p">)</span>  <span class="c1"># Missing required file</span>
+<span class="k">except</span> <span class="n">APIError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;API Error: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error details: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">detail</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;API response: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="pagination-and-performance">
+<h2>Pagination and Performance<a class="headerlink" href="#pagination-and-performance" title="Link to this heading"></a></h2>
+<p>Paperap uses lazy loading to efficiently handle large result sets:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Results are fetched only when needed</span>
+<span class="n">all_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># No API calls yet - just query definition</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Query defined&quot;</span><span class="p">)</span>
+
+<span class="c1"># First API call happens here - fetches only first page</span>
+<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">all_docs</span><span class="p">[:</span><span class="mi">25</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+
+<span class="c1"># Fetches next pages as needed</span>
+<span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">all_docs</span><span class="p">:</span>
+    <span class="n">total</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total processed: </span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Limit results for performance</span>
+<span class="n">recent</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-created&quot;</span><span class="p">)[:</span><span class="mi">100</span><span class="p">]</span>
 </pre></div>
 </div>
 </section>

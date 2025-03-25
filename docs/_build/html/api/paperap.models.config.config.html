@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -77,112 +77,276 @@
              
   <section id="module-paperap.models.config.config">
 <span id="paperap-models-config-config-module"></span><h1>paperap.models.config.config module<a class="headerlink" href="#module-paperap.models.config.config" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<blockquote>
-<div><p>METADATA:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>File:    config.py</dt><dd><p>Project: paperap</p>
-</dd>
-<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.9</p>
-</dd>
-</dl>
-<p>Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
-<blockquote>
-<div><p>Copyright (c) 2025 Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
-</div></blockquote>
-<hr class="docutils" />
-<blockquote>
-<div><p>LAST MODIFIED:</p>
-<blockquote>
-<div><p>2025-03-04     By Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
+<p>Configuration model for Paperless-NgX system settings.</p>
+<p>This module provides the Config model class for interacting with the Paperless-NgX
+configuration API endpoint. It allows retrieving and modifying system-wide settings
+that control document processing, OCR behavior, and application appearance.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.config.config.Config">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.config.config.</span></span><span class="sig-name descname"><span class="pre">Config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/config/config.html#Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.config.config.Config" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel" title="paperap.models.abstract.model.StandardModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardModel</span></code></a></p>
+<p>Model representing Paperless-NgX system configuration settings.</p>
+<p>This model provides access to system-wide configuration settings that control
+document processing, OCR behavior, and application appearance. These settings
+correspond to those available in the Paperless-NgX admin interface.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.config.config.Config.user_args">
+<span class="sig-name descname"><span class="pre">user_args</span></span><a class="headerlink" href="#paperap.models.config.config.Config.user_args" title="Link to this definition"></a></dt>
+<dd><p>Custom arguments passed to the OCR engine.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.config.config.Config.output_type">
+<span class="sig-name descname"><span class="pre">output_type</span></span><a class="headerlink" href="#paperap.models.config.config.Config.output_type" title="Link to this definition"></a></dt>
+<dd><p>Default output format for OCR results (e.g., “pdfa”, “pdf”).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.config.config.Config.pages">
+<span class="sig-name descname"><span class="pre">pages</span></span><a class="headerlink" href="#paperap.models.config.config.Config.pages" title="Link to this definition"></a></dt>
+<dd><p>Page range specification for OCR processing (e.g., “1,3-5”).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.config.config.Config.language">
+<span class="sig-name descname"><span class="pre">language</span></span><a class="headerlink" href="#paperap.models.config.config.Config.language" title="Link to this definition"></a></dt>
+<dd><p>Default OCR language code (e.g., “eng”, “deu”).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.config.config.Config.mode">
+<span class="sig-name descname"><span class="pre">mode</span></span><a class="headerlink" href="#paperap.models.config.config.Config.mode" title="Link to this definition"></a></dt>
+<dd><p>OCR processing mode (e.g., “skip”, “redo”, “force”).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.config.config.Config.skip_archive_file">
+<span class="sig-name descname"><span class="pre">skip_archive_file</span></span><a class="headerlink" href="#paperap.models.config.config.Config.skip_archive_file" title="Link to this definition"></a></dt>
+<dd><p>Whether to skip creating archive files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.config.config.Config.image_dpi">
+<span class="sig-name descname"><span class="pre">image_dpi</span></span><a class="headerlink" href="#paperap.models.config.config.Config.image_dpi" title="Link to this definition"></a></dt>
+<dd><p>DPI setting for image processing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.config.config.Config.unpaper_clean">
+<span class="sig-name descname"><span class="pre">unpaper_clean</span></span><a class="headerlink" href="#paperap.models.config.config.Config.unpaper_clean" title="Link to this definition"></a></dt>
+<dd><p>Whether to use unpaper for document cleaning.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.config.config.Config.deskew">
+<span class="sig-name descname"><span class="pre">deskew</span></span><a class="headerlink" href="#paperap.models.config.config.Config.deskew" title="Link to this definition"></a></dt>
+<dd><p>Whether to automatically deskew (straighten) documents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.config.config.Config.rotate_pages">
+<span class="sig-name descname"><span class="pre">rotate_pages</span></span><a class="headerlink" href="#paperap.models.config.config.Config.rotate_pages" title="Link to this definition"></a></dt>
+<dd><p>Whether to automatically rotate pages to the correct orientation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.config.config.Config.rotate_pages_threshold">
+<span class="sig-name descname"><span class="pre">rotate_pages_threshold</span></span><a class="headerlink" href="#paperap.models.config.config.Config.rotate_pages_threshold" title="Link to this definition"></a></dt>
+<dd><p>Confidence threshold for automatic page rotation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.config.config.Config.max_image_pixels">
+<span class="sig-name descname"><span class="pre">max_image_pixels</span></span><a class="headerlink" href="#paperap.models.config.config.Config.max_image_pixels" title="Link to this definition"></a></dt>
+<dd><p>Maximum number of pixels to process in images.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.config.config.Config.color_conversion_strategy">
+<span class="sig-name descname"><span class="pre">color_conversion_strategy</span></span><a class="headerlink" href="#paperap.models.config.config.Config.color_conversion_strategy" title="Link to this definition"></a></dt>
+<dd><p>Strategy for color conversion (e.g., “none”, “grayscale”).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.config.config.Config.app_title">
+<span class="sig-name descname"><span class="pre">app_title</span></span><a class="headerlink" href="#paperap.models.config.config.Config.app_title" title="Link to this definition"></a></dt>
+<dd><p>Custom title for the Paperless-NgX web application.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.config.config.Config.app_logo">
+<span class="sig-name descname"><span class="pre">app_logo</span></span><a class="headerlink" href="#paperap.models.config.config.Config.app_logo" title="Link to this definition"></a></dt>
+<dd><p>Custom logo path for the Paperless-NgX web application.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Retrieve current system configuration:</p>
+<p><code class="docutils literal notranslate"><span class="pre">`python</span>
+<span class="pre">config</span> <span class="pre">=</span> <span class="pre">client.config.get()</span>
+<span class="pre">print(f&quot;Current</span> <span class="pre">OCR</span> <span class="pre">language:</span> <span class="pre">{config.language}&quot;)</span>
+<span class="pre">`</span></code></p>
+<p>Update system configuration:</p>
+<p><code class="docutils literal notranslate"><span class="pre">`python</span>
+<span class="pre">config</span> <span class="pre">=</span> <span class="pre">client.config.get()</span>
+<span class="pre">config.language</span> <span class="pre">=</span> <span class="pre">&quot;eng+deu&quot;</span>&#160; <span class="pre">#</span> <span class="pre">Set</span> <span class="pre">OCR</span> <span class="pre">to</span> <span class="pre">use</span> <span class="pre">English</span> <span class="pre">and</span> <span class="pre">German</span>
+<span class="pre">config.deskew</span> <span class="pre">=</span> <span class="pre">True</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">#</span> <span class="pre">Enable</span> <span class="pre">automatic</span> <span class="pre">document</span> <span class="pre">straightening</span>
+<span class="pre">config.save()</span>
+<span class="pre">`</span></code></p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.config.config.Config.user_args">
-<span class="sig-name descname"><span class="pre">user_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.config.config.Config.user_args" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">user_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.config.config.Config.output_type">
-<span class="sig-name descname"><span class="pre">output_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.config.config.Config.output_type" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">output_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.config.config.Config.pages">
-<span class="sig-name descname"><span class="pre">pages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.config.config.Config.pages" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">pages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.config.config.Config.language">
-<span class="sig-name descname"><span class="pre">language</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.config.config.Config.language" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">language</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.config.config.Config.mode">
-<span class="sig-name descname"><span class="pre">mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.config.config.Config.mode" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.config.config.Config.skip_archive_file">
-<span class="sig-name descname"><span class="pre">skip_archive_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.config.config.Config.skip_archive_file" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">skip_archive_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.config.config.Config.image_dpi">
-<span class="sig-name descname"><span class="pre">image_dpi</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.config.config.Config.image_dpi" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">image_dpi</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.config.config.Config.unpaper_clean">
-<span class="sig-name descname"><span class="pre">unpaper_clean</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.config.config.Config.unpaper_clean" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">unpaper_clean</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.config.config.Config.deskew">
-<span class="sig-name descname"><span class="pre">deskew</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#paperap.models.config.config.Config.deskew" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">deskew</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.config.config.Config.rotate_pages">
-<span class="sig-name descname"><span class="pre">rotate_pages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#paperap.models.config.config.Config.rotate_pages" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">rotate_pages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.config.config.Config.rotate_pages_threshold">
-<span class="sig-name descname"><span class="pre">rotate_pages_threshold</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.config.config.Config.rotate_pages_threshold" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">rotate_pages_threshold</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.config.config.Config.max_image_pixels">
-<span class="sig-name descname"><span class="pre">max_image_pixels</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.config.config.Config.max_image_pixels" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">max_image_pixels</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.config.config.Config.color_conversion_strategy">
-<span class="sig-name descname"><span class="pre">color_conversion_strategy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.config.config.Config.color_conversion_strategy" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id12">
+<span class="sig-name descname"><span class="pre">color_conversion_strategy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id12" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.config.config.Config.app_title">
-<span class="sig-name descname"><span class="pre">app_title</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#paperap.models.config.config.Config.app_title" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id13">
+<span class="sig-name descname"><span class="pre">app_title</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id13" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.config.config.Config.app_logo">
-<span class="sig-name descname"><span class="pre">app_logo</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#paperap.models.config.config.Config.app_logo" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id14">
+<span class="sig-name descname"><span class="pre">app_logo</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id14" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">

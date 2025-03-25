@@ -33,4 +33,4 @@ Paperap follows these core principles:
 
 ## Project Status
 
-Paperap is under active development and ready for production use. As Paperless-NgX evolves, Paperap is maintained to ensure compatibility with the latest versions.
+Paperap is under active development and not quite ready for production use. As Paperless-NgX evolves, Paperap is maintained to ensure compatibility with the latest versions.

@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -77,45 +77,61 @@
              
   <section id="module-paperap.signals">
 <span id="paperap-signals-module"></span><h1>paperap.signals module<a class="headerlink" href="#module-paperap.signals" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<p>METADATA:</p>
-<dl class="simple">
-<dt>File:    signals.py</dt><dd><p>Project: paperap</p>
-</dd>
-<dt>Created: 2025-03-09</dt><dd><p>Version: 0.0.9</p>
-</dd>
-</dl>
-<p>Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
-<blockquote>
-<div><p>Copyright (c) 2025 Jess Mann</p>
-</div></blockquote>
-<hr class="docutils" />
-<p>LAST MODIFIED:</p>
-<p>2025-03-09     By Jess Mann</p>
+<p>Signal system for Paperap.</p>
+<p>This module provides a flexible signal/event system that allows components to communicate
+without direct dependencies. It supports prioritized handlers, handler chains, and
+temporary handler disabling.</p>
+<p>The signal system is designed around a singleton registry that manages all signals
+and their handlers. Signals can be created, connected to, and emitted through this registry.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.signals.QueueType">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.signals.</span></span><span class="sig-name descname"><span class="pre">QueueType</span></span><a class="reference internal" href="../_modules/paperap/signals.html#QueueType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.signals.QueueType" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>A type used by SignalRegistry for storing queued signal actions.</p>
+<p>This dictionary stores handlers that are registered before their signals
+are created, allowing for flexible registration order.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.signals.QueueType.connect">
-<span class="sig-name descname"><span class="pre">connect</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/constants.html#Ellipsis" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a><span class="pre">],</span> <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a><span class="pre">]]]</span></em><a class="headerlink" href="#paperap.signals.QueueType.connect" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">connect</span></span><a class="headerlink" href="#paperap.signals.QueueType.connect" title="Link to this definition"></a></dt>
+<dd><p>Maps signal names to sets of (handler, priority) tuples.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.signals.QueueType.disconnect">
-<span class="sig-name descname"><span class="pre">disconnect</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/constants.html#Ellipsis" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a><span class="pre">]]]</span></em><a class="headerlink" href="#paperap.signals.QueueType.disconnect" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">disconnect</span></span><a class="headerlink" href="#paperap.signals.QueueType.disconnect" title="Link to this definition"></a></dt>
+<dd><p>Maps signal names to sets of handlers to disconnect.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.signals.QueueType.disable">
-<span class="sig-name descname"><span class="pre">disable</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/constants.html#Ellipsis" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a><span class="pre">]]]</span></em><a class="headerlink" href="#paperap.signals.QueueType.disable" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">disable</span></span><a class="headerlink" href="#paperap.signals.QueueType.disable" title="Link to this definition"></a></dt>
+<dd><p>Maps signal names to sets of handlers to disable.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.signals.QueueType.enable">
-<span class="sig-name descname"><span class="pre">enable</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/constants.html#Ellipsis" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a><span class="pre">]]]</span></em><a class="headerlink" href="#paperap.signals.QueueType.enable" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">enable</span></span><a class="headerlink" href="#paperap.signals.QueueType.enable" title="Link to this definition"></a></dt>
+<dd><p>Maps signal names to sets of handlers to enable.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">connect</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/constants.html#Ellipsis" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a><span class="pre">],</span> <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a><span class="pre">]]]</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">disconnect</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/constants.html#Ellipsis" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a><span class="pre">]]]</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">disable</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/constants.html#Ellipsis" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a><span class="pre">]]]</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">enable</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/constants.html#Ellipsis" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a><span class="pre">,</span> <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a><span class="pre">]]]</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -125,30 +141,61 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <em class="property"><span class="k"><span class="pre">final</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.signals.</span></span><span class="sig-name descname"><span class="pre">SignalPriority</span></span><a class="reference internal" href="../_modules/paperap/signals.html#SignalPriority"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.signals.SignalPriority" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Priority levels for signal handlers.</p>
-<p>Any int can be provided, but these are the recommended values.</p>
+<p>These constants define standard priority levels for signal handlers.
+Lower numbers execute first, allowing precise control over handler execution order.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.signals.SignalPriority.FIRST">
-<span class="sig-name descname"><span class="pre">FIRST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#paperap.signals.SignalPriority.FIRST" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">FIRST</span></span><a class="headerlink" href="#paperap.signals.SignalPriority.FIRST" title="Link to this definition"></a></dt>
+<dd><p>Execute before all other handlers.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.signals.SignalPriority.HIGH">
-<span class="sig-name descname"><span class="pre">HIGH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">25</span></em><a class="headerlink" href="#paperap.signals.SignalPriority.HIGH" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">HIGH</span></span><a class="headerlink" href="#paperap.signals.SignalPriority.HIGH" title="Link to this definition"></a></dt>
+<dd><p>Execute with high priority.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.signals.SignalPriority.NORMAL">
-<span class="sig-name descname"><span class="pre">NORMAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50</span></em><a class="headerlink" href="#paperap.signals.SignalPriority.NORMAL" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">NORMAL</span></span><a class="headerlink" href="#paperap.signals.SignalPriority.NORMAL" title="Link to this definition"></a></dt>
+<dd><p>Default priority level.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.signals.SignalPriority.LOW">
-<span class="sig-name descname"><span class="pre">LOW</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">75</span></em><a class="headerlink" href="#paperap.signals.SignalPriority.LOW" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">LOW</span></span><a class="headerlink" href="#paperap.signals.SignalPriority.LOW" title="Link to this definition"></a></dt>
+<dd><p>Execute with low priority.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.signals.SignalPriority.LAST">
-<span class="sig-name descname"><span class="pre">LAST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#paperap.signals.SignalPriority.LAST" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">LAST</span></span><a class="headerlink" href="#paperap.signals.SignalPriority.LAST" title="Link to this definition"></a></dt>
+<dd><p>Execute after all other handlers.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">FIRST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">HIGH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">25</span></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">NORMAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50</span></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">LOW</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">75</span></em><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">LAST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -160,12 +207,24 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <p>A type used by SignalRegistry for storing signal parameters.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.signals.SignalParams.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#paperap.signals.SignalParams.name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#paperap.signals.SignalParams.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the signal.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.signals.SignalParams.description">
-<span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#paperap.signals.SignalParams.description" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#paperap.signals.SignalParams.description" title="Link to this definition"></a></dt>
+<dd><p>A description of the signal’s purpose.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -177,7 +236,43 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <p>A signal that can be connected to and emitted.</p>
 <p>Handlers can be registered with a priority to control execution order.
 Each handler receives the output of the previous handler as its first argument,
-enabling a filter/transformation chain.</p>
+enabling a filter/transformation chain. This allows handlers to modify data
+as it passes through the chain.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.signals.Signal.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#paperap.signals.Signal.name" title="Link to this definition"></a></dt>
+<dd><p>The unique name of this signal.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.signals.Signal.description">
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#paperap.signals.Signal.description" title="Link to this definition"></a></dt>
+<dd><p>A human-readable description of the signal’s purpose.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.signals.Signal._handlers">
+<span class="sig-name descname"><span class="pre">_handlers</span></span><a class="headerlink" href="#paperap.signals.Signal._handlers" title="Link to this definition"></a></dt>
+<dd><p>Dictionary mapping priority levels to lists of handler functions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.signals.Signal._disabled_handlers">
+<span class="sig-name descname"><span class="pre">_disabled_handlers</span></span><a class="headerlink" href="#paperap.signals.Signal._disabled_handlers" title="Link to this definition"></a></dt>
+<dd><p>Set of temporarily disabled handler functions.</p>
+</dd></dl>
+
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="s2">&quot;document.save&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">log_save</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saving document: </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">doc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">log_save</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -189,24 +284,25 @@ enabling a filter/transformation chain.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.signals.Signal.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/signals.html#Signal.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.signals.Signal.__init__" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Initialize a new signal.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
-<li><p><strong>description</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The unique name of this signal.</p></li>
+<li><p><strong>description</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – A human-readable description of the signal’s purpose.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.signals.Signal.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#paperap.signals.Signal.name" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.signals.Signal.description">
-<span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#paperap.signals.Signal.description" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id12">
+<span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id12" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -216,14 +312,26 @@ enabling a filter/transformation chain.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>handler</strong> (<span class="sphinx_autodoc_typehints-type">Callable[…, _ReturnType]</span>) – The handler function to be called when the signal is emitted.</p></li>
-<li><p><strong>priority</strong> (<span class="sphinx_autodoc_typehints-type">int</span>) – The priority level for this handler (lower numbers execute first).</p></li>
+<li><p><strong>handler</strong> (<span class="sphinx_autodoc_typehints-type">Callable[…, _ReturnType]</span>) – The handler function to be called when the signal is emitted.
+The function should accept the transformed value as its first argument,
+and return the further transformed value.</p></li>
+<li><p><strong>priority</strong> (<span class="sphinx_autodoc_typehints-type">int</span>) – The priority level for this handler (lower numbers execute first).
+Use SignalPriority constants for standard levels.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type">None</span></p>
 </dd>
 </dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">transform_document</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">doc</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">doc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">transform_document</span><span class="p">,</span> <span class="n">SignalPriority</span><span class="o">.</span><span class="n">HIGH</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -232,12 +340,19 @@ enabling a filter/transformation chain.</p>
 <dd><p>Disconnect a handler from this signal.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>handler</strong> (<span class="sphinx_autodoc_typehints-type">Callable[…, _ReturnType]</span>) – The handler to disconnect.</p>
+<dd class="field-odd"><p><strong>handler</strong> (<span class="sphinx_autodoc_typehints-type">Callable[…, _ReturnType]</span>) – The handler to disconnect. The handler will no longer be called
+when the signal is emitted.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type">None</span></p>
 </dd>
 </dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">transform_document</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -245,12 +360,14 @@ enabling a filter/transformation chain.</p>
 <span class="sig-name descname"><span class="pre">emit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/signals.html#Signal.emit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.signals.Signal.emit" title="Link to this definition"></a></dt>
 <dd><p>Emit the signal, calling all connected handlers in priority order.</p>
 <p>Each handler receives the output of the previous handler as its first argument.
-Other arguments are passed unchanged.</p>
+Other arguments are passed unchanged. This creates a transformation chain
+where each handler can modify the data before passing it to the next handler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>*args</strong> (<span class="sphinx_autodoc_typehints-type">Any</span>) – Positional arguments to pass to handlers.</p></li>
-<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type">Any</span>) – Keyword arguments to pass to handlers.</p></li>
+<li><p><strong>*args</strong> (<span class="sphinx_autodoc_typehints-type">Any</span>) – Positional arguments to pass to handlers. The first argument
+is the value that will be transformed through the handler chain.</p></li>
+<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type">Any</span>) – Keyword arguments to pass to all handlers.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -260,12 +377,22 @@ Other arguments are passed unchanged.</p>
 <dd class="field-odd"><p>The final result after all handlers have processed the data.</p>
 </dd>
 </dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Transform a document through multiple handlers</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transformed_doc</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.signals.Signal.disable">
 <span class="sig-name descname"><span class="pre">disable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/signals.html#Signal.disable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.signals.Signal.disable" title="Link to this definition"></a></dt>
 <dd><p>Temporarily disable a handler without disconnecting it.</p>
+<p>Disabled handlers remain connected but are skipped during signal emission.
+This is useful for temporarily suspending a handler’s execution without
+losing its registration.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>handler</strong> (<span class="sphinx_autodoc_typehints-type">Callable[…, _ReturnType]</span>) – The handler to disable.</p>
@@ -274,6 +401,12 @@ Other arguments are passed unchanged.</p>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type">None</span></p>
 </dd>
 </dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">log_save</span><span class="p">)</span>  <span class="c1"># Temporarily stop logging</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -282,12 +415,19 @@ Other arguments are passed unchanged.</p>
 <dd><p>Re-enable a temporarily disabled handler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>handler</strong> (<span class="sphinx_autodoc_typehints-type">Callable[…, _ReturnType]</span>) – The handler to enable.</p>
+<dd class="field-odd"><p><strong>handler</strong> (<span class="sphinx_autodoc_typehints-type">Callable[…, _ReturnType]</span>) – The handler to enable. If the handler wasn’t disabled,
+this method has no effect.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type">None</span></p>
 </dd>
 </dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">enable</span><span class="p">(</span><span class="n">log_save</span><span class="p">)</span>  <span class="c1"># Resume logging</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -297,17 +437,41 @@ Other arguments are passed unchanged.</p>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.signals.</span></span><span class="sig-name descname"><span class="pre">SignalRegistry</span></span><a class="reference internal" href="../_modules/paperap/signals.html#SignalRegistry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.signals.SignalRegistry" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Registry of all signals in the application.</p>
-<p>Signals can be created, connected to, and emitted through the registry.</p>
+<p>This singleton class manages all signals in the application, providing
+a central point for creating, connecting to, and emitting signals.</p>
+<p>The registry also handles queuing of signal actions when signals are
+connected to before they are created, ensuring that handlers are properly
+registered regardless of initialization order.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.signals.SignalRegistry._instance">
+<span class="sig-name descname"><span class="pre">_instance</span></span><a class="headerlink" href="#paperap.signals.SignalRegistry._instance" title="Link to this definition"></a></dt>
+<dd><p>The singleton instance of this class.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.signals.SignalRegistry._signals">
+<span class="sig-name descname"><span class="pre">_signals</span></span><a class="headerlink" href="#paperap.signals.SignalRegistry._signals" title="Link to this definition"></a></dt>
+<dd><p>Dictionary mapping signal names to Signal instances.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.signals.SignalRegistry._queue">
+<span class="sig-name descname"><span class="pre">_queue</span></span><a class="headerlink" href="#paperap.signals.SignalRegistry._queue" title="Link to this definition"></a></dt>
+<dd><p>Dictionary of queued actions for signals not yet created.</p>
+</dd></dl>
+
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">SignalRegistry</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Emit a signal with keyword arguments</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">SignalRegistry</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="s2">&quot;document.save:success&quot;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="s2">&quot;Fired when a document has been saved successfully&quot;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;document&quot;</span><span class="p">:</span> <span class="n">document</span><span class="p">}</span>
 <span class="gp">... </span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">filtered_data</span> <span class="o">=</span> <span class="n">SignalRegistry</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Emit a signal that transforms data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filtered_data</span> <span class="o">=</span> <span class="n">SignalRegistry</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="s2">&quot;document.save:before&quot;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="s2">&quot;Fired before a document is saved. Optionally filters the data that will be saved.&quot;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">,),</span>
@@ -315,19 +479,24 @@ Other arguments are passed unchanged.</p>
 <span class="gp">... </span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">SignalRegistry</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;document.save:success&quot;</span><span class="p">,</span> <span class="n">my_handler</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Connect a handler to a signal</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">log_document_save</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Document saved: </span><span class="si">{</span><span class="n">document</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">document</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">SignalRegistry</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;document.save:success&quot;</span><span class="p">,</span> <span class="n">log_document_save</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.signals.SignalRegistry.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/signals.html#SignalRegistry.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.signals.SignalRegistry.__init__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Initialize the signal registry.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.signals.SignalRegistry.__new__">
 <em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/signals.html#SignalRegistry.__new__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.signals.SignalRegistry.__new__" title="Link to this definition"></a></dt>
-<dd><p>Ensure that only one instance of the class is created.</p>
+<dd><p>Ensure that only one instance of the class is created (singleton pattern).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
@@ -342,6 +511,8 @@ Other arguments are passed unchanged.</p>
 <dt class="sig sig-object py" id="paperap.signals.SignalRegistry.get_instance">
 <em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_instance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/signals.html#SignalRegistry.get_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.signals.SignalRegistry.get_instance" title="Link to this definition"></a></dt>
 <dd><p>Get the singleton instance of this class.</p>
+<p>This method ensures that only one instance of SignalRegistry exists
+throughout the application.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
@@ -355,7 +526,10 @@ Other arguments are passed unchanged.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.signals.SignalRegistry.register">
 <span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/signals.html#SignalRegistry.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.signals.SignalRegistry.register" title="Link to this definition"></a></dt>
-<dd><p>Register a signal and process queued actions.</p>
+<dd><p>Register a signal and process any queued actions for it.</p>
+<p>This method registers a signal with the registry and processes any
+actions (connect, disconnect, etc.) that were queued for this signal
+before it was created.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>signal</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#paperap.signals.Signal" title="paperap.signals.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Signal</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span>) – The signal to register.</p>
@@ -369,7 +543,9 @@ Other arguments are passed unchanged.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.signals.SignalRegistry.queue_action">
 <span class="sig-name descname"><span class="pre">queue_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/signals.html#SignalRegistry.queue_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.signals.SignalRegistry.queue_action" title="Link to this definition"></a></dt>
-<dd><p>Queue any signal-related action to be processed when the signal is registered.</p>
+<dd><p>Queue a signal-related action to be processed when the signal is registered.</p>
+<p>This method allows actions to be queued for signals that haven’t been
+created yet, ensuring that handlers can be registered in any order.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -386,6 +562,12 @@ Other arguments are passed unchanged.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
 </dd>
 </dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">queue_action</span><span class="p">(</span><span class="s2">&quot;connect&quot;</span><span class="p">,</span> <span class="s2">&quot;document.save&quot;</span><span class="p">,</span> <span class="n">log_handler</span><span class="p">,</span> <span class="n">SignalPriority</span><span class="o">.</span><span class="n">HIGH</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -403,6 +585,14 @@ Other arguments are passed unchanged.</p>
 <dd class="field-odd"><p>The signal instance, or None if not found.</p>
 </dd>
 </dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;document.save:success&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">signal</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -417,18 +607,27 @@ Other arguments are passed unchanged.</p>
 <dd class="field-even"><p>A list of signal names.</p>
 </dd>
 </dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signals</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">list_signals</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Available signals: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">signals</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.signals.SignalRegistry.create">
 <span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/signals.html#SignalRegistry.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.signals.SignalRegistry.create" title="Link to this definition"></a></dt>
 <dd><p>Create and register a new signal.</p>
+<p>This method creates a new signal with the given name and description,
+registers it with the registry, and processes any queued actions for it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Signal name</p></li>
-<li><p><strong>description</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Optional description for new signals</p></li>
-<li><p><strong>return_type</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeVar" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">R</span></code>)] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Optional return type for new signals</p></li>
+<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Signal name. Should be unique and descriptive.</p></li>
+<li><p><strong>description</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Optional description for the new signal.</p></li>
+<li><p><strong>return_type</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeVar" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">R</span></code>)] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Optional return type for the new signal.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -438,54 +637,93 @@ Other arguments are passed unchanged.</p>
 <dd class="field-odd"><p>The new signal instance.</p>
 </dd>
 </dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">save_signal</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="s2">&quot;document.save:success&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;Fired when a document has been saved successfully&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.signals.SignalRegistry.emit">
 <span class="sig-name descname"><span class="pre">emit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/signals.html#SignalRegistry.emit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.signals.SignalRegistry.emit" title="Link to this definition"></a></dt>
 <dd><p>Emit a signal, calling handlers in priority order.</p>
-<p>Each handler transforms the first argument and passes it to the next handler.</p>
+<p>This method emits a signal with the given name, creating it if it doesn’t
+exist. Each handler in the signal’s chain receives the output of the previous
+handler as its first argument, allowing for data transformation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Signal name</p></li>
-<li><p><strong>description</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Optional description for new signals</p></li>
-<li><p><strong>return_type</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeVar" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">_ReturnType</span></code>)] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Optional return type for new signals</p></li>
-<li><p><strong>args</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeVar" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">_ReturnType</span></code>)]</span>) – List of positional arguments (first one is transformed through the chain)</p></li>
-<li><p><strong>kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Keyword arguments passed to all handlers</p></li>
+<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Signal name. If the signal doesn’t exist, it will be created.</p></li>
+<li><p><strong>description</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Optional description for new signals.</p></li>
+<li><p><strong>return_type</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeVar" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">_ReturnType</span></code>)] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Optional return type for new signals.</p></li>
+<li><p><strong>args</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeVar" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">_ReturnType</span></code>)]</span>) – The value to be transformed through the handler chain.</p></li>
+<li><p><strong>kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Keyword arguments passed to all handlers.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeVar" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">_ReturnType</span></code>)]</span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The transformed first argument after all handlers have processed it</p>
+<dd class="field-odd"><p>The transformed value after all handlers have processed it.</p>
 </dd>
 </dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Transform document data through a handler chain</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">processed_data</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="s2">&quot;document.process&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;Process document data before saving&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">args</span><span class="o">=</span><span class="n">document_data</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">current_user</span><span class="p">}</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.signals.SignalRegistry.connect">
 <span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/signals.html#SignalRegistry.connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.signals.SignalRegistry.connect" title="Link to this definition"></a></dt>
 <dd><p>Connect a handler to a signal, or queue it if the signal is not yet registered.</p>
+<p>This method connects a handler function to a signal with the given name.
+If the signal doesn’t exist yet, the connection is queued and will be
+established when the signal is created.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The signal name.</p></li>
 <li><p><strong>handler</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/constants.html#Ellipsis" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span>) – The handler function to connect.</p></li>
-<li><p><strong>priority</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The priority level for this handler (lower numbers execute first</p></li>
+<li><p><strong>priority</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The priority level for this handler (lower numbers execute first).
+Use SignalPriority constants for standard levels.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
 </dd>
 </dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">log_document_save</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Document saved: </span><span class="si">{</span><span class="n">document</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">document</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;document.save:success&quot;</span><span class="p">,</span> <span class="n">log_document_save</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.signals.SignalRegistry.disconnect">
 <span class="sig-name descname"><span class="pre">disconnect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/signals.html#SignalRegistry.disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.signals.SignalRegistry.disconnect" title="Link to this definition"></a></dt>
 <dd><p>Disconnect a handler from a signal, or queue it if the signal is not yet registered.</p>
+<p>This method disconnects a handler function from a signal with the given name.
+If the signal doesn’t exist yet, the disconnection is queued and will be
+processed when the signal is created.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -497,29 +735,47 @@ Other arguments are passed unchanged.</p>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
 </dd>
 </dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="s2">&quot;document.save:success&quot;</span><span class="p">,</span> <span class="n">log_document_save</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.signals.SignalRegistry.disable">
 <span class="sig-name descname"><span class="pre">disable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/signals.html#SignalRegistry.disable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.signals.SignalRegistry.disable" title="Link to this definition"></a></dt>
 <dd><p>Temporarily disable a handler for a signal, or queue it if the signal is not yet registered.</p>
+<p>This method temporarily disables a handler function for a signal with the given name.
+The handler remains connected but will be skipped during signal emission.
+If the signal doesn’t exist yet, the disable action is queued.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The signal name.</p></li>
-<li><p><strong>handler</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/constants.html#Ellipsis" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span>) – The handler function to disable</p></li>
+<li><p><strong>handler</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/constants.html#Ellipsis" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span>) – The handler function to disable.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
 </dd>
 </dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Temporarily disable logging during bulk operations</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="s2">&quot;document.save:success&quot;</span><span class="p">,</span> <span class="n">log_document_save</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.signals.SignalRegistry.enable">
 <span class="sig-name descname"><span class="pre">enable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/signals.html#SignalRegistry.enable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.signals.SignalRegistry.enable" title="Link to this definition"></a></dt>
 <dd><p>Enable a previously disabled handler, or queue it if the signal is not yet registered.</p>
+<p>This method re-enables a previously disabled handler function for a signal.
+If the signal doesn’t exist yet, the enable action is queued.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -531,12 +787,21 @@ Other arguments are passed unchanged.</p>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
 </dd>
 </dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Re-enable logging after bulk operations</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">enable</span><span class="p">(</span><span class="s2">&quot;document.save:success&quot;</span><span class="p">,</span> <span class="n">log_document_save</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.signals.SignalRegistry.is_queued">
 <span class="sig-name descname"><span class="pre">is_queued</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/signals.html#SignalRegistry.is_queued"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.signals.SignalRegistry.is_queued" title="Link to this definition"></a></dt>
 <dd><p>Check if a handler is queued for a signal action.</p>
+<p>This method checks if a specific handler is queued for a specific action
+on a signal that hasn’t been created yet.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -549,9 +814,16 @@ Other arguments are passed unchanged.</p>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True if the handler is queued, False otherwise.</p>
+<dd class="field-odd"><p>True if the handler is queued for the specified action, False otherwise.</p>
 </dd>
 </dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_queued</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">is_queued</span><span class="p">(</span><span class="s2">&quot;disable&quot;</span><span class="p">,</span> <span class="s2">&quot;document.save&quot;</span><span class="p">,</span> <span class="n">log_handler</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Handler is </span><span class="si">{</span><span class="s1">&#39;queued for disabling&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">is_queued</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;not queued&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 </dd></dl>

@@ -48,7 +48,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Guide</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#development-environment">Development Environment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#running-tests">Running Tests</a></li>
@@ -91,30 +91,37 @@
 <h2>Development Environment<a class="headerlink" href="#development-environment" title="Link to this heading"></a></h2>
 <ol class="arabic">
 <li><p>Clone the repository:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/yourusername/paperap.git
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gh<span class="w"> </span>repo<span class="w"> </span>clone<span class="w"> </span>https://github.com/Paperap/Paperap.git
 <span class="nb">cd</span><span class="w"> </span>paperap
 </pre></div>
 </div>
 </li>
 <li><p>Create a virtual environment and install development dependencies:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv
-<span class="nb">source</span><span class="w"> </span>venv/bin/activate<span class="w">  </span><span class="c1"># On Windows: venv\Scripts\activate</span>
-pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>venv<span class="w"> </span>.venv
+uv<span class="w"> </span>sync<span class="w"> </span>--all-groups
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+</pre></div>
+</div>
+</li>
+<li><p>Define an .env file</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cp<span class="w"> </span>env-sample<span class="w"> </span>.env
 </pre></div>
 </div>
 </li>
 </ol>
+<p>Most common actions are defined in package.json scripts. You can run them using <code class="docutils literal notranslate"><span class="pre">bun</span> <span class="pre">run</span> <span class="pre">&lt;script&gt;</span></code>.</p>
 </section>
 <section id="running-tests">
 <h2>Running Tests<a class="headerlink" href="#running-tests" title="Link to this heading"></a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bun<span class="w"> </span>run<span class="w"> </span><span class="nb">test</span>
 </pre></div>
 </div>
+<p>Integration tests are provided in the <code class="docutils literal notranslate"><span class="pre">tests/integration</span></code> directory. However, you may need to fiddle with them to get the data lined up with your Paperless-ngX instance. This will be improved in the future. You will probably want to run tests/lib/first_run.py to get some data in your Paperless-ngX instance. Be aware that it will FULLY DELETE all data in that instance first.</p>
+<p>Hypothesis tests are located in <code class="docutils literal notranslate"><span class="pre">tests/unit/hypothesis</span></code>. These tests are run automatically with all unit tests. If you’re not familiar with hypothesis, it is worth noting that it will run with slightly different parameters each time, and remember failures for future runs.</p>
 </section>
 <section id="building-documentation">
 <h2>Building Documentation<a class="headerlink" href="#building-documentation" title="Link to this heading"></a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>docs
-python<span class="w"> </span>generate_api_docs.py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>docs/generate_api_docs.py
 </pre></div>
 </div>
 </section>
@@ -122,11 +129,11 @@ python<span class="w"> </span>generate_api_docs.py
 <h2>Code Style<a class="headerlink" href="#code-style" title="Link to this heading"></a></h2>
 <p>This project uses:</p>
 <ul class="simple">
-<li><p>Black for code formatting</p></li>
-<li><p>Isort for import sorting</p></li>
-<li><p>Mypy for type checking</p></li>
-<li><p>Pylint and Flake8 for linting</p></li>
+<li><p>ruff</p></li>
+<li><p>pre-commit</p></li>
+<li><p>mypy</p></li>
 </ul>
+<p>It successfully passes pyright, mypy, and basedmypy with a fairly strict config in pyproject.toml. All future code should do the same.</p>
 </section>
 <section id="submitting-changes">
 <h2>Submitting Changes<a class="headerlink" href="#submitting-changes" title="Link to this heading"></a></h2>
@@ -134,6 +141,7 @@ python<span class="w"> </span>generate_api_docs.py
 <li><p>Create a new branch for your changes</p></li>
 <li><p>Make your changes</p></li>
 <li><p>Run the tests and ensure they pass</p></li>
+<li><p>Run linters via <code class="docutils literal notranslate"><span class="pre">bun</span> <span class="pre">run</span> <span class="pre">pre-commit</span></code>, and github actions via <code class="docutils literal notranslate"><span class="pre">act</span></code>.</p></li>
 <li><p>Update documentation if necessary</p></li>
 <li><p>Submit a pull request</p></li>
 </ol>

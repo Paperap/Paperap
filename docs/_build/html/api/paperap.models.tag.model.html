@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -77,85 +77,171 @@
              
   <section id="module-paperap.models.tag.model">
 <span id="paperap-models-tag-model-module"></span><h1>paperap.models.tag.model module<a class="headerlink" href="#module-paperap.models.tag.model" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<blockquote>
-<div><p>METADATA:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>File:    tag.py</dt><dd><p>Project: paperap</p>
-</dd>
-<dt>Created: 2025-03-04</dt><dd><p>Version: 0.0.10</p>
-</dd>
-</dl>
-<p>Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
-<blockquote>
-<div><p>Copyright (c) 2025 Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
-</div></blockquote>
-<hr class="docutils" />
-<blockquote>
-<div><p>LAST MODIFIED:</p>
-<blockquote>
-<div><p>2025-03-04     By Jess Mann</p>
-</div></blockquote>
-</div></blockquote>
+<p>Define the Tag model for interacting with Paperless-NgX tags.</p>
+<p>This module provides the Tag model class for working with tags in Paperless-NgX.
+Tags are used to categorize and organize documents, and this module enables
+creating, retrieving, updating, and deleting tags, as well as accessing
+documents associated with specific tags.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.tag.model.Tag">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.models.tag.model.</span></span><span class="sig-name descname"><span class="pre">Tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/tag/model.html#Tag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.tag.model.Tag" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel" title="paperap.models.abstract.model.StandardModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardModel</span></code></a>, <a class="reference internal" href="paperap.models.mixins.models.html#paperap.models.mixins.models.MatcherMixin" title="paperap.models.mixins.models.MatcherMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatcherMixin</span></code></a></p>
-<p>Represents a tag in Paperless-NgX.</p>
+<p>Represent a tag in Paperless-NgX for document categorization.</p>
+<p>Tags are used to categorize and organize documents in Paperless-NgX. Each tag
+has a name, color, and can be designated as an inbox tag. Tags can be assigned
+to documents and used for filtering and searching.</p>
+<p>This class provides methods for interacting with tags, including retrieving
+associated documents and managing tag properties.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.tag.model.Tag.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#paperap.models.tag.model.Tag.name" title="Link to this definition"></a></dt>
+<dd><p>The display name of the tag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <em>optional</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.tag.model.Tag.slug">
+<span class="sig-name descname"><span class="pre">slug</span></span><a class="headerlink" href="#paperap.models.tag.model.Tag.slug" title="Link to this definition"></a></dt>
+<dd><p>The URL-friendly version of the name (auto-generated).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <em>optional</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.tag.model.Tag.colour">
+<span class="sig-name descname"><span class="pre">colour</span></span><a class="headerlink" href="#paperap.models.tag.model.Tag.colour" title="Link to this definition"></a></dt>
+<dd><p>The color of the tag (hex string or integer).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <em>optional</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.tag.model.Tag.is_inbox_tag">
+<span class="sig-name descname"><span class="pre">is_inbox_tag</span></span><a class="headerlink" href="#paperap.models.tag.model.Tag.is_inbox_tag" title="Link to this definition"></a></dt>
+<dd><p>Whether this tag is used to mark documents for review.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>, <em>optional</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.tag.model.Tag.document_count">
+<span class="sig-name descname"><span class="pre">document_count</span></span><a class="headerlink" href="#paperap.models.tag.model.Tag.document_count" title="Link to this definition"></a></dt>
+<dd><p>The number of documents with this tag (read-only).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.tag.model.Tag.owner">
+<span class="sig-name descname"><span class="pre">owner</span></span><a class="headerlink" href="#paperap.models.tag.model.Tag.owner" title="Link to this definition"></a></dt>
+<dd><p>The ID of the user who owns this tag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <em>optional</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.tag.model.Tag.user_can_change">
+<span class="sig-name descname"><span class="pre">user_can_change</span></span><a class="headerlink" href="#paperap.models.tag.model.Tag.user_can_change" title="Link to this definition"></a></dt>
+<dd><p>Whether the current user has permission to modify this tag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>, <em>optional</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Create a new tag:
+<a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>python
+tag = client.tags.create(</p>
+<blockquote>
+<div><p>name=”Tax Documents”,
+color=”#ff0000”,
+is_inbox_tag=False</p>
+</div></blockquote>
+<p>Update an existing tag:
+<code class="docutils literal notranslate"><span class="pre">`python</span>
+<span class="pre">tag</span> <span class="pre">=</span> <span class="pre">client.tags.get(5)</span>
+<span class="pre">tag.name</span> <span class="pre">=</span> <span class="pre">&quot;Important</span> <span class="pre">Tax</span> <span class="pre">Documents&quot;</span>
+<span class="pre">tag.color</span> <span class="pre">=</span> <span class="pre">&quot;#00ff00&quot;</span>
+<span class="pre">tag.save()</span>
+<span class="pre">`</span></code></p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.tag.model.Tag.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.tag.model.Tag.name" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.tag.model.Tag.slug">
-<span class="sig-name descname"><span class="pre">slug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.tag.model.Tag.slug" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">slug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.tag.model.Tag.colour">
-<span class="sig-name descname"><span class="pre">colour</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.tag.model.Tag.colour" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">colour</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.tag.model.Tag.is_inbox_tag">
-<span class="sig-name descname"><span class="pre">is_inbox_tag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.tag.model.Tag.is_inbox_tag" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">is_inbox_tag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.tag.model.Tag.document_count">
-<span class="sig-name descname"><span class="pre">document_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#paperap.models.tag.model.Tag.document_count" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">document_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.tag.model.Tag.owner">
-<span class="sig-name descname"><span class="pre">owner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.tag.model.Tag.owner" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">owner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.tag.model.Tag.user_can_change">
-<span class="sig-name descname"><span class="pre">user_can_change</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#paperap.models.tag.model.Tag.user_can_change" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">user_can_change</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="paperap.models.tag.model.Tag.handle_text_color_alias">
 <em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handle_text_color_alias</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/tag/model.html#Tag.handle_text_color_alias"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.tag.model.Tag.handle_text_color_alias" title="Link to this definition"></a></dt>
 <dd><p>Handle ‘text_color’ as an alias for ‘colour’.</p>
+<p>Ensure compatibility with different API versions by accepting ‘text_color’
+as an alternative field name for the tag color.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span>)</p>
+<dd class="field-odd"><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict[str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Any]</span></code>) – The input data dictionary to validate.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The modified data dictionary with normalized color field.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>, Any]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -163,26 +249,60 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="py property">
 <dt class="sig sig-object py" id="paperap.models.tag.model.Tag.color">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">color</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#paperap.models.tag.model.Tag.color" title="Link to this definition"></a></dt>
-<dd><p>Alias for colour field.</p>
+<dd><p>Get the tag color (alias for the colour field).</p>
+<p>Provide American English spelling alternative for the British ‘colour’ field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The color value as a string (hex code) or integer.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a> | None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.models.tag.model.Tag.Meta">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/models/tag/model.html#Tag.Meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.models.tag.model.Tag.Meta" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.models.abstract.model.html#paperap.models.abstract.model.StandardModel.Meta" title="paperap.models.abstract.model.StandardModel.Meta"><code class="xref py py-class docutils literal notranslate"><span class="pre">Meta</span></code></a></p>
+<p>Define metadata for the Tag model.</p>
+<p>Specify model-specific metadata including read-only fields and
+the associated queryset class.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.tag.model.Tag.Meta.read_only_fields">
+<span class="sig-name descname"><span class="pre">read_only_fields</span></span><a class="headerlink" href="#paperap.models.tag.model.Tag.Meta.read_only_fields" title="Link to this definition"></a></dt>
+<dd><p>Fields that cannot be modified by the client.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.models.tag.model.Tag.Meta.queryset">
+<span class="sig-name descname"><span class="pre">queryset</span></span><a class="headerlink" href="#paperap.models.tag.model.Tag.Meta.queryset" title="Link to this definition"></a></dt>
+<dd><p>The queryset class used for querying tags.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TagQuerySet</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>model</strong> (<span class="sphinx_autodoc_typehints-type">type[_Self]</span>)</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.tag.model.Tag.Meta.read_only_fields">
-<span class="sig-name descname"><span class="pre">read_only_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[set[str]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'document_count',</span> <span class="pre">'id',</span> <span class="pre">'slug'}</span></em><a class="headerlink" href="#paperap.models.tag.model.Tag.Meta.read_only_fields" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">read_only_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[set[str]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'document_count',</span> <span class="pre">'id',</span> <span class="pre">'slug'}</span></em><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.models.tag.model.Tag.Meta.queryset">
-<span class="sig-name descname"><span class="pre">queryset</span></span><a class="headerlink" href="#paperap.models.tag.model.Tag.Meta.queryset" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id12">
+<span class="sig-name descname"><span class="pre">queryset</span></span><a class="headerlink" href="#id12" title="Link to this definition"></a></dt>
 <dd><p>alias of <a class="reference internal" href="paperap.models.tag.queryset.html#paperap.models.tag.queryset.TagQuerySet" title="paperap.models.tag.queryset.TagQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">TagQuerySet</span></code></a></p>
 </dd></dl>
 
@@ -226,12 +346,32 @@ Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46
 <dl class="py property">
 <dt class="sig sig-object py" id="paperap.models.tag.model.Tag.documents">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">documents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="paperap.models.document.queryset.html#paperap.models.document.queryset.DocumentQuerySet" title="paperap.models.document.queryset.DocumentQuerySet"><span class="pre">DocumentQuerySet</span></a></em><a class="headerlink" href="#paperap.models.tag.model.Tag.documents" title="Link to this definition"></a></dt>
-<dd><p>Get documents with this tag.</p>
+<dd><p>Get all documents associated with this tag.</p>
+<p>Retrieve a queryset of all documents that have been tagged with this tag.
+The queryset is lazy-loaded, so no API requests are made until the queryset
+is evaluated.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List of documents.</p>
+<dd class="field-odd"><p>A queryset containing all documents with this tag.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="paperap.models.html#paperap.models.DocumentQuerySet" title="paperap.models.DocumentQuerySet">DocumentQuerySet</a></p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Get documents with a specific tag:
+<a href="#id13"><span class="problematic" id="id14">``</span></a><a href="#id15"><span class="problematic" id="id16">`</span></a>python
+# Get a tag
+tax_tag = client.tags.get(5)</p>
+<p># Get all documents with this tag
+tax_documents = tax_tag.documents</p>
+<p># Count documents with this tag
+count = tax_tag.documents.count()</p>
+<p># Filter documents with this tag further
+recent_tax_docs = tax_tag.documents.filter(created__gt=”2023-01-01”)
+<a href="#id17"><span class="problematic" id="id18">``</span></a><a href="#id19"><span class="problematic" id="id20">`</span></a></p>
+</div>
 </dd></dl>
 
 <dl class="py attribute">

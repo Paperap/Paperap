@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/models/abstract/model.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../../_static/readthedocs.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,24 +76,20 @@
              
   <h1>Source code for paperap.models.abstract.model</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">Define base model classes for Paperless-ngx API objects.</span>
 
-<span class="sd">   METADATA:</span>
+<span class="sd">This module provides the foundation for all model classes in Paperap,</span>
+<span class="sd">implementing core functionality for serialization, validation, and API</span>
+<span class="sd">interactions. The models handle data mapping between Python objects and</span>
+<span class="sd">the Paperless-ngx API, with support for automatic saving, dirty tracking,</span>
+<span class="sd">and asynchronous operations.</span>
 
-<span class="sd">       File:    base.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">       Created: 2025-03-04</span>
-<span class="sd">        Version: 0.0.9</span>
-<span class="sd">       Author:  Jess Mann</span>
-<span class="sd">       Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
+<span class="sd">The module contains two primary classes:</span>
+<span class="sd">- BaseModel: Abstract base class for all API objects</span>
+<span class="sd">- StandardModel: Extension of BaseModel for objects with ID fields</span>
 
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">   LAST MODIFIED:</span>
-
-<span class="sd">       2025-03-04     By Jess Mann</span>
-
+<span class="sd">These classes are designed to be subclassed by specific resource models</span>
+<span class="sd">like Document, Tag, Correspondent, etc.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -124,6 +124,23 @@
 <div class="viewcode-block" id="ModelConfigType">
 <a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.ModelConfigType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ModelConfigType</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Define configuration options for Pydantic models.</span>
+
+<span class="sd">    This type definition specifies the configuration options used for</span>
+<span class="sd">    all Pydantic models in the application, ensuring consistent behavior</span>
+<span class="sd">    across all model classes.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        populate_by_name: Allow population by field name as well as alias.</span>
+<span class="sd">        validate_assignment: Validate values when attributes are set.</span>
+<span class="sd">        validate_default: Validate default values during model initialization.</span>
+<span class="sd">        use_enum_values: Use enum values rather than enum instances.</span>
+<span class="sd">        extra: How to handle extra fields (ignore them).</span>
+<span class="sd">        arbitrary_types_allowed: Allow arbitrary types in model fields.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">populate_by_name</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="n">validate_assignment</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="n">validate_default</span><span class="p">:</span> <span class="nb">bool</span>
@@ -144,21 +161,36 @@
 
 
 <div class="viewcode-block" id="BaseModel">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.BaseModel">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.BaseModel">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseModel</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base model for all Paperless-ngx API objects.</span>
 
-<span class="sd">    Provides automatic serialization, deserialization, and API interactions</span>
-<span class="sd">    with minimal configuration needed.</span>
+<span class="sd">    Provide automatic serialization, deserialization, and API interactions</span>
+<span class="sd">    with minimal configuration. This abstract class serves as the foundation</span>
+<span class="sd">    for all models in the Paperap library, handling data validation, dirty</span>
+<span class="sd">    tracking, and API communication.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        _meta: Metadata for the model, including filtering and resource information.</span>
-<span class="sd">        _save_lock: Lock for saving operations.</span>
+<span class="sd">        _save_lock: Lock for saving operations to prevent race conditions.</span>
 <span class="sd">        _pending_save: Future object for pending save operations.</span>
+<span class="sd">        _save_executor: Executor for asynchronous save operations.</span>
+<span class="sd">        _status: Current status of the model (INITIALIZING, READY, UPDATING, SAVING).</span>
+<span class="sd">        _original_data: Original data from the server for dirty checking.</span>
+<span class="sd">        _saved_data: Data last sent to the database during save operations.</span>
+<span class="sd">        _resource: Associated resource for API interactions.</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        ValueError: If resource is not provided.</span>
+<span class="sd">        ValueError: If resource is not provided during initialization.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Models are typically accessed through the client interface:</span>
+
+<span class="sd">        &gt;&gt;&gt; document = client.documents.get(123)</span>
+<span class="sd">        &gt;&gt;&gt; print(document.title)</span>
+<span class="sd">        &gt;&gt;&gt; document.title = &quot;New Title&quot;</span>
+<span class="sd">        &gt;&gt;&gt; document.save()</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -176,24 +208,43 @@
     <span class="n">_resource</span><span class="p">:</span> <span class="s2">&quot;BaseResource[Self]&quot;</span>
 
 <div class="viewcode-block" id="BaseModel.Meta">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.BaseModel.Meta">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.BaseModel.Meta">[docs]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">[</span><span class="n">_Self</span><span class="p">:</span> <span class="s2">&quot;BaseModel&quot;</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Metadata for the Model.</span>
 
+<span class="sd">        Define model behavior, filtering capabilities, and API interaction rules.</span>
+<span class="sd">        Each model class has its own Meta instance that controls how the model</span>
+<span class="sd">        interacts with the Paperless-ngx API.</span>
+
 <span class="sd">        Attributes:</span>
-<span class="sd">            name: The name of the model.</span>
-<span class="sd">            read_only_fields: Fields that should not be modified.</span>
-<span class="sd">            filtering_disabled: Fields disabled for filtering.</span>
-<span class="sd">            filtering_fields: Fields allowed for filtering.</span>
-<span class="sd">            supported_filtering_params: Params allowed during queryset filtering.</span>
-<span class="sd">            blacklist_filtering_params: Params disallowed during queryset filtering.</span>
-<span class="sd">            filtering_strategies: Strategies for filtering.</span>
-<span class="sd">            resource: The BaseResource instance.</span>
-<span class="sd">            queryset: The type of QuerySet for the model.</span>
+<span class="sd">            model: Reference to the model class this metadata belongs to.</span>
+<span class="sd">            name: The name of the model, used in API paths and error messages.</span>
+<span class="sd">            read_only_fields: Fields that should not be modified by the client.</span>
+<span class="sd">            filtering_disabled: Fields that cannot be used for filtering.</span>
+<span class="sd">            filtering_fields: Fields allowed for filtering operations.</span>
+<span class="sd">            supported_filtering_params: Specific filter parameters allowed</span>
+<span class="sd">                during queryset filtering (e.g., &quot;content__icontains&quot;, &quot;id__gt&quot;).</span>
+<span class="sd">            blacklist_filtering_params: Filter parameters explicitly disallowed.</span>
+<span class="sd">            filtering_strategies: Strategies that determine how filtering is handled</span>
+<span class="sd">                (ALLOW_ALL, ALLOW_NONE, WHITELIST, BLACKLIST).</span>
+<span class="sd">            field_map: Map of API field names to model attribute names.</span>
+<span class="sd">            save_on_write: If True, updating attributes triggers automatic save.</span>
+<span class="sd">                If None, follows client.settings.save_on_write.</span>
+<span class="sd">            save_timeout: Timeout in seconds for save operations.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If both ALLOW_ALL and ALLOW_NONE filtering strategies are set.</span>
+<span class="sd">            ValueError: If both ALLOW_ALL and ALLOW_NONE filtering strategies are set,</span>
+<span class="sd">                which would create contradictory behavior.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Defining a custom Meta for a model:</span>
+
+<span class="sd">            &gt;&gt;&gt; class Document(StandardModel):</span>
+<span class="sd">            &gt;&gt;&gt;     class Meta(StandardModel.Meta):</span>
+<span class="sd">            &gt;&gt;&gt;         read_only_fields = {&quot;content&quot;, &quot;checksum&quot;}</span>
+<span class="sd">            &gt;&gt;&gt;         filtering_strategies = {FilteringStrategies.WHITELIST}</span>
+<span class="sd">            &gt;&gt;&gt;         supported_filtering_params = {&quot;title__icontains&quot;, &quot;created__gt&quot;}</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -230,7 +281,7 @@
         <span class="n">__type_hints_cache__</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="BaseModel.Meta.__init__">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.BaseModel.Meta.__init__">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.BaseModel.Meta.__init__">[docs]</a>
         <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">_Self</span><span class="p">]):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
 
@@ -242,16 +293,26 @@
 
 
 <div class="viewcode-block" id="BaseModel.Meta.filter_allowed">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.BaseModel.Meta.filter_allowed">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.BaseModel.Meta.filter_allowed">[docs]</a>
         <span class="k">def</span><span class="w"> </span><span class="nf">filter_allowed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_param</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Check if a filter is allowed based on the filtering strategies.</span>
+<span class="sd">            Check if a filter parameter is allowed based on the filtering strategies.</span>
+
+<span class="sd">            Evaluate whether a given filter parameter can be used with this model</span>
+<span class="sd">            based on the configured filtering strategies and rules. This method</span>
+<span class="sd">            implements the filtering logic defined by the model&#39;s filtering_strategies.</span>
 
 <span class="sd">            Args:</span>
-<span class="sd">                filter_param: The filter parameter to check.</span>
+<span class="sd">                filter_param: The filter parameter to check (e.g., &quot;title__contains&quot;).</span>
 
 <span class="sd">            Returns:</span>
-<span class="sd">                True if the filter is allowed, False otherwise.</span>
+<span class="sd">                bool: True if the filter is allowed, False otherwise.</span>
+
+<span class="sd">            Examples:</span>
+<span class="sd">                &gt;&gt;&gt; meta.filter_allowed(&quot;title__contains&quot;)</span>
+<span class="sd">                True</span>
+<span class="sd">                &gt;&gt;&gt; meta.filter_allowed(&quot;content__exact&quot;)</span>
+<span class="sd">                False  # If content is in filtering_disabled</span>
 
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="n">FilteringStrategies</span><span class="o">.</span><span class="n">ALLOW_ALL</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">filtering_strategies</span><span class="p">:</span>
@@ -289,14 +350,27 @@
 
 
 <div class="viewcode-block" id="BaseModel.__init_subclass__">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.BaseModel.__init_subclass__">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.BaseModel.__init_subclass__">[docs]</a>
     <span class="nd">@override</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">__init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize subclass and set up metadata.</span>
 
+<span class="sd">        Ensure that each subclass has its own Meta definition and properly</span>
+<span class="sd">        inherits metadata attributes from parent classes. This method handles</span>
+<span class="sd">        the automatic creation and configuration of model metadata.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            **kwargs: Additional keyword arguments.</span>
+<span class="sd">            **kwargs: Additional keyword arguments passed to parent __init_subclass__.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ConfigurationError: If no Meta class is found in the class hierarchy.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This method automatically:</span>
+<span class="sd">            - Creates a Meta class for the subclass if not explicitly defined</span>
+<span class="sd">            - Inherits and merges metadata from parent classes</span>
+<span class="sd">            - Initializes the _meta instance for the subclass</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -373,17 +447,23 @@
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">ConfigDict</span><span class="p">(</span><span class="o">**</span><span class="n">BASE_MODEL_CONFIG</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
 <div class="viewcode-block" id="BaseModel.__init__">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.BaseModel.__init__">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.BaseModel.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the model with resource and data.</span>
 
+<span class="sd">        Set up the model with the provided resource and initialize it with</span>
+<span class="sd">        field values from the API response or user input.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            resource: The BaseResource instance.</span>
-<span class="sd">            **data: Additional data to initialize the model.</span>
+<span class="sd">            **data: Field values to initialize the model with.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If resource is not provided.</span>
+<span class="sd">            ValueError: If resource is not provided or properly initialized.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            Models should typically be created through their resource&#39;s methods</span>
+<span class="sd">            rather than directly instantiated.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
@@ -397,26 +477,56 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the client associated with this model.</span>
 
+<span class="sd">        Provide access to the PaperlessClient instance that handles API</span>
+<span class="sd">        communication for this model.</span>
+
 <span class="sd">        Returns:</span>
-<span class="sd">            The PaperlessClient instance.</span>
+<span class="sd">            PaperlessClient: The client instance associated with this model&#39;s resource.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource</span><span class="o">.</span><span class="n">client</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">resource</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BaseResource[Self]&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the resource associated with this model.</span>
+
+<span class="sd">        Provide access to the resource instance that handles API interactions</span>
+<span class="sd">        for this model type, such as retrieving, creating, updating, and</span>
+<span class="sd">        deleting objects.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BaseResource[Self]: The resource instance for this model type.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">save_executor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the thread pool executor for asynchronous save operations.</span>
+
+<span class="sd">        Provide access to the thread pool that handles asynchronous save operations,</span>
+<span class="sd">        creating a new executor if one doesn&#39;t exist yet.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            concurrent.futures.ThreadPoolExecutor: The executor for handling</span>
+<span class="sd">                asynchronous save operations.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_executor</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_save_executor</span> <span class="o">=</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">thread_name_prefix</span><span class="o">=</span><span class="s2">&quot;model_save_worker&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_executor</span>
 
 <div class="viewcode-block" id="BaseModel.cleanup">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.BaseModel.cleanup">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.BaseModel.cleanup">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clean up resources used by the model class.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clean up resources used by the model.</span>
+
+<span class="sd">        Shut down the save executor to release resources. Call this method</span>
+<span class="sd">        when the model is no longer needed to prevent resource leaks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_executor</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_save_executor</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_save_executor</span> <span class="o">=</span> <span class="kc">None</span></div>
@@ -435,28 +545,34 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">model_post_init</span><span class="p">(</span><span class="n">__context</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BaseModel.from_dict">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.BaseModel.from_dict">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.BaseModel.from_dict">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a model instance from API response data.</span>
 
+<span class="sd">        Instantiate a model from a dictionary of API response data,</span>
+<span class="sd">        handling field mapping and type conversion through the resource&#39;s</span>
+<span class="sd">        parse_to_model method.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            data: Dictionary containing the API response data.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            A model instance initialized with the provided data.</span>
+<span class="sd">            Self: A model instance initialized with the provided data.</span>
 
 <span class="sd">        Examples:</span>
-<span class="sd">            # Create a Document instance from API data</span>
-<span class="sd">            doc = Document.from_dict(api_data)</span>
+<span class="sd">            &gt;&gt;&gt; api_data = {&quot;id&quot;: 123, &quot;title&quot;: &quot;Invoice&quot;, &quot;created&quot;: &quot;2023-01-01T00:00:00Z&quot;}</span>
+<span class="sd">            &gt;&gt;&gt; doc = Document.from_dict(api_data)</span>
+<span class="sd">            &gt;&gt;&gt; print(doc.id, doc.title)</span>
+<span class="sd">            123 Invoice</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resource</span><span class="o">.</span><span class="n">parse_to_model</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BaseModel.to_dict">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.BaseModel.to_dict">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.BaseModel.to_dict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
@@ -467,17 +583,28 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the model to a dictionary for API requests.</span>
 
+<span class="sd">        Prepare the model data for submission to the API, with options to</span>
+<span class="sd">        control which fields are included based on their properties and values.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            include_read_only: Whether to include read-only fields.</span>
+<span class="sd">            include_read_only: Whether to include read-only fields in the output.</span>
+<span class="sd">                Set to False when preparing data for update operations.</span>
 <span class="sd">            exclude_none: Whether to exclude fields with None values.</span>
-<span class="sd">            exclude_unset: Whether to exclude fields that are not set.</span>
+<span class="sd">            exclude_unset: Whether to exclude fields that were not explicitly set.</span>
+<span class="sd">                Useful for partial updates.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            A dictionary with model data ready for API submission.</span>
+<span class="sd">            dict[str, Any]: A dictionary with model data ready for API submission.</span>
 
 <span class="sd">        Examples:</span>
-<span class="sd">            # Convert a Document instance to a dictionary</span>
-<span class="sd">            data = doc.to_dict()</span>
+<span class="sd">            &gt;&gt;&gt; # Full representation including all fields</span>
+<span class="sd">            &gt;&gt;&gt; data = doc.to_dict()</span>
+<span class="sd">            &gt;&gt;&gt;</span>
+<span class="sd">            &gt;&gt;&gt; # Only include fields that can be modified</span>
+<span class="sd">            &gt;&gt;&gt; update_data = doc.to_dict(include_read_only=False)</span>
+<span class="sd">            &gt;&gt;&gt;</span>
+<span class="sd">            &gt;&gt;&gt; # Only include fields that have been explicitly set</span>
+<span class="sd">            &gt;&gt;&gt; partial_data = doc.to_dict(exclude_unset=True)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">exclude</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span> <span class="k">if</span> <span class="n">include_read_only</span> <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">read_only_fields</span><span class="p">)</span>
@@ -490,20 +617,30 @@
 
 
 <div class="viewcode-block" id="BaseModel.dirty_fields">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.BaseModel.dirty_fields">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.BaseModel.dirty_fields">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">dirty_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comparison</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;saved&quot;</span><span class="p">,</span> <span class="s2">&quot;db&quot;</span><span class="p">,</span> <span class="s2">&quot;both&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;both&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Show which fields have changed since last update from the paperless ngx db.</span>
+<span class="sd">        Show which fields have changed since last update from the Paperless NGX database.</span>
+
+<span class="sd">        Compare the current model data with the last saved or retrieved data</span>
+<span class="sd">        to identify changes. This method helps determine what will be sent to</span>
+<span class="sd">        the server on the next save operation.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            comparison:</span>
-<span class="sd">                Specify the data to compare (&#39;saved&#39; or &#39;db&#39;).</span>
-<span class="sd">                Db is the last data retrieved from Paperless NGX</span>
-<span class="sd">                Saved is the last data sent to Paperless NGX to be saved</span>
+<span class="sd">            comparison: Specify the data to compare against:</span>
+<span class="sd">                - &quot;saved&quot;: Compare against the last data sent to Paperless NGX</span>
+<span class="sd">                - &quot;db&quot;: Compare against the last data retrieved from Paperless NGX</span>
+<span class="sd">                - &quot;both&quot;: Compare against both saved and db data (default)</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            A dictionary {field: (original_value, new_value)} of fields that have</span>
-<span class="sd">            changed since last update from the paperless ngx db.</span>
+<span class="sd">            dict[str, tuple[Any, Any]]: A dictionary mapping field names to tuples of</span>
+<span class="sd">                (original_value, current_value) for all fields that have changed.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; doc = client.documents.get(123)</span>
+<span class="sd">            &gt;&gt;&gt; doc.title = &quot;New Title&quot;</span>
+<span class="sd">            &gt;&gt;&gt; doc.dirty_fields()</span>
+<span class="sd">            {&#39;title&#39;: (&#39;Original Title&#39;, &#39;New Title&#39;)}</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">current_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
@@ -533,19 +670,30 @@
 
 
 <div class="viewcode-block" id="BaseModel.is_dirty">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.BaseModel.is_dirty">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.BaseModel.is_dirty">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_dirty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comparison</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;saved&quot;</span><span class="p">,</span> <span class="s2">&quot;db&quot;</span><span class="p">,</span> <span class="s2">&quot;both&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;both&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Check if any field has changed since last update from the paperless ngx db.</span>
+<span class="sd">        Check if any field has changed since last update from the Paperless NGX database.</span>
+
+<span class="sd">        Determine if the model has unsaved changes by comparing current data</span>
+<span class="sd">        with the last saved or retrieved data. New models are always considered dirty.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            comparison:</span>
-<span class="sd">                Specify the data to compare (&#39;saved&#39; or &#39;db&#39;).</span>
-<span class="sd">                Db is the last data retrieved from Paperless NGX</span>
-<span class="sd">                Saved is the last data sent to Paperless NGX to be saved</span>
+<span class="sd">            comparison: Specify the data to compare against:</span>
+<span class="sd">                - &quot;saved&quot;: Compare against the last data sent to Paperless NGX</span>
+<span class="sd">                - &quot;db&quot;: Compare against the last data retrieved from Paperless NGX</span>
+<span class="sd">                - &quot;both&quot;: Compare against both saved and db data (default)</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            True if any field has changed.</span>
+<span class="sd">            bool: True if any field has changed, False otherwise.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; doc = client.documents.get(123)</span>
+<span class="sd">            &gt;&gt;&gt; doc.is_dirty()</span>
+<span class="sd">            False</span>
+<span class="sd">            &gt;&gt;&gt; doc.title = &quot;New Title&quot;</span>
+<span class="sd">            &gt;&gt;&gt; doc.is_dirty()</span>
+<span class="sd">            True</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_new</span><span class="p">():</span>
@@ -554,43 +702,76 @@
 
 
 <div class="viewcode-block" id="BaseModel.create">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.BaseModel.create">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.BaseModel.create">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a new model instance.</span>
+<span class="sd">        Create a new model instance and save it to the server.</span>
+
+<span class="sd">        Create a new instance of the model with the specified field values</span>
+<span class="sd">        and immediately save it to the Paperless NGX server. This is a</span>
+<span class="sd">        convenience method that delegates to the resource&#39;s create method.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            **kwargs: Field values to set.</span>
+<span class="sd">            **kwargs: Field values to set on the new model instance.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            A new model instance.</span>
+<span class="sd">            Self: A new model instance that has been saved to the server.</span>
 
 <span class="sd">        Examples:</span>
-<span class="sd">            # Create a new Document instance</span>
-<span class="sd">            doc = Document.create(filename=&quot;example.pdf&quot;, contents=b&quot;PDF data&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; tag = Tag.create(name=&quot;Invoices&quot;, color=&quot;#ff0000&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; correspondent = Correspondent.create(name=&quot;Electric Company&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; doc_type = DocumentType.create(name=&quot;Bill&quot;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resource</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BaseModel.delete">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.BaseModel.delete">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.BaseModel.delete">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Delete this model from the Paperless NGX server.</span>
+
+<span class="sd">        Remove the model from the server. After calling this method,</span>
+<span class="sd">        the model instance should not be used anymore as it no longer</span>
+<span class="sd">        represents a valid server object.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ResourceNotFoundError: If the model doesn&#39;t exist on the server.</span>
+<span class="sd">            APIError: If the server returns an error response.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BaseModel.update_locally">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.BaseModel.update_locally">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.BaseModel.update_locally">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_locally</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">from_db</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_changed_fields</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update model attributes without triggering automatic save.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            **kwargs: Field values to update</span>
+<span class="sd">        Update the model&#39;s attributes with the provided values without sending</span>
+<span class="sd">        changes to the server, regardless of the save_on_write setting. This is</span>
+<span class="sd">        useful for local modifications or when applying server updates.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            Self with updated values</span>
+<span class="sd">        Args:</span>
+<span class="sd">            from_db: Whether the update is from the database. If True, resets the</span>
+<span class="sd">                dirty tracking to consider the model clean after the update.</span>
+<span class="sd">            skip_changed_fields: Whether to skip updating fields that have unsaved</span>
+<span class="sd">                changes. Useful when merging updates from the server with local changes.</span>
+<span class="sd">            **kwargs: Field values to update.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ReadOnlyFieldError: If attempting to change a read-only field when</span>
+<span class="sd">                from_db is False.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; doc = client.documents.get(123)</span>
+<span class="sd">            &gt;&gt;&gt; # Update without saving to server</span>
+<span class="sd">            &gt;&gt;&gt; doc.update_locally(title=&quot;New Title&quot;, correspondent_id=5)</span>
+<span class="sd">            &gt;&gt;&gt; # Update from server data</span>
+<span class="sd">            &gt;&gt;&gt; doc.update_locally(from_db=True, **server_data)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">from_db</span> <span class="o">=</span> <span class="n">from_db</span> <span class="k">if</span> <span class="n">from_db</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">False</span>
@@ -618,20 +799,20 @@
 
 
 <div class="viewcode-block" id="BaseModel.update">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.BaseModel.update">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.BaseModel.update">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update this model with new values.</span>
 
-<span class="sd">        Subclasses implement this with auto-saving features.</span>
-<span class="sd">        However, base BaseModel instances simply call update_locally.</span>
+<span class="sd">        Update the model with the provided field values. In BaseModel,</span>
+<span class="sd">        this simply calls update_locally without saving. Subclasses</span>
+<span class="sd">        (like StandardModel) may implement automatic saving.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            **kwargs: New field values.</span>
+<span class="sd">            **kwargs: New field values to set on the model.</span>
 
 <span class="sd">        Examples:</span>
-<span class="sd">            # Update a Document instance</span>
-<span class="sd">            doc.update(filename=&quot;new_example.pdf&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; model.update(name=&quot;New Name&quot;, description=&quot;Updated description&quot;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Since we have no id, we can&#39;t save. Therefore, all updates are silent updates</span>
@@ -640,27 +821,44 @@
 
 
 <div class="viewcode-block" id="BaseModel.is_new">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.BaseModel.is_new">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.BaseModel.is_new">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_new</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if this model represents a new (unsaved) object.</span>
 
+<span class="sd">        Determine if the model has been saved to the server. Subclasses</span>
+<span class="sd">        must implement this method, typically by checking if the model</span>
+<span class="sd">        has a valid ID or other server-assigned identifier.</span>
+
 <span class="sd">        Returns:</span>
-<span class="sd">            True if the model is new, False otherwise.</span>
+<span class="sd">            bool: True if the model is new (not yet saved), False otherwise.</span>
 
 <span class="sd">        Examples:</span>
-<span class="sd">            # Check if a Document instance is new</span>
-<span class="sd">            is_new = doc.is_new()</span>
+<span class="sd">            &gt;&gt;&gt; doc = Document.create(title=&quot;New Document&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; doc.is_new()  # Returns False after creation</span>
+<span class="sd">            &gt;&gt;&gt;</span>
+<span class="sd">            &gt;&gt;&gt; # When creating a model instance manually:</span>
+<span class="sd">            &gt;&gt;&gt; doc = Document(title=&quot;Draft Document&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; doc.is_new()  # Returns True</span>
 
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="BaseModel.should_save_on_write">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.BaseModel.should_save_on_write">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.BaseModel.should_save_on_write">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">should_save_on_write</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Check if the model should save on attribute write, factoring in the client settings.</span>
+<span class="sd">        Check if the model should save on attribute write.</span>
+
+<span class="sd">        Determine if changes to model attributes should trigger an automatic</span>
+<span class="sd">        save operation based on configuration settings. This method considers</span>
+<span class="sd">        both the model&#39;s meta settings and the client settings, with the</span>
+<span class="sd">        model&#39;s setting taking precedence.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the model should save on write, False otherwise.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">save_on_write</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">save_on_write</span>
@@ -668,52 +866,82 @@
 
 
 <div class="viewcode-block" id="BaseModel.enable_save_on_write">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.BaseModel.enable_save_on_write">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.BaseModel.enable_save_on_write">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">enable_save_on_write</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Enable automatic saving on attribute write.</span>
+
+<span class="sd">        Set the model&#39;s meta configuration to allow automatic saving whenever</span>
+<span class="sd">        an attribute is modified, overriding the client&#39;s default setting.</span>
+<span class="sd">        This affects only this specific model instance.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; doc = client.documents.get(123)</span>
+<span class="sd">            &gt;&gt;&gt; doc.enable_save_on_write()</span>
+<span class="sd">            &gt;&gt;&gt; doc.title = &quot;New Title&quot;  # This will trigger an automatic save</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">save_on_write</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="BaseModel.disable_save_on_write">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.BaseModel.disable_save_on_write">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.BaseModel.disable_save_on_write">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">disable_save_on_write</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Disable automatic saving on attribute write.</span>
+
+<span class="sd">        Set the model&#39;s meta configuration to prevent automatic saving whenever</span>
+<span class="sd">        an attribute is modified, overriding the client&#39;s default setting.</span>
+<span class="sd">        This affects only this specific model instance.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; doc = client.documents.get(123)</span>
+<span class="sd">            &gt;&gt;&gt; doc.disable_save_on_write()</span>
+<span class="sd">            &gt;&gt;&gt; doc.title = &quot;New Title&quot;  # This won&#39;t trigger an automatic save</span>
+<span class="sd">            &gt;&gt;&gt; doc.save()  # Manual save required</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">save_on_write</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 
 <div class="viewcode-block" id="BaseModel.matches_dict">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.BaseModel.matches_dict">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.BaseModel.matches_dict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">matches_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the model matches the provided data.</span>
 
+<span class="sd">        Compare the model&#39;s current data with a given dictionary to determine</span>
+<span class="sd">        if they are equivalent. This is useful for checking if a model needs</span>
+<span class="sd">        to be updated based on new data from the server.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            data: Dictionary containing the data to compare.</span>
+<span class="sd">            data: Dictionary containing the data to compare against.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            True if the model matches the data, False otherwise.</span>
+<span class="sd">            bool: True if the model matches the data, False otherwise.</span>
 
 <span class="sd">        Examples:</span>
-<span class="sd">            # Check if a Document instance matches API data</span>
-<span class="sd">            matches = doc.matches_dict(api_data)</span>
+<span class="sd">            &gt;&gt;&gt; doc = client.documents.get(123)</span>
+<span class="sd">            &gt;&gt;&gt; new_data = {&quot;id&quot;: 123, &quot;title&quot;: &quot;Invoice&quot;, &quot;correspondent_id&quot;: 5}</span>
+<span class="sd">            &gt;&gt;&gt; doc.matches_dict(new_data)</span>
+<span class="sd">            False  # If any values differ</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="o">==</span> <span class="n">data</span></div>
 
 
 <div class="viewcode-block" id="BaseModel.__str__">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.BaseModel.__str__">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.BaseModel.__str__">[docs]</a>
     <span class="nd">@override</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Human-readable string representation.</span>
 
+<span class="sd">        Provide a string representation of the model that includes the</span>
+<span class="sd">        model type and ID, typically used for logging and debugging purposes.</span>
+
 <span class="sd">        Returns:</span>
-<span class="sd">            A string representation of the model.</span>
+<span class="sd">            str: A string representation of the model (e.g., &quot;Document #123&quot;).</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span></div>
@@ -722,13 +950,31 @@
 
 
 <div class="viewcode-block" id="StandardModel">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.StandardModel">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.StandardModel">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StandardModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Standard model for Paperless-ngx API objects with an ID field.</span>
 
+<span class="sd">    Extend BaseModel to include a unique identifier and additional functionality</span>
+<span class="sd">    for API objects that require an ID. Most Paperless-ngx resources are</span>
+<span class="sd">    represented by StandardModel subclasses.</span>
+
+<span class="sd">    This class adds functionality for:</span>
+<span class="sd">    - Tracking whether an object is new or existing</span>
+<span class="sd">    - Automatic saving of changes to the server</span>
+<span class="sd">    - Refreshing data from the server</span>
+<span class="sd">    - Synchronous and asynchronous save operations</span>
+
 <span class="sd">    Attributes:</span>
-<span class="sd">        id: Unique identifier for the model.</span>
+<span class="sd">        id: Unique identifier for the model from Paperless-ngx.</span>
+<span class="sd">        _resource: Associated resource for API interactions.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        StandardModel subclasses are typically accessed through the client:</span>
+
+<span class="sd">        &gt;&gt;&gt; doc = client.documents.get(123)</span>
+<span class="sd">        &gt;&gt;&gt; tag = client.tags.create(name=&quot;Important&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; correspondent = client.correspondents.all()[0]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -736,38 +982,62 @@
     <span class="n">_resource</span><span class="p">:</span> <span class="s2">&quot;StandardResource[Self]&quot;</span>  <span class="c1"># type: ignore # override</span>
 
 <div class="viewcode-block" id="StandardModel.Meta">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.StandardModel.Meta">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.StandardModel.Meta">[docs]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">(</span><span class="n">BaseModel</span><span class="o">.</span><span class="n">Meta</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Metadata for the StandardModel.</span>
 
+<span class="sd">        Define metadata specific to StandardModel, including read-only fields</span>
+<span class="sd">        and filtering parameters common to all standard Paperless-ngx resources.</span>
+
 <span class="sd">        Attributes:</span>
-<span class="sd">            read_only_fields: Fields that should not be modified.</span>
-<span class="sd">            supported_filtering_params: Params allowed during queryset filtering.</span>
+<span class="sd">            read_only_fields: Fields that should not be modified,</span>
+<span class="sd">                including the &#39;id&#39; field which is set by the server.</span>
+<span class="sd">            supported_filtering_params: Common filtering parameters</span>
+<span class="sd">                supported for all standard models, including id-based lookups.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="c1"># Fields that should not be modified</span>
         <span class="n">read_only_fields</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">}</span>
         <span class="n">supported_filtering_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id__in&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">}</span></div>
 
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">resource</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;StandardResource[Self]&quot;</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the resource associated with this model.</span>
+
+<span class="sd">        Provide access to the StandardResource instance that handles API</span>
+<span class="sd">        interactions for this model type, with support for ID-based operations.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            StandardResource[Self]: The resource instance for this model type.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource</span>
 
 <div class="viewcode-block" id="StandardModel.update">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.StandardModel.update">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.StandardModel.update">[docs]</a>
     <span class="nd">@override</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update this model with new values and save changes.</span>
 
-<span class="sd">        NOTE: new instances will not be saved automatically.</span>
-<span class="sd">        (I&#39;m not sure if that&#39;s the right design decision or not)</span>
+<span class="sd">        Update the model with the provided field values and automatically</span>
+<span class="sd">        save the changes to the server if the model is not new. This method</span>
+<span class="sd">        combines update_locally and save for convenience.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            **kwargs: New field values.</span>
+<span class="sd">            **kwargs: New field values to set on the model.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            New (unsaved) instances will be updated locally but not saved automatically.</span>
+<span class="sd">            Use create() to save new instances.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; doc = client.documents.get(123)</span>
+<span class="sd">            &gt;&gt;&gt; doc.update(title=&quot;New Title&quot;, correspondent_id=5)</span>
+<span class="sd">            &gt;&gt;&gt; # Changes are immediately saved to the server</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Hold off on saving until all updates are complete</span>
@@ -777,16 +1047,28 @@
 
 
 <div class="viewcode-block" id="StandardModel.refresh">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.StandardModel.refresh">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.StandardModel.refresh">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">refresh</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Refresh the model with the latest data from the server.</span>
 
+<span class="sd">        Retrieve the latest data for the model from the server and update</span>
+<span class="sd">        the model instance with any changes. This is useful when you suspect</span>
+<span class="sd">        the server data may have changed due to actions by other users or</span>
+<span class="sd">        automated processes.</span>
+
 <span class="sd">        Returns:</span>
-<span class="sd">            True if the model data changes, False on failure or if the data does not change.</span>
+<span class="sd">            bool: True if the model data changed, False if the data is identical</span>
+<span class="sd">                or the refresh failed.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            ResourceNotFoundError: If the model is not found on Paperless. (e.g. it was deleted remotely)</span>
+<span class="sd">            ResourceNotFoundError: If the model is not found on the server</span>
+<span class="sd">                (e.g., it was deleted remotely).</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; doc = client.documents.get(123)</span>
+<span class="sd">            &gt;&gt;&gt; # After some time or operations by other users</span>
+<span class="sd">            &gt;&gt;&gt; doc.refresh()  # Update with latest data from server</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_new</span><span class="p">():</span>
@@ -802,27 +1084,62 @@
 
 
 <div class="viewcode-block" id="StandardModel.save">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.StandardModel.save">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.StandardModel.save">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save this model to the Paperless NGX server.</span>
+
+<span class="sd">        Send the current model state to the server, creating a new object</span>
+<span class="sd">        or updating an existing one. This is a convenience method that</span>
+<span class="sd">        calls save_sync.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            force: Whether to force the save operation even if the model</span>
+<span class="sd">                is not dirty or is already saving.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the save was successful, False otherwise.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; doc = client.documents.get(123)</span>
+<span class="sd">            &gt;&gt;&gt; doc.title = &quot;New Title&quot;</span>
+<span class="sd">            &gt;&gt;&gt; doc.save()</span>
+<span class="sd">            &gt;&gt;&gt;</span>
+<span class="sd">            &gt;&gt;&gt; # Force save even if no changes</span>
+<span class="sd">            &gt;&gt;&gt; doc.save(force=True)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_sync</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="StandardModel.save_sync">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.StandardModel.save_sync">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.StandardModel.save_sync">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">save_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save this model instance synchronously.</span>
 
-<span class="sd">        Changes are sent to the server immediately, and the model is updated</span>
-<span class="sd">        when the server responds.</span>
+<span class="sd">        Send changes to the server immediately and update the model when</span>
+<span class="sd">        the server responds. This method blocks until the save operation</span>
+<span class="sd">        is complete.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            force: Whether to force the save operation even if the model</span>
+<span class="sd">                is not dirty or is already saving.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            True if the save was successful, False otherwise.</span>
+<span class="sd">            bool: True if the save was successful, False otherwise.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            ResourceNotFoundError: If the resource doesn&#39;t exist on the server</span>
-<span class="sd">            RequestError: If there&#39;s a communication error with the server</span>
-<span class="sd">            PermissionError: If the user doesn&#39;t have permission to update the resource</span>
+<span class="sd">            ResourceNotFoundError: If the resource doesn&#39;t exist on the server.</span>
+<span class="sd">            RequestError: If there&#39;s a communication error with the server.</span>
+<span class="sd">            APIError: If the server returns an error response.</span>
+<span class="sd">            PermissionError: If the user doesn&#39;t have permission to update the resource.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; doc = client.documents.get(123)</span>
+<span class="sd">            &gt;&gt;&gt; doc.title = &quot;New Title&quot;</span>
+<span class="sd">            &gt;&gt;&gt; success = doc.save_sync()</span>
+<span class="sd">            &gt;&gt;&gt; print(f&quot;Save {&#39;succeeded&#39; if success else &#39;failed&#39;}&quot;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_new</span><span class="p">():</span>
@@ -896,16 +1213,30 @@
 
 
 <div class="viewcode-block" id="StandardModel.save_async">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.StandardModel.save_async">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.StandardModel.save_async">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">save_async</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save this model instance asynchronously.</span>
 
-<span class="sd">        Changes are sent to the server in a background thread, and the model</span>
-<span class="sd">        is updated when the server responds.</span>
+<span class="sd">        Send changes to the server in a background thread, allowing other</span>
+<span class="sd">        operations to continue while waiting for the server response.</span>
+<span class="sd">        The model will be updated with the server&#39;s response when the</span>
+<span class="sd">        save completes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            force: Whether to force the save operation even if the model</span>
+<span class="sd">                is not dirty or is already saving.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            True if the save was successfully submitted async, False otherwise.</span>
+<span class="sd">            bool: True if the save was successfully submitted to the background</span>
+<span class="sd">                thread, False otherwise (e.g., if there are no changes to save).</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; doc = client.documents.get(123)</span>
+<span class="sd">            &gt;&gt;&gt; doc.title = &quot;New Title&quot;</span>
+<span class="sd">            &gt;&gt;&gt; # Continue execution immediately while save happens in background</span>
+<span class="sd">            &gt;&gt;&gt; doc.save_async()</span>
+<span class="sd">            &gt;&gt;&gt; # Do other work...</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
@@ -935,15 +1266,20 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_perform_save_async</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Perform the actual save operation.</span>
+<span class="sd">        Perform the actual save operation in a background thread.</span>
+
+<span class="sd">        Handle the core logic for saving the model to the server, preparing</span>
+<span class="sd">        the data and sending the update request. This internal method is called</span>
+<span class="sd">        by save_async() in a separate thread.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The updated model from the server or None if no save was needed.</span>
+<span class="sd">            Self | None: The updated model from the server or None if no save was needed.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            ResourceNotFoundError: If the resource doesn&#39;t exist on the server</span>
-<span class="sd">            RequestError: If there&#39;s a communication error with the server</span>
-<span class="sd">            PermissionError: If the user doesn&#39;t have permission to update the resource</span>
+<span class="sd">            ResourceNotFoundError: If the resource doesn&#39;t exist on the server.</span>
+<span class="sd">            RequestError: If there&#39;s a communication error with the server.</span>
+<span class="sd">            APIError: If the server returns an error response.</span>
+<span class="sd">            PermissionError: If the user doesn&#39;t have permission to update the resource.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Prepare and send the update to the server</span>
@@ -962,8 +1298,15 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Handle the result of an asynchronous save operation.</span>
 
+<span class="sd">        Process the result of an async save, updating the model with the</span>
+<span class="sd">        server&#39;s response or handling errors. This internal method is called</span>
+<span class="sd">        automatically when an asynchronous save operation completes.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            future: The completed Future object containing the save result.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the save result was handled successfully, False otherwise.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1042,24 +1385,42 @@
         <span class="k">return</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="StandardModel.is_new">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.StandardModel.is_new">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.StandardModel.is_new">[docs]</a>
     <span class="nd">@override</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_new</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if this model represents a new (unsaved) object.</span>
 
+<span class="sd">        Determine if the model has been saved to the server by checking</span>
+<span class="sd">        if it has a valid ID (non-zero). StandardModel implements this</span>
+<span class="sd">        method by checking the id attribute.</span>
+
 <span class="sd">        Returns:</span>
-<span class="sd">            True if the model is new, False otherwise.</span>
+<span class="sd">            bool: True if the model is new (not yet saved), False otherwise.</span>
 
 <span class="sd">        Examples:</span>
-<span class="sd">            # Check if a Document instance is new</span>
-<span class="sd">            is_new = doc.is_new()</span>
+<span class="sd">            &gt;&gt;&gt; doc = Document(title=&quot;Draft&quot;)  # No ID yet</span>
+<span class="sd">            &gt;&gt;&gt; doc.is_new()</span>
+<span class="sd">            True</span>
+<span class="sd">            &gt;&gt;&gt; saved_doc = client.documents.get(123)</span>
+<span class="sd">            &gt;&gt;&gt; saved_doc.is_new()</span>
+<span class="sd">            False</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="mi">0</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_autosave</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Automatically save the model if conditions are met.</span>
+
+<span class="sd">        Handle automatic saving based on the save_on_write setting when</span>
+<span class="sd">        attributes are modified. This internal method is called by __setattr__</span>
+<span class="sd">        and skips saving for:</span>
+<span class="sd">        - New models (not yet saved)</span>
+<span class="sd">        - When auto-save is disabled</span>
+<span class="sd">        - When there are no changes to save</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Skip autosave for:</span>
         <span class="c1"># - New models (not yet saved)</span>
         <span class="c1"># - When auto-save is disabled</span>
@@ -1069,15 +1430,25 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
 <div class="viewcode-block" id="StandardModel.__setattr__">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.StandardModel.__setattr__">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.StandardModel.__setattr__">[docs]</a>
     <span class="nd">@override</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Override attribute setting to automatically trigger async save.</span>
+<span class="sd">        Override attribute setting to automatically trigger save.</span>
+
+<span class="sd">        Intercept attribute assignments and trigger an automatic save</span>
+<span class="sd">        operation if appropriate based on the save_on_write setting.</span>
+<span class="sd">        This enables the &quot;save on write&quot; functionality that makes the</span>
+<span class="sd">        model automatically sync changes to the server.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            name: Attribute name</span>
+<span class="sd">            name: Attribute name to set</span>
 <span class="sd">            value: New attribute value</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            - Private attributes (starting with &#39;_&#39;) never trigger autosave</span>
+<span class="sd">            - Autosave only happens when model status is READY</span>
+<span class="sd">            - Autosave is skipped for new models or when save_on_write is False</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Set the new value</span>
@@ -1093,14 +1464,17 @@
 
 
 <div class="viewcode-block" id="StandardModel.__str__">
-<a class="viewcode-back" href="../../../../api/paperap.models.abstract.model.html#paperap.models.StandardModel.__str__">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.StandardModel.__str__">[docs]</a>
     <span class="nd">@override</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Human-readable string representation.</span>
 
+<span class="sd">        This method returns a string representation of the model, typically</span>
+<span class="sd">        used for logging and debugging purposes.</span>
+
 <span class="sd">        Returns:</span>
-<span class="sd">            A string representation of the model.</span>
+<span class="sd">            str: A string representation of the model.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2"> #</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span></div>

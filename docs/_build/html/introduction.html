@@ -1,128 +1,211 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
+
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Introduction to Paperap &mdash; Paperap 0.0.8 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+  <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+  <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
-  
-    <link rel="canonical" href="/introduction.html" />
-      <script src="_static/jquery.js?v=5d32c60e"></script>
-      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=53b53b71"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script defer="defer" src="_static/readthedocs.js"></script>
-    <script src="_static/js/theme.js"></script>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installation" href="installation.html" />
-    <link rel="prev" title="Welcome to Paperap’s documentation!" href="index.html" /> 
+
+  <link rel="canonical" href="/introduction.html" />
+  <script src="_static/jquery.js?v=5d32c60e"></script>
+  <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+  <script src="_static/documentation_options.js?v=53b53b71"></script>
+  <script src="_static/doctools.js?v=9bcbadda"></script>
+  <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+  <script defer="defer" src="_static/readthedocs.js"></script>
+  <script src="_static/js/theme.js"></script>
+  <link rel="index" title="Index" href="genindex.html" />
+  <link rel="search" title="Search" href="search.html" />
+  <link rel="next" title="Installation" href="installation.html" />
+  <link rel="prev" title="Welcome to Paperap’s documentation!" href="index.html" />
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search"  style="background: #2980B9" >
+        <div class="wy-side-nav-search" style="background: #2980B9">
 
-          
-          
+
+
           <a href="index.html" class="icon icon-home">
             Paperap
           </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction to Paperap</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#features">Features</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
-</ul>
+          <div role="search">
+            <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+              <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+          </div>
+        </div>
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+          <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+          <ul class="current">
+            <li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction to Paperap</a>
+              <ul>
+                <li class="toctree-l2"><a class="reference internal" href="#what-is-paperless-ngx">What is
+                    Paperless-NgX?</a></li>
+                <li class="toctree-l2"><a class="reference internal" href="#why-paperap">Why Paperap?</a></li>
+                <li class="toctree-l2"><a class="reference internal" href="#features">Features</a></li>
+                <li class="toctree-l2"><a class="reference internal" href="#design-philosophy">Design Philosophy</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="#project-status">Project Status</a></li>
+              </ul>
+            </li>
+            <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+            <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Guide</a></li>
+            <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+            <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+          </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Paperap</a>
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" aria-label="Mobile navigation menu" style="background: #2980B9">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
         <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Introduction to Paperap</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="_sources/introduction.md.txt" rel="nofollow"> View page source</a>
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
-  <section id="introduction-to-paperap">
-<h1>Introduction to Paperap<a class="headerlink" href="#introduction-to-paperap" title="Link to this heading"></a></h1>
-<p>Paperap is a Python client for interacting with the Paperless-NgX API.</p>
-<section id="features">
-<h2>Features<a class="headerlink" href="#features" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p>Complete API coverage for Paperless-NgX</p></li>
-<li><p>Type-hinted interface with Pydantic models</p></li>
-<li><p>Pluggable architecture</p></li>
-<li><p>Signal-based event system</p></li>
-</ul>
-</section>
-</section>
-
-
-           </div>
+            <ul class="wy-breadcrumbs">
+              <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+              <li class="breadcrumb-item active">Introduction to Paperap</li>
+              <li class="wy-breadcrumbs-aside">
+                <a href="_sources/introduction.md.txt" rel="nofollow"> View page source</a>
+              </li>
+            </ul>
+            <hr />
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Paperap’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div itemprop="articleBody">
 
-  <hr/>
+              <section id="introduction-to-paperap">
+                <h1>Introduction to Paperap<a class="headerlink" href="#introduction-to-paperap"
+                    title="Link to this heading"></a></h1>
+                <p>Paperap is a modern, type-safe Python client for interacting with the <a class="reference external"
+                    href="https://docs.paperless-ngx.com/">Paperless-NgX</a> API. It provides a convenient and elegant
+                  interface to manage documents, tags, correspondents, and other resources in your Paperless-NgX
+                  instance.</p>
+                <section id="what-is-paperless-ngx">
+                  <h2>What is Paperless-NgX?<a class="headerlink" href="#what-is-paperless-ngx"
+                      title="Link to this heading"></a></h2>
+                  <p>Paperless-NgX is a document management system that indexes your scanned paper documents and
+                    electronic documents. It processes documents through OCR (Optical Character Recognition),
+                    categorizes them, and makes them searchable, enabling you to create a paperless home or office.</p>
+                </section>
+                <section id="why-paperap">
+                  <h2>Why Paperap?<a class="headerlink" href="#why-paperap" title="Link to this heading"></a></h2>
+                  <p>Paperap was created to provide a reliable, maintainable, and developer-friendly way to interact
+                    with Paperless-NgX programmatically. Whether you’re building automation workflows, integrating with
+                    other systems, or just scripting common tasks, Paperap makes it easy to work with your documents.
+                  </p>
+                </section>
+                <section id="features">
+                  <h2>Features<a class="headerlink" href="#features" title="Link to this heading"></a></h2>
+                  <ul class="simple">
+                    <li>
+                      <p><strong>Complete API Coverage</strong>: Full support for all Paperless-NgX resources and
+                        operations</p>
+                    </li>
+                    <li>
+                      <p><strong>Type Safety</strong>: Fully type-hinted with Pydantic models for reliable IDE
+                        integration and runtime validation</p>
+                    </li>
+                    <li>
+                      <p><strong>Modern Design</strong>: Built with Python’s latest features and best practices</p>
+                    </li>
+                    <li>
+                      <p><strong>Pluggable Architecture</strong>: Extensible through plugins for custom behaviors</p>
+                    </li>
+                    <li>
+                      <p><strong>Signal-Based Event System</strong>: Hook into the client’s lifecycle with a flexible
+                        event system</p>
+                    </li>
+                    <li>
+                      <p><strong>Async Support</strong>: Efficient asynchronous operations where appropriate</p>
+                    </li>
+                    <li>
+                      <p><strong>Resource-Oriented</strong>: Intuitive, object-oriented API that matches Paperless-NgX’s
+                        resource model</p>
+                    </li>
+                    <li>
+                      <p><strong>Automated Testing</strong>: Comprehensive test suite ensuring reliability</p>
+                    </li>
+                  </ul>
+                </section>
+                <section id="design-philosophy">
+                  <h2>Design Philosophy<a class="headerlink" href="#design-philosophy"
+                      title="Link to this heading"></a></h2>
+                  <p>Paperap follows these core principles:</p>
+                  <ol class="arabic simple">
+                    <li>
+                      <p><strong>Developer Experience First</strong>: Clear, intuitive interfaces with excellent
+                        documentation</p>
+                    </li>
+                    <li>
+                      <p><strong>Type Safety</strong>: Leverage Python’s type system for better code quality</p>
+                    </li>
+                    <li>
+                      <p><strong>Extensibility</strong>: Build for customization and extension</p>
+                    </li>
+                    <li>
+                      <p><strong>Performance</strong>: Efficient handling of API requests and responses</p>
+                    </li>
+                    <li>
+                      <p><strong>Maintainability</strong>: Clean architecture with separation of concerns</p>
+                    </li>
+                  </ol>
+                </section>
+                <section id="project-status">
+                  <h2>Project Status<a class="headerlink" href="#project-status" title="Link to this heading"></a></h2>
+                  <p>Paperap is under active development and not quite ready for production use. As Paperless-NgX
+                    evolves, Paperap is maintained to ensure compatibility with the latest versions.</p>
+                </section>
+              </section>
 
-  <div role="contentinfo">
-    <p>&#169; Copyright 2025, Jess Mann.</p>
-  </div>
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+            </div>
+          </div>
+          <footer>
+            <div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+              <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Paperap’s documentation!"
+                accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+              <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n"
+                rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+            </div>
 
-</footer>
+            <hr />
+
+            <div role="contentinfo">
+              <p>&#169; Copyright 2025, Jess Mann.</p>
+            </div>
+
+            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+            <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+            provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+
+          </footer>
         </div>
       </div>
     </section>
   </div>
   <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+    jQuery(function () {
+      SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
 
 </body>
+
 </html>

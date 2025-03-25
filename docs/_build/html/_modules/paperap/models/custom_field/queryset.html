@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/models/custom_field/queryset.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../../_static/readthedocs.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,24 +76,11 @@
              
   <h1>Source code for paperap.models.custom_field.queryset</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">Provide specialized queryset for custom fields in Paperless-ngx.</span>
 
-<span class="sd">   METADATA:</span>
-
-<span class="sd">       File:    queryset.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">       Created: 2025-03-04</span>
-<span class="sd">        Version: 0.0.9</span>
-<span class="sd">       Author:  Jess Mann</span>
-<span class="sd">       Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">   LAST MODIFIED:</span>
-
-<span class="sd">       2025-03-04     By Jess Mann</span>
-
+<span class="sd">This module implements the CustomFieldQuerySet class, which extends the standard</span>
+<span class="sd">queryset functionality with methods specific to custom fields. It enables</span>
+<span class="sd">filtering by name, data type, and extra data properties.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -107,60 +98,114 @@
 
 
 <div class="viewcode-block" id="CustomFieldQuerySet">
-<a class="viewcode-back" href="../../../../api/paperap.models.custom_field.queryset.html#paperap.models.CustomFieldQuerySet">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.CustomFieldQuerySet">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CustomFieldQuerySet</span><span class="p">(</span><span class="n">StandardQuerySet</span><span class="p">[</span><span class="s2">&quot;CustomField&quot;</span><span class="p">],</span> <span class="n">HasDocumentCount</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    QuerySet for Paperless-ngx custom fields with specialized filtering methods.</span>
+<span class="sd">    Manage and filter custom fields from Paperless-ngx.</span>
+
+<span class="sd">    Extends StandardQuerySet to provide specialized filtering methods for custom</span>
+<span class="sd">    fields. Allows filtering by name, data type, and extra data, making it easier</span>
+<span class="sd">    to find and manage custom fields.</span>
+
+<span class="sd">    The QuerySet is lazy-loaded, meaning API requests are only made when the</span>
+<span class="sd">    results are actually needed (when iterating, counting, etc.).</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        Inherits all attributes from StandardQuerySet and HasDocumentCount.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Get all string-type custom fields:</span>
+<span class="sd">            &gt;&gt;&gt; string_fields = client.custom_fields().data_type(&quot;string&quot;)</span>
+
+<span class="sd">        Find custom fields with a specific name pattern:</span>
+<span class="sd">            &gt;&gt;&gt; invoice_fields = client.custom_fields().name(&quot;invoice&quot;, exact=False)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="CustomFieldQuerySet.name">
-<a class="viewcode-back" href="../../../../api/paperap.models.custom_field.queryset.html#paperap.models.CustomFieldQuerySet.name">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.CustomFieldQuerySet.name">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter custom fields by name.</span>
 
+<span class="sd">        Filter the queryset to include only custom fields whose names match the</span>
+<span class="sd">        specified value, with options for exact matching and case sensitivity.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: The custom field name to filter by</span>
-<span class="sd">            exact: If True, match the exact name, otherwise use contains</span>
-<span class="sd">            case_insensitive: If True, ignore case when matching</span>
+<span class="sd">            value: The custom field name to filter by.</span>
+<span class="sd">            exact: If True, match the exact name; if False, use contains matching.</span>
+<span class="sd">                Defaults to True.</span>
+<span class="sd">            case_insensitive: If True, ignore case when matching. Defaults to True.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered CustomFieldQuerySet</span>
+<span class="sd">            A filtered CustomFieldQuerySet containing only matching custom fields.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find fields with exact name &quot;Invoice Number&quot;:</span>
+<span class="sd">                &gt;&gt;&gt; invoice_fields = client.custom_fields().name(&quot;Invoice Number&quot;)</span>
+
+<span class="sd">            Find fields containing &quot;date&quot; (case-insensitive):</span>
+<span class="sd">                &gt;&gt;&gt; date_fields = client.custom_fields().name(&quot;date&quot;, exact=False)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="o">=</span><span class="n">case_insensitive</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="CustomFieldQuerySet.data_type">
-<a class="viewcode-back" href="../../../../api/paperap.models.custom_field.queryset.html#paperap.models.CustomFieldQuerySet.data_type">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.CustomFieldQuerySet.data_type">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">data_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter custom fields by data type.</span>
 
+<span class="sd">        Filter the queryset to include only custom fields with the specified data type.</span>
+<span class="sd">        Paperless-ngx supports several data types for custom fields, including string,</span>
+<span class="sd">        integer, boolean, date, etc.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: The data type to filter by (e.g., &quot;string&quot;, &quot;integer&quot;, &quot;boolean&quot;, &quot;date&quot;)</span>
-<span class="sd">            exact: If True, match the exact data type, otherwise use contains</span>
-<span class="sd">            case_insensitive: If True, ignore case when matching</span>
+<span class="sd">            value: The data type to filter by (e.g., &quot;string&quot;, &quot;integer&quot;, &quot;boolean&quot;, &quot;date&quot;).</span>
+<span class="sd">            exact: If True, match the exact data type; if False, use contains matching.</span>
+<span class="sd">                Defaults to True.</span>
+<span class="sd">            case_insensitive: If True, ignore case when matching. Defaults to True.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered CustomFieldQuerySet</span>
+<span class="sd">            A filtered CustomFieldQuerySet containing only custom fields with matching data types.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Get all date-type custom fields:</span>
+<span class="sd">                &gt;&gt;&gt; date_fields = client.custom_fields().data_type(&quot;date&quot;)</span>
+
+<span class="sd">            Get all numeric fields (integer or float):</span>
+<span class="sd">                &gt;&gt;&gt; numeric_fields = client.custom_fields().data_type(&quot;int&quot;, exact=False)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s2">&quot;data_type&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="o">=</span><span class="n">case_insensitive</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="CustomFieldQuerySet.extra_data">
-<a class="viewcode-back" href="../../../../api/paperap.models.custom_field.queryset.html#paperap.models.CustomFieldQuerySet.extra_data">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.CustomFieldQuerySet.extra_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">extra_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter custom fields by a key-value pair in extra_data.</span>
 
+<span class="sd">        Filter custom fields based on specific values within the extra_data JSON structure.</span>
+<span class="sd">        Custom fields in Paperless-ngx can have additional configuration stored</span>
+<span class="sd">        in this extra_data field.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            key: The key in extra_data to filter by</span>
-<span class="sd">            value: The value to filter by</span>
+<span class="sd">            key: The key in extra_data to filter by. This can be a nested key</span>
+<span class="sd">                using Django&#39;s double-underscore syntax for JSON fields.</span>
+<span class="sd">            value: The value to filter by. Can be any JSON-compatible value</span>
+<span class="sd">                (string, number, boolean, etc.).</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered CustomFieldQuerySet</span>
+<span class="sd">            A filtered CustomFieldQuerySet containing only custom fields with matching extra_data values.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find custom fields with specific configuration:</span>
+<span class="sd">                &gt;&gt;&gt; fields = client.custom_fields().extra_data(&quot;format&quot;, &quot;currency&quot;)</span>
+
+<span class="sd">            Find fields with nested configuration:</span>
+<span class="sd">                &gt;&gt;&gt; fields = client.custom_fields().extra_data(&quot;options__default&quot;, True)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">filter_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;extra_data__</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span>

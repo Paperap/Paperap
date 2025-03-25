@@ -45,7 +45,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
@@ -74,27 +76,13 @@
              
   <h1>Source code for paperap.models.document.model</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Provide document models for interacting with Paperless-ngx documents.</span>
 
-
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">METADATA:</span>
-
-<span class="sd">File:    model.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">Created: 2025-03-09</span>
-<span class="sd">        Version: 0.0.10</span>
-<span class="sd">Author:  Jess Mann</span>
-<span class="sd">Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">LAST MODIFIED:</span>
-
-<span class="sd">2025-03-09     By Jess Mann</span>
-
+<span class="sd">This module contains the Document and DocumentNote models, which represent</span>
+<span class="sd">documents and their associated notes in the Paperless-ngx system. These models</span>
+<span class="sd">provide methods for retrieving, updating, and managing document metadata,</span>
+<span class="sd">content, and relationships with other entities like tags, correspondents,</span>
+<span class="sd">and custom fields.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -138,7 +126,28 @@
 <a class="viewcode-back" href="../../../../modules/models.html#paperap.models.DocumentNote">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DocumentNote</span><span class="p">(</span><span class="n">StandardModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represents a note on a Paperless-NgX document.</span>
+<span class="sd">    Represent a note on a Paperless-ngx document.</span>
+
+<span class="sd">    This class models user-created notes that can be attached to documents in the</span>
+<span class="sd">    Paperless-ngx system. Notes include information about when they were created,</span>
+<span class="sd">    who created them, and their content.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        deleted_at (datetime | None): Timestamp when the note was deleted, or None if not deleted.</span>
+<span class="sd">        restored_at (datetime | None): Timestamp when the note was restored after deletion, or None.</span>
+<span class="sd">        transaction_id (int | None): ID of the transaction that created or modified this note.</span>
+<span class="sd">        note (str): The text content of the note.</span>
+<span class="sd">        created (datetime): Timestamp when the note was created.</span>
+<span class="sd">        document (int): ID of the document this note is attached to.</span>
+<span class="sd">        user (int): ID of the user who created this note.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; note = client.document_notes().get(1)</span>
+<span class="sd">        &gt;&gt;&gt; print(note.note)</span>
+<span class="sd">        &#39;This is an important document&#39;</span>
+<span class="sd">        &gt;&gt;&gt; print(note.created)</span>
+<span class="sd">        2023-01-15 14:30:22</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">deleted_at</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -162,11 +171,14 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serialize datetime fields to ISO format.</span>
 
+<span class="sd">        Converts datetime objects to ISO 8601 formatted strings for JSON serialization.</span>
+<span class="sd">        Returns None if the input value is None.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: The datetime value to serialize.</span>
+<span class="sd">            value (datetime | None): The datetime value to serialize.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The serialized datetime value or None if the value is None.</span>
+<span class="sd">            str | None: The serialized datetime value as an ISO 8601 string, or None if the value is None.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="kc">None</span></div>
@@ -178,8 +190,17 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the document associated with this note.</span>
 
+<span class="sd">        Retrieves the full Document object that this note is attached to</span>
+<span class="sd">        by making an API request using the document ID.</span>
+
 <span class="sd">        Returns:</span>
-<span class="sd">            The document associated with this note.</span>
+<span class="sd">            Document: The document associated with this note.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; note = client.document_notes().get(1)</span>
+<span class="sd">            &gt;&gt;&gt; document = note.get_document()</span>
+<span class="sd">            &gt;&gt;&gt; print(document.title)</span>
+<span class="sd">            &#39;Invoice #12345&#39;</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">documents</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="p">)</span></div>
@@ -191,8 +212,17 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the user who created this note.</span>
 
+<span class="sd">        Retrieves the full User object for the user who created this note</span>
+<span class="sd">        by making an API request using the user ID.</span>
+
 <span class="sd">        Returns:</span>
-<span class="sd">            The user who created this note.</span>
+<span class="sd">            User: The user who created this note.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; note = client.document_notes().get(1)</span>
+<span class="sd">            &gt;&gt;&gt; user = note.get_user()</span>
+<span class="sd">            &gt;&gt;&gt; print(user.username)</span>
+<span class="sd">            &#39;admin&#39;</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">users</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">)</span></div>
@@ -204,30 +234,37 @@
 <a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Document">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Document</span><span class="p">(</span><span class="n">StandardModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represents a Paperless-NgX document.</span>
+<span class="sd">    Represent a Paperless-ngx document.</span>
+
+<span class="sd">    This class models documents stored in the Paperless-ngx system, providing access</span>
+<span class="sd">    to document metadata, content, and related objects. It supports operations like</span>
+<span class="sd">    downloading, updating metadata, and managing tags and custom fields.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        added: The timestamp when the document was added to the system.</span>
-<span class="sd">        archive_serial_number: The serial number of the archive.</span>
-<span class="sd">        archived_file_name: The name of the archived file.</span>
-<span class="sd">        content: The content of the document.</span>
-<span class="sd">        correspondent: The correspondent associated with the document.</span>
-<span class="sd">        created: The timestamp when the document was created.</span>
-<span class="sd">        created_date: The date when the document was created.</span>
-<span class="sd">        updated: The timestamp when the document was last updated.</span>
-<span class="sd">        custom_fields: Custom fields associated with the document.</span>
-<span class="sd">        deleted_at: The timestamp when the document was deleted.</span>
-<span class="sd">        document_type: The document type associated with the document.</span>
-<span class="sd">        is_shared_by_requester: Whether the document is shared by the requester.</span>
-<span class="sd">        notes: Notes associated with the document.</span>
-<span class="sd">        original_filename: The original file name of the document.</span>
-<span class="sd">        owner: The owner of the document.</span>
-<span class="sd">        page_count: The number of pages in the document.</span>
-<span class="sd">        storage_path: The storage path of the document.</span>
-<span class="sd">        tags: The tags associated with the document.</span>
-<span class="sd">        title: The title of the document.</span>
-<span class="sd">        user_can_change: Whether the user can change the document.</span>
-<span class="sd">        checksum: The checksum of the document.</span>
+<span class="sd">        added (datetime | None): Timestamp when the document was added to the system.</span>
+<span class="sd">        archive_checksum (str | None): Checksum of the archived version of the document.</span>
+<span class="sd">        archive_filename (str | None): Filename of the archived version.</span>
+<span class="sd">        archive_serial_number (int | None): Serial number in the archive system.</span>
+<span class="sd">        archived_file_name (str | None): Original name of the archived file.</span>
+<span class="sd">        checksum (str | None): Checksum of the original document.</span>
+<span class="sd">        content (str): Full text content of the document.</span>
+<span class="sd">        correspondent_id (int | None): ID of the associated correspondent.</span>
+<span class="sd">        created (datetime | None): Timestamp when the document was created.</span>
+<span class="sd">        created_date (str | None): Creation date as a string.</span>
+<span class="sd">        custom_field_dicts (list[CustomFieldValues]): Custom fields associated with the document.</span>
+<span class="sd">        deleted_at (datetime | None): Timestamp when the document was deleted, or None.</span>
+<span class="sd">        document_type_id (int | None): ID of the document type.</span>
+<span class="sd">        filename (str | None): Current filename in the system.</span>
+<span class="sd">        is_shared_by_requester (bool): Whether the document is shared by the requester.</span>
+<span class="sd">        notes (list[DocumentNote]): Notes attached to this document.</span>
+<span class="sd">        original_filename (str | None): Original filename when uploaded.</span>
+<span class="sd">        owner (int | None): ID of the document owner.</span>
+<span class="sd">        page_count (int | None): Number of pages in the document.</span>
+<span class="sd">        storage_path_id (int | None): ID of the storage path.</span>
+<span class="sd">        storage_type (DocumentStorageType | None): Type of storage used.</span>
+<span class="sd">        tag_ids (list[int]): List of tag IDs associated with this document.</span>
+<span class="sd">        title (str): Title of the document.</span>
+<span class="sd">        user_can_change (bool | None): Whether the current user can modify this document.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; document = client.documents().get(pk=1)</span>
@@ -239,6 +276,7 @@
 <span class="sd">        # Get document metadata</span>
 <span class="sd">        &gt;&gt;&gt; metadata = document.get_metadata()</span>
 <span class="sd">        &gt;&gt;&gt; print(metadata.original_mime_type)</span>
+<span class="sd">        &#39;application/pdf&#39;</span>
 
 <span class="sd">        # Download document</span>
 <span class="sd">        &gt;&gt;&gt; download = document.download()</span>
@@ -248,6 +286,7 @@
 <span class="sd">        # Get document suggestions</span>
 <span class="sd">        &gt;&gt;&gt; suggestions = document.get_suggestions()</span>
 <span class="sd">        &gt;&gt;&gt; print(suggestions.tags)</span>
+<span class="sd">        [&#39;Invoice&#39;, &#39;Tax&#39;, &#39;2023&#39;]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -307,11 +346,14 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serialize datetime fields to ISO format.</span>
 
+<span class="sd">        Converts datetime objects to ISO 8601 formatted strings for JSON serialization.</span>
+<span class="sd">        Returns None if the input value is None.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: The datetime value to serialize.</span>
+<span class="sd">            value (datetime | None): The datetime value to serialize.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The serialized datetime value.</span>
+<span class="sd">            str | None: The serialized datetime value as an ISO 8601 string, or None.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="kc">None</span></div>
@@ -324,11 +366,14 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serialize notes to a list of dictionaries.</span>
 
+<span class="sd">        Converts DocumentNote objects to dictionaries for JSON serialization.</span>
+<span class="sd">        Returns an empty list if the input value is None or empty.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: The list of DocumentNote objects to serialize.</span>
+<span class="sd">            value (list[DocumentNote]): The list of DocumentNote objects to serialize.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            A list of dictionaries representing the notes.</span>
+<span class="sd">            list[dict[str, Any]]: A list of dictionaries representing the notes.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">value</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="p">[]</span></div>
@@ -342,11 +387,25 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validate and convert tag IDs to a list of integers.</span>
 
+<span class="sd">        Ensures tag IDs are properly formatted as a list of integers.</span>
+<span class="sd">        Handles various input formats including None, single integers, and lists.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: The list of tag IDs to validate.</span>
+<span class="sd">            value (Any): The tag IDs to validate, which can be None, an integer, or a list.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            A list of validated tag IDs.</span>
+<span class="sd">            list[int]: A list of validated tag IDs.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If the input value is not None, an integer, or a list.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; Document.validate_tags(None)</span>
+<span class="sd">            []</span>
+<span class="sd">            &gt;&gt;&gt; Document.validate_tags(5)</span>
+<span class="sd">            [5]</span>
+<span class="sd">            &gt;&gt;&gt; Document.validate_tags([1, 2, 3])</span>
+<span class="sd">            [1, 2, 3]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -369,11 +428,17 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validate and return custom field dictionaries.</span>
 
+<span class="sd">        Ensures custom fields are properly formatted as a list of CustomFieldValues.</span>
+<span class="sd">        Returns an empty list if the input value is None.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: The list of custom field dictionaries to validate.</span>
+<span class="sd">            value (Any): The list of custom field dictionaries to validate.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            A list of validated custom field dictionaries.</span>
+<span class="sd">            list[CustomFieldValues]: A list of validated custom field dictionaries.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If the input value is not None or a list.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -393,11 +458,25 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validate and return a text field.</span>
 
+<span class="sd">        Ensures text fields are properly formatted as strings.</span>
+<span class="sd">        Converts integers to strings and returns an empty string if the input value is None.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: The value of the text field to validate.</span>
+<span class="sd">            value (Any): The value of the text field to validate.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The validated text value.</span>
+<span class="sd">            str: The validated text value.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If the input value is not None, a string, or an integer.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; Document.validate_text(None)</span>
+<span class="sd">            &#39;&#39;</span>
+<span class="sd">            &gt;&gt;&gt; Document.validate_text(&quot;Hello&quot;)</span>
+<span class="sd">            &#39;Hello&#39;</span>
+<span class="sd">            &gt;&gt;&gt; Document.validate_text(123)</span>
+<span class="sd">            &#39;123&#39;</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -417,11 +496,17 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validate and return the list of notes.</span>
 
+<span class="sd">        Ensures notes are properly formatted as a list of DocumentNote objects.</span>
+<span class="sd">        Handles various input formats including None, single DocumentNote objects, and lists.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: The list of notes to validate.</span>
+<span class="sd">            value (Any): The list of notes to validate.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The validated list of notes.</span>
+<span class="sd">            list[Any]: The validated list of notes.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If the input value is not None, a DocumentNote, or a list.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -444,11 +529,17 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validate and return the is_shared_by_requester flag.</span>
 
+<span class="sd">        Ensures the is_shared_by_requester flag is properly formatted as a boolean.</span>
+<span class="sd">        Returns False if the input value is None.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: The flag to validate.</span>
+<span class="sd">            value (Any): The flag to validate.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The validated flag.</span>
+<span class="sd">            bool: The validated flag.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If the input value is not None or a boolean.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -464,6 +555,16 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">custom_field_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the IDs of the custom fields for this document.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[int]: A list of custom field IDs associated with this document.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; document = client.documents().get(1)</span>
+<span class="sd">            &gt;&gt;&gt; field_ids = document.custom_field_ids</span>
+<span class="sd">            &gt;&gt;&gt; print(field_ids)</span>
+<span class="sd">            [1, 3, 5]</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">field</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_field_dicts</span><span class="p">]</span>
 
@@ -471,6 +572,16 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">custom_field_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the values of the custom fields for this document.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[Any]: A list of values for the custom fields associated with this document.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; document = client.documents().get(1)</span>
+<span class="sd">            &gt;&gt;&gt; values = document.custom_field_values</span>
+<span class="sd">            &gt;&gt;&gt; print(values)</span>
+<span class="sd">            [&#39;2023-01-15&#39;, &#39;INV-12345&#39;, True]</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_field_dicts</span><span class="p">]</span>
 
@@ -478,6 +589,16 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">tag_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the names of the tags for this document.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[str]: A list of tag names associated with this document.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; document = client.documents().get(1)</span>
+<span class="sd">            &gt;&gt;&gt; names = document.tag_names</span>
+<span class="sd">            &gt;&gt;&gt; print(names)</span>
+<span class="sd">            [&#39;Invoice&#39;, &#39;Tax&#39;, &#39;Important&#39;]</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">tag</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
 
@@ -486,16 +607,20 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the tags for this document.</span>
 
+<span class="sd">        Returns a QuerySet of Tag objects associated with this document.</span>
+<span class="sd">        The QuerySet is lazily loaded, so API requests are only made when</span>
+<span class="sd">        the tags are actually accessed.</span>
+
 <span class="sd">        Returns:</span>
-<span class="sd">            List of tags associated with this document.</span>
+<span class="sd">            TagQuerySet: QuerySet of tags associated with this document.</span>
 
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; document = client.documents().get(pk=1)</span>
 <span class="sd">            &gt;&gt;&gt; for tag in document.tags:</span>
 <span class="sd">            ...     print(f&#39;{tag.name} # {tag.id}&#39;)</span>
-<span class="sd">            &#39;Tag 1 # 1&#39;</span>
-<span class="sd">            &#39;Tag 2 # 2&#39;</span>
-<span class="sd">            &#39;Tag 3 # 3&#39;</span>
+<span class="sd">            Tag 1 # 1</span>
+<span class="sd">            Tag 2 # 2</span>
+<span class="sd">            Tag 3 # 3</span>
 
 <span class="sd">            &gt;&gt;&gt; if 5 in document.tags:</span>
 <span class="sd">            ...     print(&#39;Tag ID #5 is associated with this document&#39;)</span>
@@ -521,8 +646,26 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the tags for this document.</span>
 
+<span class="sd">        Updates the document&#39;s tag_ids list based on the provided tags.</span>
+<span class="sd">        Accepts None (to clear all tags), an iterable of Tag objects,</span>
+<span class="sd">        or an iterable of tag IDs.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: The tags to set.</span>
+<span class="sd">            value (Iterable[Tag | int] | None): The tags to set. Can be None, an iterable of Tag objects,</span>
+<span class="sd">                  or an iterable of tag IDs.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If the input value is not None, an iterable of Tag objects,</span>
+<span class="sd">                      or an iterable of integers.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; document = client.documents().get(1)</span>
+<span class="sd">            &gt;&gt;&gt; # Set tags by ID</span>
+<span class="sd">            &gt;&gt;&gt; document.tags = [1, 2, 3]</span>
+<span class="sd">            &gt;&gt;&gt; # Set tags by Tag objects</span>
+<span class="sd">            &gt;&gt;&gt; document.tags = client.tags().filter(name__icontains=&#39;invoice&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; # Clear all tags</span>
+<span class="sd">            &gt;&gt;&gt; document.tags = None</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -553,13 +696,18 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the correspondent for this document.</span>
 
+<span class="sd">        Retrieves the Correspondent object associated with this document.</span>
+<span class="sd">        Uses caching to minimize API requests when accessing the same correspondent</span>
+<span class="sd">        multiple times.</span>
+
 <span class="sd">        Returns:</span>
-<span class="sd">            The correspondent or None if not set.</span>
+<span class="sd">            Correspondent | None: The correspondent object or None if not set.</span>
 
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; document = client.documents().get(pk=1)</span>
-<span class="sd">            &gt;&gt;&gt; document.correspondent.name</span>
-<span class="sd">            &#39;Example Correspondent&#39;</span>
+<span class="sd">            &gt;&gt;&gt; if document.correspondent:</span>
+<span class="sd">            ...     print(document.correspondent.name)</span>
+<span class="sd">            Example Correspondent</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Return cache</span>
@@ -582,8 +730,26 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the correspondent for this document.</span>
 
+<span class="sd">        Updates the document&#39;s correspondent_id based on the provided correspondent.</span>
+<span class="sd">        Accepts None (to clear the correspondent), a Correspondent object,</span>
+<span class="sd">        or a correspondent ID.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: The correspondent to set.</span>
+<span class="sd">            value (Correspondent | int | None): The correspondent to set. Can be None, a Correspondent object,</span>
+<span class="sd">                  or a correspondent ID.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If the input value is not None, a Correspondent object,</span>
+<span class="sd">                      or an integer.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; document = client.documents().get(1)</span>
+<span class="sd">            &gt;&gt;&gt; # Set correspondent by ID</span>
+<span class="sd">            &gt;&gt;&gt; document.correspondent = 5</span>
+<span class="sd">            &gt;&gt;&gt; # Set correspondent by object</span>
+<span class="sd">            &gt;&gt;&gt; document.correspondent = client.correspondents().get(5)</span>
+<span class="sd">            &gt;&gt;&gt; # Clear correspondent</span>
+<span class="sd">            &gt;&gt;&gt; document.correspondent = None</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -611,13 +777,18 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the document type for this document.</span>
 
+<span class="sd">        Retrieves the DocumentType object associated with this document.</span>
+<span class="sd">        Uses caching to minimize API requests when accessing the same document type</span>
+<span class="sd">        multiple times.</span>
+
 <span class="sd">        Returns:</span>
-<span class="sd">            The document type or None if not set.</span>
+<span class="sd">            DocumentType | None: The document type object or None if not set.</span>
 
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; document = client.documents().get(pk=1)</span>
-<span class="sd">            &gt;&gt;&gt; document.document_type.name</span>
-<span class="sd">            &#39;Example Document Type</span>
+<span class="sd">            &gt;&gt;&gt; if document.document_type:</span>
+<span class="sd">            ...     print(document.document_type.name)</span>
+<span class="sd">            Example Document Type</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Return cache</span>
@@ -640,8 +811,26 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the document type for this document.</span>
 
+<span class="sd">        Updates the document&#39;s document_type_id based on the provided document type.</span>
+<span class="sd">        Accepts None (to clear the document type), a DocumentType object,</span>
+<span class="sd">        or a document type ID.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: The document type to set.</span>
+<span class="sd">            value (DocumentType | int | None): The document type to set. Can be None, a DocumentType object,</span>
+<span class="sd">                  or a document type ID.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If the input value is not None, a DocumentType object,</span>
+<span class="sd">                      or an integer.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; document = client.documents().get(1)</span>
+<span class="sd">            &gt;&gt;&gt; # Set document type by ID</span>
+<span class="sd">            &gt;&gt;&gt; document.document_type = 3</span>
+<span class="sd">            &gt;&gt;&gt; # Set document type by object</span>
+<span class="sd">            &gt;&gt;&gt; document.document_type = client.document_types().get(3)</span>
+<span class="sd">            &gt;&gt;&gt; # Clear document type</span>
+<span class="sd">            &gt;&gt;&gt; document.document_type = None</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -669,13 +858,18 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the storage path for this document.</span>
 
+<span class="sd">        Retrieves the StoragePath object associated with this document.</span>
+<span class="sd">        Uses caching to minimize API requests when accessing the same storage path</span>
+<span class="sd">        multiple times.</span>
+
 <span class="sd">        Returns:</span>
-<span class="sd">            The storage path or None if not set.</span>
+<span class="sd">            StoragePath | None: The storage path object or None if not set.</span>
 
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; document = client.documents().get(pk=1)</span>
-<span class="sd">            &gt;&gt;&gt; document.storage_path.name</span>
-<span class="sd">            &#39;Example Storage Path&#39;</span>
+<span class="sd">            &gt;&gt;&gt; if document.storage_path:</span>
+<span class="sd">            ...     print(document.storage_path.name)</span>
+<span class="sd">            Example Storage Path</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Return cache</span>
@@ -698,8 +892,26 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the storage path for this document.</span>
 
+<span class="sd">        Updates the document&#39;s storage_path_id based on the provided storage path.</span>
+<span class="sd">        Accepts None (to clear the storage path), a StoragePath object,</span>
+<span class="sd">        or a storage path ID.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: The storage path to set.</span>
+<span class="sd">            value (StoragePath | int | None): The storage path to set. Can be None, a StoragePath object,</span>
+<span class="sd">                  or a storage path ID.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If the input value is not None, a StoragePath object,</span>
+<span class="sd">                      or an integer.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; document = client.documents().get(1)</span>
+<span class="sd">            &gt;&gt;&gt; # Set storage path by ID</span>
+<span class="sd">            &gt;&gt;&gt; document.storage_path = 2</span>
+<span class="sd">            &gt;&gt;&gt; # Set storage path by object</span>
+<span class="sd">            &gt;&gt;&gt; document.storage_path = client.storage_paths().get(2)</span>
+<span class="sd">            &gt;&gt;&gt; # Clear storage path</span>
+<span class="sd">            &gt;&gt;&gt; document.storage_path = None</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -727,8 +939,19 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the custom fields for this document.</span>
 
+<span class="sd">        Returns a QuerySet of CustomField objects associated with this document.</span>
+<span class="sd">        The QuerySet is lazily loaded, so API requests are only made when</span>
+<span class="sd">        the custom fields are actually accessed.</span>
+
 <span class="sd">        Returns:</span>
-<span class="sd">            List of custom fields associated with this document.</span>
+<span class="sd">            CustomFieldQuerySet: QuerySet of custom fields associated with this document.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; document = client.documents().get(1)</span>
+<span class="sd">            &gt;&gt;&gt; for field in document.custom_fields:</span>
+<span class="sd">            ...     print(f&#39;{field.name}: {field.value}&#39;)</span>
+<span class="sd">            Due Date: 2023-04-15</span>
+<span class="sd">            Reference: INV-12345</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_field_dicts</span><span class="p">:</span>
@@ -743,8 +966,26 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the custom fields for this document.</span>
 
+<span class="sd">        Updates the document&#39;s custom_field_dicts list based on the provided custom fields.</span>
+<span class="sd">        Accepts None (to clear all custom fields), an iterable of CustomField objects,</span>
+<span class="sd">        CustomFieldValues objects, or dictionaries with field and value keys.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: The custom fields to set.</span>
+<span class="sd">            value (Iterable[CustomField | CustomFieldValues | CustomFieldTypedDict] | None): The custom fields to set.</span>
+<span class="sd">                Can be None, an iterable of CustomField objects, CustomFieldValues objects, or dictionaries.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If the input value is not None, an iterable of CustomField objects,</span>
+<span class="sd">                      CustomFieldValues objects, or dictionaries.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; document = client.documents().get(1)</span>
+<span class="sd">            &gt;&gt;&gt; # Set custom fields by dictionary</span>
+<span class="sd">            &gt;&gt;&gt; document.custom_fields = [{&#39;field&#39;: 1, &#39;value&#39;: &#39;2023-04-15&#39;}, {&#39;field&#39;: 2, &#39;value&#39;: &#39;INV-12345&#39;}]</span>
+<span class="sd">            &gt;&gt;&gt; # Set custom fields by CustomField objects</span>
+<span class="sd">            &gt;&gt;&gt; document.custom_fields = client.custom_fields().filter(name__icontains=&#39;date&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; # Clear all custom fields</span>
+<span class="sd">            &gt;&gt;&gt; document.custom_fields = None</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -778,10 +1019,29 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">has_search_hit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if this document has search hit information.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if this document was returned as part of a search result</span>
+<span class="sd">                 and has search hit information, False otherwise.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__search_hit__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">search_hit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the search hit information for this document.</span>
+
+<span class="sd">        When a document is returned as part of a search result, this property</span>
+<span class="sd">        contains additional information about the search match.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict[str, Any] | None: Dictionary with search hit information or None</span>
+<span class="sd">                                  if this document was not part of a search result.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__search_hit__</span>
 
 <div class="viewcode-block" id="Document.custom_field_value">
@@ -790,13 +1050,29 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the value of a custom field by ID.</span>
 
+<span class="sd">        Retrieves the value of a specific custom field associated with this document.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            field_id: The ID of the custom field.</span>
-<span class="sd">            default: The value to return if the field is not found.</span>
-<span class="sd">            raise_errors: Whether to raise an error if the field is not found.</span>
+<span class="sd">            field_id (int): The ID of the custom field to retrieve.</span>
+<span class="sd">            default (Any, optional): The value to return if the field is not found. Defaults to None.</span>
+<span class="sd">            raise_errors (bool, optional): Whether to raise an error if the field is not found. Defaults to False.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The value of the custom field or the default value if not found.</span>
+<span class="sd">            Any: The value of the custom field or the default value if not found.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If raise_errors is True and the field is not found.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; document = client.documents().get(1)</span>
+<span class="sd">            &gt;&gt;&gt; # Get value with default</span>
+<span class="sd">            &gt;&gt;&gt; due_date = document.custom_field_value(3, default=&quot;Not set&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; # Get value with error handling</span>
+<span class="sd">            &gt;&gt;&gt; try:</span>
+<span class="sd">            ...     reference = document.custom_field_value(5, raise_errors=True)</span>
+<span class="sd">            ... except ValueError:</span>
+<span class="sd">            ...     print(&quot;Reference field not found&quot;)</span>
+<span class="sd">            Reference field not found</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_field_dicts</span><span class="p">:</span>
@@ -824,8 +1100,26 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a tag to the document.</span>
 
+<span class="sd">        Adds a tag to the document&#39;s tag_ids list. The tag can be specified as a Tag object,</span>
+<span class="sd">        a tag ID, or a tag name. If a tag name is provided, the method will look up the</span>
+<span class="sd">        corresponding tag ID.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            tag: The tag to add.</span>
+<span class="sd">            tag (Tag | int | str): The tag to add. Can be a Tag object, a tag ID, or a tag name.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If the input value is not a Tag object, an integer, or a string.</span>
+<span class="sd">            ResourceNotFoundError: If a tag name is provided but no matching tag is found.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; document = client.documents().get(1)</span>
+<span class="sd">            &gt;&gt;&gt; # Add tag by ID</span>
+<span class="sd">            &gt;&gt;&gt; document.add_tag(5)</span>
+<span class="sd">            &gt;&gt;&gt; # Add tag by object</span>
+<span class="sd">            &gt;&gt;&gt; tag = client.tags().get(3)</span>
+<span class="sd">            &gt;&gt;&gt; document.add_tag(tag)</span>
+<span class="sd">            &gt;&gt;&gt; # Add tag by name</span>
+<span class="sd">            &gt;&gt;&gt; document.add_tag(&quot;Invoice&quot;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -851,8 +1145,27 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove a tag from the document.</span>
 
+<span class="sd">        Removes a tag from the document&#39;s tag_ids list. The tag can be specified as a Tag object,</span>
+<span class="sd">        a tag ID, or a tag name. If a tag name is provided, the method will look up the</span>
+<span class="sd">        corresponding tag ID.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            tag: The tag to remove.</span>
+<span class="sd">            tag (Tag | int | str): The tag to remove. Can be a Tag object, a tag ID, or a tag name.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If the input value is not a Tag object, an integer, or a string.</span>
+<span class="sd">            ResourceNotFoundError: If a tag name is provided but no matching tag is found.</span>
+<span class="sd">            ValueError: If the tag is not associated with this document.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; document = client.documents().get(1)</span>
+<span class="sd">            &gt;&gt;&gt; # Remove tag by ID</span>
+<span class="sd">            &gt;&gt;&gt; document.remove_tag(5)</span>
+<span class="sd">            &gt;&gt;&gt; # Remove tag by object</span>
+<span class="sd">            &gt;&gt;&gt; tag = client.tags().get(3)</span>
+<span class="sd">            &gt;&gt;&gt; document.remove_tag(tag)</span>
+<span class="sd">            &gt;&gt;&gt; # Remove tag by name</span>
+<span class="sd">            &gt;&gt;&gt; document.remove_tag(&quot;Invoice&quot;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -881,12 +1194,19 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the metadata for this document.</span>
 
+<span class="sd">        Retrieves detailed metadata about the document from the Paperless-ngx API.</span>
+<span class="sd">        This includes information like the original file format, creation date,</span>
+<span class="sd">        modification date, and other technical details.</span>
+
 <span class="sd">        Returns:</span>
-<span class="sd">            The document metadata.</span>
+<span class="sd">            DocumentMetadata: The document metadata object.</span>
 
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; metadata = document.get_metadata()</span>
 <span class="sd">            &gt;&gt;&gt; print(metadata.original_mime_type)</span>
+<span class="sd">            application/pdf</span>
+<span class="sd">            &gt;&gt;&gt; print(metadata.media_filename)</span>
+<span class="sd">            document.pdf</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
@@ -898,16 +1218,27 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Download the document file.</span>
 
+<span class="sd">        Downloads either the archived version (default) or the original version</span>
+<span class="sd">        of the document from the Paperless-ngx server.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            original: Whether to download the original file instead of the archived version.</span>
+<span class="sd">            original (bool, optional): Whether to download the original file instead of the archived version.</span>
+<span class="sd">                     Defaults to False (download the archived version).</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The downloaded document.</span>
+<span class="sd">            DownloadedDocument: An object containing the downloaded document content</span>
+<span class="sd">                               and metadata.</span>
 
 <span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; # Download archived version</span>
 <span class="sd">            &gt;&gt;&gt; download = document.download()</span>
 <span class="sd">            &gt;&gt;&gt; with open(download.disposition_filename, &#39;wb&#39;) as f:</span>
 <span class="sd">            ...     f.write(download.content)</span>
+
+<span class="sd">            &gt;&gt;&gt; # Download original version</span>
+<span class="sd">            &gt;&gt;&gt; original = document.download(original=True)</span>
+<span class="sd">            &gt;&gt;&gt; print(f&quot;Downloaded {len(original.content)} bytes&quot;)</span>
+<span class="sd">            Downloaded 245367 bytes</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
@@ -919,11 +1250,22 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a preview of the document.</span>
 
+<span class="sd">        Retrieves a preview version of the document from the Paperless-ngx server.</span>
+<span class="sd">        This is typically a web-friendly version (e.g., PDF) that can be displayed</span>
+<span class="sd">        in a browser.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            original: Whether to preview the original file instead of the archived version.</span>
+<span class="sd">            original (bool, optional): Whether to preview the original file instead of the archived version.</span>
+<span class="sd">                     Defaults to False (preview the archived version).</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The document preview.</span>
+<span class="sd">            DownloadedDocument: An object containing the preview document content</span>
+<span class="sd">                               and metadata.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; preview = document.preview()</span>
+<span class="sd">            &gt;&gt;&gt; with open(&#39;preview.pdf&#39;, &#39;wb&#39;) as f:</span>
+<span class="sd">            ...     f.write(preview.content)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
@@ -935,11 +1277,21 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the document thumbnail.</span>
 
+<span class="sd">        Retrieves a thumbnail image of the document from the Paperless-ngx server.</span>
+<span class="sd">        This is typically a small image representation of the first page.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            original: Whether to get the thumbnail of the original file.</span>
+<span class="sd">            original (bool, optional): Whether to get the thumbnail of the original file instead of</span>
+<span class="sd">                     the archived version. Defaults to False (get thumbnail of archived version).</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The document thumbnail.</span>
+<span class="sd">            DownloadedDocument: An object containing the thumbnail image content</span>
+<span class="sd">                               and metadata.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; thumbnail = document.thumbnail()</span>
+<span class="sd">            &gt;&gt;&gt; with open(&#39;thumbnail.png&#39;, &#39;wb&#39;) as f:</span>
+<span class="sd">            ...     f.write(thumbnail.content)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
@@ -951,12 +1303,21 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get suggestions for this document.</span>
 
+<span class="sd">        Retrieves AI-generated suggestions for document metadata from the Paperless-ngx server.</span>
+<span class="sd">        This can include suggested tags, correspondent, document type, and other metadata</span>
+<span class="sd">        based on the document&#39;s content.</span>
+
 <span class="sd">        Returns:</span>
-<span class="sd">            The document suggestions.</span>
+<span class="sd">            DocumentSuggestions: An object containing suggested metadata for the document.</span>
 
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; suggestions = document.get_suggestions()</span>
-<span class="sd">            &gt;&gt;&gt; print(suggestions.tags)</span>
+<span class="sd">            &gt;&gt;&gt; print(f&quot;Suggested tags: {suggestions.tags}&quot;)</span>
+<span class="sd">            Suggested tags: [{&#39;name&#39;: &#39;Invoice&#39;, &#39;score&#39;: 0.95}, {&#39;name&#39;: &#39;Utility&#39;, &#39;score&#39;: 0.87}]</span>
+<span class="sd">            &gt;&gt;&gt; print(f&quot;Suggested correspondent: {suggestions.correspondent}&quot;)</span>
+<span class="sd">            Suggested correspondent: {&#39;name&#39;: &#39;Electric Company&#39;, &#39;score&#39;: 0.92}</span>
+<span class="sd">            &gt;&gt;&gt; print(f&quot;Suggested document type: {suggestions.document_type}&quot;)</span>
+<span class="sd">            Suggested document type: {&#39;name&#39;: &#39;Bill&#39;, &#39;score&#39;: 0.89}</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
@@ -968,8 +1329,16 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Append content to the document.</span>
 
+<span class="sd">        Adds the specified text to the end of the document&#39;s content,</span>
+<span class="sd">        separated by a newline.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: The content to append.</span>
+<span class="sd">            value (str): The content to append.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; document = client.documents().get(1)</span>
+<span class="sd">            &gt;&gt;&gt; document.append_content(&quot;Additional notes about this document&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; document.save()</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span></div>
@@ -982,12 +1351,23 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the document locally with the provided data.</span>
 
+<span class="sd">        Updates the document&#39;s attributes with the provided data without sending</span>
+<span class="sd">        an API request. Handles special cases for notes and tags, which cannot be</span>
+<span class="sd">        set to None in Paperless-ngx if they already have values.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            from_db: Whether to update from the database.</span>
+<span class="sd">            from_db (bool | None, optional): Whether the update is coming from the database. If True,</span>
+<span class="sd">                    bypasses certain validation checks. Defaults to None.</span>
 <span class="sd">            **kwargs: Additional data to update the document with.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            NotImplementedError: If attempting to set notes or tags to None when they are not already None.</span>
+<span class="sd">            NotImplementedError: If attempting to set notes or tags to None when</span>
+<span class="sd">                                they are not already None and from_db is False.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; document = client.documents().get(1)</span>
+<span class="sd">            &gt;&gt;&gt; document.update_locally(title=&quot;New Title&quot;, correspondent_id=5)</span>
+<span class="sd">            &gt;&gt;&gt; document.save()</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">from_db</span><span class="p">:</span>

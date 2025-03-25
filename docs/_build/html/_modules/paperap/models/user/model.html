@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/models/user/model.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../../_static/readthedocs.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,24 +76,14 @@
              
   <h1>Source code for paperap.models.user.model</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">Define models for interacting with Paperless-NgX users and groups.</span>
 
-<span class="sd">   METADATA:</span>
+<span class="sd">Provides the User and Group models that represent users and groups</span>
+<span class="sd">in a Paperless-NgX instance. These models allow for querying, creating, and</span>
+<span class="sd">managing users and their permissions within the system.</span>
 
-<span class="sd">       File:    user.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">       Created: 2025-03-04</span>
-<span class="sd">        Version: 0.0.9</span>
-<span class="sd">       Author:  Jess Mann</span>
-<span class="sd">       Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">   LAST MODIFIED:</span>
-
-<span class="sd">       2025-03-04     By Jess Mann</span>
-
+<span class="sd">The models in this module follow the same pattern as other Paperless-NgX</span>
+<span class="sd">resources, with standard CRUD operations and relationship management.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -103,17 +97,38 @@
 
 
 <div class="viewcode-block" id="Group">
-<a class="viewcode-back" href="../../../../api/paperap.models.user.model.html#paperap.models.Group">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Group">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Group</span><span class="p">(</span><span class="n">StandardModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represents a user group in Paperless-NgX.</span>
+<span class="sd">    Represent a user group in Paperless-NgX.</span>
+
+<span class="sd">    A group is a collection of users that share the same permissions. Groups are used</span>
+<span class="sd">    to simplify permission management by assigning permissions to groups rather than</span>
+<span class="sd">    individual users.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name (str, optional): The name of the group.</span>
+<span class="sd">        permissions (list[str]): A list of permission strings assigned to this group.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Get all admin groups::</span>
+
+<span class="sd">            admin_groups = client.groups().filter(name__icontains=&quot;admin&quot;)</span>
+
+<span class="sd">        Create a new group::</span>
+
+<span class="sd">            new_group = client.groups().create(</span>
+<span class="sd">                name=&quot;Finance&quot;,</span>
+<span class="sd">                permissions=[&quot;view_document&quot;]</span>
+<span class="sd">            )</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">permissions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Group.Meta">
-<a class="viewcode-back" href="../../../../api/paperap.models.user.model.html#paperap.models.Group.Meta">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.Group.Meta">[docs]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">(</span><span class="n">StandardModel</span><span class="o">.</span><span class="n">Meta</span><span class="p">):</span>
         <span class="n">queryset</span> <span class="o">=</span> <span class="n">GroupQuerySet</span></div>
 
@@ -121,10 +136,20 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;UserQuerySet&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the users in this group.</span>
+<span class="sd">        Get all users that are members of this group.</span>
+
+<span class="sd">        Returns a queryset of all users that belong to this group,</span>
+<span class="sd">        allowing for further filtering and operations on those users.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            UserQuerySet: The users in this group</span>
+<span class="sd">            UserQuerySet: A queryset containing all users that are members of this group.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Get active users in a group::</span>
+
+<span class="sd">                group = client.groups().get(1)  # Get group with ID 1</span>
+<span class="sd">                active_users = group.users.filter(is_active=True)</span>
+<span class="sd">                print(f&quot;Group {group.name} has {active_users.count()} active users&quot;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">users</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">in_group</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
@@ -132,10 +157,45 @@
 
 
 <div class="viewcode-block" id="User">
-<a class="viewcode-back" href="../../../../api/paperap.models.user.model.html#paperap.models.User">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.User">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">(</span><span class="n">StandardModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represents a user in Paperless-NgX.</span>
+<span class="sd">    Represent a user in Paperless-NgX.</span>
+
+<span class="sd">    Models a user account in the Paperless-NgX system, including</span>
+<span class="sd">    authentication details, personal information, and permission settings.</span>
+<span class="sd">    Users can belong to groups and have both direct and inherited permissions.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        username (str, optional): The user&#39;s login username.</span>
+<span class="sd">        email (str, optional): The user&#39;s email address.</span>
+<span class="sd">        password (str, optional): The user&#39;s password (only used when creating new users).</span>
+<span class="sd">        first_name (str, optional): The user&#39;s first name.</span>
+<span class="sd">        last_name (str, optional): The user&#39;s last name.</span>
+<span class="sd">        date_joined (str, optional): ISO 8601 formatted date when the user joined.</span>
+<span class="sd">        is_staff (bool, optional): Whether the user has staff privileges.</span>
+<span class="sd">        is_active (bool, optional): Whether the user account is active.</span>
+<span class="sd">        is_superuser (bool, optional): Whether the user has superuser privileges.</span>
+<span class="sd">        groups (list[int]): List of group IDs the user belongs to.</span>
+<span class="sd">        user_permissions (list[str]): List of permission strings directly assigned to the user.</span>
+<span class="sd">        inherited_permissions (list[str]): List of permission strings inherited from groups.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Get all active users::</span>
+
+<span class="sd">            active_users = client.users().filter(is_active=True)</span>
+
+<span class="sd">        Create a new user::</span>
+
+<span class="sd">            new_user = client.users().create(</span>
+<span class="sd">                username=&quot;jsmith&quot;,</span>
+<span class="sd">                email=&quot;jsmith@example.com&quot;,</span>
+<span class="sd">                password=&quot;secure_password&quot;,</span>
+<span class="sd">                first_name=&quot;John&quot;,</span>
+<span class="sd">                last_name=&quot;Smith&quot;,</span>
+<span class="sd">                is_active=True</span>
+<span class="sd">            )</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">username</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -152,19 +212,29 @@
     <span class="n">inherited_permissions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 
 <div class="viewcode-block" id="User.Meta">
-<a class="viewcode-back" href="../../../../api/paperap.models.user.model.html#paperap.models.User.Meta">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.User.Meta">[docs]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">(</span><span class="n">StandardModel</span><span class="o">.</span><span class="n">Meta</span><span class="p">):</span>
         <span class="n">queryset</span> <span class="o">=</span> <span class="n">UserQuerySet</span></div>
 
 
 <div class="viewcode-block" id="User.get_groups">
-<a class="viewcode-back" href="../../../../api/paperap.models.user.model.html#paperap.models.User.get_groups">[docs]</a>
+<a class="viewcode-back" href="../../../../modules/models.html#paperap.models.User.get_groups">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GroupQuerySet&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the groups this user is a member of.</span>
+<span class="sd">        Get all groups this user is a member of.</span>
+
+<span class="sd">        Returns a queryset containing all the groups that this user belongs to,</span>
+<span class="sd">        allowing for further filtering and operations on those groups.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            GroupQuerySet: The groups this user is a member</span>
+<span class="sd">            GroupQuerySet: A queryset containing all groups this user is a member of.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find admin groups a user belongs to::</span>
+
+<span class="sd">                user = client.users().get(1)  # Get user with ID 1</span>
+<span class="sd">                admin_groups = user.get_groups().filter(name__icontains=&quot;admin&quot;)</span>
+<span class="sd">                print(f&quot;User {user.username} belongs to {user.get_groups().count()} groups&quot;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">)</span></div>

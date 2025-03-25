@@ -46,7 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
@@ -77,70 +77,144 @@
              
   <section id="module-paperap.resources.document_metadata">
 <span id="paperap-resources-document-metadata-module"></span><h1>paperap.resources.document_metadata module<a class="headerlink" href="#module-paperap.resources.document_metadata" title="Link to this heading"></a></h1>
-<hr class="docutils" />
-<p>METADATA:</p>
+<p>Provide resources for interacting with document metadata in the Paperless-NgX API.</p>
+<p>The document metadata endpoints expose additional information about documents
+that isn’t included in standard document responses, such as detailed OCR text,
+archive metadata, and system-level information.</p>
 <dl class="simple">
-<dt>File:    document_metadata.py</dt><dd><p>Project: paperap</p>
+<dt>Classes:</dt><dd><p>DocumentMetadataResource: Resource for retrieving and managing document metadata.</p>
 </dd>
-<dt>Created: 2025-03-18</dt><dd><p>Version: 0.0.9</p>
+<dt>Exceptions:</dt><dd><p>ResourceNotFoundError: Raised when requested metadata is not found.
+APIError: Raised when the API returns an error response.
+BadResponseError: Raised when the API response cannot be parsed.</p>
 </dd>
 </dl>
-<p>Author:  Jess Mann
-Email:   <a class="reference external" href="mailto:jess&#37;&#52;&#48;jmann&#46;me">jess<span>&#64;</span>jmann<span>&#46;</span>me</a></p>
-<blockquote>
-<div><p>Copyright (c) 2025 Jess Mann</p>
-</div></blockquote>
-<hr class="docutils" />
-<p>LAST MODIFIED:</p>
-<p>2025-03-18     By Jess Mann</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="paperap.resources.document_metadata.DocumentMetadataResource">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">paperap.resources.document_metadata.</span></span><span class="sig-name descname"><span class="pre">DocumentMetadataResource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/resources/document_metadata.html#DocumentMetadataResource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.resources.document_metadata.DocumentMetadataResource" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="paperap.resources.base.html#paperap.resources.base.StandardResource" title="paperap.resources.base.StandardResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardResource</span></code></a>[<a class="reference internal" href="paperap.models.document.metadata.model.html#paperap.models.document.metadata.model.DocumentMetadata" title="paperap.models.document.metadata.model.DocumentMetadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentMetadata</span></code></a>, <a class="reference internal" href="paperap.models.document.metadata.queryset.html#paperap.models.document.metadata.queryset.DocumentMetadataQuerySet" title="paperap.models.document.metadata.queryset.DocumentMetadataQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentMetadataQuerySet</span></code></a>]</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>client</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="paperap.client.html#paperap.client.PaperlessClient" title="paperap.client.PaperlessClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">PaperlessClient</span></code></a></span>)</p>
-</dd>
-</dl>
+<p>Manage document metadata in Paperless-NgX.</p>
+<p>Provides methods to interact with document metadata API endpoints,
+allowing retrieval of extended metadata associated with documents. Document metadata
+includes information such as OCR text, archive metadata, and system-level details
+that aren’t included in standard document responses.</p>
+<p>Unlike most resources, DocumentMetadataResource uses a specialized endpoint
+structure that retrieves metadata for a specific document by ID.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.resources.document_metadata.DocumentMetadataResource.model_class">
 <span class="sig-name descname"><span class="pre">model_class</span></span><a class="headerlink" href="#paperap.resources.document_metadata.DocumentMetadataResource.model_class" title="Link to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="paperap.models.document.metadata.model.html#paperap.models.document.metadata.model.DocumentMetadata" title="paperap.models.document.metadata.model.DocumentMetadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentMetadata</span></code></a></p>
+<dd><p>The model class for document metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Type[DocumentMetadata]</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="paperap.resources.document_metadata.DocumentMetadataResource.queryset_class">
 <span class="sig-name descname"><span class="pre">queryset_class</span></span><a class="headerlink" href="#paperap.resources.document_metadata.DocumentMetadataResource.queryset_class" title="Link to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="paperap.models.document.metadata.queryset.html#paperap.models.document.metadata.queryset.DocumentMetadataQuerySet" title="paperap.models.document.metadata.queryset.DocumentMetadataQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentMetadataQuerySet</span></code></a></p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.resources.document_metadata.DocumentMetadataResource.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'document_metadata'</span></em><a class="headerlink" href="#paperap.resources.document_metadata.DocumentMetadataResource.name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.resources.document_metadata.DocumentMetadataResource.endpoints">
-<span class="sig-name descname"><span class="pre">endpoints</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[Endpoints]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'detail':</span> <span class="pre">&lt;string.Template</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#paperap.resources.document_metadata.DocumentMetadataResource.endpoints" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="paperap.resources.document_metadata.DocumentMetadataResource.get_metadata">
-<span class="sig-name descname"><span class="pre">get_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">document_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/resources/document_metadata.html#DocumentMetadataResource.get_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.resources.document_metadata.DocumentMetadataResource.get_metadata" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>document_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>)</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="paperap.models.document.metadata.model.html#paperap.models.document.metadata.model.DocumentMetadata" title="paperap.models.document.metadata.model.DocumentMetadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentMetadata</span></code></a></span></p>
+<dd><p>The queryset class for metadata queries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Type[DocumentMetadataQuerySet]</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="paperap.resources.document_metadata.DocumentMetadataResource.client">
-<span class="sig-name descname"><span class="pre">client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">PaperlessClient</span></em><a class="headerlink" href="#paperap.resources.document_metadata.DocumentMetadataResource.client" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="paperap.resources.document_metadata.DocumentMetadataResource.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#paperap.resources.document_metadata.DocumentMetadataResource.name" title="Link to this definition"></a></dt>
+<dd><p>The resource name identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="paperap.resources.document_metadata.DocumentMetadataResource.endpoints">
+<span class="sig-name descname"><span class="pre">endpoints</span></span><a class="headerlink" href="#paperap.resources.document_metadata.DocumentMetadataResource.endpoints" title="Link to this definition"></a></dt>
+<dd><p>Mapping of endpoint names to their URL patterns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">PaperlessClient</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata_resource</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_metadata</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># or directly</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata_resource</span> <span class="o">=</span> <span class="n">DocumentMetadataResource</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>client</strong> (<span class="sphinx_autodoc_typehints-type">PaperlessClient</span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">model_class</span></span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="paperap.models.document.metadata.model.html#paperap.models.document.metadata.model.DocumentMetadata" title="paperap.models.document.metadata.model.DocumentMetadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentMetadata</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">queryset_class</span></span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="paperap.models.document.metadata.queryset.html#paperap.models.document.metadata.queryset.DocumentMetadataQuerySet" title="paperap.models.document.metadata.queryset.DocumentMetadataQuerySet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentMetadataQuerySet</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'document_metadata'</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">endpoints</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[Endpoints]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'detail':</span> <span class="pre">&lt;string.Template</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="paperap.resources.document_metadata.DocumentMetadataResource.get_metadata">
+<span class="sig-name descname"><span class="pre">get_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">document_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/paperap/resources/document_metadata.html#DocumentMetadataResource.get_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#paperap.resources.document_metadata.DocumentMetadataResource.get_metadata" title="Link to this definition"></a></dt>
+<dd><p>Retrieve metadata for a specific document.</p>
+<p>Fetches extended metadata for a document that isn’t included
+in the standard document response, such as detailed OCR text, archive
+metadata, and system-level information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>document_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – The ID of the document for which to retrieve metadata.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A model containing the document’s metadata.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="paperap.models.document.html#paperap.models.document.DocumentMetadata" title="paperap.models.document.DocumentMetadata">DocumentMetadata</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.ResourceNotFoundError" title="paperap.exceptions.ResourceNotFoundError"><strong>ResourceNotFoundError</strong></a> – If the document or its metadata doesn’t exist.</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.APIError" title="paperap.exceptions.APIError"><strong>APIError</strong></a> – If the API returns an error response.</p></li>
+<li><p><a class="reference internal" href="paperap.exceptions.html#paperap.exceptions.BadResponseError" title="paperap.exceptions.BadResponseError"><strong>BadResponseError</strong></a> – If the API response cannot be parsed.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">PaperlessClient</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">document_metadata</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original filename: </span><span class="si">{</span><span class="n">metadata</span><span class="o">.</span><span class="n">original_filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Archive Size: </span><span class="si">{</span><span class="n">metadata</span><span class="o">.</span><span class="n">archive_size</span><span class="si">}</span><span class="s2"> bytes&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
 
 </dd></dl>
 

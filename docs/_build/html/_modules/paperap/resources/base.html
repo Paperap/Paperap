@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/resources/base.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../../_static/readthedocs.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,28 +76,14 @@
              
   <h1>Source code for paperap.resources.base</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Provide base resource classes for interacting with Paperless-NgX API endpoints.</span>
 
+<span class="sd">This module contains the foundation classes for all API resources in Paperap.</span>
+<span class="sd">Resources handle communication with the Paperless-NgX API, including request</span>
+<span class="sd">formatting, response parsing, and model instantiation.</span>
 
-
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">METADATA:</span>
-
-<span class="sd">File:    base.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">Created: 2025-03-21</span>
-<span class="sd">        Version: 0.0.10</span>
-<span class="sd">Author:  Jess Mann</span>
-<span class="sd">Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">LAST MODIFIED:</span>
-
-<span class="sd">2025-03-21     By Jess Mann</span>
-
+<span class="sd">Each resource corresponds to an API endpoint in Paperless-NgX and provides</span>
+<span class="sd">methods for retrieving, creating, updating, and deleting resources.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -136,10 +126,30 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for API resources.</span>
 
+<span class="sd">    Provides the foundation for all API resources in Paperap. Handles communication</span>
+<span class="sd">    with the Paperless-NgX API, including request formatting, response parsing,</span>
+<span class="sd">    and model instantiation.</span>
+
+<span class="sd">    Each resource corresponds to an API endpoint in Paperless-NgX and provides</span>
+<span class="sd">    methods for retrieving, creating, updating, and deleting resources.</span>
+
 <span class="sd">    Args:</span>
-<span class="sd">        client: The PaperlessClient instance.</span>
-<span class="sd">        endpoint: The API endpoint for this resource.</span>
-<span class="sd">        model_class: The model class for this resource.</span>
+<span class="sd">        client: PaperlessClient instance for making API requests.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        model_class: Model class for this resource.</span>
+<span class="sd">        queryset_class: QuerySet class for this resource.</span>
+<span class="sd">        client: PaperlessClient instance.</span>
+<span class="sd">        name: Name of the resource (defaults to model name + &#39;s&#39;).</span>
+<span class="sd">        endpoints: Dictionary of API endpoint templates.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from paperap import PaperlessClient</span>
+<span class="sd">        &gt;&gt;&gt; client = PaperlessClient()</span>
+<span class="sd">        &gt;&gt;&gt; resource = DocumentResource(client)</span>
+<span class="sd">        &gt;&gt;&gt; documents = resource.all()</span>
+<span class="sd">        &gt;&gt;&gt; for doc in documents[:5]:  # Get first 5 documents</span>
+<span class="sd">        ...     print(doc.title)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -161,6 +171,16 @@
 <div class="viewcode-block" id="BaseResource.__init__">
 <a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="s2">&quot;PaperlessClient&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the resource with a client instance.</span>
+
+<span class="sd">        Sets up the resource with the client, configures endpoints, and establishes</span>
+<span class="sd">        the relationship between the resource and its model class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            client: PaperlessClient instance for making API requests.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">client</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">s&quot;</span>
@@ -182,10 +202,16 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">__init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize the subclass.</span>
+<span class="sd">        Initialize the subclass with required attributes.</span>
+
+<span class="sd">        Validates that subclasses define required attributes like model_class</span>
+<span class="sd">        and sets up default endpoints if not explicitly defined.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            **kwargs: Arbitrary keyword arguments</span>
+<span class="sd">            **kwargs: Arbitrary keyword arguments passed to parent __init_subclass__.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ConfigurationError: If model_class is not defined in the subclass.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -213,10 +239,30 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BaseModel.Meta[_BaseModel]&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the Meta class of the model.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Meta class instance from the model_class.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_class</span><span class="o">.</span><span class="n">_meta</span>  <span class="c1"># pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_endpoints</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Endpoints</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate and convert endpoint definitions to Templates.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: Endpoints dictionary to validate.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dictionary of validated endpoint Templates.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ModelValidationError: If endpoints are not properly formatted.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">ModelValidationError</span><span class="p">(</span><span class="s2">&quot;endpoints must be a dictionary&quot;</span><span class="p">)</span>
 
@@ -240,6 +286,27 @@
 <div class="viewcode-block" id="BaseResource.get_endpoint">
 <a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.get_endpoint">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_endpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">HttpUrl</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a fully-formed URL for the specified endpoint.</span>
+
+<span class="sd">        Retrieves the endpoint template, substitutes any parameters, and ensures</span>
+<span class="sd">        the URL is properly formatted with the base URL if needed.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: Name of the endpoint (e.g., &quot;list&quot;, &quot;detail&quot;).</span>
+<span class="sd">            **kwargs: Parameters to substitute in the endpoint template.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Fully-formed URL for the endpoint.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ConfigurationError: If the requested endpoint is not defined.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; resource.get_endpoint(&quot;detail&quot;, pk=123)</span>
+<span class="sd">            &#39;https://paperless.example.com/api/documents/123/&#39;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">template</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">endpoints</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Endpoint </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> not defined for resource </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -260,8 +327,15 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a QuerySet representing all objects of this resource type.</span>
 
+<span class="sd">        Creates a new QuerySet instance for this resource without any filters.</span>
+
 <span class="sd">        Returns:</span>
-<span class="sd">            A QuerySet for this resource</span>
+<span class="sd">            QuerySet for this resource.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; all_documents = client.documents.all()</span>
+<span class="sd">            &gt;&gt;&gt; for doc in all_documents:</span>
+<span class="sd">            ...     print(doc.title)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">queryset_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># type: ignore # _meta.queryset is always the right queryset type</span></div>
@@ -273,11 +347,20 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a QuerySet filtered by the given parameters.</span>
 
+<span class="sd">        Creates a new QuerySet with filters applied. Filters use Django-style</span>
+<span class="sd">        field lookups (e.g., field__contains, field__gt).</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            **kwargs: Filter parameters</span>
+<span class="sd">            **kwargs: Filter parameters as field=value pairs.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            A filtered QuerySet</span>
+<span class="sd">            Filtered QuerySet.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; invoices = client.documents.filter(</span>
+<span class="sd">            ...     title__contains=&quot;invoice&quot;,</span>
+<span class="sd">            ...     created__gt=&quot;2023-01-01&quot;</span>
+<span class="sd">            ... )</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -289,13 +372,18 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a model by ID.</span>
 
-<span class="sd">        Raises NotImplementedError. Subclasses may implement this.</span>
+<span class="sd">        This is a base method that raises NotImplementedError.</span>
+<span class="sd">        Subclasses should implement this method to retrieve a specific model by ID.</span>
 
-<span class="sd">        Raises:</span>
-<span class="sd">            NotImplementedError: Unless implemented by a subclass.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            *args: Positional arguments (typically model_id).</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The model retrieved.</span>
+<span class="sd">            Retrieved model.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError: This base method is not implemented.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;get method not available for resources without an id&quot;</span><span class="p">)</span></div>
@@ -307,11 +395,24 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a new resource.</span>
 
+<span class="sd">        Sends a POST request to the API to create a new resource with the provided data.</span>
+<span class="sd">        Emits signals before and after the creation.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            data: Resource data.</span>
+<span class="sd">            **kwargs: Resource data as field=value pairs.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The created resource.</span>
+<span class="sd">            Newly created model instance.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ConfigurationError: If the create endpoint is not defined.</span>
+<span class="sd">            ResourceNotFoundError: If the resource cannot be created.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; tag = client.tags.create(</span>
+<span class="sd">            ...     name=&quot;Invoices&quot;,</span>
+<span class="sd">            ...     color=&quot;#ff0000&quot;</span>
+<span class="sd">            ... )</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Signal before creating resource</span>
@@ -343,11 +444,17 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update a resource.</span>
 
+<span class="sd">        This is a base method that raises NotImplementedError.</span>
+<span class="sd">        Subclasses should implement this method to update a model.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            resource: The resource to update.</span>
+<span class="sd">            model: Model instance to update.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The updated resource.</span>
+<span class="sd">            Updated model instance.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError: This base method is not implemented.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;update method not available for resources without an id&quot;</span><span class="p">)</span></div>
@@ -357,9 +464,21 @@
 <a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.update_dict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_BaseModel</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Update a resource.</span>
+<span class="sd">        Update a resource using a dictionary of values.</span>
 
-<span class="sd">        Subclasses may implement this.</span>
+<span class="sd">        This is a base method that raises NotImplementedError.</span>
+<span class="sd">        Subclasses should implement this method to update a model using a dictionary.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *args: Positional arguments (typically model_id).</span>
+<span class="sd">            **kwargs: Field values to update.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Updated model instance.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError: This base method is not implemented.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;update_dict method not available for resources without an id&quot;</span><span class="p">)</span></div>
 
@@ -370,8 +489,15 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delete a resource.</span>
 
+<span class="sd">        This is a base method that raises NotImplementedError.</span>
+<span class="sd">        Subclasses should implement this method to delete a model.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            model_id: ID of the resource.</span>
+<span class="sd">            *args: Positional arguments (typically model_id).</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError: This base method is not implemented.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;delete method not available for resources without an id&quot;</span><span class="p">)</span></div>
@@ -381,13 +507,18 @@
 <a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.parse_to_model">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">parse_to_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">_BaseModel</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parse an item dictionary into a model instance, handling date parsing.</span>
+<span class="sd">        Parse an item dictionary into a model instance.</span>
+
+<span class="sd">        Transforms the raw API data and validates it against the model class.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            item: The item dictionary.</span>
+<span class="sd">            item: Dictionary of data from the API.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The parsed model instance.</span>
+<span class="sd">            Validated model instance.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ResponseParsingError: If the data cannot be parsed into a valid model.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -404,11 +535,14 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Transform data after receiving it from the API.</span>
 
+<span class="sd">        Maps API field names to model field names using the field_map defined</span>
+<span class="sd">        in the model&#39;s Meta class.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            data: The data to transform.</span>
+<span class="sd">            **data: Raw data from the API.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The transformed data.</span>
+<span class="sd">            Transformed data ready for model validation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">field_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -429,13 +563,19 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Transform data before sending it to the API.</span>
 
+<span class="sd">        Maps model field names to API field names using the field_map defined</span>
+<span class="sd">        in the model&#39;s Meta class.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            model: The model to transform.</span>
-<span class="sd">            exclude_unset: If model is provided, exclude unset fields when calling to_dict()</span>
-<span class="sd">            data: The data to transform.</span>
+<span class="sd">            model: Model instance to transform. If provided, its to_dict() method is used.</span>
+<span class="sd">            exclude_unset: If model is provided, whether to exclude unset fields.</span>
+<span class="sd">            **data: Raw data to transform if no model is provided.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The transformed data.</span>
+<span class="sd">            Transformed data ready to send to the API.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If both model and data are provided.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">model</span><span class="p">:</span>
@@ -454,13 +594,23 @@
 <a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.create_model">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_BaseModel</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a new model instance.</span>
+<span class="sd">        Create a new model instance without saving to the API.</span>
+
+<span class="sd">        Instantiates a new model with the provided field values and associates</span>
+<span class="sd">        it with this resource.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            **kwargs: Model field values</span>
+<span class="sd">            **kwargs: Model field values.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            A new model instance.</span>
+<span class="sd">            New, unsaved model instance.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; doc = client.documents.create_model(</span>
+<span class="sd">            ...     title=&quot;New Document&quot;,</span>
+<span class="sd">            ...     correspondent_id=5</span>
+<span class="sd">            ... )</span>
+<span class="sd">            &gt;&gt;&gt; doc.save()  # Save to the API</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Mypy output:</span>
@@ -479,16 +629,29 @@
         <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Make an HTTP request to the API, and return the raw json response.</span>
+<span class="sd">        Make an HTTP request to the API and return the raw JSON response.</span>
+
+<span class="sd">        A low-level method to send requests to the API without processing the response</span>
+<span class="sd">        into model instances.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            method: The HTTP method to use</span>
-<span class="sd">            url: The full URL to request</span>
-<span class="sd">            params: Query parameters</span>
-<span class="sd">            data: Request body data</span>
+<span class="sd">            url: URL to request. If None, uses the list endpoint.</span>
+<span class="sd">            method: HTTP method to use (GET, POST, PUT, DELETE).</span>
+<span class="sd">            params: Query parameters to include in the request.</span>
+<span class="sd">            data: Request body data for POST/PUT requests.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The JSON-decoded response from the API</span>
+<span class="sd">            JSON-decoded response from the API.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ConfigurationError: If no URL is provided and the list endpoint is not defined.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; # Get raw data from a custom endpoint</span>
+<span class="sd">            &gt;&gt;&gt; response = resource.request_raw(</span>
+<span class="sd">            ...     url=&quot;https://paperless.example.com/api/custom/&quot;,</span>
+<span class="sd">            ...     params={&quot;filter&quot;: &quot;value&quot;}</span>
+<span class="sd">            ... )</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">url</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">url</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_endpoint</span><span class="p">(</span><span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="n">resource</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)):</span>
@@ -504,6 +667,22 @@
 <div class="viewcode-block" id="BaseResource.handle_response">
 <a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.handle_response">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">handle_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">_BaseModel</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process API response and yield model instances.</span>
+
+<span class="sd">        Handles different response formats (list or dict) and emits signals</span>
+<span class="sd">        before and after processing.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            response: API response to process.</span>
+
+<span class="sd">        Yields:</span>
+<span class="sd">            Model instances created from the response data.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ResponseParsingError: If the response format is unexpected.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">registry</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
             <span class="s2">&quot;resource._handle_response:before&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Emitted before listing resources&quot;</span><span class="p">,</span>
@@ -532,9 +711,20 @@
 <a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.handle_dict_response">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">handle_dict_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">response</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">_BaseModel</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Handle a response from the API and yield results.</span>
+<span class="sd">        Handle a dictionary response from the API and yield model instances.</span>
 
-<span class="sd">        Override in subclasses to implement custom response logic.</span>
+<span class="sd">        Processes responses that are dictionaries, which may contain a &#39;results&#39; key</span>
+<span class="sd">        with a list of items or may be a single item directly.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **response: Dictionary response from the API.</span>
+
+<span class="sd">        Yields:</span>
+<span class="sd">            Model instances created from the response data.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ResponseParsingError: If the response format is unexpected.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">results</span> <span class="o">:=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)):</span>
             <span class="k">return</span>
@@ -572,7 +762,18 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Yield parsed models from a list of results.</span>
 
-<span class="sd">        Override in subclasses to implement custom result handling.</span>
+<span class="sd">        Processes a list of dictionaries into model instances, emitting signals</span>
+<span class="sd">        for each item.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            results: List of dictionaries from the API.</span>
+
+<span class="sd">        Yields:</span>
+<span class="sd">            Model instances created from the results.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ResponseParsingError: If the results format is unexpected.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">ResponseParsingError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> results to be a list, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">results</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -594,16 +795,21 @@
 <a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.BaseResource.__call__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">keywords</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_BaseQuerySet</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Make the resource callable to get a BaseQuerySet.</span>
+<span class="sd">        Make the resource callable to get a filtered QuerySet.</span>
 
-<span class="sd">        This allows usage like: client.documents(title__contains=&#39;invoice&#39;)</span>
+<span class="sd">        This allows for a shorthand syntax when filtering resources.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            *args: Unused</span>
-<span class="sd">            **keywords: Filter parameters</span>
+<span class="sd">            *args: Unused positional arguments.</span>
+<span class="sd">            **keywords: Filter parameters as field=value pairs.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            A filtered QuerySet</span>
+<span class="sd">            Filtered QuerySet.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; # These are equivalent:</span>
+<span class="sd">            &gt;&gt;&gt; client.documents(title__contains=&#39;invoice&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; client.documents.filter(title__contains=&#39;invoice&#39;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">keywords</span><span class="p">)</span></div>
@@ -615,12 +821,24 @@
 <a class="viewcode-back" href="../../../api/paperap.resources.base.html#paperap.resources.base.StandardResource">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StandardResource</span><span class="p">(</span><span class="n">BaseResource</span><span class="p">[</span><span class="n">_StandardModel</span><span class="p">,</span> <span class="n">_StandardQuerySet</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Base class for API resources.</span>
+<span class="sd">    Base class for API resources with standard ID-based operations.</span>
+
+<span class="sd">    Extends BaseResource with implementations for get, update, and delete</span>
+<span class="sd">    operations that work with models having an &#39;id&#39; field.</span>
+
+<span class="sd">    This class is used for most Paperless-NgX resources that follow the standard</span>
+<span class="sd">    REST pattern with unique integer IDs.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        client: The PaperlessClient instance.</span>
-<span class="sd">        endpoint: The API endpoint for this resource.</span>
-<span class="sd">        model_class: The model class for this resource.</span>
+<span class="sd">        client: PaperlessClient instance for making API requests.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from paperap import PaperlessClient</span>
+<span class="sd">        &gt;&gt;&gt; client = PaperlessClient()</span>
+<span class="sd">        &gt;&gt;&gt; resource = TagResource(client)</span>
+<span class="sd">        &gt;&gt;&gt; tag = resource.get(5)  # Get tag with ID 5</span>
+<span class="sd">        &gt;&gt;&gt; tag.name = &quot;New Name&quot;</span>
+<span class="sd">        &gt;&gt;&gt; resource.update(tag)   # Update the tag</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -631,11 +849,24 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a model within this resource by ID.</span>
 
+<span class="sd">        Retrieves a specific model by its ID, emitting signals before and after</span>
+<span class="sd">        the operation.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            model_id: ID of the model to retrieve.</span>
+<span class="sd">            *args: Additional positional arguments.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The model retrieved</span>
+<span class="sd">            Retrieved model instance.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ConfigurationError: If the detail endpoint is not defined.</span>
+<span class="sd">            ObjectNotFoundError: If the model with the given ID does not exist.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; document = client.documents.get(123)</span>
+<span class="sd">            &gt;&gt;&gt; print(document.title)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Signal before getting resource</span>
@@ -671,13 +902,20 @@
     <span class="nd">@override</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">_StandardModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_StandardModel</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Update a model.</span>
+<span class="sd">        Update a model in the API.</span>
+
+<span class="sd">        Converts the model to a dictionary and sends it to the API for updating.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            model: The model to update.</span>
+<span class="sd">            model: Model instance to update.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The updated model.</span>
+<span class="sd">            Updated model instance.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; tag = client.tags.get(5)</span>
+<span class="sd">            &gt;&gt;&gt; tag.name = &quot;Updated Name&quot;</span>
+<span class="sd">            &gt;&gt;&gt; updated_tag = client.tags.update(tag)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
@@ -697,10 +935,25 @@
     <span class="nd">@override</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">_StandardModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Delete a resource.</span>
+<span class="sd">        Delete a resource from the API.</span>
+
+<span class="sd">        Sends a DELETE request to remove the resource, emitting signals before</span>
+<span class="sd">        and after the operation.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            model_id: ID of the resource.</span>
+<span class="sd">            model_id: ID of the resource or the model instance to delete.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If model_id is not provided.</span>
+<span class="sd">            ConfigurationError: If the delete endpoint is not defined.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; # Delete by ID</span>
+<span class="sd">            &gt;&gt;&gt; client.tags.delete(5)</span>
+<span class="sd">            &gt;&gt;&gt;</span>
+<span class="sd">            &gt;&gt;&gt; # Delete by model instance</span>
+<span class="sd">            &gt;&gt;&gt; tag = client.tags.get(5)</span>
+<span class="sd">            &gt;&gt;&gt; client.tags.delete(tag)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">model_id</span><span class="p">:</span>
@@ -726,17 +979,28 @@
     <span class="nd">@override</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">_StandardModel</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Update a resource.</span>
+<span class="sd">        Update a resource using a dictionary of values.</span>
+
+<span class="sd">        Sends a PUT request to update the resource with the provided data,</span>
+<span class="sd">        emitting signals before and after the operation.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            model_id: ID of the resource.</span>
-<span class="sd">            data: Resource data.</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            ResourceNotFoundError: If the resource with the given id is not found</span>
+<span class="sd">            model_id: ID of the resource to update.</span>
+<span class="sd">            **data: Field values to update.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The updated resource.</span>
+<span class="sd">            Updated model instance.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ConfigurationError: If the update endpoint is not defined.</span>
+<span class="sd">            ResourceNotFoundError: If the resource with the given ID is not found.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; updated_tag = client.tags.update_dict(</span>
+<span class="sd">            ...     5,</span>
+<span class="sd">            ...     name=&quot;New Name&quot;,</span>
+<span class="sd">            ...     color=&quot;#ff0000&quot;</span>
+<span class="sd">            ... )</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Signal before updating resource</span>
@@ -779,22 +1043,41 @@
         <span class="n">merge</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Bulk edit non-document objects (tags, correspondents, document types, storage paths).</span>
+<span class="sd">        Bulk edit non-document objects in the API.</span>
+
+<span class="sd">        Performs operations on multiple objects of the same type in a single request.</span>
+<span class="sd">        Currently supports permission setting and deletion operations.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            object_type: Type of objects to edit (&#39;tags&#39;, &#39;correspondents&#39;, &#39;document_types&#39;, &#39;storage_paths&#39;)</span>
-<span class="sd">            ids: List of object IDs to edit</span>
-<span class="sd">            operation: Operation to perform (&#39;set_permissions&#39; or &#39;delete&#39;)</span>
-<span class="sd">            permissions: Permissions object for &#39;set_permissions&#39; operation</span>
-<span class="sd">            owner_id: Owner ID to assign</span>
-<span class="sd">            merge: Whether to merge permissions with existing ones (True) or replace them (False)</span>
+<span class="sd">            object_type: Type of objects to edit (&#39;tags&#39;, &#39;correspondents&#39;, &#39;document_types&#39;, &#39;storage_paths&#39;).</span>
+<span class="sd">            ids: List of object IDs to edit.</span>
+<span class="sd">            operation: Operation to perform (&#39;set_permissions&#39; or &#39;delete&#39;).</span>
+<span class="sd">            permissions: Permissions object for &#39;set_permissions&#39; operation.</span>
+<span class="sd">            owner_id: Owner ID to assign.</span>
+<span class="sd">            merge: Whether to merge permissions with existing ones (True) or replace them (False).</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The API response</span>
+<span class="sd">            API response dictionary.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If operation is not valid</span>
-<span class="sd">            ConfigurationError: If the bulk edit endpoint is not defined</span>
+<span class="sd">            ValueError: If operation is not valid.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; # Delete multiple tags</span>
+<span class="sd">            &gt;&gt;&gt; client.tags.bulk_edit_objects(</span>
+<span class="sd">            ...     object_type=&quot;tags&quot;,</span>
+<span class="sd">            ...     ids=[1, 2, 3],</span>
+<span class="sd">            ...     operation=&quot;delete&quot;</span>
+<span class="sd">            ... )</span>
+<span class="sd">            &gt;&gt;&gt;</span>
+<span class="sd">            &gt;&gt;&gt; # Set permissions on multiple document types</span>
+<span class="sd">            &gt;&gt;&gt; client.document_types.bulk_edit_objects(</span>
+<span class="sd">            ...     object_type=&quot;document_types&quot;,</span>
+<span class="sd">            ...     ids=[4, 5],</span>
+<span class="sd">            ...     operation=&quot;set_permissions&quot;,</span>
+<span class="sd">            ...     permissions={&quot;view&quot;: {&quot;users&quot;: [1]}, &quot;change&quot;: {&quot;groups&quot;: [2]}},</span>
+<span class="sd">            ...     owner_id=1</span>
+<span class="sd">            ... )</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">operation</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;set_permissions&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">):</span>

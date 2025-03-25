@@ -10,11 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="canonical" href="/_modules/paperap/exceptions.html" />
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script defer="defer" src="../../_static/readthedocs.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -24,7 +26,7 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
 
           
           
@@ -41,22 +43,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">paperap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">Paperap</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,24 +76,11 @@
              
   <h1>Source code for paperap.exceptions</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">Define exception hierarchy for the Paperap library.</span>
 
-<span class="sd">   METADATA:</span>
-
-<span class="sd">       File:    exceptions.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">       Created: 2025-03-04</span>
-<span class="sd">        Version: 0.0.8</span>
-<span class="sd">       Author:  Jess Mann</span>
-<span class="sd">       Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">   LAST MODIFIED:</span>
-
-<span class="sd">       2025-03-04     By Jess Mann</span>
-
+<span class="sd">This module contains all exceptions that may be raised by the Paperap library</span>
+<span class="sd">during its operation. The exceptions form a hierarchy with PaperapError as the</span>
+<span class="sd">base class, allowing applications to catch specific or general error types as needed.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -100,19 +91,48 @@
 
 
 <div class="viewcode-block" id="PaperapError">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.PaperapError">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.PaperapError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PaperapError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base exception for all paperless client errors.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base exception for all paperless client errors.</span>
+
+<span class="sd">    This is the parent class for all exceptions raised by the Paperap library.</span>
+<span class="sd">    All custom exceptions inherit from this class, allowing users to catch any</span>
+<span class="sd">    Paperap-related exception with a single except clause.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     client.documents.get(99999)</span>
+<span class="sd">        ... except PaperapError as e:</span>
+<span class="sd">        ...     print(f&quot;Paperap error occurred: {e}&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="ModelValidationError">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.ModelValidationError">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.ModelValidationError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ModelValidationError</span><span class="p">(</span><span class="n">PaperapError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a model fails validation.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise when a model fails validation.</span>
+
+<span class="sd">    This exception occurs when a Pydantic model fails validation, typically</span>
+<span class="sd">    when creating or updating a model with invalid data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        message: Custom error message. If None, a default message is generated.</span>
+<span class="sd">        model: The Pydantic model that failed validation.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     client.documents.create(invalid_field=&quot;value&quot;)</span>
+<span class="sd">        ... except ModelValidationError as e:</span>
+<span class="sd">        ...     print(f&quot;Validation error: {e}&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ModelValidationError.__init__">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.ModelValidationError.__init__">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.ModelValidationError.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">message</span><span class="p">:</span>
             <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Model failed validation for </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span>
@@ -122,35 +142,91 @@
 
 
 <div class="viewcode-block" id="ReadOnlyFieldError">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.ReadOnlyFieldError">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.ReadOnlyFieldError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ReadOnlyFieldError</span><span class="p">(</span><span class="n">ModelValidationError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a read-only field is set.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise when a read-only field is modified.</span>
+
+<span class="sd">    This exception occurs when an attempt is made to modify a field that</span>
+<span class="sd">    is marked as read-only in the model&#39;s Meta configuration.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     document.id = 456  # id is typically read-only</span>
+<span class="sd">        ... except ReadOnlyFieldError as e:</span>
+<span class="sd">        ...     print(f&quot;Cannot modify read-only field: {e}&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="ConfigurationError">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.ConfigurationError">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.ConfigurationError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ConfigurationError</span><span class="p">(</span><span class="n">PaperapError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when the configuration is invalid.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise when the client configuration is invalid.</span>
+
+<span class="sd">    This exception occurs when there&#39;s an issue with the client configuration,</span>
+<span class="sd">    such as missing required settings or invalid connection parameters.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     client = PaperlessClient(base_url=&quot;invalid://url&quot;)</span>
+<span class="sd">        ... except ConfigurationError as e:</span>
+<span class="sd">        ...     print(f&quot;Configuration error: {e}&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="PaperlessError">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.PaperlessError">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.PaperlessError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PaperlessError</span><span class="p">(</span><span class="n">PaperapError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised due to a feature or error of paperless ngx&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise when an error is specific to the Paperless-NgX server.</span>
+
+<span class="sd">    This exception occurs when an error is specific to the Paperless-NgX server</span>
+<span class="sd">    or its API, rather than the Paperap client itself.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     # An operation that depends on a Paperless-NgX feature</span>
+<span class="sd">        ...     client.documents.merge([1, 2, 3])</span>
+<span class="sd">        ... except PaperlessError as e:</span>
+<span class="sd">        ...     print(f&quot;Paperless server error: {e}&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="APIError">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.APIError">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.APIError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">APIError</span><span class="p">(</span><span class="n">PaperlessError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when the API returns an error.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise when the Paperless-NgX API returns an error.</span>
+
+<span class="sd">    This exception occurs when the Paperless-NgX API returns an error response.</span>
+<span class="sd">    It includes the HTTP status code and error message from the API.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        message: Error message from the API. If None, a default message is used.</span>
+<span class="sd">        status_code: HTTP status code returned by the API.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        status_code: HTTP status code returned by the API.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     client.documents.create(title=&quot;Test&quot;)  # Missing required file</span>
+<span class="sd">        ... except APIError as e:</span>
+<span class="sd">        ...     print(f&quot;API Error {e.status_code}: {e}&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">status_code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="APIError.__init__">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.APIError.__init__">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.APIError.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">status_code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="n">status_code</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">message</span><span class="p">:</span>
@@ -163,63 +239,171 @@
 
 
 <div class="viewcode-block" id="AuthenticationError">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.AuthenticationError">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.AuthenticationError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AuthenticationError</span><span class="p">(</span><span class="n">APIError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when authentication fails.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise when authentication with the Paperless-NgX server fails.</span>
+
+<span class="sd">    This exception occurs when the client fails to authenticate with the</span>
+<span class="sd">    Paperless-NgX server, typically due to invalid credentials or an expired token.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     client = PaperlessClient(token=&quot;invalid_token&quot;)</span>
+<span class="sd">        ...     client.documents.all()</span>
+<span class="sd">        ... except AuthenticationError as e:</span>
+<span class="sd">        ...     print(f&quot;Authentication failed: {e}&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="InsufficientPermissionError">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.InsufficientPermissionError">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.InsufficientPermissionError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">InsufficientPermissionError</span><span class="p">(</span><span class="n">APIError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a user does not have permission to perform an action.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise when a user lacks permission for an operation.</span>
+
+<span class="sd">    This exception occurs when the authenticated user lacks the necessary</span>
+<span class="sd">    permissions to perform the requested operation on the Paperless-NgX server.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     # Attempting an admin-only operation with a regular user account</span>
+<span class="sd">        ...     client.users.create(username=&quot;new_user&quot;)</span>
+<span class="sd">        ... except InsufficientPermissionError as e:</span>
+<span class="sd">        ...     print(f&quot;Permission denied: {e}&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="FeatureNotAvailableError">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.FeatureNotAvailableError">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.FeatureNotAvailableError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FeatureNotAvailableError</span><span class="p">(</span><span class="n">APIError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a feature is not available.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise when attempting to use an unavailable feature.</span>
+
+<span class="sd">    This exception occurs when attempting to use a feature that is not</span>
+<span class="sd">    available in the current version of Paperless-NgX or has been disabled</span>
+<span class="sd">    in the server configuration.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     # Using a feature only available in newer versions</span>
+<span class="sd">        ...     client.documents.bulk_edit(...)</span>
+<span class="sd">        ... except FeatureNotAvailableError as e:</span>
+<span class="sd">        ...     print(f&quot;Feature not available: {e}&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="FilterDisabledError">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.FilterDisabledError">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.FilterDisabledError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FilterDisabledError</span><span class="p">(</span><span class="n">FeatureNotAvailableError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a filter is not available.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise when attempting to use an unavailable filter.</span>
+
+<span class="sd">    This exception occurs when attempting to use a filter that has been</span>
+<span class="sd">    disabled in the model&#39;s Meta configuration or is not supported by the API.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     client.documents.filter(unsupported_field=&quot;value&quot;)</span>
+<span class="sd">        ... except FilterDisabledError as e:</span>
+<span class="sd">        ...     print(f&quot;Filter not available: {e}&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="RequestError">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.RequestError">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.RequestError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RequestError</span><span class="p">(</span><span class="n">APIError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when an error occurs while making a request.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise when an HTTP request fails.</span>
+
+<span class="sd">    This exception occurs when there&#39;s an error in the HTTP request itself,</span>
+<span class="sd">    such as a connection error, timeout, or invalid URL.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     client.request(&quot;GET&quot;, &quot;invalid/endpoint&quot;)</span>
+<span class="sd">        ... except RequestError as e:</span>
+<span class="sd">        ...     print(f&quot;Request failed: {e}&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="BadResponseError">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.BadResponseError">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.BadResponseError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BadResponseError</span><span class="p">(</span><span class="n">APIError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a response is returned, but the status code is not 200.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise when the API returns a non-success status code.</span>
+
+<span class="sd">    This exception occurs when the API returns a non-success status code,</span>
+<span class="sd">    indicating that the request was received but could not be processed successfully.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     client.request(&quot;POST&quot;, &quot;documents/&quot;, data={&quot;invalid&quot;: &quot;data&quot;})</span>
+<span class="sd">        ... except BadResponseError as e:</span>
+<span class="sd">        ...     print(f&quot;Bad response: {e.status_code} - {e}&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="ResponseParsingError">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.ResponseParsingError">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.ResponseParsingError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ResponseParsingError</span><span class="p">(</span><span class="n">APIError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when the response can&#39;t be parsed.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise when the API response cannot be parsed.</span>
+
+<span class="sd">    This exception occurs when the API returns a response that cannot be</span>
+<span class="sd">    parsed as expected, typically due to an unexpected format or content type.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     client.request(&quot;GET&quot;, &quot;documents/&quot;, json_response=True)</span>
+<span class="sd">        ...     # Assuming the response is not valid JSON</span>
+<span class="sd">        ... except ResponseParsingError as e:</span>
+<span class="sd">        ...     print(f&quot;Failed to parse response: {e}&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="ResourceNotFoundError">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.ResourceNotFoundError">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.ResourceNotFoundError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ResourceNotFoundError</span><span class="p">(</span><span class="n">APIError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a requested resource is not found.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise when a requested API resource is not found.</span>
+
+<span class="sd">    This exception occurs when the requested API resource (endpoint) does not exist</span>
+<span class="sd">    or is not available.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        message: Custom error message. If None, a default message is generated.</span>
+<span class="sd">        resource_name: Name of the resource that was not found.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        resource_name: Name of the resource that was not found.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     client.request(&quot;GET&quot;, &quot;nonexistent_resource/&quot;)</span>
+<span class="sd">        ... except ResourceNotFoundError as e:</span>
+<span class="sd">        ...     print(f&quot;Resource not found: {e.resource_name}&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">resource_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="ResourceNotFoundError.__init__">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.ResourceNotFoundError.__init__">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.ResourceNotFoundError.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">resource_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">resource_name</span> <span class="o">=</span> <span class="n">resource_name</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">message</span><span class="p">:</span>
@@ -231,21 +415,53 @@
 
 
 <div class="viewcode-block" id="RelationshipNotFoundError">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.RelationshipNotFoundError">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.RelationshipNotFoundError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RelationshipNotFoundError</span><span class="p">(</span><span class="n">ResourceNotFoundError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a requested relationship is not found.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise when a requested model relationship is not found.</span>
+
+<span class="sd">    This exception occurs when attempting to access a relationship that</span>
+<span class="sd">    does not exist on a model, such as a foreign key or many-to-many relationship.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     document.nonexistent_relationship</span>
+<span class="sd">        ... except RelationshipNotFoundError as e:</span>
+<span class="sd">        ...     print(f&quot;Relationship not found: {e}&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="ObjectNotFoundError">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.ObjectNotFoundError">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.ObjectNotFoundError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ObjectNotFoundError</span><span class="p">(</span><span class="n">ResourceNotFoundError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a requested object is not found.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise when a requested object is not found by ID.</span>
+
+<span class="sd">    This exception occurs when attempting to retrieve a specific object by ID</span>
+<span class="sd">    that does not exist in the Paperless-NgX database.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        message: Custom error message. If None, a default message is generated.</span>
+<span class="sd">        resource_name: Name of the resource type (e.g., &quot;document&quot;, &quot;tag&quot;).</span>
+<span class="sd">        model_id: ID of the object that was not found.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        model_id: ID of the object that was not found.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     client.documents.get(99999)  # Non-existent document ID</span>
+<span class="sd">        ... except ObjectNotFoundError as e:</span>
+<span class="sd">        ...     print(f&quot;{e.resource_name} with ID {e.model_id} not found&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">model_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="ObjectNotFoundError.__init__">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.ObjectNotFoundError.__init__">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.ObjectNotFoundError.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">resource_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span> <span class="o">=</span> <span class="n">model_id</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">message</span><span class="p">:</span>
@@ -257,30 +473,79 @@
 
 
 <div class="viewcode-block" id="MultipleObjectsFoundError">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.MultipleObjectsFoundError">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.MultipleObjectsFoundError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MultipleObjectsFoundError</span><span class="p">(</span><span class="n">APIError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when multiple objects are found when only one was expected.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise when multiple objects are found when only one was expected.</span>
+
+<span class="sd">    This exception occurs when a query that should return a single object</span>
+<span class="sd">    returns multiple objects, typically in a get() operation with non-unique filters.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     # If multiple documents have this exact title</span>
+<span class="sd">        ...     client.documents.filter(title=&quot;Invoice&quot;).get()</span>
+<span class="sd">        ... except MultipleObjectsFoundError as e:</span>
+<span class="sd">        ...     print(f&quot;Multiple objects found: {e}&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="DocumentError">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.DocumentError">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.DocumentError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DocumentError</span><span class="p">(</span><span class="n">PaperapError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when an error occurs with a local document.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise when an error occurs with a local document file.</span>
+
+<span class="sd">    This exception occurs when there&#39;s an issue with a local document file,</span>
+<span class="sd">    such as when uploading or processing a document.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     client.documents.upload(&quot;nonexistent_file.pdf&quot;)</span>
+<span class="sd">        ... except DocumentError as e:</span>
+<span class="sd">        ...     print(f&quot;Document error: {e}&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="NoImagesError">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.NoImagesError">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.NoImagesError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NoImagesError</span><span class="p">(</span><span class="n">DocumentError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when no images are found in a pdf.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise when no images or pages are found in a document.</span>
+
+<span class="sd">    This exception occurs when attempting to process a document that</span>
+<span class="sd">    contains no images or pages that can be processed.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     client.documents.upload(&quot;empty.pdf&quot;)</span>
+<span class="sd">        ... except NoImagesError as e:</span>
+<span class="sd">        ...     print(f&quot;Cannot process PDF: {e}&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="DocumentParsingError">
-<a class="viewcode-back" href="../../api/paperap.exceptions.html#paperap.exceptions.DocumentParsingError">[docs]</a>
+<a class="viewcode-back" href="../../modules/exceptions.html#paperap.exceptions.DocumentParsingError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DocumentParsingError</span><span class="p">(</span><span class="n">DocumentError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a document cannot be parsed.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise when a document cannot be parsed or content extracted.</span>
+
+<span class="sd">    This exception occurs when the system fails to parse or extract content</span>
+<span class="sd">    from a document, typically due to an unsupported format or corrupted file.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; try:</span>
+<span class="sd">        ...     client.documents.upload(&quot;corrupted.pdf&quot;)</span>
+<span class="sd">        ... except DocumentParsingError as e:</span>
+<span class="sd">        ...     print(f&quot;Failed to parse document: {e}&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 </pre></div>
 

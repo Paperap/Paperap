@@ -45,7 +45,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
@@ -74,24 +76,12 @@
              
   <h1>Source code for paperap.const</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">Constants and base types for the Paperap library.</span>
 
-<span class="sd">   METADATA:</span>
-
-<span class="sd">       File:    const.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">       Created: 2025-03-04</span>
-<span class="sd">        Version: 0.0.10</span>
-<span class="sd">       Author:  Jess Mann</span>
-<span class="sd">       Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">   LAST MODIFIED:</span>
-
-<span class="sd">       2025-03-04     By Jess Mann</span>
-
+<span class="sd">This module defines enumerations, constants, and base types used throughout</span>
+<span class="sd">the Paperap library for interacting with Paperless-ngx. It includes status</span>
+<span class="sd">enums, model configurations, URL templates, and type definitions that provide</span>
+<span class="sd">a foundation for the API client.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -123,6 +113,25 @@
 <div class="viewcode-block" id="StrEnumWithUnknown">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.StrEnumWithUnknown">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StrEnumWithUnknown</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    String enumeration that handles unknown values gracefully.</span>
+
+<span class="sd">    This base class extends StrEnum to automatically handle unknown values by</span>
+<span class="sd">    returning a designated UNKNOWN value instead of raising an exception.</span>
+<span class="sd">    Subclasses must define an UNKNOWN member.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; class Status(StrEnumWithUnknown):</span>
+<span class="sd">        ...     ACTIVE = &quot;active&quot;</span>
+<span class="sd">        ...     INACTIVE = &quot;inactive&quot;</span>
+<span class="sd">        ...     UNKNOWN = &quot;unknown&quot;</span>
+<span class="sd">        &gt;&gt;&gt; Status(&quot;active&quot;)</span>
+<span class="sd">        &lt;Status.ACTIVE: &#39;active&#39;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; Status(&quot;nonexistent&quot;)</span>
+<span class="sd">        &lt;Status.UNKNOWN: &#39;unknown&#39;&gt;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="nd">@override</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_missing_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -134,6 +143,26 @@
 <div class="viewcode-block" id="IntEnumWithUnknown">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.IntEnumWithUnknown">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">IntEnumWithUnknown</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Integer enumeration that handles unknown values gracefully.</span>
+
+<span class="sd">    This base class extends IntEnum to automatically handle unknown values by</span>
+<span class="sd">    returning a designated UNKNOWN value instead of raising an exception.</span>
+<span class="sd">    Subclasses must define an UNKNOWN member.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; class Priority(IntEnumWithUnknown):</span>
+<span class="sd">        ...     HIGH = 3</span>
+<span class="sd">        ...     MEDIUM = 2</span>
+<span class="sd">        ...     LOW = 1</span>
+<span class="sd">        ...     UNKNOWN = -1</span>
+<span class="sd">        &gt;&gt;&gt; Priority(2)</span>
+<span class="sd">        &lt;Priority.MEDIUM: 2&gt;</span>
+<span class="sd">        &gt;&gt;&gt; Priority(99)</span>
+<span class="sd">        &lt;Priority.UNKNOWN: -1&gt;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="nd">@override</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_missing_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -145,6 +174,19 @@
 <div class="viewcode-block" id="ConstModel">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.ConstModel">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ConstModel</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base model for constant data structures with strict validation.</span>
+
+<span class="sd">    This model provides consistent configuration for all constant data structures</span>
+<span class="sd">    in the application, with strict validation and comparison capabilities.</span>
+<span class="sd">    It enforces validation on assignment and defaults, and provides custom</span>
+<span class="sd">    equality comparison with dictionaries.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        model_config: Pydantic configuration dictionary that enforces strict validation.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span>
         <span class="n">from_attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">,</span>
@@ -153,8 +195,23 @@
         <span class="n">validate_assignment</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
 
+<div class="viewcode-block" id="ConstModel.__eq__">
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.ConstModel.__eq__">[docs]</a>
     <span class="nd">@override</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compare this model with another object for equality.</span>
+
+<span class="sd">        Supports comparison with dictionaries by checking that all fields match,</span>
+<span class="sd">        and with other ConstModel instances by comparing their serialized forms.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            other: The object to compare with this model.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the objects are equal, False otherwise.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="c1"># Ensure the dictionary keys match the model fields</span>
             <span class="n">expected_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_fields</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
@@ -168,12 +225,43 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
+</div>
 
 
 
 <div class="viewcode-block" id="URLS">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.URLS">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">URLS</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    URL templates for Paperless-ngx API endpoints.</span>
+
+<span class="sd">    This class provides string templates for all API endpoints used by the client.</span>
+<span class="sd">    Templates can be formatted with parameters like ${resource} and ${pk} to</span>
+<span class="sd">    generate specific endpoint URLs.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This class may be deprecated in the future. It is currently used for reference.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        index: API root endpoint.</span>
+<span class="sd">        token: Authentication token endpoint.</span>
+<span class="sd">        list: List endpoint for a resource type.</span>
+<span class="sd">        detail: Detail endpoint for a specific resource.</span>
+<span class="sd">        create: Creation endpoint for a resource type.</span>
+<span class="sd">        update: Update endpoint for a specific resource.</span>
+<span class="sd">        delete: Deletion endpoint for a specific resource.</span>
+<span class="sd">        meta: Document metadata endpoint.</span>
+<span class="sd">        next_asn: Endpoint to get the next available ASN.</span>
+<span class="sd">        notes: Document notes endpoint.</span>
+<span class="sd">        post: Document upload endpoint.</span>
+<span class="sd">        single: Single document endpoint.</span>
+<span class="sd">        suggestions: Suggestions endpoint for a resource.</span>
+<span class="sd">        preview: Document preview endpoint.</span>
+<span class="sd">        thumbnail: Document thumbnail endpoint.</span>
+<span class="sd">        download: Document download endpoint.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># May be deprecated in the future. Used for reference currently.</span>
     <span class="n">index</span><span class="p">:</span> <span class="n">Template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;/api/&quot;</span><span class="p">)</span>
     <span class="n">token</span><span class="p">:</span> <span class="n">Template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;/api/token/&quot;</span><span class="p">)</span>
@@ -194,15 +282,33 @@
 
 
 
+<span class="c1"># Type aliases for API endpoints and responses</span>
 <span class="n">CommonEndpoints</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="s2">&quot;detail&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;Type alias for common API endpoint names.&quot;&quot;&quot;</span>
+
 <span class="n">Endpoints</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">[</span><span class="n">CommonEndpoints</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Template</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;Type alias for a dictionary mapping endpoint names to URL templates.&quot;&quot;&quot;</span>
 
 <span class="nb">type</span> <span class="n">ClientResponse</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span>
+<span class="sd">&quot;&quot;&quot;Type alias for API response data structures.&quot;&quot;&quot;</span>
 
 
 <div class="viewcode-block" id="FilteringStrategies">
-<a class="viewcode-back" href="../../api/paperap.models.abstract.html#paperap.const.FilteringStrategies">[docs]</a>
+<a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.FilteringStrategies">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FilteringStrategies</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enumeration of filtering strategies for API queries.</span>
+
+<span class="sd">    These strategies determine how field filtering is applied when querying resources.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        WHITELIST: Only allow filtering on explicitly listed fields.</span>
+<span class="sd">        BLACKLIST: Allow filtering on all fields except those explicitly listed.</span>
+<span class="sd">        ALLOW_ALL: Allow filtering on all fields.</span>
+<span class="sd">        ALLOW_NONE: Disallow filtering on all fields.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">WHITELIST</span> <span class="o">=</span> <span class="s2">&quot;whitelist&quot;</span>
     <span class="n">BLACKLIST</span> <span class="o">=</span> <span class="s2">&quot;blacklist&quot;</span>
     <span class="n">ALLOW_ALL</span> <span class="o">=</span> <span class="s2">&quot;allow_all&quot;</span>
@@ -213,6 +319,20 @@
 <div class="viewcode-block" id="ModelStatus">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.ModelStatus">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ModelStatus</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enumeration of possible model states during lifecycle operations.</span>
+
+<span class="sd">    These states track the current operation being performed on a model instance.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        INITIALIZING: Model is being initialized with data.</span>
+<span class="sd">        UPDATING: Model is being updated with new data.</span>
+<span class="sd">        SAVING: Model is being saved to the server.</span>
+<span class="sd">        READY: Model is ready for use.</span>
+<span class="sd">        ERROR: An error occurred during a model operation.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">INITIALIZING</span> <span class="o">=</span> <span class="s2">&quot;initializing&quot;</span>
     <span class="n">UPDATING</span> <span class="o">=</span> <span class="s2">&quot;updating&quot;</span>
     <span class="n">SAVING</span> <span class="o">=</span> <span class="s2">&quot;saving&quot;</span>
@@ -224,6 +344,24 @@
 <div class="viewcode-block" id="CustomFieldTypes">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.CustomFieldTypes">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CustomFieldTypes</span><span class="p">(</span><span class="n">StrEnumWithUnknown</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enumeration of supported custom field data types in Paperless-ngx.</span>
+
+<span class="sd">    These types determine how custom field values are validated, stored, and displayed.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        STRING: Text string value.</span>
+<span class="sd">        BOOLEAN: Boolean (true/false) value.</span>
+<span class="sd">        INTEGER: Whole number value.</span>
+<span class="sd">        FLOAT: Decimal number value.</span>
+<span class="sd">        MONETARY: Currency value.</span>
+<span class="sd">        DATE: Date value.</span>
+<span class="sd">        URL: Web URL value.</span>
+<span class="sd">        DOCUMENT_LINK: Link to another document.</span>
+<span class="sd">        UNKNOWN: Unknown field type (fallback).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">STRING</span> <span class="o">=</span> <span class="s2">&quot;string&quot;</span>
     <span class="n">BOOLEAN</span> <span class="o">=</span> <span class="s2">&quot;boolean&quot;</span>
     <span class="n">INTEGER</span> <span class="o">=</span> <span class="s2">&quot;integer&quot;</span>
@@ -239,6 +377,16 @@
 <div class="viewcode-block" id="CustomFieldValues">
 <a class="viewcode-back" href="../../api/paperap.models.document.html#paperap.const.CustomFieldValues">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CustomFieldValues</span><span class="p">(</span><span class="n">ConstModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for custom field values associated with a document.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        field: The ID of the custom field.</span>
+<span class="sd">        value: The value of the custom field, which can be of any type</span>
+<span class="sd">            depending on the field&#39;s data_type.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">field</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">value</span><span class="p">:</span> <span class="n">Any</span></div>
 
@@ -247,6 +395,18 @@
 <div class="viewcode-block" id="CustomFieldTypedDict">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.CustomFieldTypedDict">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CustomFieldTypedDict</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TypedDict for custom field values, used for type checking.</span>
+
+<span class="sd">    This provides the same structure as CustomFieldValues but as a TypedDict</span>
+<span class="sd">    for use in function signatures and type annotations.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        field: The ID of the custom field.</span>
+<span class="sd">        value: The value of the custom field.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">field</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">value</span><span class="p">:</span> <span class="n">Any</span></div>
 
@@ -256,6 +416,23 @@
 <div class="viewcode-block" id="DocumentMetadataType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.DocumentMetadataType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DocumentMetadataType</span><span class="p">(</span><span class="n">ConstModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for document metadata extracted from files.</span>
+
+<span class="sd">    This model represents metadata extracted from document files, such as</span>
+<span class="sd">    PDF metadata, EXIF data, or other embedded information.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This class may not be used after refactoring.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        namespace: The metadata namespace (e.g., &quot;pdf&quot;, &quot;exif&quot;).</span>
+<span class="sd">        prefix: The metadata prefix.</span>
+<span class="sd">        key: The metadata key name.</span>
+<span class="sd">        value: The metadata value.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -266,6 +443,20 @@
 <div class="viewcode-block" id="DocumentSearchHitType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.DocumentSearchHitType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DocumentSearchHitType</span><span class="p">(</span><span class="n">ConstModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for search result hits with relevance information.</span>
+
+<span class="sd">    This model represents a document search result with relevance scoring</span>
+<span class="sd">    and highlighted text snippets showing where matches occurred.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        score: The relevance score of the search hit.</span>
+<span class="sd">        highlights: Highlighted text snippets from the document content.</span>
+<span class="sd">        note_highlights: Highlighted text snippets from document notes.</span>
+<span class="sd">        rank: The rank of this result in the overall search results.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">score</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">highlights</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">note_highlights</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -276,6 +467,24 @@
 <div class="viewcode-block" id="MatchingAlgorithmType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.MatchingAlgorithmType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MatchingAlgorithmType</span><span class="p">(</span><span class="n">IntEnumWithUnknown</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enumeration of matching algorithms used for document classification.</span>
+
+<span class="sd">    These algorithms determine how Paperless-ngx matches documents to</span>
+<span class="sd">    correspondents, document types, and tags during automatic classification.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        NONE: No matching (manual assignment only).</span>
+<span class="sd">        ANY: Match if any of the terms are found.</span>
+<span class="sd">        ALL: Match only if all terms are found.</span>
+<span class="sd">        LITERAL: Match the exact string.</span>
+<span class="sd">        REGEX: Match using regular expressions.</span>
+<span class="sd">        FUZZY: Match using fuzzy string matching.</span>
+<span class="sd">        AUTO: Automatically select the best matching algorithm.</span>
+<span class="sd">        UNKNOWN: Unknown algorithm type (fallback).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">NONE</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">ANY</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">ALL</span> <span class="o">=</span> <span class="mi">2</span>
@@ -296,6 +505,18 @@
 <div class="viewcode-block" id="PermissionSetType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.PermissionSetType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PermissionSetType</span><span class="p">(</span><span class="n">ConstModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for a set of user and group permissions.</span>
+
+<span class="sd">    This model represents a collection of users and groups that have</span>
+<span class="sd">    a specific permission on a resource.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        users: List of user IDs with the permission.</span>
+<span class="sd">        groups: List of group IDs with the permission.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">users</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
     <span class="n">groups</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span></div>
 
@@ -304,6 +525,18 @@
 <div class="viewcode-block" id="PermissionTableType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.PermissionTableType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PermissionTableType</span><span class="p">(</span><span class="n">ConstModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for a complete permission table for a resource.</span>
+
+<span class="sd">    This model represents all permissions for a resource, organized by</span>
+<span class="sd">    permission type (view, change).</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        view: The set of users and groups with view permission.</span>
+<span class="sd">        change: The set of users and groups with change permission.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">view</span><span class="p">:</span> <span class="n">PermissionSetType</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">PermissionSetType</span><span class="p">)</span>
     <span class="n">change</span><span class="p">:</span> <span class="n">PermissionSetType</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">PermissionSetType</span><span class="p">)</span></div>
 
@@ -312,6 +545,18 @@
 <div class="viewcode-block" id="RetrieveFileMode">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.RetrieveFileMode">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RetrieveFileMode</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enumeration of file retrieval modes.</span>
+
+<span class="sd">    These modes determine how a document file is retrieved from the server.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        DOWNLOAD: Download the full document file.</span>
+<span class="sd">        PREVIEW: Get a preview version of the document.</span>
+<span class="sd">        THUMBNAIL: Get a thumbnail image of the document.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">DOWNLOAD</span> <span class="o">=</span> <span class="s2">&quot;download&quot;</span>
     <span class="n">PREVIEW</span> <span class="o">=</span> <span class="s2">&quot;preview&quot;</span>
     <span class="n">THUMBNAIL</span> <span class="o">=</span> <span class="s2">&quot;thumb&quot;</span></div>
@@ -321,6 +566,19 @@
 <div class="viewcode-block" id="SavedViewFilterRuleType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.SavedViewFilterRuleType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SavedViewFilterRuleType</span><span class="p">(</span><span class="n">ConstModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for a filter rule in a saved view.</span>
+
+<span class="sd">    This model represents a single filtering rule that is part of a saved view,</span>
+<span class="sd">    specifying how documents should be filtered.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        rule_type: The type of filter rule (corresponds to FilterRuleType enum).</span>
+<span class="sd">        value: The value to filter by.</span>
+<span class="sd">        saved_view: The ID of the saved view this rule belongs to.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">rule_type</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">saved_view</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
@@ -330,6 +588,18 @@
 <div class="viewcode-block" id="ShareLinkFileVersionType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.ShareLinkFileVersionType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ShareLinkFileVersionType</span><span class="p">(</span><span class="n">StrEnumWithUnknown</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enumeration of file versions available for share links.</span>
+
+<span class="sd">    These determine which version of a document is shared via a share link.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        ARCHIVE: The archived version of the document (typically processed PDF).</span>
+<span class="sd">        ORIGINAL: The original uploaded file.</span>
+<span class="sd">        UNKNOWN: Unknown file version type (fallback).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">ARCHIVE</span> <span class="o">=</span> <span class="s2">&quot;archive&quot;</span>
     <span class="n">ORIGINAL</span> <span class="o">=</span> <span class="s2">&quot;original&quot;</span>
     <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="s2">&quot;unknown&quot;</span>
@@ -345,6 +615,18 @@
 <div class="viewcode-block" id="StatusType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.StatusType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StatusType</span><span class="p">(</span><span class="n">StrEnumWithUnknown</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enumeration of general status values for system components.</span>
+
+<span class="sd">    These status values indicate the operational state of various system components.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        OK: The component is functioning normally.</span>
+<span class="sd">        ERROR: The component has encountered an error.</span>
+<span class="sd">        UNKNOWN: The component&#39;s status is unknown (fallback).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">OK</span> <span class="o">=</span> <span class="s2">&quot;OK&quot;</span>
     <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span>
     <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="s2">&quot;UNKNOWN&quot;</span>
@@ -360,6 +642,17 @@
 <div class="viewcode-block" id="StatusDatabaseMigrationStatusType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.StatusDatabaseMigrationStatusType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StatusDatabaseMigrationStatusType</span><span class="p">(</span><span class="n">ConstModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for database migration status information.</span>
+
+<span class="sd">    This model represents the current state of database migrations in the system.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        latest_migration: The name of the most recently applied migration.</span>
+<span class="sd">        unapplied_migrations: List of migration names that have not been applied.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">latest_migration</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">unapplied_migrations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span></div>
 
@@ -368,6 +661,20 @@
 <div class="viewcode-block" id="StatusDatabaseType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.StatusDatabaseType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StatusDatabaseType</span><span class="p">(</span><span class="n">ConstModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for database status information.</span>
+
+<span class="sd">    This model represents the current status of the database system.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        type: The type of database (e.g., &quot;postgresql&quot;, &quot;sqlite&quot;).</span>
+<span class="sd">        url: The database connection URL.</span>
+<span class="sd">        status: The operational status of the database.</span>
+<span class="sd">        error: Error message if the database has encountered an error.</span>
+<span class="sd">        migration_status: Information about database migrations.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">status</span><span class="p">:</span> <span class="n">StatusType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -379,6 +686,17 @@
 <div class="viewcode-block" id="StatusStorageType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.StatusStorageType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StatusStorageType</span><span class="p">(</span><span class="n">ConstModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for storage status information.</span>
+
+<span class="sd">    This model represents the current status of the storage system.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        total: Total storage space in bytes.</span>
+<span class="sd">        available: Available storage space in bytes.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">total</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">available</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
 
@@ -387,6 +705,26 @@
 <div class="viewcode-block" id="StatusTasksType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.StatusTasksType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StatusTasksType</span><span class="p">(</span><span class="n">ConstModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for task system status information.</span>
+
+<span class="sd">    This model represents the current status of the task processing system,</span>
+<span class="sd">    including Redis, Celery, indexing, and classification components.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        redis_url: The Redis connection URL.</span>
+<span class="sd">        redis_status: The operational status of Redis.</span>
+<span class="sd">        redis_error: Error message if Redis has encountered an error.</span>
+<span class="sd">        celery_status: The operational status of Celery.</span>
+<span class="sd">        index_status: The operational status of the document index.</span>
+<span class="sd">        index_last_modified: When the index was last modified.</span>
+<span class="sd">        index_error: Error message if the index has encountered an error.</span>
+<span class="sd">        classifier_status: The operational status of the document classifier.</span>
+<span class="sd">        classifier_last_trained: When the classifier was last trained.</span>
+<span class="sd">        classifier_error: Error message if the classifier has encountered an error.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">redis_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">redis_status</span><span class="p">:</span> <span class="n">StatusType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">redis_error</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -403,6 +741,20 @@
 <div class="viewcode-block" id="TaskStatusType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.TaskStatusType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TaskStatusType</span><span class="p">(</span><span class="n">StrEnumWithUnknown</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enumeration of possible task statuses.</span>
+
+<span class="sd">    These statuses represent the current state of a background task.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        PENDING: Task is waiting to be executed.</span>
+<span class="sd">        STARTED: Task has started execution.</span>
+<span class="sd">        SUCCESS: Task has completed successfully.</span>
+<span class="sd">        FAILURE: Task has failed.</span>
+<span class="sd">        UNKNOWN: Task status is unknown (fallback).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">PENDING</span> <span class="o">=</span> <span class="s2">&quot;PENDING&quot;</span>
     <span class="n">STARTED</span> <span class="o">=</span> <span class="s2">&quot;STARTED&quot;</span>
     <span class="n">SUCCESS</span> <span class="o">=</span> <span class="s2">&quot;SUCCESS&quot;</span>
@@ -414,6 +766,19 @@
 <div class="viewcode-block" id="TaskTypeType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.TaskTypeType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TaskTypeType</span><span class="p">(</span><span class="n">StrEnumWithUnknown</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enumeration of task types.</span>
+
+<span class="sd">    These types categorize tasks based on how they were initiated.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        AUTO: Task was automatically triggered by the system.</span>
+<span class="sd">        SCHEDULED_TASK: Task was scheduled to run at a specific time.</span>
+<span class="sd">        MANUAL_TASK: Task was manually triggered by a user.</span>
+<span class="sd">        UNKNOWN: Task type is unknown (fallback).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">AUTO</span> <span class="o">=</span> <span class="s2">&quot;auto_task&quot;</span>
     <span class="n">SCHEDULED_TASK</span> <span class="o">=</span> <span class="s2">&quot;scheduled_task&quot;</span>
     <span class="n">MANUAL_TASK</span> <span class="o">=</span> <span class="s2">&quot;manual_task&quot;</span>
@@ -424,6 +789,20 @@
 <div class="viewcode-block" id="WorkflowActionType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.WorkflowActionType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WorkflowActionType</span><span class="p">(</span><span class="n">IntEnumWithUnknown</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enumeration of workflow action types.</span>
+
+<span class="sd">    These types define what actions can be performed by a workflow.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        ASSIGNMENT: Assign a value to a document field.</span>
+<span class="sd">        REMOVAL: Remove a value from a document field.</span>
+<span class="sd">        EMAIL: Send an email notification.</span>
+<span class="sd">        WEBHOOK: Trigger a webhook.</span>
+<span class="sd">        UNKNOWN: Unknown action type (fallback).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">ASSIGNMENT</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">REMOVAL</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">EMAIL</span> <span class="o">=</span> <span class="mi">3</span>
@@ -435,6 +814,19 @@
 <div class="viewcode-block" id="WorkflowTriggerType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.WorkflowTriggerType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WorkflowTriggerType</span><span class="p">(</span><span class="n">IntEnumWithUnknown</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enumeration of workflow trigger types.</span>
+
+<span class="sd">    These types define what events can trigger a workflow.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        CONSUMPTION: Triggered when a document is consumed (processed).</span>
+<span class="sd">        DOCUMENT_ADDED: Triggered when a document is added to the system.</span>
+<span class="sd">        DOCUMENT_UPDATED: Triggered when a document is updated.</span>
+<span class="sd">        UNKNOWN: Unknown trigger type (fallback).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">CONSUMPTION</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">DOCUMENT_ADDED</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">DOCUMENT_UPDATED</span> <span class="o">=</span> <span class="mi">3</span>
@@ -445,6 +837,19 @@
 <div class="viewcode-block" id="WorkflowTriggerSourceType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.WorkflowTriggerSourceType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WorkflowTriggerSourceType</span><span class="p">(</span><span class="n">IntEnumWithUnknown</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enumeration of workflow trigger source types.</span>
+
+<span class="sd">    These types define the source of documents that can trigger a workflow.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        CONSUME_FOLDER: Documents from the consumption folder.</span>
+<span class="sd">        API_UPLOAD: Documents uploaded via the API.</span>
+<span class="sd">        MAIL_FETCH: Documents fetched from email.</span>
+<span class="sd">        UNKNOWN: Unknown source type (fallback).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">CONSUME_FOLDER</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">API_UPLOAD</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">MAIL_FETCH</span> <span class="o">=</span> <span class="mi">3</span>
@@ -455,6 +860,22 @@
 <div class="viewcode-block" id="WorkflowTriggerMatchingType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.WorkflowTriggerMatchingType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WorkflowTriggerMatchingType</span><span class="p">(</span><span class="n">IntEnumWithUnknown</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enumeration of workflow trigger matching algorithms.</span>
+
+<span class="sd">    These algorithms determine how workflow triggers match documents.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        NONE: No matching (triggers for all documents).</span>
+<span class="sd">        ANY: Match if any of the terms are found.</span>
+<span class="sd">        ALL: Match only if all terms are found.</span>
+<span class="sd">        LITERAL: Match the exact string.</span>
+<span class="sd">        REGEX: Match using regular expressions.</span>
+<span class="sd">        FUZZY: Match using fuzzy string matching.</span>
+<span class="sd">        UNKNOWN: Unknown matching type (fallback).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">NONE</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">ANY</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">ALL</span> <span class="o">=</span> <span class="mi">2</span>
@@ -468,6 +889,20 @@
 <div class="viewcode-block" id="ScheduleDateFieldType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.ScheduleDateFieldType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ScheduleDateFieldType</span><span class="p">(</span><span class="n">StrEnumWithUnknown</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enumeration of date fields that can be used for scheduling.</span>
+
+<span class="sd">    These fields determine which document date is used for scheduling operations.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        ADDED: The date the document was added to the system.</span>
+<span class="sd">        CREATED: The date the document was created.</span>
+<span class="sd">        MODIFIED: The date the document was last modified.</span>
+<span class="sd">        CUSTOM_FIELD: A custom date field.</span>
+<span class="sd">        UNKNOWN: Unknown date field type (fallback).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">ADDED</span> <span class="o">=</span> <span class="s2">&quot;added&quot;</span>
     <span class="n">CREATED</span> <span class="o">=</span> <span class="s2">&quot;created&quot;</span>
     <span class="n">MODIFIED</span> <span class="o">=</span> <span class="s2">&quot;modified&quot;</span>
@@ -479,6 +914,21 @@
 <div class="viewcode-block" id="WorkflowTriggerScheduleDateFieldType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.WorkflowTriggerScheduleDateFieldType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WorkflowTriggerScheduleDateFieldType</span><span class="p">(</span><span class="n">StrEnumWithUnknown</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enumeration of date fields that can trigger scheduled workflows.</span>
+
+<span class="sd">    These fields determine which document date is used for triggering</span>
+<span class="sd">    scheduled workflows.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        ADDED: The date the document was added to the system.</span>
+<span class="sd">        CREATED: The date the document was created.</span>
+<span class="sd">        MODIFIED: The date the document was last modified.</span>
+<span class="sd">        CUSTOM_FIELD: A custom date field.</span>
+<span class="sd">        UNKNOWN: Unknown date field type (fallback).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">ADDED</span> <span class="o">=</span> <span class="s2">&quot;added&quot;</span>
     <span class="n">CREATED</span> <span class="o">=</span> <span class="s2">&quot;created&quot;</span>
     <span class="n">MODIFIED</span> <span class="o">=</span> <span class="s2">&quot;modified&quot;</span>
@@ -490,6 +940,19 @@
 <div class="viewcode-block" id="SavedViewDisplayModeType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.SavedViewDisplayModeType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SavedViewDisplayModeType</span><span class="p">(</span><span class="n">StrEnumWithUnknown</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enumeration of display modes for saved views.</span>
+
+<span class="sd">    These modes determine how documents are displayed in a saved view.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        TABLE: Display documents in a table format.</span>
+<span class="sd">        SMALL_CARDS: Display documents as small cards.</span>
+<span class="sd">        LARGE_CARDS: Display documents as large cards.</span>
+<span class="sd">        UNKNOWN: Unknown display mode (fallback).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">TABLE</span> <span class="o">=</span> <span class="s2">&quot;table&quot;</span>
     <span class="n">SMALL_CARDS</span> <span class="o">=</span> <span class="s2">&quot;smallCards&quot;</span>
     <span class="n">LARGE_CARDS</span> <span class="o">=</span> <span class="s2">&quot;largeCards&quot;</span>
@@ -500,6 +963,29 @@
 <div class="viewcode-block" id="SavedViewDisplayFieldType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.SavedViewDisplayFieldType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SavedViewDisplayFieldType</span><span class="p">(</span><span class="n">StrEnumWithUnknown</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enumeration of field types that can be displayed in saved views.</span>
+
+<span class="sd">    These fields determine which document attributes are displayed in a saved view.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        TITLE: Document title.</span>
+<span class="sd">        CREATED: Document creation date.</span>
+<span class="sd">        ADDED: Date the document was added to the system.</span>
+<span class="sd">        TAGS: Document tags.</span>
+<span class="sd">        CORRESPONDENT: Document correspondent.</span>
+<span class="sd">        DOCUMENT_TYPE: Document type.</span>
+<span class="sd">        STORAGE_PATH: Document storage path.</span>
+<span class="sd">        NOTES: Document notes.</span>
+<span class="sd">        OWNER: Document owner.</span>
+<span class="sd">        SHARED: Whether the document is shared.</span>
+<span class="sd">        ASN: Document archive serial number.</span>
+<span class="sd">        PAGE_COUNT: Number of pages in the document.</span>
+<span class="sd">        CUSTOM_FIELD: Custom field (format string with field ID).</span>
+<span class="sd">        UNKNOWN: Unknown field type (fallback).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">TITLE</span> <span class="o">=</span> <span class="s2">&quot;title&quot;</span>
     <span class="n">CREATED</span> <span class="o">=</span> <span class="s2">&quot;created&quot;</span>
     <span class="n">ADDED</span> <span class="o">=</span> <span class="s2">&quot;added&quot;</span>
@@ -520,6 +1006,18 @@
 <div class="viewcode-block" id="DocumentStorageType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.DocumentStorageType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DocumentStorageType</span><span class="p">(</span><span class="n">StrEnumWithUnknown</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enumeration of document storage encryption types.</span>
+
+<span class="sd">    These types determine how documents are encrypted in storage.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        UNENCRYPTED: Documents are stored without encryption.</span>
+<span class="sd">        GPG: Documents are encrypted using GPG.</span>
+<span class="sd">        UNKNOWN: Unknown storage type (fallback).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">UNENCRYPTED</span> <span class="o">=</span> <span class="s2">&quot;unencrypted&quot;</span>
     <span class="n">GPG</span> <span class="o">=</span> <span class="s2">&quot;gpg&quot;</span>
     <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="s2">&quot;unknown&quot;</span></div>
@@ -529,6 +1027,20 @@
 <div class="viewcode-block" id="TaskNameType">
 <a class="viewcode-back" href="../../api/paperap.const.html#paperap.const.TaskNameType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TaskNameType</span><span class="p">(</span><span class="n">StrEnumWithUnknown</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enumeration of background task names.</span>
+
+<span class="sd">    These names identify specific background tasks in the system.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        CONSUME_FILE: Task for consuming and processing a document file.</span>
+<span class="sd">        TRAIN_CLASSIFIER: Task for training the document classifier.</span>
+<span class="sd">        CHECK_SANITY: Task for checking system sanity/integrity.</span>
+<span class="sd">        INDEX_OPTIMIZE: Task for optimizing the document index.</span>
+<span class="sd">        UNKNOWN: Unknown task name (fallback).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">CONSUME_FILE</span> <span class="o">=</span> <span class="s2">&quot;consume_file&quot;</span>
     <span class="n">TRAIN_CLASSIFIER</span> <span class="o">=</span> <span class="s2">&quot;train_classifier&quot;</span>
     <span class="n">CHECK_SANITY</span> <span class="o">=</span> <span class="s2">&quot;check_sanity&quot;</span>

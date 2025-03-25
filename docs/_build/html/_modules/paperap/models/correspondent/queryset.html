@@ -45,7 +45,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to Paperap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
 </ul>
 
         </div>
@@ -74,24 +76,12 @@
              
   <h1>Source code for paperap.models.correspondent.queryset</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">----------------------------------------------------------------------------</span>
+<span class="sd">Provide queryset functionality for Paperless-ngx correspondents.</span>
 
-<span class="sd">   METADATA:</span>
-
-<span class="sd">       File:    queryset.py</span>
-<span class="sd">        Project: paperap</span>
-<span class="sd">       Created: 2025-03-04</span>
-<span class="sd">        Version: 0.0.10</span>
-<span class="sd">       Author:  Jess Mann</span>
-<span class="sd">       Email:   jess@jmann.me</span>
-<span class="sd">        Copyright (c) 2025 Jess Mann</span>
-
-<span class="sd">----------------------------------------------------------------------------</span>
-
-<span class="sd">   LAST MODIFIED:</span>
-
-<span class="sd">       2025-03-04     By Jess Mann</span>
-
+<span class="sd">This module implements the CorrespondentQuerySet class, which enables</span>
+<span class="sd">filtering and querying correspondent objects from the Paperless-ngx API.</span>
+<span class="sd">It extends the standard queryset functionality with correspondent-specific</span>
+<span class="sd">filtering methods.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -100,7 +90,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Self</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.mixins.queryset</span><span class="w"> </span><span class="kn">import</span> <span class="n">HasDocumentCount</span><span class="p">,</span> <span class="n">HasOwner</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.abstract.queryset</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseQuerySet</span><span class="p">,</span> <span class="n">StandardQuerySet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.abstract.queryset</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseQuerySet</span><span class="p">,</span> <span class="n">StandardQuerySet</span><span class="p">,</span> <span class="n">SupportsBulkActions</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">paperap.models.correspondent.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Correspondent</span>
@@ -110,9 +100,27 @@
 
 <div class="viewcode-block" id="CorrespondentQuerySet">
 <a class="viewcode-back" href="../../../../modules/models.html#paperap.models.CorrespondentQuerySet">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">CorrespondentQuerySet</span><span class="p">(</span><span class="n">StandardQuerySet</span><span class="p">[</span><span class="s2">&quot;Correspondent&quot;</span><span class="p">],</span> <span class="n">HasOwner</span><span class="p">,</span> <span class="n">HasDocumentCount</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CorrespondentQuerySet</span><span class="p">(</span><span class="n">StandardQuerySet</span><span class="p">[</span><span class="s2">&quot;Correspondent&quot;</span><span class="p">],</span> <span class="n">HasOwner</span><span class="p">,</span> <span class="n">HasDocumentCount</span><span class="p">,</span> <span class="n">SupportsBulkActions</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    QuerySet for Paperless-ngx correspondents with specialized filtering methods.</span>
+
+<span class="sd">    Extends StandardQuerySet to provide correspondent-specific filtering</span>
+<span class="sd">    capabilities, including filtering by name, matching algorithm, and other</span>
+<span class="sd">    correspondent attributes.</span>
+
+<span class="sd">    Inherits document counting capabilities from HasDocumentCount</span>
+<span class="sd">    and owner-related filtering from HasOwner.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Get all correspondents:</span>
+<span class="sd">            &gt;&gt;&gt; correspondents = client.correspondents()</span>
+
+<span class="sd">        Filter by name:</span>
+<span class="sd">            &gt;&gt;&gt; electric = client.correspondents().name(&quot;Electric Company&quot;)</span>
+
+<span class="sd">        Find correspondents with case-insensitive matching:</span>
+<span class="sd">            &gt;&gt;&gt; insensitive = client.correspondents().case_insensitive(True)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="CorrespondentQuerySet.name">
@@ -122,11 +130,19 @@
 <span class="sd">        Filter correspondents by name.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            name: The correspondent name to filter by</span>
-<span class="sd">            exact: If True, match the exact name, otherwise use contains</span>
+<span class="sd">            value: The correspondent name to filter by.</span>
+<span class="sd">            exact: If True, match the exact name, otherwise use contains.</span>
+<span class="sd">            case_insensitive: If True, ignore case when matching.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered CorrespondentQuerySet</span>
+<span class="sd">            Filtered CorrespondentQuerySet.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find correspondents with exact name:</span>
+<span class="sd">                &gt;&gt;&gt; exact_match = client.correspondents().name(&quot;Electric Company&quot;)</span>
+
+<span class="sd">            Find correspondents with name containing &quot;electric&quot;:</span>
+<span class="sd">                &gt;&gt;&gt; contains = client.correspondents().name(&quot;electric&quot;, exact=False)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="o">=</span><span class="n">case_insensitive</span><span class="p">)</span></div>
@@ -138,11 +154,21 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter correspondents by their matching algorithm.</span>
 
+<span class="sd">        Paperless-ngx supports different algorithms for matching documents to</span>
+<span class="sd">        correspondents. This method filters correspondents by the algorithm they use.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: The matching algorithm ID to filter by</span>
+<span class="sd">            value: The matching algorithm ID to filter by.</span>
+<span class="sd">                Common values include:</span>
+<span class="sd">                1: Any word</span>
+<span class="sd">                2: All words</span>
+<span class="sd">                3: Exact match</span>
+<span class="sd">                4: Regular expression</span>
+<span class="sd">                5: Fuzzy match</span>
+<span class="sd">                6: Auto</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered CorrespondentQuerySet</span>
+<span class="sd">            Filtered CorrespondentQuerySet.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">matching_algorithm</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
@@ -152,14 +178,22 @@
 <a class="viewcode-back" href="../../../../modules/models.html#paperap.models.CorrespondentQuerySet.match">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Filter correspondents by match.</span>
+<span class="sd">        Filter correspondents by their match pattern.</span>
+
+<span class="sd">        The match pattern is the text pattern used by Paperless-ngx to automatically</span>
+<span class="sd">        assign documents to this correspondent.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            match: The match to filter by</span>
-<span class="sd">            exact: If True, match the exact match, otherwise use contains</span>
+<span class="sd">            match: The match pattern to filter by.</span>
+<span class="sd">            exact: If True, match the exact pattern, otherwise use contains.</span>
+<span class="sd">            case_insensitive: If True, ignore case when matching.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered CorrespondentQuerySet</span>
+<span class="sd">            Filtered CorrespondentQuerySet.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find correspondents with match pattern containing &quot;invoice&quot;:</span>
+<span class="sd">                &gt;&gt;&gt; invoice_matchers = client.correspondents().match(&quot;invoice&quot;, exact=False)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s2">&quot;match&quot;</span><span class="p">,</span> <span class="n">match</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="o">=</span><span class="n">case_insensitive</span><span class="p">)</span></div>
@@ -171,11 +205,15 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter correspondents by case sensitivity setting.</span>
 
+<span class="sd">        Paperless-ngx allows correspondents to have case-sensitive or case-insensitive</span>
+<span class="sd">        matching. This method filters correspondents based on that setting.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            insensitive: If True, get correspondents with case insensitive matching</span>
+<span class="sd">            insensitive: If True, get correspondents with case-insensitive matching.</span>
+<span class="sd">                If False, get correspondents with case-sensitive matching.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered CorrespondentQuerySet</span>
+<span class="sd">            Filtered CorrespondentQuerySet.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_insensitive</span><span class="o">=</span><span class="n">insensitive</span><span class="p">)</span></div>
@@ -187,11 +225,16 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter correspondents by user change permission.</span>
 
+<span class="sd">        In Paperless-ngx, some correspondents may be restricted from modification</span>
+<span class="sd">        by certain users based on permissions. This method filters correspondents</span>
+<span class="sd">        based on whether the current user can change them.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: If True, get correspondents that can be changed by user</span>
+<span class="sd">            value: If True, get correspondents that can be changed by the current user.</span>
+<span class="sd">                If False, get correspondents that cannot be changed by the current user.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered CorrespondentQuerySet</span>
+<span class="sd">            Filtered CorrespondentQuerySet.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user_can_change</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
@@ -203,13 +246,21 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter correspondents by slug.</span>
 
+<span class="sd">        Slugs are URL-friendly versions of the correspondent name used in the</span>
+<span class="sd">        Paperless-ngx web interface and API. This method filters correspondents</span>
+<span class="sd">        based on their slug value.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            value: The slug to filter by</span>
-<span class="sd">            exact: If True, match the exact slug, otherwise use contains</span>
-<span class="sd">            case_insensitive: If True, ignore case when matching</span>
+<span class="sd">            value: The slug to filter by.</span>
+<span class="sd">            exact: If True, match the exact slug, otherwise use contains.</span>
+<span class="sd">            case_insensitive: If True, ignore case when matching.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Filtered CorrespondentQuerySet</span>
+<span class="sd">            Filtered CorrespondentQuerySet.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Find correspondent with slug &quot;electric-company&quot;:</span>
+<span class="sd">                &gt;&gt;&gt; electric = client.correspondents().slug(&quot;electric-company&quot;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_field_by_str</span><span class="p">(</span><span class="s2">&quot;slug&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span> <span class="n">case_insensitive</span><span class="o">=</span><span class="n">case_insensitive</span><span class="p">)</span></div>
