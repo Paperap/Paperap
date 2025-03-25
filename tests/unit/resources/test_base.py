@@ -28,7 +28,7 @@ from paperap.signals import SignalRegistry, registry
 from tests.lib import UnitTestCase
 
 
-class TestModel(BaseModel):
+class ExampleModel(BaseModel):
     """Test model for BaseResource tests."""
 
     name: str
@@ -44,7 +44,7 @@ class TestModel(BaseModel):
         field_map = {"api_name": "name"}
 
 
-class TestStandardModel(StandardModel):
+class ExampleStandardModel(StandardModel):
     """Test model for StandardResource tests."""
 
     name: str
@@ -57,13 +57,13 @@ class TestStandardModel(StandardModel):
         field_map = {"api_name": "name"}
 
 
-class TestQuerySet(BaseQuerySet[TestModel]):
+class ExampleQuerySet(BaseQuerySet[ExampleModel]):
     """Test queryset for BaseResource tests."""
 
     pass
 
 
-class TestStandardQuerySet(StandardQuerySet[TestStandardModel]):
+class ExampleStandardQuerySet(StandardQuerySet[ExampleStandardModel]):
     """Test queryset for StandardResource tests."""
 
     pass
@@ -84,9 +84,9 @@ class TestBaseResource(UnitTestCase):
         self.mock_client = MagicMock(spec=PaperlessClient)
 
         # Create a concrete subclass of BaseResource for testing
-        class ConcreteBaseResource(BaseResource[TestModel, TestQuerySet]):
-            model_class = TestModel
-            queryset_class = TestQuerySet
+        class ConcreteBaseResource(BaseResource[ExampleModel, ExampleQuerySet]):
+            model_class = ExampleModel
+            queryset_class = ExampleQuerySet
             endpoints = {
                 "list": Template("${resource}/"),
                 "create": Template("${resource}/"),
@@ -125,16 +125,16 @@ class TestBaseResource(UnitTestCase):
 
         # Test invalid endpoints
         with self.assertRaises(ModelValidationError):
-            class InvalidEndpointsResource(BaseResource[TestModel, TestQuerySet]):
-                model_class = TestModel
-                queryset_class = TestQuerySet
+            class InvalidEndpointsResource(BaseResource[ExampleModel, ExampleQuerySet]):
+                model_class = ExampleModel
+                queryset_class = ExampleQuerySet
                 endpoints = "not_a_dict"  # type: ignore
 
         # Test invalid endpoint value
         with self.assertRaises(ModelValidationError):
-            class InvalidEndpointValueResource(BaseResource[TestModel, TestQuerySet]):
-                model_class = TestModel
-                queryset_class = TestQuerySet
+            class InvalidEndpointValueResource(BaseResource[ExampleModel, ExampleQuerySet]):
+                model_class = ExampleModel
+                queryset_class = ExampleQuerySet
                 endpoints = {"list": 123}  # type: ignore
 
     def test_get_endpoint(self) -> None:
@@ -163,7 +163,7 @@ class TestBaseResource(UnitTestCase):
         Written By claude
         """
         queryset = self.resource.all()
-        self.assertIsInstance(queryset, TestQuerySet)
+        self.assertIsInstance(queryset, ExampleQuerySet)
         self.assertEqual(queryset.resource, self.resource)
 
     def test_filter(self) -> None:
@@ -172,7 +172,7 @@ class TestBaseResource(UnitTestCase):
 
         Written By claude
         """
-        with patch.object(TestQuerySet, 'filter') as mock_filter:
+        with patch.object(ExampleQuerySet, 'filter') as mock_filter:
             mock_filter.return_value = "filtered_queryset"
             result = self.resource.filter(name="test")
             mock_filter.assert_called_once_with(name="test")
@@ -206,7 +206,7 @@ class TestBaseResource(UnitTestCase):
         self.mock_client.request.assert_called_once_with("POST", "tests/", data={"name": "test", "value": 42})
 
         # Verify model was created correctly
-        self.assertIsInstance(model, TestModel)
+        self.assertIsInstance(model, ExampleModel)
         self.assertEqual(model.name, "test")
         self.assertEqual(model.value, 42)
 
@@ -227,7 +227,7 @@ class TestBaseResource(UnitTestCase):
 
         Written By claude
         """
-        model = TestModel(name="test")
+        model = ExampleModel(name="test")
         with self.assertRaises(NotImplementedError):
             self.resource.update(model)
 
@@ -257,7 +257,7 @@ class TestBaseResource(UnitTestCase):
         """
         # Test with valid data
         model = self.resource.parse_to_model({"name": "test", "value": 42})
-        self.assertIsInstance(model, TestModel)
+        self.assertIsInstance(model, ExampleModel)
         self.assertEqual(model.name, "test")
         self.assertEqual(model.value, 42)
 
@@ -287,7 +287,7 @@ class TestBaseResource(UnitTestCase):
         Written By claude
         """
         # Test with model
-        model = TestModel(name="test", value=42)
+        model = ExampleModel(name="test", value=42)
         data = self.resource.transform_data_output(model)
         self.assertEqual(data, {"api_name": "test", "value": 42})
 
@@ -306,7 +306,7 @@ class TestBaseResource(UnitTestCase):
         Written By claude
         """
         model = self.resource.create_model(name="test", value=42)
-        self.assertIsInstance(model, TestModel)
+        self.assertIsInstance(model, ExampleModel)
         self.assertEqual(model.name, "test")
         self.assertEqual(model.value, 42)
         self.assertEqual(model._resource, self.resource)  # type: ignore
@@ -350,20 +350,20 @@ class TestBaseResource(UnitTestCase):
         # Test with results list
         results = list(self.resource.handle_dict_response(results=[{"name": "test1"}, {"name": "test2"}]))
         self.assertEqual(len(results), 2)
-        self.assertIsInstance(results[0], TestModel)
+        self.assertIsInstance(results[0], ExampleModel)
         self.assertEqual(results[0].name, "test1")
         self.assertEqual(results[1].name, "test2")
 
         # Test with single result dict
         results = list(self.resource.handle_dict_response(results={"name": "test"}))
         self.assertEqual(len(results), 1)
-        self.assertIsInstance(results[0], TestModel)
+        self.assertIsInstance(results[0], ExampleModel)
         self.assertEqual(results[0].name, "test")
 
         # Test with results in top-level response
         results = list(self.resource.handle_dict_response(name="test"))
         self.assertEqual(len(results), 1)
-        self.assertIsInstance(results[0], TestModel)
+        self.assertIsInstance(results[0], ExampleModel)
         self.assertEqual(results[0].name, "test")
 
         # Test with invalid results type
@@ -379,7 +379,7 @@ class TestBaseResource(UnitTestCase):
         # Test with valid results
         results = list(self.resource.handle_results([{"name": "test1"}, {"name": "test2"}]))
         self.assertEqual(len(results), 2)
-        self.assertIsInstance(results[0], TestModel)
+        self.assertIsInstance(results[0], ExampleModel)
         self.assertEqual(results[0].name, "test1")
         self.assertEqual(results[1].name, "test2")
 
@@ -419,9 +419,9 @@ class TestStandardResource(UnitTestCase):
         self.mock_client = MagicMock(spec=PaperlessClient)
 
         # Create a concrete subclass of StandardResource for testing
-        class ConcreteStandardResource(StandardResource[TestStandardModel, TestStandardQuerySet]):
-            model_class = TestStandardModel
-            queryset_class = TestStandardQuerySet
+        class ConcreteStandardResource(StandardResource[ExampleStandardModel, ExampleStandardQuerySet]):
+            model_class = ExampleStandardModel
+            queryset_class = ExampleStandardQuerySet
             endpoints = {
                 "list": Template("${resource}/"),
                 "detail": Template("${resource}/${pk}/"),
@@ -457,7 +457,7 @@ class TestStandardResource(UnitTestCase):
         self.mock_client.request.assert_called_once_with("GET", "tests/1/")
 
         # Verify model was created correctly
-        self.assertIsInstance(model, TestStandardModel)
+        self.assertIsInstance(model, ExampleStandardModel)
         self.assertEqual(model.id, 1)
         self.assertEqual(model.name, "test")
         self.assertEqual(model.value, 42)
@@ -485,10 +485,10 @@ class TestStandardResource(UnitTestCase):
         Written By claude
         """
         # Create a model to update
-        model = TestStandardModel(id=1, name="test", value=42)
+        model = ExampleStandardModel(id=1, name="test", value=42)
 
         # Mock update_dict to return an updated model
-        updated_model = TestStandardModel(id=1, name="updated", value=43)
+        updated_model = ExampleStandardModel(id=1, name="updated", value=43)
         with patch.object(self.resource, 'update_dict', return_value=updated_model) as mock_update_dict:
             # Test update method
             result = self.resource.update(model)
@@ -518,7 +518,7 @@ class TestStandardResource(UnitTestCase):
         self.resource.get_endpoint.return_value = "tests/2/"
 
         # Test delete with model
-        model = TestStandardModel(id=2, name="test")
+        model = ExampleStandardModel(id=2, name="test")
         self.resource.delete(model)
         self.mock_client.request.assert_called_once_with("DELETE", "tests/2/")
 
@@ -550,7 +550,7 @@ class TestStandardResource(UnitTestCase):
         self.mock_client.request.assert_called_once_with("PUT", "tests/1/", data={"name": "updated", "value": 43})
 
         # Verify model was updated correctly
-        self.assertIsInstance(model, TestStandardModel)
+        self.assertIsInstance(model, ExampleStandardModel)
         self.assertEqual(model.id, 1)
         self.assertEqual(model.name, "updated")
         self.assertEqual(model.value, 43)

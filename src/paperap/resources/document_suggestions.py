@@ -55,6 +55,7 @@ class DocumentSuggestionsResource(StandardResource[DocumentSuggestions, Document
 
     """
 
+    model_class = DocumentSuggestions
     queryset_class = DocumentSuggestionsQuerySet
     name: str = "document_suggestions"
     endpoints = {
