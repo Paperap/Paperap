@@ -8,6 +8,7 @@ allow documents to be accessed without authentication for a limited time.
 Classes:
     ShareLinksResource: Resource for managing share links operations.
 """
+
 from __future__ import annotations
 from paperap.models.share_links import ShareLinks, ShareLinksQuerySet
 from paperap.resources.base import StandardResource

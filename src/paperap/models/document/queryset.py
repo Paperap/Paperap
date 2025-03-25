@@ -1148,7 +1148,6 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return [doc.id for doc in self]
 
-    @override
     def delete(self) -> ClientResponse:
         """
         Delete all documents in the current queryset.
