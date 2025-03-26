@@ -227,8 +227,11 @@ class TestDescribePhotos(DocumentUnitTest):
         mock_page.get_images.return_value = [("xref1", 0, 0, 0, 0, 0, 0)]
         mock_pdf.extract_image.side_effect = Exception("Extraction error")
 
-        with self.assertRaises(DocumentParsingError):
-            self.describe.extract_images_from_pdf(b"pdf_data")
+        with self.assertLogs(level='ERROR') as log:
+            with self.assertRaises(DocumentParsingError):
+                self.describe.extract_images_from_pdf(b"pdf_data")
+            self.assertIn("Failed to extract one image from page 1 of PDF", log.output[0])
+            self.assertIn("extract_images_from_pdf: Error extracting image from PDF: Extraction error", log.output[1])
 
     @patch("paperap.scripts.describe.fitz.open")
     def test_extract_images_from_pdf_max_images(self, mock_fitz_open):
@@ -468,8 +471,9 @@ class TestDescribePhotos(DocumentUnitTest):
         self.describe._enrichment_service = mock_service
 
         # The method should catch the exception and return None
-        result = self.describe._send_describe_request(b"image_data", self.model)
-        self.assertIsNone(result)
+        with self.assertLogs(level='INFO'):
+            result = self.describe._send_describe_request(b"image_data", self.model)
+            self.assertIsNone(result)
 
     @patch("paperap.scripts.describe.Image.open")
     def test_convert_image_to_jpg_success(self, mock_image_open):
@@ -495,8 +499,10 @@ class TestDescribePhotos(DocumentUnitTest):
         # Mock image open error
         mock_image_open.side_effect = Exception("Image open error")
 
-        with self.assertRaises(Exception):
-            self.describe.convert_image_to_jpg(b"image_data")
+        with self.assertLogs(level='ERROR') as log:
+            with self.assertRaises(Exception):
+                self.describe.convert_image_to_jpg(b"image_data")
+            self.assertIn("Failed to convert image to JPEG: Image open error", log.output[0])
 
     def test_describe_document_success(self):
         """Test describe_document with successful description."""
@@ -536,9 +542,10 @@ class TestDescribePhotos(DocumentUnitTest):
             original_filename="test.jpg"
         )
 
-        result = self.describe.describe_document(document)
-
-        self.assertFalse(result)
+        with self.assertLogs(level='ERROR') as log:
+            result = self.describe.describe_document(document)
+            self.assertFalse(result)
+            self.assertIn("Failed to describe document 123: Document has no content", log.output[0])
 
     def test_describe_document_unsupported_format(self):
         """Test describe_document with unsupported format."""
@@ -549,9 +556,10 @@ class TestDescribePhotos(DocumentUnitTest):
             original_filename="test.txt"
         )
 
-        result = self.describe.describe_document(document)
-
-        self.assertFalse(result)
+        with self.assertLogs(level='ERROR') as log:
+            result = self.describe.describe_document(document)
+            self.assertFalse(result)
+            self.assertIn("Failed to describe document 123: Unsupported file format for vision: test.txt", log.output[0])
 
     @patch("paperap.services.enrichment.service.DocumentEnrichmentService.process_document")
     def test_describe_document_empty_response(self, mock_process):
@@ -563,9 +571,10 @@ class TestDescribePhotos(DocumentUnitTest):
         mock_result.document = self.model
         mock_process.return_value = mock_result
 
-        result = self.describe.describe_document(self.model)
-
-        self.assertFalse(result)
+        with self.assertLogs(level='ERROR') as log:
+            result = self.describe.describe_document(self.model)
+            self.assertFalse(result)
+            self.assertIn("Failed to describe document 1: Empty response", log.output[0])
 
     @patch("paperap.scripts.describe.DescribePhotos.describe_document")
     def test_describe_document_no_images_error(self, mock_describe_document):
@@ -621,9 +630,11 @@ class TestDescribePhotos(DocumentUnitTest):
         # Invalid JSON response
         response = "Invalid JSON"
 
-        result = self.describe.process_response(response, document)
-
-        self.assertEqual(result, document)
+        with self.assertLogs(level='ERROR') as log:
+            result = self.describe.process_response(response, document)
+            self.assertEqual(result, document)
+            self.assertIn("Failed to parse response as JSON", log.output[0])
+        
         # The actual implementation logs the error but doesn't append content for invalid JSON
         mock_append_content.assert_not_called()
 
@@ -631,15 +642,17 @@ class TestDescribePhotos(DocumentUnitTest):
     def test_process_response_non_dict_json(self, mock_append_content):
         """Test process_response with non-dict JSON response."""
         # Create a document for this test
-        document = self.bake_model(id=123)
+        document = self.bake_model(id=123, original_filename="apply.ods")
 
         # Non-dict JSON response
         response = json.dumps(["item1", "item2"])
 
         # The actual implementation appends the raw response, so we need to check for that
-        result = self.describe.process_response(response, document)
-
-        self.assertEqual(result, document)
+        with self.assertLogs(level='WARNING') as log:
+            result = self.describe.process_response(response, document)
+            self.assertEqual(result, document)
+            self.assertIn("Parsed response not a dictionary. Saving response raw to document.content. Document #123", log.output[0])
+        
         # Check that append_content was called with the raw response
         mock_append_content.assert_called_once_with(response)
 

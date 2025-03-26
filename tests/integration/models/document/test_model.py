@@ -195,9 +195,12 @@ class TestUpload(IntegrationTest):
             retrieved_document = self.client.documents().get(document.id)
             self.assertEqual(document, retrieved_document)
 
-            # Upload duplicate
-            with self.assertRaises(APIError):
-                self.resource.upload_sync(filepath)
+            # Upload duplicate - should produce log message about duplicate
+            with self.assertLogs(level='WARNING') as log:
+                with self.assertRaises(APIError):
+                    self.resource.upload_sync(filepath)
+                # Verify the duplicate file error was logged
+                self.assertTrue(any("Not consuming" in entry and "duplicate" in entry for entry in log.output))
 
             # Still there
             second_retrieved_document = self.client.documents().get(document.id)
@@ -406,16 +409,20 @@ class TestSaveNone(IntegrationTest):
 
     def test_set_fields_to_none(self):
         # field_name -> expected value after being set to None
-        for field, value in self.none_data.items():
-            #with self.subTest(field=field):
-                setattr(self.model, field, None)
-                self.assertEqual(value, getattr(self.model, field), f"{field} not updated in local instance")
-                self.model.save()
-                self.assertEqual(value, getattr(self.model, field), f"{field} not updated after save")
+        with self.assertLogs(level='INFO') as log:
+            for field, value in self.none_data.items():
+                #with self.subTest(field=field):
+                    setattr(self.model, field, None)
+                    self.assertEqual(value, getattr(self.model, field), f"{field} not updated in local instance")
+                    self.model.save()
+                    self.assertEqual(value, getattr(self.model, field), f"{field} not updated after save")
 
-                # Get a new copy
-                document = self.client.documents().get(self._initial_data['id'])
-                self.assertEqual(value, getattr(document, field), f"{field} not updated in remote instance")
+                    # Get a new copy
+                    document = self.client.documents().get(self._initial_data['id'])
+                    self.assertEqual(value, getattr(document, field), f"{field} not updated in remote instance")
+            
+            # Verify the "not dirty" messages were logged
+            self.assertTrue(any("Model is not dirty, skipping save" in entry for entry in log.output))
 
     def test_set_fields_to_expected(self):
         for field, value in self.expected_data.items():

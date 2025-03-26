@@ -336,8 +336,11 @@ class TestDocumentEnrichmentService(TestCase):
         # Mock extraction error
         mock_pdf.extract_image.side_effect = Exception("Test error")
 
-        with self.assertRaises(DocumentParsingError):
-            self.service.extract_images_from_pdf(b"test pdf", max_images=1)
+        with self.assertLogs(level='ERROR') as log:
+            with self.assertRaises(DocumentParsingError):
+                self.service.extract_images_from_pdf(b"test pdf", max_images=1)
+            self.assertIn("Failed to extract image from page 1 of PDF: Test error", log.output[0])
+            self.assertIn("Error extracting images from PDF: Test error", log.output[1])
 
     @patch('PIL.Image.open')
     def test_convert_to_base64_png(self, mock_open):
@@ -532,11 +535,15 @@ class TestDocumentEnrichmentService(TestCase):
         # Create a proper APIConnectionError with the required 'request' parameter
         mock_request = Mock()
         error = openai.APIConnectionError(request=mock_request)
-        error.message = "Test error"  # Set the message attribute
+        error.message = "Connection error."  # Set the message attribute
         mock_client.chat.completions.create.side_effect = error
 
         # Process the document
-        result = self.service.process_document(self.document, self.config)
+        with self.assertLogs(level='ERROR') as log:
+            result = self.service.process_document(self.document, self.config)
+            
+            # Check the logs
+            self.assertIn("Error extracting images from PDF: Failed to open stream", log.output[0])
 
         # Check the result
         self.assertFalse(result.success)
