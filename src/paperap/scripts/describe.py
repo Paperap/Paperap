@@ -32,12 +32,13 @@ import requests
 from alive_progress import alive_bar  # type: ignore
 from dotenv import load_dotenv
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, field_validator
-
+from paperap.const import EnrichmentConfig
 from paperap.client import PaperlessClient
 from paperap.exceptions import DocumentParsingError, NoImagesError
 from paperap.models.document import Document
+from paperap.models import Document, EnrichmentResult
 from paperap.scripts.utils import ProgressBar, setup_logging
-from paperap.services.enrichment import DocumentEnrichmentService, EnrichmentConfig
+from paperap.services.enrichment import DocumentEnrichmentService
 from paperap.settings import Settings
 
 logger = logging.getLogger(__name__)
@@ -462,12 +463,16 @@ class DescribePhotos(BaseModel):
                 max_images=2
             )
 
-            # Process the document
-            result = self.enrichment_service.process_document(document, config)
+            try:
+                # Process the document
+                result = self.enrichment_service.process_document(document, config)
 
-            # Handle the result
-            if not result.success:
-                logger.error(f"Failed to describe document {document.id}: {result.error}")
+                # Handle the result
+                if not result.success:
+                    logger.error(f"Failed to describe document {document.id}: {result.error}")
+                    return False
+            except (NoImagesError, DocumentParsingError) as e:
+                logger.error(f"Failed to describe document {document.id}: {e}")
                 return False
 
             # Add appropriate tags

@@ -14,19 +14,17 @@ from typing import TYPE_CHECKING, Any, NamedTuple, Self, Union, overload, overri
 
 from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models.mixins.queryset import HasOwner
-from paperap.const import ClientResponse
-from paperap.services.enrichment import DocumentEnrichmentService, EnrichmentConfig
+from paperap.const import ClientResponse, EnrichmentConfig
 
 if TYPE_CHECKING:
     from paperap.models import Correspondent, Document, DocumentNote, DocumentType, StoragePath
+    from paperap.resources.documents import DocumentResource
+    from paperap.services.enrichment import DocumentEnrichmentService
 
 logger = logging.getLogger(__name__)
 
 _OperationType = Union[str, "_QueryParam"]
 _QueryParam = Union["CustomFieldQuery", tuple[str, _OperationType, Any]]
-
-if TYPE_CHECKING:
-    from paperap.resources.documents import DocumentResource
 
 
 class CustomFieldQuery(NamedTuple):
@@ -86,11 +84,13 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
     """
 
     resource: "DocumentResource"  # type: ignore # because nested generics are not allowed
-    _enrichment_service : DocumentEnrichmentService
+    _enrichment_service : "DocumentEnrichmentService"
 
     @property
-    def enrichment_service(self) -> DocumentEnrichmentService:
+    def enrichment_service(self) -> "DocumentEnrichmentService":
         if not self._enrichment_service:
+            # Avoid circular ref. # TODO
+            from paperap.services.enrichment import DocumentEnrichmentService # type: ignore
             self._enrichment_service = DocumentEnrichmentService()
         return self._enrichment_service
 

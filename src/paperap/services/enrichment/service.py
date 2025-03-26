@@ -18,7 +18,7 @@ import re
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Protocol, cast, override
+from typing import Any, Protocol, cast, override, TYPE_CHECKING
 
 import dateparser
 import fitz  # type: ignore
@@ -29,8 +29,12 @@ from PIL import Image, UnidentifiedImageError
 from pydantic import BaseModel, ConfigDict, Field
 
 from paperap.exceptions import DocumentParsingError, NoImagesError
-from paperap.models.document import Document
+from paperap.const import EnrichmentConfig
 from paperap.signals import SignalRegistry
+from paperap.models.enrichment.result import EnrichmentResult
+
+if TYPE_CHECKING:
+    from paperap.models.document import Document
 
 logger = logging.getLogger(__name__)
 
@@ -42,56 +46,6 @@ DEFAULT_TEMPLATES_PATH = str(Path(__file__).parent / "templates")
 ACCEPTED_IMAGE_FORMATS = ["png", "jpg", "jpeg", "gif", "tif", "tiff", "bmp", "webp", "pdf"]
 # File formats accepted by OpenAI's vision models
 OPENAI_ACCEPTED_FORMATS = ["png", "jpg", "jpeg", "gif", "webp"]
-
-
-class EnrichmentResult(BaseModel):
-    """
-    Result of a document enrichment operation.
-
-    Attributes:
-        document: The enriched document
-        raw_response: The raw response from the enrichment service
-        parsed_response: The parsed response as a dictionary
-        success: Whether the enrichment was successful
-        error: Error message if the enrichment failed
-
-    """
-
-    document: Document
-    raw_response: str | None = None
-    parsed_response: dict[str, Any] | None = None
-    success: bool = True
-    error: str | None = None
-
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
-
-class EnrichmentConfig(BaseModel):
-    """
-    Configuration for document enrichment services.
-
-    Attributes:
-        template_name: Name of the template to use
-        template_dir: Optional custom directory for templates
-        model: Model name for LLM services
-        api_key: API key for LLM services
-        api_url: Base URL for LLM services
-        vision: Whether to use vision capabilities
-        extract_images: Whether to extract images from documents
-        max_images: Maximum number of images to extract
-        max_tokens: Maximum tokens to generate in the response
-
-    """
-
-    template_name: str
-    template_dir: str | None = None
-    model: str = "gpt-4o-mini"
-    api_key: str | None = None
-    api_url: str | None = None
-    vision: bool = True
-    extract_images: bool = True
-    max_images: int = 2
-    max_tokens: int = 500
 
 
 class TemplateLoader:
@@ -247,7 +201,7 @@ class DocumentEnrichmentService:
 
         return self._openai_client
 
-    def prepare_context(self, document: Document) -> dict[str, Any]:
+    def prepare_context(self, document: "Document") -> dict[str, Any]:
         """
         Prepare the template context for a document.
 
@@ -281,7 +235,7 @@ class DocumentEnrichmentService:
 
         return modified_context or context
 
-    def render_prompt(self, document: Document, config: EnrichmentConfig) -> str:
+    def render_prompt(self, document: "Document", config: EnrichmentConfig) -> str:
         """
         Render a prompt template for a document.
 
@@ -428,7 +382,7 @@ class DocumentEnrichmentService:
 
         return []
 
-    def process_document(self, document: Document, config: EnrichmentConfig) -> EnrichmentResult:
+    def process_document(self, document: "Document", config: EnrichmentConfig) -> EnrichmentResult:
         """
         Process a document with OpenAI.
 
@@ -562,7 +516,7 @@ class DocumentEnrichmentService:
 
         return dateparser.parse(date_str)
 
-    def apply_enrichment(self, result: EnrichmentResult) -> Document:
+    def apply_enrichment(self, result: EnrichmentResult) -> "Document":
         """
         Apply the enrichment result to the document.
 
@@ -583,7 +537,6 @@ class DocumentEnrichmentService:
             "enrichment.apply_result",
             args=document,
             kwargs={"result": result},
-            return_type=Document
         )
 
         if updated_doc:

@@ -7,14 +7,13 @@ summaries, and other metadata using language models.
 
 from paperap.services.enrichment.service import (
     DocumentEnrichmentService,
-    EnrichmentConfig,
-    EnrichmentResult,
     TEMPLATE_DIR_ENV,
+    ACCEPTED_IMAGE_FORMATS,
+    OPENAI_ACCEPTED_FORMATS,
+    DEFAULT_TEMPLATES_PATH,
 )
 
 __all__ = [
     "DocumentEnrichmentService",
-    "EnrichmentConfig",
-    "EnrichmentResult",
     "TEMPLATE_DIR_ENV",
 ]
