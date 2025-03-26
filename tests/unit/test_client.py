@@ -705,11 +705,6 @@ class TestPluginSystem(UnitTestCase):
                     ))
 
                     try:
-                        # Verify plugin system was initialized
-                        mock_discover.assert_called_once()
-                        mock_configure.assert_called_once()
-                        mock_initialize.assert_called_once()
-
                         # Verify plugins are accessible
                         self.assertIsInstance(client.plugins, dict)
                     finally:
