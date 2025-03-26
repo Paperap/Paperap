@@ -28,16 +28,7 @@ AUTH_DATA = {
     'password': "password",
 }
 
-# By default, patch os.environ to prevent environment variables from affecting tests
-class NoEnvTestCase(UnitTestCase):
-    def setUp(self):
-        self.patcher = patch.dict(os.environ, {}, clear=True)
-        self.patcher.start()
-
-    def tearDown(self):
-        self.patcher.stop()
-
-class TestSettings(NoEnvTestCase):
+class TestSettings(UnitTestCase):
 
     """Unit tests for the Settings class."""
 
@@ -52,7 +43,8 @@ class TestSettings(NoEnvTestCase):
         self.assertEqual(settings.timeout, TOKEN_DATA['timeout'])
         self.assertFalse(settings.require_ssl)
 
-class TestSettingsTimeout(NoEnvTestCase):
+class TestSettingsTimeout(UnitTestCase):
+    @patch.dict('os.environ', {}, clear=True)
     def test_default_timeout(self):
         """Test that the default timeout is set to 60 if not provided."""
         params = TOKEN_DATA.copy()
@@ -60,6 +52,7 @@ class TestSettingsTimeout(NoEnvTestCase):
         settings = Settings(**params)
         self.assertEqual(settings.timeout, 60, "Timeout was not set to default value")
 
+    @patch.dict('os.environ', {}, clear=True)
     def test_positive_timeouts(self):
         """Test that the timeout is correctly set."""
         test_cases = [0, 1, 10, 100, 1000, 10000]
@@ -68,12 +61,14 @@ class TestSettingsTimeout(NoEnvTestCase):
             settings = Settings(**params)
             self.assertEqual(settings.timeout, timeout)
 
+    @patch.dict('os.environ', {}, clear=True)
     def test_negative_timeouts(self):
         """Test that a negative timeout raises a validation error."""
         with self.assertRaises(ConfigurationError):
             params = {**TOKEN_DATA, 'timeout': -1}
             Settings(**params)
 
+    @patch.dict('os.environ', {}, clear=True)
     def test_invalid_types(self):
         """Test that invalid types for the timeout raise a validation error."""
         test_cases = ["abc", object(), [], {}]
@@ -82,7 +77,7 @@ class TestSettingsTimeout(NoEnvTestCase):
                 params = {**TOKEN_DATA, 'timeout': timeout}
                 Settings(**params)
 
-class TestSettingsURL(NoEnvTestCase):
+class TestSettingsURL(UnitTestCase):
     def test_accept_url(self):
         """Test that a pydantic HttpUrl object is accepted."""
         test_cases = [
@@ -141,32 +136,36 @@ class TestSettingsURL(NoEnvTestCase):
             settings = Settings(**params)
             self.assertEqual(str(settings.base_url), expected, f"URL final slash not added. {settings.base_url} != {HttpUrl(expected)}")
 
-class TestSettingsToken(NoEnvTestCase):
+class TestSettingsToken(UnitTestCase):
+    @patch.dict('os.environ', {}, clear=True)
     def test_null_token(self):
         """Test that a None token is allowed when user/pass is provided."""
         settings = Settings(**AUTH_DATA)
         self.assertIsNone(settings.token, "Token should be None")
 
-class TestSettingsUsernamePassword(NoEnvTestCase):
+class TestSettingsUsernamePassword(UnitTestCase):
     def test_null_username_password(self):
         """Test that None values for username and password are allowed."""
         settings = Settings(**TOKEN_DATA)
         self.assertIsNone(settings.username, "Username was initialized incorrectly during Settings init for token auth")
         self.assertIsNone(settings.password, "Password was initialized incorrectly during Settings init for token auth")
 
-class TestSettingsSSL(NoEnvTestCase):
+class TestSettingsSSL(UnitTestCase):
+    @patch.dict('os.environ', {}, clear=True)
     def test_require_ssl_set(self):
         """Test that require_ssl is set correctly."""
         params = {**TOKEN_DATA, 'require_ssl': True}
         settings = Settings(**params)
         self.assertTrue(settings.require_ssl, "require_ssl was not set during Settings init")
 
+    @patch.dict('os.environ', {}, clear=True)
     def test_require_ssl_enforced(self):
         """Test that require_ssl is enforced."""
         params = {**TOKEN_DATA, 'require_ssl': True, 'base_url': 'http://example.com'}
         with self.assertRaises(ConfigurationError, msg="http URL should be invalid when require_ssl is True"):
             Settings(**params)
 
+    @patch.dict('os.environ', {}, clear=True)
     def test_require_ssl_success(self):
         """Test that require_ssl is not enforced when disabled."""
         params = {**TOKEN_DATA, 'require_ssl': True, 'base_url': 'https://example.com'}
