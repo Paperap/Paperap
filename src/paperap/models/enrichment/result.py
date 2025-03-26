@@ -1,4 +1,3 @@
-
 """
 Document enrichment service using LLMs.
 
@@ -14,6 +13,7 @@ from __future__ import annotations
 from typing import Any
 from pydantic import BaseModel, ConfigDict
 from paperap.models.document import Document
+
 
 class EnrichmentResult(BaseModel):
     """

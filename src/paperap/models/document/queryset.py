@@ -84,13 +84,14 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
     """
 
     resource: "DocumentResource"  # type: ignore # because nested generics are not allowed
-    _enrichment_service : "DocumentEnrichmentService"
+    _enrichment_service: "DocumentEnrichmentService"
 
     @property
     def enrichment_service(self) -> "DocumentEnrichmentService":
         if not self._enrichment_service:
             # Avoid circular ref. # TODO
-            from paperap.services.enrichment import DocumentEnrichmentService # type: ignore
+            from paperap.services.enrichment import DocumentEnrichmentService  # type: ignore
+
             self._enrichment_service = DocumentEnrichmentService()
         return self._enrichment_service
 
@@ -1496,6 +1497,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         if ids:
             self.resource.set_permissions(ids, permissions, owner_id, merge)
         return self
+
     def summarize(
         self,
         model: str = "gpt-4o-mini",
@@ -1532,9 +1534,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         results = []
 
         # Process documents in batches
-        documents : list[Document] = list(self[:]) # type: ignore # TODO
+        documents: list[Document] = list(self[:])  # type: ignore # TODO
         for i in range(0, len(documents), batch_size):
-            batch = documents[i:i+batch_size]
+            batch = documents[i : i + batch_size]
             for doc in batch:
                 result = self.enrichment_service.process_document(doc, config)
                 if result.success:
@@ -1584,9 +1586,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         results = []
 
         # Process documents in batches
-        documents : list[Document] = list(self[:]) # type: ignore # TODO
+        documents: list[Document] = list(self[:])  # type: ignore # TODO
         for i in range(0, len(documents), batch_size):
-            batch = documents[i:i+batch_size]
+            batch = documents[i : i + batch_size]
             for doc in batch:
                 result = self.enrichment_service.process_document(doc, config)
                 if result.success:

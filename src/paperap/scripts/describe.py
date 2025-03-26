@@ -103,10 +103,7 @@ class DescribePhotos(BaseModel):
     def enrichment_service(self) -> DocumentEnrichmentService:
         """Get or create the document enrichment service."""
         if not self._enrichment_service:
-            self._enrichment_service = DocumentEnrichmentService(
-                api_key=self.client.settings.openai_key,
-                api_url=self.client.settings.openai_url
-            )
+            self._enrichment_service = DocumentEnrichmentService(api_key=self.client.settings.openai_key, api_url=self.client.settings.openai_url)
         return self._enrichment_service
 
     @field_validator("max_threads", mode="before")
@@ -264,7 +261,7 @@ class DescribePhotos(BaseModel):
         dt = self.enrichment_service.parse_date(date_str)
         if dt is None:
             return None
-        return dt.date() if hasattr(dt, 'date') else dt
+        return dt.date() if hasattr(dt, "date") else dt
 
     def standardize_image_contents(self, content: bytes) -> list[str]:
         """
@@ -350,10 +347,7 @@ class DescribePhotos(BaseModel):
 
             # Get OpenAI client from the enrichment service
             openai_client = self.enrichment_service.get_openai_client(
-                EnrichmentConfig(
-                    template_name=self.template_name,
-                    model=self.client.settings.openai_model or ScriptDefaults.MODEL
-                )
+                EnrichmentConfig(template_name=self.template_name, model=self.client.settings.openai_model or ScriptDefaults.MODEL)
             )
 
             response = openai_client.chat.completions.create(
@@ -460,7 +454,7 @@ class DescribePhotos(BaseModel):
                 model=self.client.settings.openai_model or ScriptDefaults.MODEL,
                 vision=True,
                 extract_images=True,
-                max_images=2
+                max_images=2,
             )
 
             try:

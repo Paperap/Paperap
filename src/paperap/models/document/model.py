@@ -1061,7 +1061,7 @@ class Document(StandardModel):
 
         raise TypeError(f"Invalid type for tag: {type(tag)}")
 
-    def set_custom_field(self, field : str | int, value : Any) -> None:
+    def set_custom_field(self, field: str | int, value: Any) -> None:
         """
         Set a custom field value for this document.
 

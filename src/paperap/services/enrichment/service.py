@@ -82,7 +82,7 @@ class TemplateLoader:
         if template_dir not in self._environments:
             self._environments[template_dir] = Environment(
                 loader=FileSystemLoader(template_dir),
-                autoescape=select_autoescape(['html', 'xml']),
+                autoescape=select_autoescape(["html", "xml"]),
                 trim_blocks=True,
                 lstrip_blocks=True,
             )
@@ -163,9 +163,7 @@ class DocumentEnrichmentService:
             template_path = template_dir / template_name
             if not template_path.exists():
                 # Try to load from package resources
-                template_content = pkgutil.get_data(
-                    "paperap.services.enrichment", f"templates/{template_name}"
-                )
+                template_content = pkgutil.get_data("paperap.services.enrichment", f"templates/{template_name}")
 
                 if template_content:
                     # Write template to file
@@ -213,7 +211,7 @@ class DocumentEnrichmentService:
 
         """
         # Base context with document and metadata
-        context : dict[str, Any] = {
+        context: dict[str, Any] = {
             "document": document,
             "tag_names": document.tag_names,
             "correspondent": document.correspondent.name if document.correspondent else None,
@@ -227,11 +225,7 @@ class DocumentEnrichmentService:
         context["custom_fields"] = custom_fields
 
         # Allow context modification through signals
-        modified_context = self.signals.emit(
-            "enrichment.prepare_context",
-            args=context,
-            return_type=dict
-        )
+        modified_context = self.signals.emit("enrichment.prepare_context", args=context, return_type=dict)
 
         return modified_context or context
 
@@ -248,19 +242,10 @@ class DocumentEnrichmentService:
 
         """
         context = self.prepare_context(document)
-        prompt = template_loader.render_template(
-            config.template_name,
-            config.template_dir,
-            **context
-        )
+        prompt = template_loader.render_template(config.template_name, config.template_dir, **context)
 
         # Allow prompt modification through signals
-        modified_prompt = self.signals.emit(
-            "enrichment.render_prompt",
-            args=prompt,
-            kwargs={"document": document, "config": config},
-            return_type=str
-        )
+        modified_prompt = self.signals.emit("enrichment.render_prompt", args=prompt, kwargs={"document": document, "config": config}, return_type=str)
 
         return modified_prompt or prompt
 
@@ -310,9 +295,7 @@ class DocumentEnrichmentService:
                         logger.debug(f"Extracted image from page {page_number + 1} of the PDF.")
                     except Exception as e:
                         count = len(results)
-                        logger.error(
-                            f"Failed to extract image from page {page_number + 1} of PDF: {e}"
-                        )
+                        logger.error(f"Failed to extract image from page {page_number + 1} of PDF: {e}")
                         if count < 1:
                             raise
 

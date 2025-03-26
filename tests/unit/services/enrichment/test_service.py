@@ -194,7 +194,7 @@ class TestDocumentEnrichmentService(TestCase):
         self.assertEqual(mock_write.call_count, 3)  # Three default templates
         mock_get_data.assert_called()
         
-    @patch('openai.OpenAI')
+    @patch('paperap.services.enrichment.service.OpenAI')
     def test_get_openai_client(self, mock_openai_class):
         """Test getting the OpenAI client."""
         # First call should create a new client

@@ -615,7 +615,11 @@ class PaperlessClient:
 
         registry.emit("client.request:before", "Before a request is sent to the Paperless server", args=[self], kwargs=kwargs)
 
-        if not (response := self.request_raw(method, endpoint, params=params, data=data, files=files)):
+        # Get the response from request_raw
+        response = self.request_raw(method, endpoint, params=params, data=data, files=files)
+
+        # Only return None if response is exactly None (not just falsey)
+        if response is None:
             return None
 
         registry.emit(

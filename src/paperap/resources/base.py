@@ -935,7 +935,7 @@ class BaseResourceProtocol[_BaseModel: "BaseModel", _BaseQuerySet: "BaseQuerySet
     def __call__(self, *args: Any, **keywords: Any) -> _BaseQuerySet: ...
 
 
-class BulkEditingMixin[_Model : "StandardModel"]:
+class BulkEditingMixin[_Model: "StandardModel"]:
     def _bulk_operation(
         self: BaseResourceProtocol,  # type: ignore
         ids: list[int],
