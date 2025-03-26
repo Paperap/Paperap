@@ -451,10 +451,10 @@ class TestDescribePhotos(DocumentUnitTest):
         # Configure mocks
         mock_standardize.return_value = ["base64_image"]
         mock_get_prompt.return_value = "Test prompt"
-        
+
         # Create a mock enrichment service
         mock_service = MagicMock()
-        
+
         # Configure the mock OpenAI client to raise an error
         mock_openai = MagicMock()
         mock_chat = MagicMock()
@@ -463,10 +463,10 @@ class TestDescribePhotos(DocumentUnitTest):
         mock_chat.completions = mock_completions
         mock_openai.chat = mock_chat
         mock_service.get_openai_client.return_value = mock_openai
-        
+
         # Replace the real service with our mock
         self.describe._enrichment_service = mock_service
-        
+
         # The method should catch the exception and return None
         result = self.describe._send_describe_request(b"image_data", self.model)
         self.assertIsNone(result)
@@ -503,26 +503,26 @@ class TestDescribePhotos(DocumentUnitTest):
         # Mock the client to prevent actual API calls
         self.describe.client = MagicMock()
         self.describe.client.settings.openai_model = "gpt-4o"  # Use a string value
-        
+
         # Mock the document
         document = MagicMock()
         document.id = 123
         document.content = "test content"
         document.original_filename = "test.jpg"
-        
+
         # Mock the enrichment service
         mock_service = MagicMock()
         mock_result = MagicMock()
         mock_result.success = True
         mock_result.document = document
         mock_service.process_document.return_value = mock_result
-        
+
         # Replace the real service with our mock
         self.describe._enrichment_service = mock_service
-        
+
         # Test the describe_document method
         result = self.describe.describe_document(document)
-        
+
         # Check the result
         self.assertTrue(result)
         mock_service.process_document.assert_called_once()
@@ -572,10 +572,10 @@ class TestDescribePhotos(DocumentUnitTest):
         """Test describe_document with NoImagesError."""
         # Setup for the test
         document = self.bake_model(id=123, content="test content", original_filename="test.jpg")
-        
+
         # Configure the mock to handle the NoImagesError internally and return False
         mock_describe_document.side_effect = lambda doc: False
-        
+
         # Use a try-except to catch any exception
         try:
             result = mock_describe_document(document)
@@ -588,10 +588,10 @@ class TestDescribePhotos(DocumentUnitTest):
         """Test describe_document with DocumentParsingError."""
         # Setup for the test
         document = self.bake_model(id=123, content="test content", original_filename="test.jpg")
-        
+
         # Configure the mock to handle the DocumentParsingError internally and return False
         mock_describe_document.side_effect = lambda doc: False
-        
+
         # Use a try-except to catch any exception
         try:
             result = mock_describe_document(document)
@@ -807,7 +807,7 @@ class TestMain(DocumentUnitTest):
         mock_logger = MagicMock()
         mock_setup_logging.return_value = mock_logger
 
-        # Call main and expect sys.exit 
+        # Call main and expect sys.exit
         with patch("sys.exit") as mock_exit:
             # Prevent the actual exit
             mock_exit.side_effect = lambda code: None

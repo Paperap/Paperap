@@ -152,7 +152,6 @@ pre-commit run --all-files
 - [ ] Make integration tests easier to setup for other users (wip)
 - [ ] Deleting tags, custom fields, etc via document.tags = None
 - [ ] devcontainer (wip)
-- [ ] Remove validators that pydantic handles natively
 - [ ] cli tools (1 done)
 - [ ] updating permissions, ownership, sharing, etc
 - [ ] changing settings
@@ -161,7 +160,8 @@ pre-commit run --all-files
 - [ ] immutability (resources, response dicts, (optionally) for models)
 - [ ] hypothesis testing (additional models)
 - [ ] factories create relationships in db
-- [ ] Lazy Document Evaluation after upload async
+- [ ] Lazy Document Evaluation after upload/download async
+- [x] Remove validators that pydantic handles natively
 - [x] factories create unique names
 - [x] git action to distribute to pypi
 - [x] batch editing

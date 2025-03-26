@@ -54,6 +54,7 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
 
         Args:
             document: The document ID or Document model to download.
+            original: Whether to download the original file (True) or the archived version (False).
 
         Returns:
             DownloadedDocument: The model instance representing the download request.
@@ -74,14 +75,15 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
         """
         document_id = document.id if isinstance(document, Document) else document
 
-        # Create a download request via the document_downloads resource
-        download = self.create(
-            document_id=document_id,
+        # Create a DownloadedDocument instance directly without using StandardResource.create
+        download = DownloadedDocument(
+            _resource = self,
+            id=document_id,
             mode=RetrieveFileMode.DOWNLOAD,
             original=original
         )
 
-        # Load the content
+        # Load the content # TODO: async
         self.load(download)
         return download
 
@@ -95,6 +97,7 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
 
         Args:
             document: The document ID or Document model to download.
+            original: Whether to download the original file (True) or the archived version (False).
 
         Returns:
             DownloadedDocument: The model instance representing the download request.
@@ -115,14 +118,15 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
         """
         document_id = document.id if isinstance(document, Document) else document
 
-        # Create a download request via the document_downloads resource
-        download = self.create(
-            document_id=document_id,
+        # Create a DownloadedDocument instance directly without using StandardResource.create
+        download = DownloadedDocument(
+            _resource=self,
+            id=document_id,
             mode=RetrieveFileMode.THUMBNAIL,
             original=original
         )
 
-        # Load the content
+        # Load the content # TODO: async
         self.load(download)
         return download
 
@@ -136,6 +140,7 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
 
         Args:
             document: The document ID or Document model to download.
+            original: Whether to download the original file (True) or the archived version (False).
 
         Returns:
             DownloadedDocument: The model instance representing the download request.
@@ -156,14 +161,15 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
         """
         document_id = document.id if isinstance(document, Document) else document
 
-        # Create a download request via the document_downloads resource
-        download = self.create(
-            document_id=document_id,
+        # Create a DownloadedDocument instance directly without using StandardResource.create
+        download = DownloadedDocument(
+            _resource=self,
+            id=document_id,
             mode=RetrieveFileMode.PREVIEW,
             original=original
         )
 
-        # Load the content
+        # Load the content # TODO: async
         self.load(download)
         return download
 
