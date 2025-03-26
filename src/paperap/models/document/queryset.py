@@ -1555,6 +1555,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         max_images: int = 2,
         api_key: str | None = None,
         api_url: str | None = None,
+        expanded_description : bool = True,
     ) -> Self:
         """
         Describe documents in the queryset using an LLM with vision capabilities.
@@ -1590,7 +1591,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         for i in range(0, len(documents), batch_size):
             batch = documents[i : i + batch_size]
             for doc in batch:
-                result = self.enrichment_service.process_document(doc, config)
+                result = self.enrichment_service.process_document(doc, config, expand_descriptions=expanded_description)
                 if result.success:
                     results.append(result.document)
                 else:

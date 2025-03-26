@@ -242,10 +242,20 @@ class DocumentEnrichmentService:
 
         """
         context = self.prepare_context(document)
+        if not config.template_name:
+            raise ValueError("Template name is required in the enrichment configuration.")
         prompt = template_loader.render_template(config.template_name, config.template_dir, **context)
 
         # Allow prompt modification through signals
-        modified_prompt = self.signals.emit("enrichment.render_prompt", args=prompt, kwargs={"document": document, "config": config}, return_type=str)
+        modified_prompt = self.signals.emit(
+            "enrichment.render_prompt",
+            args=prompt,
+            kwargs={
+                "document": document,
+                "config": config
+            },
+            return_type=str,
+        )
 
         return modified_prompt or prompt
 
@@ -365,13 +375,19 @@ class DocumentEnrichmentService:
 
         return []
 
-    def process_document(self, document: "Document", config: EnrichmentConfig) -> EnrichmentResult:
+    def process_document(
+        self,
+        document: "Document",
+        config: EnrichmentConfig,
+        expand_descriptions: bool = False,
+    ) -> EnrichmentResult:
         """
         Process a document with OpenAI.
 
         Args:
             document: The document to process
             config: The enrichment configuration
+            expand_descriptions: Whether to expand descriptions with synonyms for better search
 
         Returns:
             The enrichment result
@@ -456,7 +472,7 @@ class DocumentEnrichmentService:
                     logger.warning(f"Failed to parse response as JSON: {raw_response}")
 
             # Apply the enrichment
-            self.apply_enrichment(result)
+            self.apply_enrichment(result, expand_descriptions)
 
         except openai.APIConnectionError as e:
             logger.error(f"API Connection Error: {e}")
@@ -499,12 +515,66 @@ class DocumentEnrichmentService:
 
         return dateparser.parse(date_str)
 
-    def apply_enrichment(self, result: EnrichmentResult) -> "Document":
+    def expand_description_with_synonyms(self, description: str) -> str:
+        """
+        Expand a description by generating multiple versions with synonyms.
+
+        This method takes a description and sends it to GPT to create
+        alternative versions using synonyms to improve search capabilities.
+
+        Args:
+            description: The original description to expand
+
+        Returns:
+            A string containing the original description plus expanded versions
+
+        """
+        # Skip if no description
+        if not description:
+            return ""
+
+        try:
+            # Create a prompt for GPT to generate synonyms
+            prompt = f"""
+Please rewrite the following description 3-4 times, using synonyms for key terms to enhance searchability.
+Keep each version about the same length as the original, but vary the wording.
+Output in the format:
+VERSION 1: [rewritten description with synonyms]
+VERSION 2: [another rewritten description with different synonyms]
+etc.
+
+ORIGINAL DESCRIPTION:
+{description}
+"""
+
+            # Get the OpenAI client (using a simpler model for synonyms)
+            openai_client = self.get_openai_client(EnrichmentConfig(model="gpt-4o-mini"))
+
+            # Call OpenAI API
+            response = openai_client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=1500,  # Allow for longer output to fit multiple versions
+            )
+
+            # Get the response text
+            expanded_text = response.choices[0].message.content
+
+            # Combine original plus expansions
+            result = f"ORIGINAL DESCRIPTION:\n{description}\n\nALTERNATIVE DESCRIPTIONS FOR SEARCH:\n{expanded_text}"
+            return result
+
+        except Exception as e:
+            logger.error(f"Error expanding description with synonyms: {e}")
+            return description  # Return original description on error
+
+    def apply_enrichment(self, result: EnrichmentResult, expand_descriptions: bool = False) -> "Document":
         """
         Apply the enrichment result to the document.
 
         Args:
             result: The enrichment result
+            expand_descriptions: Whether to expand descriptions with synonyms for better search
 
         Returns:
             The updated document
@@ -570,7 +640,12 @@ class DocumentEnrichmentService:
             if document_type := response.get("document_type"):
                 description_parts.append(f"Document Type: {document_type}")
 
-            description_parts.append(f"\nDescription:\n{description}")
+            # If expand_descriptions is enabled, generate synonym expansions
+            if expand_descriptions:
+                expanded_description = self.expand_description_with_synonyms(description)
+                description_parts.append(f"\n{expanded_description}")
+            else:
+                description_parts.append(f"\nDescription:\n{description}")
 
             # Update document content
             document.content = "\n".join(description_parts)

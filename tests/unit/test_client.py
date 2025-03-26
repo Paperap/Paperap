@@ -145,11 +145,33 @@ class TestClientInitialization(unittest.TestCase):
 class TestClientRequests(UnitTestCase):
     """Test the request methods of the PaperlessClient class."""
 
+    @patch("requests.Session.request")
+    def test_request_with_relative_endpoint(self, mock_session_request):
+        """Test making a request with a relative endpoint."""
+        result = self.client.request("GET", "api/documents/")
+        mock_session_request.assert_called_once()
+        call_args = mock_session_request.call_args[1]
+        self.assertEqual(call_args["method"], "GET")
+        self.assertEqual(call_args["url"], "http://example.com/api/documents/")
+        self.assertEqual(result, {"key": "value"})
+
+    @patch("requests.Session.request")
+    def test_request_binary_response(self, mock_response):
+        """Test requesting binary content."""
+        mock_response.content = b"Binary content"
+        result = self.client.request("GET", "api/documents/1/download/", json_response=False)
+        self.assertEqual(result, b"Binary content")
+
+class TestClientRequests(UnitTestCase):
+    """Test the request methods of the PaperlessClient class."""
+
     @override
     def setUp(self):
         super().setUp()
+            
         self.session_patcher = patch('requests.Session.request')
         self.mock_session_request = self.session_patcher.start()
+        self.addCleanup(self.session_patcher.stop)
 
         # Setup a mock response
         self.mock_response = Mock(spec=requests.Response)
@@ -157,11 +179,6 @@ class TestClientRequests(UnitTestCase):
         self.mock_response.json.return_value = {"key": "value"}
         self.mock_response.content = b'{"key": "value"}'
         self.mock_session_request.return_value = self.mock_response
-
-    @override
-    def tearDown(self):
-        self.session_patcher.stop()
-        super().tearDown()
 
     def test_request_with_relative_endpoint(self):
         """Test making a request with a relative endpoint."""
@@ -172,6 +189,11 @@ class TestClientRequests(UnitTestCase):
         self.assertEqual(call_args["url"], "http://example.com/api/documents/")
         self.assertEqual(result, {"key": "value"})
 
+    def test_request_binary_response(self):
+        """Test requesting binary content."""
+        self.mock_response.content = b"Binary content"
+        result = self.client.request("GET", "api/documents/1/download/", json_response=False)
+        self.assertEqual(result, b"Binary content")
     def test_request_with_absolute_url(self):
         """Test making a request with an absolute URL."""
         _result = self.client.request("GET", "https://other-example.com/api/documents/")
@@ -238,12 +260,6 @@ class TestClientRequests(UnitTestCase):
         with self.assertLogs(level="WARNING"):
             with self.assertRaises(ResponseParsingError):
                 self.client.request("GET", "api/documents/")
-
-    def test_request_binary_response(self):
-        """Test requesting binary content."""
-        self.mock_response.content = b"Binary content"
-        result = self.client.request("GET", "api/documents/1/download/", json_response=False)
-        self.assertEqual(result, b"Binary content")
 
     def test_request_connection_error(self):
         """Test handling a connection error."""

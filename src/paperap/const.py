@@ -884,7 +884,7 @@ class EnrichmentConfig(pydantic.BaseModel):
 
     """
 
-    template_name: str
+    template_name: str | None = None
     template_dir: str | None = None
     model: str = "gpt-4o-mini"
     api_key: str | None = None

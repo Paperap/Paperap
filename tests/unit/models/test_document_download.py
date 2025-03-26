@@ -81,17 +81,17 @@ class TestDownloadedDocumentModel(DocumentUnitTest):
         """Test that to_dict excludes binary content by default."""
         # Use model_dump instead of to_dict
         result = self.model.model_dump(exclude={"content"})
-        
+
         self.assertNotIn("content", result)
         # Note: model uses id, not document_id
         self.assertEqual(result["content_type"], self.content_type)
         self.assertEqual(result["disposition_filename"], self.disposition_filename)
-        
+
     def test_to_dict_include_content(self):
         """Test that to_dict can include binary content when specified."""
         # Use model_dump instead of to_dict
         result = self.model.model_dump(exclude_none=True)
-        
+
         self.assertIn("content", result)
         self.assertEqual(result["content"], self.content)
 
@@ -152,22 +152,22 @@ class TestDownloadedDocumentResource(DocumentUnitTest):
     def test_load_method(self, mock_request_raw):
         """Test the load method for downloaded document."""
         mock_request_raw.return_value = self.mock_response
-        
+
         # Create a downloaded document
         downloaded_doc = DownloadedDocument(
             document_id=self.document_id,
             mode=RetrieveFileMode.DOWNLOAD,
             original=False,
         )
-        
+
         # Load the content
         self.resource.load(downloaded_doc)
-        
+
         # Verify the request was made correctly
         mock_request_raw.assert_called_once()
         call_args = mock_request_raw.call_args[1]
         self.assertEqual(call_args["params"], {"original": "false"})
-        
+
         # Verify the document was updated
         self.assertEqual(downloaded_doc.content, self.content)
         self.assertEqual(downloaded_doc.content_type, "application/pdf")
@@ -178,17 +178,17 @@ class TestDownloadedDocumentResource(DocumentUnitTest):
     def test_load_method_original_true(self, mock_request_raw):
         """Test the load method for original document."""
         mock_request_raw.return_value = self.mock_response
-        
+
         # Create a downloaded document for original
         downloaded_doc = DownloadedDocument(
             document_id=self.document_id,
             mode=RetrieveFileMode.DOWNLOAD,
             original=True,
         )
-        
+
         # Load the content
         self.resource.load(downloaded_doc)
-        
+
         # Verify the request was made with original=true
         mock_request_raw.assert_called_once()
         call_args = mock_request_raw.call_args[1]
@@ -201,15 +201,15 @@ class TestDownloadedDocumentResource(DocumentUnitTest):
         response.content = self.content
         response.headers = {"Content-Type": "application/pdf"}
         mock_request_raw.return_value = response
-        
+
         downloaded_doc = DownloadedDocument(
             document_id=self.document_id,
             mode=RetrieveFileMode.DOWNLOAD,
         )
-        
+
         # Load the content
         self.resource.load(downloaded_doc)
-        
+
         # Verify the document was updated correctly
         self.assertEqual(downloaded_doc.content, self.content)
         self.assertEqual(downloaded_doc.content_type, "application/pdf")
@@ -226,15 +226,15 @@ class TestDownloadedDocumentResource(DocumentUnitTest):
             "Content-Disposition": "inline",
         }
         mock_request_raw.return_value = response
-        
+
         downloaded_doc = DownloadedDocument(
             document_id=self.document_id,
             mode=RetrieveFileMode.DOWNLOAD,
         )
-        
+
         # Load the content
         self.resource.load(downloaded_doc)
-        
+
         # Verify the document was updated correctly
         self.assertEqual(downloaded_doc.content, self.content)
         self.assertEqual(downloaded_doc.content_type, "application/pdf")
@@ -245,77 +245,84 @@ class TestDownloadedDocumentResource(DocumentUnitTest):
     def test_load_method_request_error(self, mock_request_raw):
         """Test load method when request fails."""
         mock_request_raw.return_value = None
-        
+
         downloaded_doc = DownloadedDocument(
             document_id=self.document_id,
             mode=RetrieveFileMode.DOWNLOAD,
         )
-        
+
         # Verify exception is raised
         with self.assertRaises(ResourceNotFoundError):
             self.resource.load(downloaded_doc)
 
     @patch("paperap.resources.document_download.DownloadedDocumentResource.load")
-    @patch("paperap.resources.document_download.DownloadedDocumentResource.create")
-    def test_download_document(self, mock_create, mock_load):
+    def test_download_document(self, mock_load):
         """Test download_document method."""
         mock_document = Mock(spec=Document)
         mock_document.id = self.document_id
-        
-        mock_download = Mock(spec=DownloadedDocument)
-        mock_create.return_value = mock_download
-        
+
         # Call the download_document method
         result = self.resource.download_document(mock_document, original=True)
-        
-        # Verify result
-        self.assertEqual(result, mock_download)
+
+        # Verify properties of the returned object
+        self.assertIsInstance(result, DownloadedDocument)
+        self.assertEqual(result.id, self.document_id)
+        self.assertEqual(result.mode, RetrieveFileMode.DOWNLOAD)
+        self.assertTrue(result.original)
+
+        # Verify load was called with the document
+        mock_load.assert_called_once_with(result)
 
     @patch("paperap.resources.document_download.DownloadedDocumentResource.load")
-    @patch("paperap.resources.document_download.DownloadedDocumentResource.create")
-    def test_download_thumbnail(self, mock_create, mock_load):
+    def test_download_thumbnail(self, mock_load):
         """Test download_thumbnail method."""
         mock_document = Mock(spec=Document)
         mock_document.id = self.document_id
-        
-        mock_download = Mock(spec=DownloadedDocument)
-        mock_create.return_value = mock_download
-        
+
         # Call the download_thumbnail method
         result = self.resource.download_thumbnail(mock_document, original=False)
-        
-        # Verify result
-        self.assertEqual(result, mock_download)
+
+        # Verify properties of the returned object
+        self.assertIsInstance(result, DownloadedDocument)
+        self.assertEqual(result.id, self.document_id)
+        self.assertEqual(result.mode, RetrieveFileMode.THUMBNAIL)
+        self.assertFalse(result.original)
+
+        # Verify load was called with the document
+        mock_load.assert_called_once_with(result)
 
     @patch("paperap.resources.document_download.DownloadedDocumentResource.load")
-    @patch("paperap.resources.document_download.DownloadedDocumentResource.create")
-    def test_download_preview(self, mock_create, mock_load):
+    def test_download_preview(self, mock_load):
         """Test download_preview method."""
         mock_document = Mock(spec=Document)
         mock_document.id = self.document_id
-        
-        mock_download = Mock(spec=DownloadedDocument)
-        mock_create.return_value = mock_download
-        
+
         # Call the download_preview method
         result = self.resource.download_preview(mock_document, original=False)
-        
-        # Verify result
-        self.assertEqual(result, mock_download)
+
+        # Verify properties of the returned object
+        self.assertIsInstance(result, DownloadedDocument)
+        self.assertEqual(result.id, self.document_id)
+        self.assertEqual(result.mode, RetrieveFileMode.PREVIEW)
+        self.assertFalse(result.original)
+
+        # Verify load was called with the document
+        mock_load.assert_called_once_with(result)
 
     def test_download_document_with_int_id(self):
         """Test download_document with integer document ID."""
-        with patch.object(self.resource, 'create') as mock_create, \
-             patch.object(self.resource, 'load') as mock_load:
-            
-            mock_download = Mock(spec=DownloadedDocument)
-            mock_create.return_value = mock_download
-            
+        with patch.object(self.resource, 'load') as mock_load:
             # Call the download_document method with integer ID
             result = self.resource.download_document(self.document_id)
-            
-            # Verify result
-            self.assertEqual(result, mock_download)
+
+            # Verify properties of the returned object
+            self.assertIsInstance(result, DownloadedDocument)
+            self.assertEqual(result.id, self.document_id)
+            self.assertEqual(result.mode, RetrieveFileMode.DOWNLOAD)
+            self.assertTrue(result.original)
+
+            # Verify load was called with the document
+            mock_load.assert_called_once_with(result)
 
 
 class TestDocumentDownloadIntegration(DocumentUnitTest):
@@ -325,16 +332,16 @@ class TestDocumentDownloadIntegration(DocumentUnitTest):
         """Set up test fixtures."""
         super().setUp()
         self.document_id = 123
-        
+
         # Initialize document with the client
         # In real code, Document objects should come from the client's resources
         # For tests, we need to mock this relationship
         with patch.object(Document, "_client", new_callable=PropertyMock) as mock_client:
             mock_client.return_value = self.client
             self.document = Document(id=self.document_id, title="Test Document")
-        
+
         self.content = b"Test document content"
-        
+
         # Mock responses for downloads
         self.mock_response = Mock()
         self.mock_response.content = self.content
@@ -351,16 +358,16 @@ class TestDocumentDownloadIntegration(DocumentUnitTest):
     def test_document_download_method(self, mock_request_raw):
         """Test Document.download() method."""
         mock_request_raw.return_value = self.mock_response
-        
+
         # Call download method on Document
         result = self.document.download()
-        
+
         # Verify result
         self.assertIsInstance(result, DownloadedDocument)
         self.assertEqual(result.id, self.document_id)
         self.assertEqual(result.content, self.content)
         self.assertEqual(result.mode, RetrieveFileMode.DOWNLOAD)
-        
+
         # Verify request was made
         mock_request_raw.assert_called_once()
 
@@ -368,16 +375,16 @@ class TestDocumentDownloadIntegration(DocumentUnitTest):
     def test_document_preview_method(self, mock_request_raw):
         """Test Document.preview() method."""
         mock_request_raw.return_value = self.mock_response
-        
+
         # Call preview method on Document
         result = self.document.preview()
-        
+
         # Verify result
         self.assertIsInstance(result, DownloadedDocument)
         self.assertEqual(result.id, self.document_id)
         self.assertEqual(result.content, self.content)
         self.assertEqual(result.mode, RetrieveFileMode.PREVIEW)
-        
+
         # Verify request was made
         mock_request_raw.assert_called_once()
 
@@ -385,16 +392,16 @@ class TestDocumentDownloadIntegration(DocumentUnitTest):
     def test_document_thumbnail_method(self, mock_request_raw):
         """Test Document.thumbnail() method."""
         mock_request_raw.return_value = self.mock_response
-        
+
         # Call thumbnail method on Document
         result = self.document.thumbnail()
-        
+
         # Verify result
         self.assertIsInstance(result, DownloadedDocument)
         self.assertEqual(result.id, self.document_id)
         self.assertEqual(result.content, self.content)
         self.assertEqual(result.mode, RetrieveFileMode.THUMBNAIL)
-        
+
         # Verify request was made
         mock_request_raw.assert_called_once()
 
@@ -402,20 +409,20 @@ class TestDocumentDownloadIntegration(DocumentUnitTest):
     def test_original_flag_passage(self, mock_request_raw):
         """Test that original flag is properly passed through methods."""
         mock_request_raw.return_value = self.mock_response
-        
+
         # Call download with original=True
         self.document.download(original=True)
-        
+
         # Verify params contains original=true
         call_args = mock_request_raw.call_args[1]
         self.assertEqual(call_args["params"], {"original": "true"})
-        
+
         # Reset mock
         mock_request_raw.reset_mock()
-        
+
         # Call download with original=False
         self.document.download(original=False)
-        
+
         # Verify params contains original=false
         call_args = mock_request_raw.call_args[1]
         self.assertEqual(call_args["params"], {"original": "false"})
