@@ -1,9 +1,9 @@
 """
 Describe documents with AI in Paperless-ngx.
 
-This script uses the OpenAI API to generate descriptions for documents stored in a Paperless-ngx instance.
-It extracts images from documents and sends them to OpenAI for processing, updating the document content
-with the generated description.
+This script uses the document enrichment service to generate descriptions for documents stored in a
+Paperless-ngx instance. It leverages the same code used by the API to process documents, ensuring
+consistency between CLI and API functionality.
 
 Usage:
     $ python describe.py --tag needs-description
@@ -16,46 +16,31 @@ import base64
 import json
 import logging
 import os
-import re
 import sys
-from datetime import date, datetime
+from datetime import date
 from enum import StrEnum
 from io import BytesIO
 from pathlib import Path
 from typing import Any, cast
 
-import dateparser
 import fitz  # type: ignore
+from jinja2 import Environment, FileSystemLoader
+from PIL import Image, UnidentifiedImageError
 import openai
-import openai.types.chat
+
 import requests
 from alive_progress import alive_bar  # type: ignore
 from dotenv import load_dotenv
-from jinja2 import Environment, FileSystemLoader
-from openai import OpenAI
-from PIL import Image, UnidentifiedImageError
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, field_validator
 
 from paperap.client import PaperlessClient
 from paperap.exceptions import DocumentParsingError, NoImagesError
 from paperap.models.document import Document
 from paperap.scripts.utils import ProgressBar, setup_logging
+from paperap.services.enrichment import DocumentEnrichmentService, EnrichmentConfig
 from paperap.settings import Settings
 
 logger = logging.getLogger(__name__)
-
-# File formats accepted by the describe script
-DESCRIBE_ACCEPTED_FORMATS = ["png", "jpg", "jpeg", "gif", "tif", "tiff", "bmp", "webp", "pdf"]
-# File formats accepted by OpenAI's vision models
-OPENAI_ACCEPTED_FORMATS = ["png", "jpg", "jpeg", "gif", "webp", "pdf"]
-# MIME type mapping for image formats
-MIME_TYPES = {
-    "png": "image/png",
-    "jpeg": "image/jpeg",
-    "jpg": "image/jpeg",
-    "gif": "image/gif",
-    "webp": "image/webp",
-}
 
 
 class ScriptDefaults(StrEnum):
@@ -67,25 +52,23 @@ class ScriptDefaults(StrEnum):
 
 
 # Current version of the describe script
-SCRIPT_VERSION = "0.2.2"
+SCRIPT_VERSION = "0.3.0"
 
 
 class DescribePhotos(BaseModel):
     """
     Describes photos in the Paperless NGX instance using a language model.
 
-    This class provides methods to extract images from documents, generate prompts using Jinja templates,
-    and interact with the OpenAI API to obtain descriptions for documents stored in a Paperless NGX instance.
+    This class uses the DocumentEnrichmentService to analyze documents and generate
+    descriptions, titles, dates, and tags.
 
     Attributes:
         max_threads (int): Maximum number of threads to use for processing.
         paperless_tag (str | None): Tag to filter documents for description.
-        prompt (str | None): Custom prompt to use for OpenAI.
+        template_name (str): Name of the template to use for description generation.
         client (PaperlessClient): Client for interacting with the Paperless-NgX API.
-        _jinja_env (Environment | None): Jinja environment for template rendering.
+        _enrichment_service (DocumentEnrichmentService | None): Service for document enrichment.
         _progress_bar (ProgressBar | None): Progress bar for tracking processing status.
-        _progress_message (str | None): Message to display in the progress bar.
-        _openai (OpenAI | None): OpenAI client for API interaction.
 
     Example:
         >>> client = PaperlessClient(settings)
@@ -93,19 +76,19 @@ class DescribePhotos(BaseModel):
         >>> describer.describe_documents()
 
     Notes:
-        Custom templates can be provided by setting the PAPERLESS_TEMPLATE_DIRECTORY
+        Custom templates can be provided by setting the PAPERAP_TEMPLATE_DIR
         environment variable or passing template_dir to the Settings constructor.
 
     """
 
     max_threads: int = 0
     paperless_tag: str | None = Field(default=ScriptDefaults.NEEDS_DESCRIPTION)
-    prompt: str | None = Field(None)
+    template_name: str = Field(default="photo")
     client: PaperlessClient
-    _jinja_env: Environment | None = PrivateAttr(default=None)
+    prompt: str | None = Field(default=None)
+    _enrichment_service: DocumentEnrichmentService | None = PrivateAttr(default=None)
     _progress_bar: ProgressBar | None = PrivateAttr(default=None)
-    _progress_message: str | None = PrivateAttr(default=None)
-    _openai: OpenAI | None = PrivateAttr(default=None)
+    _jinja_env: Environment | None = PrivateAttr(default=None)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -116,27 +99,14 @@ class DescribePhotos(BaseModel):
         return self._progress_bar  # type: ignore # pyright not handling the protocol correctly, not sure why
 
     @property
-    def openai_url(self) -> str | None:
-        return self.client.settings.openai_url
-
-    @property
-    def openai_key(self) -> str | None:
-        return self.client.settings.openai_key
-
-    @property
-    def openai_model(self) -> str:
-        return self.client.settings.openai_model or ScriptDefaults.MODEL
-
-    @property
-    def openai(self) -> OpenAI:
-        if not self._openai:
-            if self.openai_url:
-                logger.info("Using custom OpenAI URL: %s", self.openai_url)
-                self._openai = OpenAI(api_key=self.openai_key, base_url=self.openai_url)
-            else:
-                logger.info("Using default OpenAI URL")
-                self._openai = OpenAI()
-        return self._openai
+    def enrichment_service(self) -> DocumentEnrichmentService:
+        """Get or create the document enrichment service."""
+        if not self._enrichment_service:
+            self._enrichment_service = DocumentEnrichmentService(
+                api_key=self.client.settings.openai_key,
+                api_url=self.client.settings.openai_url
+            )
+        return self._enrichment_service
 
     @field_validator("max_threads", mode="before")
     @classmethod
@@ -289,45 +259,11 @@ class DescribePhotos(BaseModel):
             >>> print(parsed_date)
 
         """
-        if not (parsed_date := self.parse_datetime(date_str)):
+        # Use the service's parse_date method and convert to date if needed
+        dt = self.enrichment_service.parse_date(date_str)
+        if dt is None:
             return None
-        return parsed_date.date()
-
-    def parse_datetime(self, date_str: str) -> datetime | None:
-        """
-        Parse a date string into a datetime object.
-
-        Args:
-            date_str (str): The date string to parse.
-
-        Returns:
-            datetime | None: The parsed datetime or None if parsing fails.
-
-        Raises:
-            ValueError: If the date format is invalid.
-
-        Example:
-            >>> parsed_datetime = describer.parse_datetime("2025-03-24T15:30:00")
-            >>> print(parsed_datetime)
-
-        """
-        if not date_str:
-            return None
-
-        date_str = str(date_str).strip()
-
-        # "Date unknown" or "Unknown date" or "No date"
-        if re.match(r"(date unknown|unknown date|no date|none|unknown|n/?a)$", date_str, re.IGNORECASE):
-            return None
-
-        # Handle "circa 1950"
-        if matches := re.match(r"((around|circa|mid|early|late|before|after) *)?(\d{4})s?$", date_str, re.IGNORECASE):
-            date_str = f"{matches.group(3)}-01-01"
-
-        parsed_date = dateparser.parse(date_str)
-        if not parsed_date:
-            raise ValueError(f"Invalid date format: {date_str=}")
-        return parsed_date
+        return dt.date() if hasattr(dt, 'date') else dt
 
     def standardize_image_contents(self, content: bytes) -> list[str]:
         """
@@ -411,8 +347,16 @@ class DescribePhotos(BaseModel):
                     }
                 )
 
-            response = self.openai.chat.completions.create(
-                model=self.openai_model,
+            # Get OpenAI client from the enrichment service
+            openai_client = self.enrichment_service.get_openai_client(
+                EnrichmentConfig(
+                    template_name=self.template_name,
+                    model=self.client.settings.openai_model or ScriptDefaults.MODEL
+                )
+            )
+
+            response = openai_client.chat.completions.create(
+                model=self.client.settings.openai_model or ScriptDefaults.MODEL,
                 messages=[
                     {"role": "user", "content": message_contents}  # type: ignore
                 ],
@@ -448,8 +392,8 @@ class DescribePhotos(BaseModel):
         except openai.APIConnectionError as ace:
             logger.error(
                 "API Connection Error. Is the OpenAI API URL correct? URL: %s, model: %s -> %s",
-                self.openai_url,
-                self.openai_model,
+                self.client.settings.openai_url,
+                self.client.settings.openai_model or ScriptDefaults.MODEL,
                 ace,
             )
             raise
@@ -487,7 +431,7 @@ class DescribePhotos(BaseModel):
 
     def describe_document(self, document: Document) -> bool:
         """
-        Describe a single document using OpenAI's language model.
+        Describe a single document using the document enrichment service.
 
         The document object passed in will be updated with the description.
 
@@ -506,52 +450,41 @@ class DescribePhotos(BaseModel):
             >>> print("Description successful:", success)
 
         """
-        response = None
         try:
-            logger.debug(f"Describing document {document.id} using OpenAI...")
+            logger.debug(f"Describing document {document.id}...")
 
-            if not (content := document.content):
-                logger.error("Document content is empty for document #%s", document.id)
+            # Create enrichment config
+            config = EnrichmentConfig(
+                template_name=self.template_name,
+                model=self.client.settings.openai_model or ScriptDefaults.MODEL,
+                vision=True,
+                extract_images=True,
+                max_images=2
+            )
+
+            # Process the document
+            result = self.enrichment_service.process_document(document, config)
+
+            # Handle the result
+            if not result.success:
+                logger.error(f"Failed to describe document {document.id}: {result.error}")
                 return False
 
-            # Ensure accepted format
-            original_filename = (document.original_filename or "").lower()
-            if not any(original_filename.endswith(ext) for ext in DESCRIBE_ACCEPTED_FORMATS):
-                logger.error(f"Document {document.id} has unsupported extension: {original_filename}")
-                return False
+            # Add appropriate tags
+            if result.success:
+                document.remove_tag(ScriptDefaults.NEEDS_DESCRIPTION)
+                document.add_tag(ScriptDefaults.DESCRIBED)
 
-            try:
-                # Convert content to bytes if it's a string
-                content_bytes = content if isinstance(content, bytes) else content.encode("utf-8")
-                if not (response := self._send_describe_request(content_bytes, document)):
-                    logger.error(f"OpenAI returned empty description for document {document.id}.")
-                    return False
-            except NoImagesError as nie:
-                logger.debug(f"No images found in document {document.id}: {nie}")
-                return False
-            except DocumentParsingError as dpe:
-                logger.error(f"Failed to parse document {document.id}: {dpe}")
-                return False
-            except openai.BadRequestError as e:
-                if "invalid_image_format" not in str(e):
-                    logger.error(
-                        "Failed to generate description for document #%s: %s -> %s",
-                        document.id,
-                        document.original_filename,
-                        e,
-                    )
-                    return False
+                # Save the document
+                document.save()
 
-                logger.debug("Bad format for document #%s: %s -> %s", document.id, document.original_filename, e)
-                return False
+            return result.success
 
-            # Process the response
-            self.process_response(response, document)
         except requests.RequestException as e:
-            logger.error(f"Failed to describe document {document.id}. {response=} => {e}")
+            logger.error(f"Failed to describe document {document.id}: {e}")
             raise
 
-        return True
+        return False
 
     def process_response(self, response: str, document: Document) -> Document:
         """
@@ -650,7 +583,7 @@ class DescribePhotos(BaseModel):
 
     def describe_documents(self, documents: list[Document] | None = None) -> list[Document]:
         """
-        Describe a list of documents using OpenAI's language model.
+        Describe a list of documents using the document enrichment service.
 
         Args:
             documents (list[Document] | None): The documents to describe. If None, fetches documents
@@ -677,7 +610,7 @@ class DescribePhotos(BaseModel):
             for document in documents:
                 if self.describe_document(document):
                     results.append(document)
-                self.progress_bar()
+                self._progress_bar()  # type: ignore
         return results
 
 
@@ -730,7 +663,7 @@ def main() -> None:
         parser.add_argument("--model", type=str, default=None, help="The OpenAI model to use")
         parser.add_argument("--openai-url", type=str, default=None, help="The base URL for the OpenAI API")
         parser.add_argument("--tag", type=str, default=ScriptDefaults.NEEDS_DESCRIPTION, help="Tag to filter documents")
-        parser.add_argument("--prompt", type=str, default=None, help="Prompt to use for OpenAI")
+        parser.add_argument("--template", type=str, default="photo", help="Template name to use for description")
         parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
 
         args = parser.parse_args(namespace=ArgNamespace())
@@ -761,9 +694,9 @@ def main() -> None:
         settings = Settings(**cast(Any, config))
         client = PaperlessClient(settings)
 
-        paperless = DescribePhotos(client=client, prompt=args.prompt)
+        paperless = DescribePhotos(client=client, template_name=args.template)
 
-        logger.info(f"Starting document description process with model: {paperless.openai_model}")
+        logger.info(f"Starting document description process with model: {paperless.client.settings.openai_model}")
         results = paperless.describe_documents()
 
         if results:

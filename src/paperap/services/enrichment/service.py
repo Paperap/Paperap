@@ -183,27 +183,27 @@ class DocumentEnrichmentService:
         self._api_url = api_url
         self._ensure_default_templates()
         super().__init__()
-    
+
     def _ensure_default_templates(self) -> None:
         """
         Ensure default templates are available.
-        
+
         This method checks for the existence of default templates and creates them if necessary.
         """
         import pkgutil
         from pathlib import Path
-        
+
         # Directory where templates should be stored
         template_dir = Path(__file__).parent / "templates"
         template_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # List of default templates
         default_templates = [
             "document_description.jinja",
             "document_summary.jinja",
             "document_analysis.jinja",
         ]
-        
+
         # Check if templates exist, if not create them from package resources
         for template_name in default_templates:
             template_path = template_dir / template_name
@@ -212,7 +212,7 @@ class DocumentEnrichmentService:
                 template_content = pkgutil.get_data(
                     "paperap.services.enrichment", f"templates/{template_name}"
                 )
-                
+
                 if template_content:
                     # Write template to file
                     template_path.write_bytes(template_content)
