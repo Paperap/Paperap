@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
+import re
 from typing import TYPE_CHECKING, Annotated, Any, Iterable, Iterator, Self, TypedDict, cast, override
 
 import pydantic
@@ -1132,7 +1133,7 @@ class Document(StandardModel):
             document.pdf
 
         """
-        raise NotImplementedError()
+        return self._client.document_metadata.get_metadata(self.id)
 
     def download(self, original: bool = False) -> "DownloadedDocument":
         """
@@ -1161,7 +1162,7 @@ class Document(StandardModel):
             Downloaded 245367 bytes
 
         """
-        raise NotImplementedError()
+        return self._client.downloaded_documents.download_document(self.id, original)
 
     def preview(self, original: bool = False) -> "DownloadedDocument":
         """
@@ -1185,7 +1186,7 @@ class Document(StandardModel):
             ...     f.write(preview.content)
 
         """
-        raise NotImplementedError()
+        return self._client.downloaded_documents.download_preview(self.id, original)
 
     def thumbnail(self, original: bool = False) -> "DownloadedDocument":
         """
@@ -1208,7 +1209,7 @@ class Document(StandardModel):
             ...     f.write(thumbnail.content)
 
         """
-        raise NotImplementedError()
+        return self._client.downloaded_documents.download_thumbnail(self.id, original)
 
     def get_suggestions(self) -> "DocumentSuggestions":
         """
@@ -1231,7 +1232,7 @@ class Document(StandardModel):
             Suggested document type: {'name': 'Bill', 'score': 0.89}
 
         """
-        raise NotImplementedError()
+        return self._client.document_suggestions.get_suggestions(self.id)
 
     def append_content(self, value: str) -> None:
         """
