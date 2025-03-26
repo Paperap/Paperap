@@ -1,6 +1,6 @@
 [project]
 name = "paperap"
-version = "0.0.11"
+version = "0.0.12"
 description = "Python library for interacting with the Paperless NGX REST API"
 readme = "README.md"
 authors = [{ name = "Jess Mann", email = "jess@jmann.me" }]
@@ -21,6 +21,7 @@ license = "MIT"
 
 [project.scripts]
 paperap = "paperap:main"
+describe_docs = "paperap.scripts.describe:main"
 
 [build-system]
 requires = ["hatchling"]

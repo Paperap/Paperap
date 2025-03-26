@@ -233,7 +233,7 @@ class Document(StandardModel):
         # NOTE: Filtering appears to be disabled by paperless on page_count
         read_only_fields = {"page_count", "deleted_at", "is_shared_by_requester", "archived_file_name"}
         filtering_disabled = {"page_count", "deleted_at", "is_shared_by_requester"}
-        filtering_strategies = {FilteringStrategies.WHITELIST}
+        filtering_strategies = {FilteringStrategies.BLACKLIST}
         field_map = {
             "tags": "tag_ids",
             "custom_fields": "custom_field_dicts",
@@ -1043,21 +1043,25 @@ class Document(StandardModel):
             >>> document.remove_tag("Invoice")
 
         """
-        if isinstance(tag, int):
-            # TODO: Handle removal with consideration of "tags can't be empty" rule in paperless
-            self.tag_ids.remove(tag)
-            return
+        try:
+            if isinstance(tag, int):
+                # TODO: Handle removal with consideration of "tags can't be empty" rule in paperless
+                self.tag_ids.remove(tag)
+                return
 
-        if isinstance(tag, StandardModel):
-            # TODO: Handle removal with consideration of "tags can't be empty" rule in paperless
-            self.tag_ids.remove(tag.id)
-            return
+            if isinstance(tag, StandardModel):
+                # TODO: Handle removal with consideration of "tags can't be empty" rule in paperless
+                self.tag_ids.remove(tag.id)
+                return
 
-        if isinstance(tag, str):
-            # TODO: Handle removal with consideration of "tags can't be empty" rule in paperless
-            if not (instance := self._client.tags().filter(name=tag).first()):
-                raise ResourceNotFoundError(f"Tag '{tag}' not found")
-            self.tag_ids.remove(instance.id)
+            if isinstance(tag, str):
+                # TODO: Handle removal with consideration of "tags can't be empty" rule in paperless
+                if not (instance := self._client.tags().filter(name=tag).first()):
+                    raise ResourceNotFoundError(f"Tag '{tag}' not found")
+                self.tag_ids.remove(instance.id)
+                return
+        except ValueError as e:
+            logger.warning('Tag %s was not removed: %s', tag, e)
             return
 
         raise TypeError(f"Invalid type for tag: {type(tag)}")
