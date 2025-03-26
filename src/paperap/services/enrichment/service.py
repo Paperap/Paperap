@@ -250,10 +250,7 @@ class DocumentEnrichmentService:
         modified_prompt = self.signals.emit(
             "enrichment.render_prompt",
             args=prompt,
-            kwargs={
-                "document": document,
-                "config": config
-            },
+            kwargs={"document": document, "config": config},
             return_type=str,
         )
 

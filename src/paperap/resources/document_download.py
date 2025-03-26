@@ -44,7 +44,7 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
         RetrieveFileMode.DOWNLOAD: URLS.download,
     }
 
-    def download_document(self, document : int | Document, original : bool = True) -> DownloadedDocument:
+    def download_document(self, document: int | Document, original: bool = True) -> DownloadedDocument:
         """
         Download a document file from the Paperless-NgX API.
 
@@ -76,18 +76,13 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
         document_id = document.id if isinstance(document, Document) else document
 
         # Create a DownloadedDocument instance directly without using StandardResource.create
-        download = DownloadedDocument(
-            _resource = self,
-            id=document_id,
-            mode=RetrieveFileMode.DOWNLOAD,
-            original=original
-        )
+        download = DownloadedDocument(_resource=self, id=document_id, mode=RetrieveFileMode.DOWNLOAD, original=original)
 
         # Load the content # TODO: async
         self.load(download)
         return download
 
-    def download_thumbnail(self, document: int | Document, original : bool = True) -> DownloadedDocument:
+    def download_thumbnail(self, document: int | Document, original: bool = True) -> DownloadedDocument:
         """
         Download a document thumbnail from the Paperless-NgX API.
 
@@ -119,18 +114,13 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
         document_id = document.id if isinstance(document, Document) else document
 
         # Create a DownloadedDocument instance directly without using StandardResource.create
-        download = DownloadedDocument(
-            _resource=self,
-            id=document_id,
-            mode=RetrieveFileMode.THUMBNAIL,
-            original=original
-        )
+        download = DownloadedDocument(_resource=self, id=document_id, mode=RetrieveFileMode.THUMBNAIL, original=original)
 
         # Load the content # TODO: async
         self.load(download)
         return download
 
-    def download_preview(self, document: int | Document, original : bool = True) -> DownloadedDocument:
+    def download_preview(self, document: int | Document, original: bool = True) -> DownloadedDocument:
         """
         Download a document preview from the Paperless-NgX API.
 
@@ -162,12 +152,7 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
         document_id = document.id if isinstance(document, Document) else document
 
         # Create a DownloadedDocument instance directly without using StandardResource.create
-        download = DownloadedDocument(
-            _resource=self,
-            id=document_id,
-            mode=RetrieveFileMode.PREVIEW,
-            original=original
-        )
+        download = DownloadedDocument(_resource=self, id=document_id, mode=RetrieveFileMode.PREVIEW, original=original)
 
         # Load the content # TODO: async
         self.load(download)

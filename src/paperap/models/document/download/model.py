@@ -74,7 +74,7 @@ class DownloadedDocument(StandardModel):
     content_type: str | None = None
     disposition_filename: str | None = None
     disposition_type: str | None = None
-    _resource : "DownloadedDocumentResource" # type: ignore # because mypy doesn't accept nested generics
+    _resource: "DownloadedDocumentResource"  # type: ignore # because mypy doesn't accept nested generics
 
     class Meta(StandardModel.Meta):
         """
