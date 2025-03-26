@@ -76,7 +76,7 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
         document_id = document.id if isinstance(document, Document) else document
 
         # Create a DownloadedDocument instance directly without using StandardResource.create
-        download = DownloadedDocument(_resource=self, id=document_id, mode=RetrieveFileMode.DOWNLOAD, original=original)
+        download = DownloadedDocument(_resource=self, id=document_id, mode=RetrieveFileMode.DOWNLOAD, original=original) # type: ignore # mypy doesn't like passing _resource
 
         # Load the content # TODO: async
         self.load(download)
@@ -114,7 +114,7 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
         document_id = document.id if isinstance(document, Document) else document
 
         # Create a DownloadedDocument instance directly without using StandardResource.create
-        download = DownloadedDocument(_resource=self, id=document_id, mode=RetrieveFileMode.THUMBNAIL, original=original)
+        download = DownloadedDocument(_resource=self, id=document_id, mode=RetrieveFileMode.THUMBNAIL, original=original) # type: ignore # mypy doesn't like passing _resource
 
         # Load the content # TODO: async
         self.load(download)
@@ -152,7 +152,7 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
         document_id = document.id if isinstance(document, Document) else document
 
         # Create a DownloadedDocument instance directly without using StandardResource.create
-        download = DownloadedDocument(_resource=self, id=document_id, mode=RetrieveFileMode.PREVIEW, original=original)
+        download = DownloadedDocument(_resource=self, id=document_id, mode=RetrieveFileMode.PREVIEW, original=original) # type: ignore # mypy doesn't like passing _resource
 
         # Load the content # TODO: async
         self.load(download)

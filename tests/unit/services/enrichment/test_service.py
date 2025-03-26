@@ -541,7 +541,7 @@ class TestDocumentEnrichmentService(TestCase):
         # Process the document
         with self.assertLogs(level='ERROR') as log:
             result = self.service.process_document(self.document, self.config)
-            
+
             # Check the logs
             self.assertIn("Error extracting images from PDF: Failed to open stream", log.output[0])
 

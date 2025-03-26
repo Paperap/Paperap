@@ -152,7 +152,7 @@ class DisableTestClientRequests(UnitTestCase):
         mock_response.status_code = 200
         mock_response.json.return_value = {"key": "value"}
         mock_response.content = b'{"key": "value"}'
-        
+
         mock_session_request.return_value = mock_response
         result = self.client.request("GET", "api/documents/")
         mock_session_request.assert_called_once()
@@ -167,11 +167,11 @@ class DisableTestClientRequests(UnitTestCase):
         mock_response = Mock(spec=requests.Response)
         mock_response.status_code = 200
         mock_response.content = b"Binary content"
-        
+
         mock_session_request.return_value = mock_response
         result = self.client.request("GET", "api/documents/1/download/", json_response=False)
         self.assertEqual(result, b"Binary content")
-        
+
 class TestClientRequests(UnitTestCase):
     """Test the request methods of the PaperlessClient class."""
 
@@ -182,7 +182,7 @@ class TestClientRequests(UnitTestCase):
         mock_response.status_code = 200
         mock_response.json.return_value = {"key": "value"}
         mock_response.content = b'{"key": "value"}'
-        
+
         mock_session_request.return_value = mock_response
         _result = self.client.request("GET", "https://other-example.com/api/documents/")
         mock_session_request.assert_called_once()
@@ -195,7 +195,7 @@ class TestClientRequests(UnitTestCase):
         mock_response = Mock(spec=requests.Response)
         mock_response.status_code = 200
         mock_response.json.return_value = {"key": "value"}
-        
+
         mock_session_request.return_value = mock_response
         data = {"title": "Test Document"}
         self.client.request("POST", "api/documents/", data=data)
@@ -208,7 +208,7 @@ class TestClientRequests(UnitTestCase):
         mock_response = Mock(spec=requests.Response)
         mock_response.status_code = 200
         mock_response.json.return_value = {"key": "value"}
-        
+
         mock_session_request.return_value = mock_response
         files = {"file": ("test.pdf", b"file content")}
         data = {"title": "Test Document"}
@@ -225,7 +225,7 @@ class TestClientRequests(UnitTestCase):
         mock_response = Mock(spec=requests.Response)
         mock_response.status_code = 200
         mock_response.json.return_value = {"key": "value"}
-        
+
         mock_session_request.return_value = mock_response
         url = HttpUrl("http://example.com/api/documents/")
         self.client.request("GET", url)
@@ -238,7 +238,7 @@ class TestClientRequests(UnitTestCase):
         mock_response = Mock(spec=requests.Response)
         mock_response.status_code = 204
         mock_response.json.return_value = {"key": "value"}
-        
+
         mock_session_request.return_value = mock_response
         result = self.client.request("DELETE", "api/documents/1/")
         self.assertIsNone(result)
@@ -249,7 +249,7 @@ class TestClientRequests(UnitTestCase):
         mock_response = Mock(spec=requests.Response)
         mock_response.status_code = 200
         mock_response.json.return_value = {"key": "value"}
-        
+
         mock_session_request.return_value = mock_response
         methods = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]
         for method in methods:
@@ -263,7 +263,7 @@ class TestClientRequests(UnitTestCase):
         mock_response = Mock(spec=requests.Response)
         mock_response.status_code = 200
         mock_response.json.return_value = {"key": "value"}
-        
+
         mock_session_request.return_value = mock_response
         # With double slashes
         self.client.request("GET", "//api/documents/")
@@ -283,7 +283,7 @@ class TestClientRequests(UnitTestCase):
         mock_response.json.side_effect = ValueError("Invalid JSON")
         mock_response.content = b"Not JSON"
         mock_response.url = "https://example.com/api/documents/"
-        
+
         mock_session_request.return_value = mock_response
         with self.assertLogs(level="WARNING"):
             with self.assertRaises(ResponseParsingError):
@@ -656,7 +656,7 @@ class TestTokenGeneration(UnitTestCase):
 
 class TestSignalIntegration(UnitTestCase):
     """Test the integration with the signal system."""
-    
+
     @override
     def tearDown(self) -> None:
         """Clean up any resources used by the tests."""

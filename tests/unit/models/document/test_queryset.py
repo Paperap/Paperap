@@ -43,7 +43,7 @@ class TestTagFilters(DocumentQuerySetTestCase):
         """Test filtering by a single tag ID."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         result = queryset.tag_id(1)
         mock_filter.assert_called_once_with(tags__id=1)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -53,7 +53,7 @@ class TestTagFilters(DocumentQuerySetTestCase):
         """Test filtering by a list of tag IDs."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         result = queryset.tag_id([1, 2, 3])
         mock_filter.assert_called_once_with(tags__id__in=[1, 2, 3])
         self.assertIsInstance(result, DocumentQuerySet)
@@ -63,7 +63,7 @@ class TestTagFilters(DocumentQuerySetTestCase):
         """Test filtering by tag name with exact match and case insensitive."""
         queryset = self.create_queryset()
         mock_filter_field.return_value = queryset
-        
+
         result = queryset.tag_name("Invoice")
         mock_filter_field.assert_called_once_with("tags__name", "Invoice", exact=True, case_insensitive=True)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -73,7 +73,7 @@ class TestTagFilters(DocumentQuerySetTestCase):
         """Test filtering by tag name with contains and case sensitive."""
         queryset = self.create_queryset()
         mock_filter_field.return_value = queryset
-        
+
         result = queryset.tag_name("Invoice", exact=False, case_insensitive=False)
         mock_filter_field.assert_called_once_with("tags__name", "Invoice", exact=False, case_insensitive=False)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -90,7 +90,7 @@ class TestTitleFilter(DocumentQuerySetTestCase):
         """Test filtering by title with exact match and case insensitive."""
         queryset = self.create_queryset()
         mock_filter_field.return_value = queryset
-        
+
         result = queryset.title("Invoice")
         mock_filter_field.assert_called_once_with("title", "Invoice", exact=True, case_insensitive=True)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -100,7 +100,7 @@ class TestTitleFilter(DocumentQuerySetTestCase):
         """Test filtering by title with contains and case sensitive."""
         queryset = self.create_queryset()
         mock_filter_field.return_value = queryset
-        
+
         result = queryset.title("Invoice", exact=False, case_insensitive=False)
         mock_filter_field.assert_called_once_with("title", "Invoice", exact=False, case_insensitive=False)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -117,7 +117,7 @@ class TestCorrespondentFilters(DocumentQuerySetTestCase):
         """Test filtering by correspondent ID."""
         queryset = self.create_queryset()
         mock_id.return_value = queryset
-        
+
         result = queryset.correspondent(1)
         mock_id.assert_called_once_with(1)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -127,7 +127,7 @@ class TestCorrespondentFilters(DocumentQuerySetTestCase):
         """Test filtering by correspondent name."""
         queryset = self.create_queryset()
         mock_name.return_value = queryset
-        
+
         result = queryset.correspondent("John Doe")
         mock_name.assert_called_once_with("John Doe", exact=True, case_insensitive=True)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -143,7 +143,7 @@ class TestCorrespondentFilters(DocumentQuerySetTestCase):
         """Test filtering by correspondent ID as keyword argument."""
         queryset = self.create_queryset()
         mock_id.return_value = queryset
-        
+
         result = queryset.correspondent(id=1)
         mock_id.assert_called_once_with(1)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -153,7 +153,7 @@ class TestCorrespondentFilters(DocumentQuerySetTestCase):
         """Test filtering by correspondent name as keyword argument."""
         queryset = self.create_queryset()
         mock_name.return_value = queryset
-        
+
         result = queryset.correspondent(name="John Doe")
         mock_name.assert_called_once_with("John Doe", exact=True, case_insensitive=True)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -163,7 +163,7 @@ class TestCorrespondentFilters(DocumentQuerySetTestCase):
         """Test filtering by correspondent slug as keyword argument."""
         queryset = self.create_queryset()
         mock_slug.return_value = queryset
-        
+
         result = queryset.correspondent(slug="john-doe")
         mock_slug.assert_called_once_with("john-doe", exact=True, case_insensitive=True)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -175,7 +175,7 @@ class TestCorrespondentFilters(DocumentQuerySetTestCase):
         queryset = self.create_queryset()
         mock_id.return_value = queryset
         mock_name.return_value = queryset
-        
+
         result = queryset.correspondent(id=1, name="John Doe")
         mock_id.assert_called_once_with(1)
         mock_name.assert_called_once_with("John Doe", exact=True, case_insensitive=True)
@@ -192,7 +192,7 @@ class TestCorrespondentFilters(DocumentQuerySetTestCase):
         """Test filtering by correspondent ID."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         result = queryset.correspondent_id(1)
         mock_filter.assert_called_once_with(correspondent__id=1)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -202,7 +202,7 @@ class TestCorrespondentFilters(DocumentQuerySetTestCase):
         """Test filtering by correspondent name."""
         queryset = self.create_queryset()
         mock_filter_field.return_value = queryset
-        
+
         result = queryset.correspondent_name("John Doe")
         mock_filter_field.assert_called_once_with(
             "correspondent__name", "John Doe", exact=True, case_insensitive=True
@@ -214,7 +214,7 @@ class TestCorrespondentFilters(DocumentQuerySetTestCase):
         """Test filtering by correspondent slug."""
         queryset = self.create_queryset()
         mock_filter_field.return_value = queryset
-        
+
         result = queryset.correspondent_slug("john-doe")
         mock_filter_field.assert_called_once_with(
             "correspondent__slug", "john-doe", exact=True, case_insensitive=True
@@ -233,7 +233,7 @@ class TestDocumentTypeFilters(DocumentQuerySetTestCase):
         """Test filtering by document type ID."""
         queryset = self.create_queryset()
         mock_id.return_value = queryset
-        
+
         result = queryset.document_type(1)
         mock_id.assert_called_once_with(1)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -243,7 +243,7 @@ class TestDocumentTypeFilters(DocumentQuerySetTestCase):
         """Test filtering by document type name."""
         queryset = self.create_queryset()
         mock_name.return_value = queryset
-        
+
         result = queryset.document_type("Invoice")
         mock_name.assert_called_once_with("Invoice", exact=True, case_insensitive=True)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -259,7 +259,7 @@ class TestDocumentTypeFilters(DocumentQuerySetTestCase):
         """Test filtering by document type ID as keyword argument."""
         queryset = self.create_queryset()
         mock_id.return_value = queryset
-        
+
         result = queryset.document_type(id=1)
         mock_id.assert_called_once_with(1)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -269,7 +269,7 @@ class TestDocumentTypeFilters(DocumentQuerySetTestCase):
         """Test filtering by document type name as keyword argument."""
         queryset = self.create_queryset()
         mock_name.return_value = queryset
-        
+
         result = queryset.document_type(name="Invoice")
         mock_name.assert_called_once_with("Invoice", exact=True, case_insensitive=True)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -281,7 +281,7 @@ class TestDocumentTypeFilters(DocumentQuerySetTestCase):
         queryset = self.create_queryset()
         mock_id.return_value = queryset
         mock_name.return_value = queryset
-        
+
         result = queryset.document_type(id=1, name="Invoice")
         mock_id.assert_called_once_with(1)
         mock_name.assert_called_once_with("Invoice", exact=True, case_insensitive=True)
@@ -298,7 +298,7 @@ class TestDocumentTypeFilters(DocumentQuerySetTestCase):
         """Test filtering by document type ID."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         result = queryset.document_type_id(1)
         mock_filter.assert_called_once_with(document_type__id=1)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -308,7 +308,7 @@ class TestDocumentTypeFilters(DocumentQuerySetTestCase):
         """Test filtering by document type name."""
         queryset = self.create_queryset()
         mock_filter_field.return_value = queryset
-        
+
         result = queryset.document_type_name("Invoice")
         mock_filter_field.assert_called_once_with(
             "document_type__name", "Invoice", exact=True, case_insensitive=True
@@ -325,7 +325,7 @@ class TestStoragePathFilters(DocumentQuerySetTestCase):
         """Test filtering by storage path ID."""
         queryset = self.create_queryset()
         mock_id.return_value = queryset
-        
+
         result = queryset.storage_path(1)
         mock_id.assert_called_once_with(1)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -335,7 +335,7 @@ class TestStoragePathFilters(DocumentQuerySetTestCase):
         """Test filtering by storage path name."""
         queryset = self.create_queryset()
         mock_name.return_value = queryset
-        
+
         result = queryset.storage_path("Invoices")
         mock_name.assert_called_once_with("Invoices", exact=True, case_insensitive=True)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -351,7 +351,7 @@ class TestStoragePathFilters(DocumentQuerySetTestCase):
         """Test filtering by storage path ID as keyword argument."""
         queryset = self.create_queryset()
         mock_id.return_value = queryset
-        
+
         result = queryset.storage_path(id=1)
         mock_id.assert_called_once_with(1)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -361,7 +361,7 @@ class TestStoragePathFilters(DocumentQuerySetTestCase):
         """Test filtering by storage path name as keyword argument."""
         queryset = self.create_queryset()
         mock_name.return_value = queryset
-        
+
         result = queryset.storage_path(name="Invoices")
         mock_name.assert_called_once_with("Invoices", exact=True, case_insensitive=True)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -373,7 +373,7 @@ class TestStoragePathFilters(DocumentQuerySetTestCase):
         queryset = self.create_queryset()
         mock_id.return_value = queryset
         mock_name.return_value = queryset
-        
+
         result = queryset.storage_path(id=1, name="Invoices")
         mock_id.assert_called_once_with(1)
         mock_name.assert_called_once_with("Invoices", exact=True, case_insensitive=True)
@@ -390,7 +390,7 @@ class TestStoragePathFilters(DocumentQuerySetTestCase):
         """Test filtering by storage path ID."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         result = queryset.storage_path_id(1)
         mock_filter.assert_called_once_with(storage_path__id=1)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -400,7 +400,7 @@ class TestStoragePathFilters(DocumentQuerySetTestCase):
         """Test filtering by storage path name."""
         queryset = self.create_queryset()
         mock_filter_field.return_value = queryset
-        
+
         result = queryset.storage_path_name("Invoices")
         mock_filter_field.assert_called_once_with(
             "storage_path__name", "Invoices", exact=True, case_insensitive=True
@@ -419,7 +419,7 @@ class TestContentFilter(DocumentQuerySetTestCase):
         """Test filtering by content."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         result = queryset.content("invoice")
         mock_filter.assert_called_once_with(content__contains="invoice")
         self.assertIsInstance(result, DocumentQuerySet)
@@ -434,7 +434,7 @@ class TestDateFilters(DocumentQuerySetTestCase):
         """Test filtering by added after date."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         result = queryset.added_after("2025-01-01")
         mock_filter.assert_called_once_with(added__gt="2025-01-01")
         self.assertIsInstance(result, DocumentQuerySet)
@@ -444,7 +444,7 @@ class TestDateFilters(DocumentQuerySetTestCase):
         """Test filtering by added before date."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         result = queryset.added_before("2025-01-01")
         mock_filter.assert_called_once_with(added__lt="2025-01-01")
         self.assertIsInstance(result, DocumentQuerySet)
@@ -454,7 +454,7 @@ class TestDateFilters(DocumentQuerySetTestCase):
         """Test filtering by created before date with datetime object."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         date = datetime(2025, 1, 1)
         result = queryset.created_before(date)
         mock_filter.assert_called_once_with(created__lt="2025-01-01")
@@ -465,7 +465,7 @@ class TestDateFilters(DocumentQuerySetTestCase):
         """Test filtering by created before date with string."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         result = queryset.created_before("2025-01-01")
         mock_filter.assert_called_once_with(created__lt="2025-01-01")
         self.assertIsInstance(result, DocumentQuerySet)
@@ -475,7 +475,7 @@ class TestDateFilters(DocumentQuerySetTestCase):
         """Test filtering by created after date with datetime object."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         date = datetime(2025, 1, 1)
         result = queryset.created_after(date)
         mock_filter.assert_called_once_with(created__gt="2025-01-01")
@@ -486,7 +486,7 @@ class TestDateFilters(DocumentQuerySetTestCase):
         """Test filtering by created after date with string."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         result = queryset.created_after("2025-01-01")
         mock_filter.assert_called_once_with(created__gt="2025-01-01")
         self.assertIsInstance(result, DocumentQuerySet)
@@ -496,7 +496,7 @@ class TestDateFilters(DocumentQuerySetTestCase):
         """Test filtering by created between dates with datetime objects."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         start = datetime(2025, 1, 1)
         end = datetime(2025, 12, 31)
         result = queryset.created_between(start, end)
@@ -508,7 +508,7 @@ class TestDateFilters(DocumentQuerySetTestCase):
         """Test filtering by created between dates with strings."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         result = queryset.created_between("2025-01-01", "2025-12-31")
         mock_filter.assert_called_once_with(created__range=("2025-01-01", "2025-12-31"))
         self.assertIsInstance(result, DocumentQuerySet)
@@ -518,7 +518,7 @@ class TestDateFilters(DocumentQuerySetTestCase):
         """Test filtering by created between dates with mixed types."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         start = datetime(2025, 1, 1)
         result = queryset.created_between(start, "2025-12-31")
         mock_filter.assert_called_once_with(created__range=("2025-01-01", "2025-12-31"))
@@ -535,7 +535,7 @@ class TestMiscFilters(DocumentQuerySetTestCase):
         """Test filtering by archive serial number."""
         queryset = self.create_queryset()
         mock_filter_field.return_value = queryset
-        
+
         result = queryset.asn("123456")
         mock_filter_field.assert_called_once_with("asn", "123456", exact=True, case_insensitive=True)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -545,7 +545,7 @@ class TestMiscFilters(DocumentQuerySetTestCase):
         """Test filtering by original file name."""
         queryset = self.create_queryset()
         mock_filter_field.return_value = queryset
-        
+
         result = queryset.original_filename("invoice.pdf")
         mock_filter_field.assert_called_once_with(
             "original_filename", "invoice.pdf", exact=True, case_insensitive=True
@@ -557,7 +557,7 @@ class TestMiscFilters(DocumentQuerySetTestCase):
         """Test filtering by user change permission."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         result = queryset.user_can_change(True)
         mock_filter.assert_called_once_with(user_can_change=True)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -567,7 +567,7 @@ class TestMiscFilters(DocumentQuerySetTestCase):
         """Test filtering by notes."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         result = queryset.notes("important")
         mock_filter.assert_called_once_with(notes__contains="important")
         self.assertIsInstance(result, DocumentQuerySet)
@@ -584,7 +584,7 @@ class TestCustomFieldFilters(DocumentQuerySetTestCase):
         """Test full search of custom fields with case insensitive."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         result = queryset.custom_field_fullsearch("invoice")
         mock_filter.assert_called_once_with(custom_fields__icontains="invoice")
         self.assertIsInstance(result, DocumentQuerySet)
@@ -600,7 +600,7 @@ class TestCustomFieldFilters(DocumentQuerySetTestCase):
         """Test filtering by custom field with exact match and case insensitive."""
         queryset = self.create_queryset()
         mock_query.return_value = queryset
-        
+
         result = queryset.custom_field("amount", 100, exact=True)
         mock_query.assert_called_once_with("amount", "iexact", 100)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -610,7 +610,7 @@ class TestCustomFieldFilters(DocumentQuerySetTestCase):
         """Test filtering by custom field with exact match and case sensitive."""
         queryset = self.create_queryset()
         mock_query.return_value = queryset
-        
+
         result = queryset.custom_field("amount", 100, exact=True, case_insensitive=False)
         mock_query.assert_called_once_with("amount", "exact", 100)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -620,7 +620,7 @@ class TestCustomFieldFilters(DocumentQuerySetTestCase):
         """Test filtering by custom field with contains and case insensitive."""
         queryset = self.create_queryset()
         mock_query.return_value = queryset
-        
+
         result = queryset.custom_field("amount", 100, exact=False)
         mock_query.assert_called_once_with("amount", "icontains", 100)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -630,7 +630,7 @@ class TestCustomFieldFilters(DocumentQuerySetTestCase):
         """Test filtering by custom field with contains and case sensitive."""
         queryset = self.create_queryset()
         mock_query.return_value = queryset
-        
+
         result = queryset.custom_field("amount", 100, exact=False, case_insensitive=False)
         mock_query.assert_called_once_with("amount", "contains", 100)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -640,7 +640,7 @@ class TestCustomFieldFilters(DocumentQuerySetTestCase):
         """Test filtering by custom field ID."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         result = queryset.has_custom_field_id(1)
         mock_filter.assert_called_once_with(custom_fields__id__in=1)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -650,7 +650,7 @@ class TestCustomFieldFilters(DocumentQuerySetTestCase):
         """Test filtering by list of custom field IDs."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         result = queryset.has_custom_field_id([1, 2, 3])
         mock_filter.assert_called_once_with(custom_fields__id__in=[1, 2, 3])
         self.assertIsInstance(result, DocumentQuerySet)
@@ -660,7 +660,7 @@ class TestCustomFieldFilters(DocumentQuerySetTestCase):
         """Test filtering by custom field ID with exact match."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         result = queryset.has_custom_field_id(1, exact=True)
         mock_filter.assert_called_once_with(custom_fields__id__all=1)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -670,7 +670,7 @@ class TestCustomFieldFilters(DocumentQuerySetTestCase):
         """Test filtering for documents with custom fields."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         result = queryset.has_custom_fields()
         mock_filter.assert_called_once_with(has_custom_fields=True)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -680,7 +680,7 @@ class TestCustomFieldFilters(DocumentQuerySetTestCase):
         """Test filtering for documents without custom fields."""
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
-        
+
         result = queryset.no_custom_fields()
         mock_filter.assert_called_once_with(has_custom_fields=False)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -751,7 +751,7 @@ class TestCustomFieldQueryMethods(DocumentQuerySetTestCase):
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
         mock_normalize.return_value = '["amount", "exact", 100]'
-        
+
         query = CustomFieldQuery("amount", "exact", 100)
         result = queryset.custom_field_query(query)
         mock_normalize.assert_called_once_with(query)
@@ -765,7 +765,7 @@ class TestCustomFieldQueryMethods(DocumentQuerySetTestCase):
         queryset = self.create_queryset()
         mock_filter.return_value = queryset
         mock_normalize.return_value = '["amount", "exact", 100]'
-        
+
         result = queryset.custom_field_query("amount", "exact", 100)
         mock_filter.assert_called_once_with(custom_field_query='["amount", "exact", 100]')
         self.assertIsInstance(result, DocumentQuerySet)
@@ -781,7 +781,7 @@ class TestCustomFieldQueryMethods(DocumentQuerySetTestCase):
         """Test filtering by custom field range."""
         queryset = self.create_queryset()
         mock_query.return_value = queryset
-        
+
         result = queryset.custom_field_range("amount", "50", "150")
         mock_query.assert_called_once_with("amount", "range", ["50", "150"])
         self.assertIsInstance(result, DocumentQuerySet)
@@ -791,7 +791,7 @@ class TestCustomFieldQueryMethods(DocumentQuerySetTestCase):
         """Test filtering by custom field exact match."""
         queryset = self.create_queryset()
         mock_query.return_value = queryset
-        
+
         result = queryset.custom_field_exact("amount", 100)
         mock_query.assert_called_once_with("amount", "exact", 100)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -801,7 +801,7 @@ class TestCustomFieldQueryMethods(DocumentQuerySetTestCase):
         """Test filtering by custom field in a list of values."""
         queryset = self.create_queryset()
         mock_query.return_value = queryset
-        
+
         result = queryset.custom_field_in("amount", [50, 100, 150])
         mock_query.assert_called_once_with("amount", "in", [50, 100, 150])
         self.assertIsInstance(result, DocumentQuerySet)
@@ -811,7 +811,7 @@ class TestCustomFieldQueryMethods(DocumentQuerySetTestCase):
         """Test filtering by custom field is null."""
         queryset = self.create_queryset()
         mock_query.return_value = queryset
-        
+
         result = queryset.custom_field_isnull("amount")
         mock_query.assert_called_once_with("OR", ("amount", "isnull", True), ["amount", "exact", ""])
         self.assertIsInstance(result, DocumentQuerySet)
@@ -821,7 +821,7 @@ class TestCustomFieldQueryMethods(DocumentQuerySetTestCase):
         """Test filtering by custom field exists."""
         queryset = self.create_queryset()
         mock_query.return_value = queryset
-        
+
         result = queryset.custom_field_exists("amount")
         mock_query.assert_called_once_with("amount", "exists", True)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -831,7 +831,7 @@ class TestCustomFieldQueryMethods(DocumentQuerySetTestCase):
         """Test filtering by custom field does not exist."""
         queryset = self.create_queryset()
         mock_query.return_value = queryset
-        
+
         result = queryset.custom_field_exists("amount", False)
         mock_query.assert_called_once_with("amount", "exists", False)
         self.assertIsInstance(result, DocumentQuerySet)
@@ -841,7 +841,7 @@ class TestCustomFieldQueryMethods(DocumentQuerySetTestCase):
         """Test filtering by custom field contains all values."""
         queryset = self.create_queryset()
         mock_query.return_value = queryset
-        
+
         result = queryset.custom_field_contains("tags", ["invoice", "receipt"])
         mock_query.assert_called_once_with("tags", "contains", ["invoice", "receipt"])
         self.assertIsInstance(result, DocumentQuerySet)

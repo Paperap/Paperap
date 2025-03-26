@@ -420,7 +420,7 @@ class TestSaveNone(IntegrationTest):
                     # Get a new copy
                     document = self.client.documents().get(self._initial_data['id'])
                     self.assertEqual(value, getattr(document, field), f"{field} not updated in remote instance")
-            
+
             # Verify the "not dirty" messages were logged
             self.assertTrue(any("Model is not dirty, skipping save" in entry for entry in log.output))
 

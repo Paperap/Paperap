@@ -634,7 +634,7 @@ class TestDescribePhotos(DocumentUnitTest):
             result = self.describe.process_response(response, document)
             self.assertEqual(result, document)
             self.assertIn("Failed to parse response as JSON", log.output[0])
-        
+
         # The actual implementation logs the error but doesn't append content for invalid JSON
         mock_append_content.assert_not_called()
 
@@ -652,7 +652,7 @@ class TestDescribePhotos(DocumentUnitTest):
             result = self.describe.process_response(response, document)
             self.assertEqual(result, document)
             self.assertIn("Parsed response not a dictionary. Saving response raw to document.content. Document #123", log.output[0])
-        
+
         # Check that append_content was called with the raw response
         mock_append_content.assert_called_once_with(response)
 
