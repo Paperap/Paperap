@@ -29,10 +29,10 @@ Example:
 from __future__ import annotations
 
 from paperap.models.tag import Tag, TagQuerySet
-from paperap.resources.base import BaseResource, BulkEditing, StandardResource
+from paperap.resources.base import BaseResource, BulkEditingMixin, StandardResource
 
 
-class TagResource(StandardResource[Tag, TagQuerySet], BulkEditing):
+class TagResource(StandardResource[Tag, TagQuerySet], BulkEditingMixin[Tag]):
     """
     Manage tag resources in the Paperless-NgX system.
 

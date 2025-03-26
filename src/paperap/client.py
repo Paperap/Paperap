@@ -9,6 +9,7 @@ access to all API resources.
 from __future__ import annotations
 
 import logging
+import os
 import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, Unpack, overload
@@ -169,7 +170,7 @@ class PaperlessClient:
         # Set default headers
         self.session.headers.update(
             {
-                "Accept": "application/json; version=2",
+                "Accept": "application/json; version=7",
                 # Don't set Content-Type here as it will be set appropriately per request
                 # "Content-Type": "application/json",
             }
@@ -262,18 +263,19 @@ class PaperlessClient:
         # Create and configure the plugin manager
         self.manager = PluginManager(client=self)
 
-        # Discover available plugins
-        self.manager.discover_plugins()
+        if os.getenv("PAPERAP_TESTING", False):
+            # Discover available plugins
+            self.manager.discover_plugins()
 
-        # Configure plugins
-        plugin_config = plugin_config or {
-            "enabled_plugins": ["SampleDataCollector"],
-            "settings": {
-                "SampleDataCollector": {
-                    "test_dir": str(Path(__file__).parents[3] / "tests/sample_data"),
+            # Configure plugins
+            plugin_config = plugin_config or {
+                "enabled_plugins": ["SampleDataCollector"],
+                "settings": {
+                    "SampleDataCollector": {
+                        "test_dir": str(Path(__file__).parents[3] / "tests/sample_data"),
+                    },
                 },
-            },
-        }
+            }
         self.manager.configure(plugin_config)
 
         # Initialize all enabled plugins
@@ -613,7 +615,11 @@ class PaperlessClient:
 
         registry.emit("client.request:before", "Before a request is sent to the Paperless server", args=[self], kwargs=kwargs)
 
-        if not (response := self.request_raw(method, endpoint, params=params, data=data, files=files)):
+        # Get the response from request_raw
+        response = self.request_raw(method, endpoint, params=params, data=data, files=files)
+
+        # Only return None if response is exactly None (not just falsey)
+        if response is None:
             return None
 
         registry.emit(

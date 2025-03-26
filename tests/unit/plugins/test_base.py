@@ -88,6 +88,7 @@ class TestPlugin(unittest.TestCase):
         # Setup patcher for Plugin's validation to bypass type checking
         patcher = patch('paperap.plugins.base.Plugin.model_validate')
         self.mock_validate = patcher.start()
+        self.addCleanup(patcher.stop)
 
         # Make model_validate create and return a properly configured instance
         def side_effect(obj, **kwargs):
@@ -103,7 +104,6 @@ class TestPlugin(unittest.TestCase):
             return obj
 
         self.mock_validate.side_effect = side_effect
-        self.addCleanup(patcher.stop)
 
     def test_plugin_initialization(self) -> None:
         """

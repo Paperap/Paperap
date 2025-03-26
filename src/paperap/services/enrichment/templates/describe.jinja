@@ -1,0 +1,94 @@
+{# 
+  Document description template for OpenAI vision models
+  
+  This template generates a prompt for OpenAI to analyze and describe images.
+  It provides instructions for generating structured descriptions with specific
+  elements like title, detailed description, date identification, tags, and document type.
+  
+  Variables:
+    document: The Document object containing metadata about the image
+    tag_names: List of tag names on the document
+    correspondent: Name of the document's correspondent
+    document_type: Name of the document's document type
+    custom_fields: Dictionary of custom field values
+#}
+
+Your task is to describe the document or photo you are shown.
+
+# Document Metadata
+{% if document.title %}Current Title: {{ document.title }}{% endif %}
+{% if document.created %}Current Date: {{ document.created }}{% endif %}
+{% if correspondent %}Correspondent: {{ correspondent }}{% endif %}
+{% if document_type %}Document Type: {{ document_type }}{% endif %}
+
+{% if tag_names %}
+Tags:
+{% for tag in tag_names %}
+    - {{ tag }}
+{% endfor %}
+{% endif %}
+
+{% if custom_fields %}
+Custom Fields:
+{% for field_name, field_value in custom_fields.items() %}
+    - {{ field_name }}: {{ field_value }}
+{% endfor %}
+{% endif %}
+
+# Instructions
+Analyze the image or document carefully and provide a detailed, structured description. Ensure your response is optimized for searchability by including specific keywords and contextual information.
+
+## Title Suggestion
+Provide a concise and relevant title that best describes the document in 5-10 words.
+The title should be descriptive yet practical, ensuring it aids in quick identification.
+
+## Detailed Description
+Describe everything visible in the document, including:
+- Visual elements (buildings, people, objects, clothing, signage)
+- Text content (transcribe any visible text)
+- Layout and format
+- Context and purpose of the document
+- Any notable details that would help identify this specific document
+
+## Date Identification
+If a date is visible anywhere in the document, extract and format it as YYYY-MM-DD.
+If no explicit date is visible but an approximate time period can be inferred, provide an estimated date or decade (e.g., "circa 1920s").
+If no date can be determined, state "Date Unknown."
+
+## Tag Suggestions
+Suggest tags for the document based on its content and type. Use existing tags when applicable:
+{% for tag in tag_names %}
+- {{ tag }}
+{% endfor %}
+
+## Custom Field Suggestions
+Suggest values for these custom fields based on the document's content:
+{% for field_name, field_value in custom_fields.items() %}
+- {{ field_name }}: Currently "{{ field_value }}"
+{% endfor %}
+
+## Document Type
+Classify the document as one of the following types:
+Photograph, Letter, Invoice, Receipt, Report, Contract, Form, Certificate, Other
+
+## Output Format
+The output should be a JSON object with the following keys:
+- title: Suggested title for the document
+- description: Detailed description of the document contents
+- date: Extracted or inferred date (YYYY-MM-DD format) or "Date Unknown"
+- tags: Array of suggested tags
+- document_type: Document classification
+- custom_fields: Object with suggested values for custom fields
+
+# Example Output
+{
+    "title": "Invoice from Acme Corp, March 2023",
+    "description": "This document is an invoice from Acme Corporation dated March 15, 2023. It details a purchase of office supplies including paper, pens, and folders for a total of $156.78. The invoice includes the Acme Corp logo in the top right corner, a blue letterhead, and the signature of John Smith, Sales Manager.",
+    "date": "2023-03-15",
+    "tags": ["invoice", "acme", "office supplies"],
+    "document_type": "Invoice",
+    "custom_fields": {
+        "amount": "156.78",
+        "vendor": "Acme Corporation"
+    }
+}

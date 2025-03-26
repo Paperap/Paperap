@@ -7,7 +7,8 @@ from paperap.resources.document_download import DownloadedDocumentResource
 from paperap.resources.document_metadata import DocumentMetadataResource
 from paperap.resources.document_suggestions import DocumentSuggestionsResource
 from paperap.resources.document_types import DocumentTypeResource
-from paperap.resources.documents import DocumentNoteResource, DocumentResource
+from paperap.resources.document_notes import DocumentNoteResource
+from paperap.resources.documents import DocumentResource
 from paperap.resources.profile import ProfileResource
 from paperap.resources.saved_views import SavedViewResource
 from paperap.resources.share_links import ShareLinksResource

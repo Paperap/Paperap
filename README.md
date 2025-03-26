@@ -26,6 +26,8 @@ pip install paperap
 
 ## Quick Start
 
+Documentation: [https://paperap.readthedocs.io](https://paperap.readthedocs.io)
+
 ### Creating a Client
 
 #### Using API Token:
@@ -146,24 +148,25 @@ pre-commit run --all-files
 ```
 
 ## TODO
-- [ ] unit tests to 100% coverage (currently around 85%)
+- [ ] increase test coverage (currently around 85%)
 - [ ] Make integration tests easier to setup for other users (wip)
 - [ ] Deleting tags, custom fields, etc via document.tags = None
 - [ ] devcontainer (wip)
-- [x] git action to distribute to pypi
-- [ ] Remove validators that pydantic handles natively
-- [ ] cli tools
-- [ ] batch editing (done? needs integration tests)
+- [ ] cli tools (1 done)
 - [ ] updating permissions, ownership, sharing, etc
 - [ ] changing settings
 - [ ] local queryset filtering on fields not supported by api
 - [ ] unit tests for additional edge cases
 - [ ] immutability (resources, response dicts, (optionally) for models)
 - [ ] hypothesis testing (additional models)
+- [ ] factories create relationships in db
+- [ ] Lazy Document Evaluation after upload/download async
+- [x] Remove validators that pydantic handles natively
+- [x] factories create unique names
+- [x] git action to distribute to pypi
+- [x] batch editing
 - [x] Empty trash
-- [ ] factories create unique names, and create relationships in db
-- [ ] publish sphinx docs (once stable)
-- [ ] Lazy Document Evaluation after upload async
+- [x] publish sphinx docs
 - [x] Compile sphinx documentation
 - [x] async model updates
 - [x] uploading documents

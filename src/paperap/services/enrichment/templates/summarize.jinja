@@ -1,0 +1,61 @@
+{# 
+  Document summarization template for OpenAI
+  
+  This template generates a prompt for OpenAI to summarize document content.
+  It provides context about the document and instructions for generating a
+  structured summary.
+  
+  Variables:
+    document: The Document object containing metadata about the document
+    tag_names: List of tag names on the document
+    correspondent: Name of the document's correspondent
+    document_type: Name of the document's document type
+    custom_fields: Dictionary of custom field values
+#}
+
+Your task is to summarize the content of a document.
+
+# Document Metadata
+{% if document.title %}Title: {{ document.title }}{% endif %}
+{% if document.created %}Date: {{ document.created }}{% endif %}
+{% if correspondent %}Correspondent: {{ correspondent }}{% endif %}
+{% if document_type %}Document Type: {{ document_type }}{% endif %}
+
+{% if tag_names %}
+Tags:
+{% for tag in tag_names %}
+    - {{ tag }}
+{% endfor %}
+{% endif %}
+
+{% if custom_fields %}
+Custom Fields:
+{% for field_name, field_value in custom_fields.items() %}
+    - {{ field_name }}: {{ field_value }}
+{% endfor %}
+{% endif %}
+
+# Document Content
+{{ document.content }}
+
+# Instructions
+Create a concise but comprehensive summary of the document that captures:
+- The main purpose or subject of the document
+- Key points, findings, or conclusions
+- Important details, figures, dates, or entities mentioned
+- The overall context and significance
+
+Also suggest an improved title that accurately reflects the document's content.
+
+Your summary should be approximately 100-200 words and written in a clear, professional style.
+
+## Output Format
+The output should be a JSON object with the following keys:
+- summary: A comprehensive summary of the document
+- title: A suggested title for the document (if the current one can be improved)
+
+# Example Output
+{
+    "summary": "This quarterly financial report from Acme Corporation shows revenue of $2.3M for Q1 2023, a 15% increase over the same period last year. Major growth areas include cloud services (32% increase) and consulting (18% increase). Operating expenses rose by 7%, primarily due to new hires in the engineering department. The report highlights the successful launch of the company's new analytics platform and projects continued growth in Q2.",
+    "title": "Acme Corporation Q1 2023 Financial Report"
+}

@@ -17,10 +17,10 @@ from __future__ import annotations
 from typing import Type
 
 from paperap.models.document_type import DocumentType, DocumentTypeQuerySet
-from paperap.resources.base import BulkEditing, StandardResource
+from paperap.resources.base import BulkEditingMixin, StandardResource
 
 
-class DocumentTypeResource(StandardResource[DocumentType, DocumentTypeQuerySet], BulkEditing):
+class DocumentTypeResource(StandardResource[DocumentType, DocumentTypeQuerySet], BulkEditingMixin[DocumentType]):
     """
     Resource for managing document types in Paperless-NgX.
 

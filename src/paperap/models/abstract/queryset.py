@@ -10,10 +10,8 @@ from __future__ import annotations
 
 import copy
 import logging
-from datetime import datetime
-import resource
 from string import Template
-from typing import TYPE_CHECKING, Any, Final, Generic, Iterable, Iterator, Protocol, Self, TypeAlias, Union, override
+from typing import TYPE_CHECKING, Any, Generic, Iterable, Iterator, Protocol, Self, override
 
 from pydantic import HttpUrl
 from typing_extensions import TypeVar
@@ -205,15 +203,12 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         processed_filters = {}
 
         for key, value in kwargs.items():
-            # Handle list values for __in lookups
             if isinstance(value, (list, set, tuple)):
                 # Convert list to comma-separated string for the API
                 processed_value = ",".join(str(item) for item in value)
                 processed_filters[key] = processed_value
-            # Handle boolean values
             elif isinstance(value, bool):
                 processed_filters[key] = str(value).lower()
-            # Handle normal values
             else:
                 processed_filters[key] = value
 
@@ -752,6 +747,31 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
 
         return clone
 
+    def delete(self) -> Any:
+        """
+        Delete all objects in the queryset.
+
+        The Base QuerySet calls a separate delete request for each object. Some
+        child classes offer bulk deletion functionality that will perform it all
+        in one request.
+
+        """
+        for model in self:
+            model.delete()
+
+    def update(self, **kwargs: Any) -> Self:
+        """
+        Update this model with new values.
+
+        This is implemented by subclasses (i.e. StandardQuerySet) that have
+        an ID field. This base implementation raises a NotImplementedError.
+
+        Returns:
+            Self: The chainable queryset
+
+        """
+        raise NotImplementedError("Update is not implemented for models without an id")
+
     @override
     def __iter__(self) -> Iterator[_Model]:
         """
@@ -1041,6 +1061,23 @@ class StandardQuerySet[_Model: StandardModel](BaseQuerySet[_Model]):
         return self.filter(id=value)
 
     @override
+    def update(self, **kwargs: Any) -> Self:
+        """
+        Update all objects in the queryset with the given values.
+
+        Unless called on a model that supports bulk updates, this method
+        will iterate over each object and call its update method individually,
+        resulting in multiple API requests.
+
+        Returns:
+            The updated QuerySet instance.
+
+        """
+        for model in self:
+            model.update(**kwargs)
+        return self._chain()
+
+    @override
     def __contains__(self, item: Any) -> bool:
         """
         Return True if the QuerySet contains the given object.
@@ -1106,8 +1143,8 @@ class BaseQuerySetProtocol[_Model: BaseModel](Protocol):
     def __contains__(self, item: Any) -> bool: ...
 
 
-class SupportsBulkActions:
-    def bulk_action(self: BaseQuerySetProtocol, action: str, **kwargs: Any) -> ClientResponse:
+class BulkQuerySet[_Model: StandardModel](StandardQuerySet[_Model]):
+    def _bulk_action(self, action: str, **kwargs: Any) -> ClientResponse:
         """
         Perform a bulk action on all objects in the queryset.
 
@@ -1128,17 +1165,17 @@ class SupportsBulkActions:
         Examples:
             Delete all documents with "draft" in the title:
 
-            >>> client.documents().filter(title__contains="draft").bulk_action("delete")
+            >>> client.documents().filter(title__contains="draft")._bulk_action("delete")
 
             Merge documents with custom parameters:
 
-            >>> client.documents().filter(correspondent_id=5).bulk_action(
+            >>> client.documents().filter(correspondent_id=5)._bulk_action(
             ...     "merge",
             ...     metadata_document_id=123
             ... )
 
         """
-        if not (fn := getattr(self.resource, "bulk_action", None)):
+        if not (fn := getattr(self.resource, "_bulk_operation", None)):
             raise NotImplementedError(f"Resource {self.resource.name} does not support bulk actions")
 
         # Fetch all IDs in the queryset
@@ -1148,13 +1185,14 @@ class SupportsBulkActions:
         if not ids:
             return {"success": True, "count": 0}
 
-        return fn(action, ids, **kwargs)
+        return fn(ids=ids, operation=action, **kwargs)
 
-    def delete(self: BaseQuerySetProtocol) -> ClientResponse:
+    @override
+    def delete(self) -> ClientResponse:
         """
         Delete all objects in the queryset.
 
-        This is a convenience method that calls bulk_action("delete").
+        This is a convenience method that calls _bulk_action("delete").
 
         Returns:
             The API response containing results of the delete operation.
@@ -1171,19 +1209,14 @@ class SupportsBulkActions:
             >>> client.documents().filter(created__lt=one_year_ago).delete()
 
         """
-        if not (fn := getattr(self.resource, "bulk_action", None)):
-            raise NotImplementedError(f"Resource {self.resource.name} does not support bulk actions")
-
         # Fetch all IDs in the queryset
         # We only need IDs, so optimize by requesting just the ID field if possible
         ids = [obj.id for obj in self]
 
-        if not ids:
-            return {"success": True, "count": 0}
+        return self.resource.delete(ids)  # type: ignore # Not sure why pyright is complaining
 
-        return fn("delete", ids)
-
-    def bulk_update(self: BaseQuerySetProtocol, **kwargs: Any) -> ClientResponse:
+    @override
+    def update(self, **kwargs: Any) -> Self:
         """
         Update all objects in the queryset with the given values.
 
@@ -1209,161 +1242,19 @@ class SupportsBulkActions:
 
         """
         if not (fn := getattr(self.resource, "bulk_update", None)):
-            raise NotImplementedError(f"Resource {self.resource.name} does not support bulk updates")
+            return super().update(**kwargs)
 
         # Fetch all IDs in the queryset
         ids = [obj.id for obj in self]
 
         if not ids:
-            return {"success": True, "count": 0}
+            return self
 
-        return fn(ids, **kwargs)
+        fn(ids, **kwargs)
 
-    def bulk_assign_tags(
-        self: BaseQuerySetProtocol,
-        tag_ids: list[int],
-        remove_existing: bool = False,
-    ) -> ClientResponse:
-        """
-        Assign tags to all objects in the queryset.
+        return self._chain()
 
-        Adds the specified tags to all objects in the queryset.
-
-        Args:
-            tag_ids: List of tag IDs to assign.
-            remove_existing: If True, remove existing tags before assigning new ones.
-                If False (default), add the new tags to any existing tags.
-
-        Returns:
-            The API response containing results of the operation.
-
-        Raises:
-            NotImplementedError: If the resource doesn't support bulk tag assignment.
-
-        Examples:
-            Add tags to all invoices:
-
-            >>> client.documents().filter(title__contains="invoice").bulk_assign_tags([1, 2])
-
-            Replace all tags on tax documents:
-
-            >>> client.documents().filter(title__contains="tax").bulk_assign_tags(
-            ...     [5, 6],
-            ...     remove_existing=True
-            ... )
-
-        """
-        if not (fn := getattr(self.resource, "bulk_assign_tags", None)):
-            raise NotImplementedError(f"Resource {self.resource.name} does not support bulk tag assignment")
-
-        # Fetch all IDs in the queryset
-        ids = [obj.id for obj in self]
-
-        if not ids:
-            return {"success": True, "count": 0}
-
-        return fn(ids, tag_ids, remove_existing)
-
-    def bulk_assign_correspondent(self: BaseQuerySetProtocol, correspondent_id: int) -> ClientResponse:
-        """
-        Assign a correspondent to all objects in the queryset.
-
-        Sets the correspondent for all objects in the queryset
-        to the specified correspondent ID.
-
-        Args:
-            correspondent_id: Correspondent ID to assign.
-
-        Returns:
-            The API response containing results of the operation.
-
-        Raises:
-            NotImplementedError: If the resource doesn't support bulk correspondent assignment.
-
-        Examples:
-            Set correspondent for all invoices:
-
-            >>> client.documents().filter(title__contains="invoice").bulk_assign_correspondent(5)
-
-        """
-        if not (fn := getattr(self.resource, "bulk_assign_correspondent", None)):
-            raise NotImplementedError(f"Resource {self.resource.name} does not support bulk correspondent assignment")
-
-        # Fetch all IDs in the queryset
-        ids = [obj.id for obj in self]
-
-        if not ids:
-            return {"success": True, "count": 0}
-
-        return fn(ids, correspondent_id)
-
-    def bulk_assign_document_type(self: BaseQuerySetProtocol, document_type_id: int) -> ClientResponse:
-        """
-        Assign a document type to all objects in the queryset.
-
-        Sets the document type for all objects in the queryset
-        to the specified document type ID.
-
-        Args:
-            document_type_id: Document type ID to assign.
-
-        Returns:
-            The API response containing results of the operation.
-
-        Raises:
-            NotImplementedError: If the resource doesn't support bulk document type assignment.
-
-        Examples:
-            Set document type for all invoices:
-
-            >>> client.documents().filter(title__contains="invoice").bulk_assign_document_type(3)
-
-        """
-        if not (fn := getattr(self.resource, "bulk_assign_document_type", None)):
-            raise NotImplementedError(f"Resource {self.resource.name} does not support bulk document type assignment")
-
-        # Fetch all IDs in the queryset
-        ids = [obj.id for obj in self]
-
-        if not ids:
-            return {"success": True, "count": 0}
-
-        return fn(ids, document_type_id)
-
-    def bulk_assign_storage_path(self: BaseQuerySetProtocol, storage_path_id: int) -> ClientResponse:
-        """
-        Assign a storage path to all objects in the queryset.
-
-        Sets the storage path for all objects in the queryset
-        to the specified storage path ID.
-
-        Args:
-            storage_path_id: Storage path ID to assign.
-
-        Returns:
-            The API response containing results of the operation.
-
-        Raises:
-            NotImplementedError: If the resource doesn't support bulk storage path assignment.
-
-        Examples:
-            Set storage path for all tax documents:
-
-            >>> client.documents().filter(title__contains="tax").bulk_assign_storage_path(2)
-
-        """
-        if not (fn := getattr(self.resource, "bulk_assign_storage_path", None)):
-            raise NotImplementedError(f"Resource {self.resource.name} does not support bulk storage path assignment")
-
-        # Fetch all IDs in the queryset
-        ids = [obj.id for obj in self]
-
-        if not ids:
-            return {"success": True, "count": 0}
-
-        return fn(ids, storage_path_id)
-
-    def bulk_assign_owner(self: BaseQuerySetProtocol, owner_id: int) -> ClientResponse:
+    def assign_owner(self, owner_id: int) -> ClientResponse:
         """
         Assign an owner to all objects in the queryset.
 
@@ -1382,10 +1273,10 @@ class SupportsBulkActions:
         Examples:
             Set owner for all personal documents:
 
-            >>> client.documents().filter(title__contains="personal").bulk_assign_owner(1)
+            >>> client.documents().filter(title__contains="personal").assign_owner(1)
 
         """
-        if not (fn := getattr(self.resource, "bulk_assign_owner", None)):
+        if not (fn := getattr(self.resource, "assign_owner", None)):
             raise NotImplementedError(f"Resource {self.resource.name} does not support bulk owner assignment")
 
         # Fetch all IDs in the queryset

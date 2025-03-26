@@ -18,6 +18,7 @@ from paperap.models.document import (
     MetadataElement,
 )
 from paperap.models.document_type import DocumentType, DocumentTypeQuerySet
+from paperap.models.enrichment import EnrichmentResult
 from paperap.models.profile import Profile, ProfileQuerySet
 from paperap.models.saved_view import SavedView, SavedViewQuerySet
 from paperap.models.share_links import ShareLinks, ShareLinksQuerySet

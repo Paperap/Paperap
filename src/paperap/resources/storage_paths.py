@@ -31,10 +31,10 @@ Example:
 from __future__ import annotations
 
 from paperap.models.storage_path import StoragePath, StoragePathQuerySet
-from paperap.resources.base import BaseResource, BulkEditing, StandardResource
+from paperap.resources.base import BaseResource, BulkEditingMixin, StandardResource
 
 
-class StoragePathResource(StandardResource[StoragePath, StoragePathQuerySet], BulkEditing):
+class StoragePathResource(StandardResource[StoragePath, StoragePathQuerySet], BulkEditingMixin[StoragePath]):
     """
     Resource for managing storage paths in Paperless-NgX.
 

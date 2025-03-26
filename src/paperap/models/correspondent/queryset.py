@@ -13,7 +13,7 @@ import logging
 from typing import TYPE_CHECKING, Any, Self, Union
 
 from paperap.models.mixins.queryset import HasDocumentCount, HasOwner
-from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet, SupportsBulkActions
+from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet, BulkQuerySet
 
 if TYPE_CHECKING:
     from paperap.models.correspondent.model import Correspondent
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class CorrespondentQuerySet(StandardQuerySet["Correspondent"], HasOwner, HasDocumentCount, SupportsBulkActions):
+class CorrespondentQuerySet(BulkQuerySet["Correspondent"], HasOwner, HasDocumentCount):
     """
     QuerySet for Paperless-ngx correspondents with specialized filtering methods.
 

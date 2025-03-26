@@ -14,6 +14,7 @@ from typing_extensions import TypeVar
 
 from paperap.const import URLS
 from paperap.exceptions import APIError, BadResponseError, ResourceNotFoundError
+from paperap.models.document import Document
 from paperap.models.document.download import DownloadedDocument, DownloadedDocumentQuerySet, RetrieveFileMode
 from paperap.resources.base import BaseResource, StandardResource
 
@@ -42,6 +43,120 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
         RetrieveFileMode.THUMBNAIL: URLS.thumbnail,
         RetrieveFileMode.DOWNLOAD: URLS.download,
     }
+
+    def download_document(self, document: int | Document, original: bool = True) -> DownloadedDocument:
+        """
+        Download a document file from the Paperless-NgX API.
+
+        This method creates a new DownloadedDocument model instance for the specified
+        document and sets the mode to RetrieveFileMode.DOWNLOAD. The model is then
+        saved to the API to initiate the download process.
+
+        Args:
+            document: The document ID or Document model to download.
+            original: Whether to download the original file (True) or the archived version (False).
+
+        Returns:
+            DownloadedDocument: The model instance representing the download request.
+
+        Raises:
+            APIError: If the download request fails.
+
+        Example:
+            # Get a document reference
+            doc = client.documents.get(123)
+
+            # Download the original document file
+            download = client.document_downloads.download_document(doc)
+
+            # The download model is now available with the ID
+            print(f"Download ID: {download.id}")
+
+        """
+        document_id = document.id if isinstance(document, Document) else document
+
+        # Create a DownloadedDocument instance directly without using StandardResource.create
+        download = DownloadedDocument(_resource=self, id=document_id, mode=RetrieveFileMode.DOWNLOAD, original=original)  # type: ignore # mypy doesn't like passing _resource
+
+        # Load the content # TODO: async
+        self.load(download)
+        return download
+
+    def download_thumbnail(self, document: int | Document, original: bool = True) -> DownloadedDocument:
+        """
+        Download a document thumbnail from the Paperless-NgX API.
+
+        This method creates a new DownloadedDocument model instance for the specified
+        document and sets the mode to RetrieveFileMode.THUMBNAIL. The model is then
+        saved to the API to initiate the download process.
+
+        Args:
+            document: The document ID or Document model to download.
+            original: Whether to download the original file (True) or the archived version (False).
+
+        Returns:
+            DownloadedDocument: The model instance representing the download request.
+
+        Raises:
+            APIError: If the download request fails.
+
+        Example:
+            # Get a document reference
+            doc = client.documents.get(123)
+
+            # Download the document thumbnail
+            download = client.document_downloads.download_thumbnail(doc)
+
+            # The download model is now available with the ID
+            print(f"Download ID: {download.id}")
+
+        """
+        document_id = document.id if isinstance(document, Document) else document
+
+        # Create a DownloadedDocument instance directly without using StandardResource.create
+        download = DownloadedDocument(_resource=self, id=document_id, mode=RetrieveFileMode.THUMBNAIL, original=original)  # type: ignore # mypy doesn't like passing _resource
+
+        # Load the content # TODO: async
+        self.load(download)
+        return download
+
+    def download_preview(self, document: int | Document, original: bool = True) -> DownloadedDocument:
+        """
+        Download a document preview from the Paperless-NgX API.
+
+        This method creates a new DownloadedDocument model instance for the specified
+        document and sets the mode to RetrieveFileMode.PREVIEW. The model is then
+        saved to the API to initiate the download process.
+
+        Args:
+            document: The document ID or Document model to download.
+            original: Whether to download the original file (True) or the archived version (False).
+
+        Returns:
+            DownloadedDocument: The model instance representing the download request.
+
+        Raises:
+            APIError: If the download request fails.
+
+        Example:
+            # Get a document reference
+            doc = client.documents.get(123)
+
+            # Download the document preview
+            download = client.document_downloads.download_preview(doc)
+
+            # The download model is now available with the ID
+            print(f"Download ID: {download.id}")
+
+        """
+        document_id = document.id if isinstance(document, Document) else document
+
+        # Create a DownloadedDocument instance directly without using StandardResource.create
+        download = DownloadedDocument(_resource=self, id=document_id, mode=RetrieveFileMode.PREVIEW, original=original)  # type: ignore # mypy doesn't like passing _resource
+
+        # Load the content # TODO: async
+        self.load(download)
+        return download
 
     def load(self, downloaded_document: "DownloadedDocument") -> None:
         """

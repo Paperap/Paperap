@@ -9,10 +9,13 @@ metadata about the downloaded files.
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from paperap.const import URLS
 from paperap.models.abstract import StandardModel
+
+if TYPE_CHECKING:
+    from paperap.resources.document_download import DownloadedDocumentResource
 
 
 class RetrieveFileMode(str, Enum):
@@ -71,6 +74,7 @@ class DownloadedDocument(StandardModel):
     content_type: str | None = None
     disposition_filename: str | None = None
     disposition_type: str | None = None
+    _resource: "DownloadedDocumentResource"  # type: ignore # because mypy doesn't accept nested generics
 
     class Meta(StandardModel.Meta):
         """

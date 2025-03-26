@@ -17,6 +17,7 @@ from tests.lib.factories import DocumentFactory, DocumentNoteFactory
 
 resource = create_resource(DocumentResource)
 doc = DocumentFactory.to_dict()
+faker = Faker()
 
 custom_field_strategy = st.fixed_dictionaries(
     {
@@ -107,8 +108,6 @@ def test_fuzz_Document(**kwargs) -> None:
     #assert document.added == kwargs.get("added", None)
     #assert document.custom_field_dicts == kwargs.get("custom_field_dicts", [])
 
-faker = Faker()
-
 @given(value=st.one_of(st.lists(custom_field_strategy), st.none()))
 @example(value=None)
 @example(value=[])
@@ -157,6 +156,9 @@ def test_fuzz_document_validate_tags(value: Union[list[int], None]) -> None:
 def test_fuzz_document_validate_text(value: Union[str, None]) -> None:
     # Will raise error if invalid
     Document.validate_text(value=value)
+
+    # Second test indirectly through instantiation
+    document = DocumentFactory.create(content = value, title = value)
 
 note = DocumentNoteFactory.to_dict()
 @given(

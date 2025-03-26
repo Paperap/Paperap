@@ -14,18 +14,17 @@ from typing import TYPE_CHECKING, Any, NamedTuple, Self, Union, overload, overri
 
 from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models.mixins.queryset import HasOwner
-from paperap.const import ClientResponse
+from paperap.const import ClientResponse, EnrichmentConfig
 
 if TYPE_CHECKING:
     from paperap.models import Correspondent, Document, DocumentNote, DocumentType, StoragePath
+    from paperap.resources.documents import DocumentResource
+    from paperap.services.enrichment import DocumentEnrichmentService
 
 logger = logging.getLogger(__name__)
 
 _OperationType = Union[str, "_QueryParam"]
 _QueryParam = Union["CustomFieldQuery", tuple[str, _OperationType, Any]]
-
-if TYPE_CHECKING:
-    from paperap.resources.documents import DocumentResource
 
 
 class CustomFieldQuery(NamedTuple):
@@ -85,6 +84,16 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
     """
 
     resource: "DocumentResource"  # type: ignore # because nested generics are not allowed
+    _enrichment_service: "DocumentEnrichmentService"
+
+    @property
+    def enrichment_service(self) -> "DocumentEnrichmentService":
+        if not self._enrichment_service:
+            # Avoid circular ref. # TODO
+            from paperap.services.enrichment import DocumentEnrichmentService  # type: ignore
+
+            self._enrichment_service = DocumentEnrichmentService()
+        return self._enrichment_service
 
     def tag_id(self, tag_id: int | list[int]) -> Self:
         """
@@ -205,7 +214,14 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter(more_like_id=document_id)
 
-    def correspondent(self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs: Any) -> Self:
+    def correspondent(
+        self,
+        value: int | str | None = None,
+        *,
+        exact: bool = True,
+        case_insensitive: bool = True,
+        **kwargs: Any,
+    ) -> Self:
         """
         Filter documents by correspondent.
 
@@ -337,7 +353,14 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter_field_by_str("correspondent__slug", slug, exact=exact, case_insensitive=case_insensitive)
 
-    def document_type(self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs: Any) -> Self:
+    def document_type(
+        self,
+        value: int | str | None = None,
+        *,
+        exact: bool = True,
+        case_insensitive: bool = True,
+        **kwargs: Any,
+    ) -> Self:
         """
         Filter documents by document type.
 
@@ -441,7 +464,14 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter_field_by_str("document_type__name", name, exact=exact, case_insensitive=case_insensitive)
 
-    def storage_path(self, value: int | str | None = None, *, exact: bool = True, case_insensitive: bool = True, **kwargs: Any) -> Self:
+    def storage_path(
+        self,
+        value: int | str | None = None,
+        *,
+        exact: bool = True,
+        case_insensitive: bool = True,
+        **kwargs: Any,
+    ) -> Self:
         """
         Filter documents by storage path.
 
@@ -1148,6 +1178,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return [doc.id for doc in self]
 
+    @override
     def delete(self) -> ClientResponse:
         """
         Delete all documents in the current queryset.
@@ -1156,8 +1187,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         the current queryset filters.
 
         Returns:
-            ClientResponse: The API response from the bulk delete operation.
-            None if there are no documents to delete.
+            None
 
         Examples:
             >>> # Delete all documents with "invoice" in title
@@ -1168,7 +1198,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         """
         if ids := self._get_ids():
-            return self.resource.bulk_delete(ids)
+            return self.resource.delete(ids)  # type: ignore # Not sure why pyright is complaining
         return None
 
     def reprocess(self) -> ClientResponse:
@@ -1179,7 +1209,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         on all documents matching the current queryset filters.
 
         Returns:
-            ClientResponse: The API response from the bulk reprocess operation.
+            ClientResponse: The API response from the reprocess operation.
             None if there are no documents to reprocess.
 
         Examples:
@@ -1193,7 +1223,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         """
         if ids := self._get_ids():
-            return self.resource.bulk_reprocess(ids)
+            return self.resource.reprocess(ids)
         return None
 
     def merge(self, metadata_document_id: int | None = None, delete_originals: bool = False) -> bool:
@@ -1211,8 +1241,8 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             bool: True if submitting the merge succeeded, False if there are no documents to merge.
 
         Raises:
-            BadResponseError: If the merge action returns an unexpected response.
-            APIError: If the merge action fails.
+            BadResponseError: If the merge operation returns an unexpected response.
+            APIError: If the merge operation fails.
 
         Examples:
             >>> # Merge all documents with tag "merge_me"
@@ -1225,7 +1255,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         """
         if ids := self._get_ids():
-            return self.resource.bulk_merge(ids, metadata_document_id, delete_originals)
+            return self.resource.merge(ids, metadata_document_id, delete_originals)
         return False
 
     def rotate(self, degrees: int) -> ClientResponse:
@@ -1239,7 +1269,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             degrees: Degrees to rotate (must be 90, 180, or 270).
 
         Returns:
-            ClientResponse: The API response from the bulk rotate operation.
+            ClientResponse: The API response from the rotate operation.
             None if there are no documents to rotate.
 
         Examples:
@@ -1251,9 +1281,10 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         """
         if ids := self._get_ids():
-            return self.resource.bulk_rotate(ids, degrees)
+            return self.resource.rotate(ids, degrees)
         return None
 
+    @override
     def update(
         self,
         *,
@@ -1262,6 +1293,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         document_type: "DocumentType | int | None" = None,
         storage_path: "StoragePath | int | None" = None,
         owner: int | None = None,
+        **kwargs: Any,
     ) -> Self:
         """
         Perform bulk updates on all documents in the current queryset.
@@ -1294,15 +1326,15 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
         # Handle correspondent update
         if correspondent is not None:
-            self.resource.bulk_set_correspondent(ids, correspondent)
+            self.resource.set_correspondent(ids, correspondent)
 
         # Handle document type update
         if document_type is not None:
-            self.resource.bulk_set_document_type(ids, document_type)
+            self.resource.set_document_type(ids, document_type)
 
         # Handle storage path update
         if storage_path is not None:
-            self.resource.bulk_set_storage_path(ids, storage_path)
+            self.resource.set_storage_path(ids, storage_path)
 
         return self._chain()
 
@@ -1339,7 +1371,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         ids = self._get_ids()
         if ids:
-            self.resource.bulk_modify_custom_fields(ids, add_custom_fields, remove_custom_fields)
+            self.resource.modify_custom_fields(ids, add_custom_fields, remove_custom_fields)
         return self
 
     def modify_tags(self, add_tags: list[int] | None = None, remove_tags: list[int] | None = None) -> Self:
@@ -1372,7 +1404,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         ids = self._get_ids()
         if ids:
-            self.resource.bulk_modify_tags(ids, add_tags, remove_tags)
+            self.resource.modify_tags(ids, add_tags, remove_tags)
         return self
 
     def add_tag(self, tag_id: int) -> Self:
@@ -1397,7 +1429,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         ids = self._get_ids()
         if ids:
-            self.resource.bulk_add_tag(ids, tag_id)
+            self.resource.add_tag(ids, tag_id)
         return self
 
     def remove_tag(self, tag_id: int) -> Self:
@@ -1422,10 +1454,15 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         ids = self._get_ids()
         if ids:
-            self.resource.bulk_remove_tag(ids, tag_id)
+            self.resource.remove_tag(ids, tag_id)
         return self
 
-    def set_permissions(self, permissions: dict[str, Any] | None = None, owner_id: int | None = None, merge: bool = False) -> Self:
+    def set_permissions(
+        self,
+        permissions: dict[str, Any] | None = None,
+        owner_id: int | None = None,
+        merge: bool = False,
+    ) -> Self:
         """
         Set permissions for all documents in the current queryset.
 
@@ -1458,5 +1495,106 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         ids = self._get_ids()
         if ids:
-            self.resource.bulk_set_permissions(ids, permissions, owner_id, merge)
+            self.resource.set_permissions(ids, permissions, owner_id, merge)
         return self
+
+    def summarize(
+        self,
+        model: str = "gpt-4o-mini",
+        template_name: str = "summarize",
+        template_dir: str | None = None,
+        batch_size: int = 10,
+        api_key: str | None = None,
+        api_url: str | None = None,
+    ) -> Self:
+        """
+        Summarize documents in the queryset using an LLM.
+
+        Args:
+            model: The model to use
+            template_name: The template to use
+            template_dir: Optional custom directory for templates
+            batch_size: Number of documents to process at once
+            api_key: Optional OpenAI API key
+            api_url: Optional custom OpenAI API URL
+
+        Returns:
+            Itself, for chainability
+
+        """
+        config = EnrichmentConfig(
+            template_name=template_name,
+            template_dir=template_dir,
+            model=model,
+            api_key=api_key,
+            api_url=api_url,
+            vision=False,  # No need for vision for summarization
+        )
+
+        results = []
+
+        # Process documents in batches
+        documents: list[Document] = list(self[:])  # type: ignore # TODO
+        for i in range(0, len(documents), batch_size):
+            batch = documents[i : i + batch_size]
+            for doc in batch:
+                result = self.enrichment_service.process_document(doc, config)
+                if result.success:
+                    results.append(result.document)
+                else:
+                    logger.error(f"Failed to summarize document {doc.id}: {result.error}")
+
+        return self._chain()
+
+    def describe(
+        self,
+        model: str = "gpt-4o-mini",
+        template_name: str = "describe",
+        template_dir: str | None = None,
+        batch_size: int = 10,
+        max_images: int = 2,
+        api_key: str | None = None,
+        api_url: str | None = None,
+        expanded_description: bool = True,
+    ) -> Self:
+        """
+        Describe documents in the queryset using an LLM with vision capabilities.
+
+        Args:
+            model: The model to use
+            template_name: The template to use
+            template_dir: Optional custom directory for templates
+            batch_size: Number of documents to process at once
+            max_images: Maximum number of images to extract per document
+            api_key: Optional OpenAI API key
+            api_url: Optional custom OpenAI API URL
+
+        Returns:
+            Itself, for chainability
+
+        """
+        config = EnrichmentConfig(
+            template_name=template_name,
+            template_dir=template_dir,
+            model=model,
+            api_key=api_key,
+            api_url=api_url,
+            vision=True,
+            extract_images=True,
+            max_images=max_images,
+        )
+
+        results = []
+
+        # Process documents in batches
+        documents: list[Document] = list(self[:])  # type: ignore # TODO
+        for i in range(0, len(documents), batch_size):
+            batch = documents[i : i + batch_size]
+            for doc in batch:
+                result = self.enrichment_service.process_document(doc, config, expand_descriptions=expanded_description)
+                if result.success:
+                    results.append(result.document)
+                else:
+                    logger.error(f"Failed to describe document {doc.id}: {result.error}")
+
+        return self._chain()

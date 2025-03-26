@@ -15,12 +15,12 @@ import copy
 import logging
 from abc import ABC, ABCMeta
 from string import Template
-from typing import TYPE_CHECKING, Any, ClassVar, Final, Generic, Iterator, overload, override
+from typing import TYPE_CHECKING, Any, ClassVar, Final, Generic, Iterator, Protocol, overload, override
 
 from pydantic import HttpUrl, field_validator
 from typing_extensions import TypeVar
 
-from paperap.const import URLS, Endpoints
+from paperap.const import URLS, ClientResponse, Endpoints
 from paperap.exceptions import (
     ConfigurationError,
     ModelValidationError,
@@ -197,6 +197,9 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
 
         # We validated that converted matches endpoints above
         return converted
+
+    def _bulk_operation(self, *args: Any, **kwargs: Any) -> Any:
+        raise NotImplementedError("_bulk_operation method not available for resources without an id")
 
     def get_endpoint(self, name: str, **kwargs: Any) -> str | HttpUrl:
         """
@@ -377,7 +380,7 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         """
         raise NotImplementedError("update_dict method not available for resources without an id")
 
-    def delete(self, *args: Any, **kwargs: Any) -> None:
+    def delete(self, *args: Any, **kwargs: Any) -> ClientResponse:
         """
         Delete a resource.
 
@@ -442,7 +445,12 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
     @overload
     def transform_data_output(self, **data: Any) -> dict[str, Any]: ...
 
-    def transform_data_output(self, model: _BaseModel | None = None, exclude_unset: bool = True, **data: Any) -> dict[str, Any]:
+    def transform_data_output(
+        self,
+        model: _BaseModel | None = None,
+        exclude_unset: bool = True,
+        **data: Any,
+    ) -> dict[str, Any]:
         """
         Transform data before sending it to the API.
 
@@ -786,7 +794,18 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         return self.update_dict(model_id, **data)
 
     @override
-    def delete(self, model_id: int | _StandardModel) -> None:
+    def delete(self, model: int | _StandardModel | list[int | _StandardModel]) -> ClientResponse:
+        if isinstance(model, list):
+            return self._delete_multiple(model)
+        return self._delete_single(model)
+
+    def _delete_multiple(self, models: list[int | _StandardModel]) -> ClientResponse:
+        for model in models:
+            _response = self._delete_single(model)
+
+        return None  # TODO
+
+    def _delete_single(self, model: int | _StandardModel) -> ClientResponse:
         """
         Delete a resource from the API.
 
@@ -809,22 +828,24 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
             >>> client.tags.delete(tag)
 
         """
-        if not model_id:
+        if not model:
             raise ValueError("model_id is required to delete a resource")
-        if not isinstance(model_id, int):
-            model_id = model_id.id
+        if not isinstance(model, int):
+            model = model.id
 
         # Signal before deleting resource
-        signal_params = {"resource": self.name, "model_id": model_id}
+        signal_params = {"resource": self.name, "model_id": model}
         registry.emit("resource.delete:before", "Emitted before deleting a resource", args=[self], kwargs=signal_params)
 
-        if not (url := self.get_endpoint("delete", resource=self.name, pk=model_id)):
+        if not (url := self.get_endpoint("delete", resource=self.name, pk=model)):
             raise ConfigurationError(f"Delete endpoint not defined for resource {self.name}")
 
-        self.client.request("DELETE", url)
+        result = self.client.request("DELETE", url)
 
         # Signal after deleting resource
         registry.emit("resource.delete:after", "Emitted after deleting a resource", args=[self], kwargs=signal_params)
+
+        return result
 
     @override
     def update_dict(self, model_id: int, **data: dict[str, Any]) -> _StandardModel:
@@ -876,52 +897,67 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         return model
 
 
-class BulkEditing:
-    def bulk_edit_objects(  # type: ignore
-        self: BaseResource,  # type: ignore
-        object_type: str,
+class BaseResourceProtocol[_BaseModel: "BaseModel", _BaseQuerySet: "BaseQuerySet"](Protocol):
+    model_class: type[_BaseModel]
+    queryset_class: type[_BaseQuerySet]
+    name: str
+    endpoints: ClassVar[Endpoints]
+    client: "PaperlessClient"
+
+    def get_endpoint(self, name: str, **kwargs: Any) -> str | HttpUrl: ...
+    def all(self) -> _BaseQuerySet: ...
+    def filter(self, **kwargs: Any) -> _BaseQuerySet: ...
+    def get(self, model_id: int, *args: Any, **kwargs: Any) -> _BaseModel: ...
+    def create(self, **kwargs: Any) -> _BaseModel: ...
+    def update(self, model: _BaseModel) -> _BaseModel: ...
+    def update_dict(self, model_id: int, **data: dict[str, Any]) -> _BaseModel: ...
+    def delete(self, model: int | _BaseModel | list[int | _BaseModel]) -> ClientResponse: ...
+    def parse_to_model(self, item: dict[str, Any]) -> _BaseModel: ...
+    def transform_data_input(self, **data: Any) -> dict[str, Any]: ...
+    def transform_data_output(
+        self,
+        model: _BaseModel | None = None,
+        exclude_unset: bool = True,
+        **data: Any,
+    ) -> dict[str, Any]: ...
+    def create_model(self, **kwargs: Any) -> _BaseModel: ...
+    def request_raw(
+        self,
+        url: str | Template | HttpUrl | None = None,
+        method: str = "GET",
+        params: dict[str, Any] | None = None,
+        data: dict[str, Any] | None = None,
+    ) -> dict[str, Any] | list[dict[str, Any]] | None: ...
+    def handle_response(self, response: Any) -> Iterator[_BaseModel]: ...
+    def handle_dict_response(self, **response: dict[str, Any]) -> Iterator[_BaseModel]: ...
+    def handle_results(self, results: list[dict[str, Any]]) -> Iterator[_BaseModel]: ...
+    def _bulk_operation(self, *args: Any, **kwargs: Any) -> Any: ...
+    def __call__(self, *args: Any, **keywords: Any) -> _BaseQuerySet: ...
+
+
+class BulkEditingMixin[_Model: "StandardModel"]:
+    def _bulk_operation(
+        self: BaseResourceProtocol,  # type: ignore
         ids: list[int],
         operation: str,
-        permissions: dict[str, Any] | None = None,
-        owner_id: int | None = None,
-        merge: bool = False,
-    ) -> dict[str, Any]:
+        **kwargs: Any,
+    ) -> ClientResponse:
         """
-        Bulk edit non-document objects in the API.
+        Perform a bulk operation on multiple objects through the generic bulk edit endpoint.
 
-        Performs operations on multiple objects of the same type in a single request.
-        Currently supports permission setting and deletion operations.
+        This is a low-level method that handles communication with the bulk_edit_objects
+        endpoint in Paperless-NGX.
 
         Args:
-            object_type: Type of objects to edit ('tags', 'correspondents', 'document_types', 'storage_paths').
-            ids: List of object IDs to edit.
-            operation: Operation to perform ('set_permissions' or 'delete').
-            permissions: Permissions object for 'set_permissions' operation.
-            owner_id: Owner ID to assign.
-            merge: Whether to merge permissions with existing ones (True) or replace them (False).
+            ids: List of object IDs to operate on.
+            operation: Operation to perform ('delete', 'set_permissions', etc.)
+            **kwargs: Additional parameters for the operation.
 
         Returns:
             API response dictionary.
 
         Raises:
-            ValueError: If operation is not valid.
-
-        Examples:
-            >>> # Delete multiple tags
-            >>> client.tags.bulk_edit_objects(
-            ...     object_type="tags",
-            ...     ids=[1, 2, 3],
-            ...     operation="delete"
-            ... )
-            >>>
-            >>> # Set permissions on multiple document types
-            >>> client.document_types.bulk_edit_objects(
-            ...     object_type="document_types",
-            ...     ids=[4, 5],
-            ...     operation="set_permissions",
-            ...     permissions={"view": {"users": [1]}, "change": {"groups": [2]}},
-            ...     owner_id=1
-            ... )
+            ValueError: If the operation is not valid.
 
         """
         if operation not in ("set_permissions", "delete"):
@@ -929,26 +965,24 @@ class BulkEditing:
 
         # Signal before bulk action
         signal_params = {
-            "object_type": object_type,
+            "resource": self.name,
             "operation": operation,
             "ids": ids,
-            "permissions": permissions,
-            "owner_id": owner_id,
-            "merge": merge,
+            **kwargs,
         }
         registry.emit(
-            "resource.bulk_edit_objects:before",
-            "Emitted before bulk edit objects",
+            "resource.bulk_operation:before",
+            "Emitted before bulk operation",
             args=[self],
             kwargs=signal_params,
         )
 
-        data: dict[str, Any] = {"objects": ids, "object_type": object_type, "operation": operation, "merge": merge}
-
-        if permissions:
-            data["permissions"] = permissions
-        if owner_id is not None:
-            data["owner"] = owner_id
+        data: dict[str, Any] = {
+            "objects": ids,
+            "object_type": self.name,
+            "operation": operation,
+            **kwargs,
+        }
 
         # Use the special endpoint for bulk editing objects
         url = HttpUrl(f"{self.client.base_url}/api/bulk_edit_objects/")
@@ -957,10 +991,60 @@ class BulkEditing:
 
         # Signal after bulk action
         registry.emit(
-            "resource.bulk_edit_objects:after",
-            "Emitted after bulk edit objects",
+            "resource.bulk_operation:after",
+            "Emitted after bulk operation",
             args=[self],
             kwargs={**signal_params, "response": response},
         )
 
-        return response or {}
+        return response
+
+    def set_permissions(
+        self: BaseResourceProtocol,  # type: ignore
+        model_ids: int | list[int],
+        permissions: dict[str, Any] | None = None,
+        owner_id: int | None = None,
+        merge: bool = False,
+    ) -> ClientResponse:
+        """
+        Set permissions for one or multiple resources.
+
+        Args:
+            model_ids: Single ID or list of IDs to update permissions for.
+            permissions: Permissions object defining user and group permissions.
+            owner_id: Owner ID to assign to the resources.
+            merge: Whether to merge with existing permissions (True) or replace them (False).
+
+        Returns:
+            API response dictionary.
+
+        Examples:
+            >>> # Set permissions for a single item
+            >>> client.tags.set_permissions(5,
+            ...     permissions={"view": {"users": [1]}},
+            ...     owner_id=1
+            ... )
+            >>>
+            >>> # Set permissions for multiple items
+            >>> client.tags.set_permissions([1, 2, 3],
+            ...     permissions={"view": {"users": [1, 2]}, "change": {"groups": [1]}},
+            ...     owner_id=2,
+            ...     merge=True
+            ... )
+
+        """
+        # Create params dictionary
+        params: dict[str, Any] = {"merge": merge}
+        if permissions:
+            params["permissions"] = permissions
+        if owner_id is not None:
+            params["owner"] = owner_id
+
+        # Handle single ID
+        if isinstance(model_ids, int):
+            model_ids = [model_ids]
+
+        return self._bulk_operation(ids=model_ids, operation="set_permissions", **params)  # type: ignore # allow protected access
+
+    def _delete_multiple(self, models: list[int | _Model]) -> ClientResponse:
+        return self._bulk_operation(ids=models, operation="delete")  # type: ignore # allow protected access

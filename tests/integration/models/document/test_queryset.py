@@ -15,7 +15,7 @@ from tests.lib import factories
 class TestDocumentQuerysetBulkOperations(DocumentUnitTest):
     """Test document queryset bulk operations functionality."""
     mock_env = False
-    test_docs: List[Document] = []
+    test_docs: list[Document] = []
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -119,7 +119,7 @@ class TestDocumentQuerysetBulkOperations(DocumentUnitTest):
 
         return new_doc
 
-    def _create_multiple_test_documents(self, count: int = 3) -> List[Document]:
+    def _create_multiple_test_documents(self, count: int = 3) -> list[Document]:
         """Create multiple test documents."""
         docs = []
         for i in range(count):
@@ -127,7 +127,7 @@ class TestDocumentQuerysetBulkOperations(DocumentUnitTest):
         return docs
 
     def test_modify_tags(self) -> None:
-        """Test bulk_modify_tags operation."""
+        """Test modify_tags operation."""
         if not self.tag_id:
             self.skipTest("No tags available for testing")
 
@@ -161,7 +161,7 @@ class TestDocumentQuerysetBulkOperations(DocumentUnitTest):
             self.assertTrue(has_tag, "Tag should have been added to the document")
 
     def test_add_tag(self) -> None:
-        """Test bulk_add_tag operation."""
+        """Test add_tag operation."""
         if not self.tag_id:
             self.skipTest("No tags available for testing")
 
@@ -186,7 +186,7 @@ class TestDocumentQuerysetBulkOperations(DocumentUnitTest):
             self.assertTrue(has_tag, "Tag should have been added to the document")
 
     def test_remove_tag(self) -> None:
-        """Test bulk_remove_tag operation."""
+        """Test remove_tag operation."""
         if not self.tag_id:
             self.skipTest("No tags available for testing")
 
@@ -195,7 +195,7 @@ class TestDocumentQuerysetBulkOperations(DocumentUnitTest):
         doc_ids = [doc.id for doc in docs]
 
         # First, add the tag to the documents
-        self.client.documents.bulk_add_tag(doc_ids, self.tag_id)
+        self.client.documents.add_tag(doc_ids, self.tag_id)
 
         # Refresh the documents
         time.sleep(1)  # Give server time to process
@@ -251,7 +251,7 @@ class TestDocumentQuerysetBulkOperations(DocumentUnitTest):
             )
 
     def test_set_document_type(self) -> None:
-        """Test bulk_set_document_type operation."""
+        """Test set_document_type operation."""
         if not self.document_type_id:
             self.skipTest("No document type available for testing")
 
@@ -275,7 +275,7 @@ class TestDocumentQuerysetBulkOperations(DocumentUnitTest):
             )
 
     def test_set_storage_path(self) -> None:
-        """Test bulk_set_storage_path operation."""
+        """Test set_storage_path operation."""
         if not self.storage_path_id:
             self.skipTest("No storage path available for testing")
 
@@ -301,7 +301,7 @@ class TestDocumentQuerysetBulkOperations(DocumentUnitTest):
     @pytest.mark.skip(reason="Test requires actual document content to rotate")
     def test_rotate(self) -> None:
         """
-        Test bulk_rotate operation.
+        Test rotate operation.
 
         This test is skipped by default since rotation requires actual
         document content and not just metadata.
@@ -361,7 +361,7 @@ class TestDocumentQuerysetBulkOperations(DocumentUnitTest):
     @pytest.mark.skip(reason="Reprocessing requires document content")
     def test_reprocess(self) -> None:
         """
-        Test bulk_reprocess operation.
+        Test reprocess operation.
 
         This test is skipped by default since reprocessing requires actual
         document content and not just metadata.

@@ -32,7 +32,7 @@ import pydantic
 from pydantic import Field, PrivateAttr
 from typing_extensions import TypeVar
 
-from paperap.const import FilteringStrategies, ModelStatus
+from paperap.const import ClientResponse, FilteringStrategies, ModelStatus
 from paperap.exceptions import APIError, ConfigurationError, ReadOnlyFieldError, RequestError, ResourceNotFoundError
 from paperap.models.abstract.meta import StatusContext
 from paperap.signals import registry
@@ -612,7 +612,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         return cls._resource.create(**kwargs)
 
-    def delete(self) -> None:
+    def delete(self) -> ClientResponse:
         """
         Delete this model from the Paperless NGX server.
 
@@ -790,6 +790,15 @@ class BaseModel(pydantic.BaseModel, ABC):
 
         """
         return self.to_dict() == data
+
+    @override
+    def __eq__(self, value: object) -> bool:
+        """
+        Compare this model with another object for equality.
+        """
+        if isinstance(value, BaseModel):
+            return self.to_dict() == value.to_dict()
+        return super().__eq__(value)
 
     @override
     def __str__(self) -> str:

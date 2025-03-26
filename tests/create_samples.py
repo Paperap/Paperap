@@ -43,7 +43,7 @@ class ApiConfig(BaseModel):
     verbose: bool = False
 
     @property
-    def headers(self) -> Dict[str, str]:
+    def headers(self) -> dict[str, str]:
         """Get headers for API requests."""
         return {"Authorization": f"Token {self.token}"}
 
@@ -136,7 +136,7 @@ class ApiClient:
         """Initialize the API client."""
         self.config = config
 
-    def get(self, url: str, params: Optional[Dict[str, Any]] = None) -> Response:
+    def get(self, url: str, params: dict[str, Any] | None = None) -> Response:
         """Make a GET request to the API."""
         return requests.get(url, headers=self.config.headers, params=params or {})
 
@@ -169,9 +169,9 @@ class EndpointCollector:
         self.client = client
         self.name = endpoint_name
         self.url = endpoint_url
-        self.ids: List[int] = []
+        self.ids: list[int] = []
 
-    def fetch_list(self, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def fetch_list(self, params: dict[str, Any] | None = None) -> dict[str, Any]:
         """Fetch a list of items from the endpoint."""
         try:
             response = self.client.get(self.url, params=params or {"page_size": 10})
@@ -191,7 +191,7 @@ class EndpointCollector:
                 logger.error(f"Failed to fetch list for {self.name}: {e}")
             return {}
 
-    def fetch_item(self, item_id: int) -> Optional[Dict[str, Any]]:
+    def fetch_item(self, item_id: int) -> dict[str, Any] | None:
         """Fetch a single item by ID."""
         item_url = f"{self.url.rstrip('/')}/{item_id}/"
 
@@ -231,7 +231,7 @@ class EndpointCollector:
         finally:
             logger.setLevel(logger_level)
 
-    def fetch_multiple(self, count: int = 3) -> Optional[Dict[str, Any]]:
+    def fetch_multiple(self, count: int = 3) -> dict[str, Any] | None:
         """Fetch multiple items using id__in parameter."""
         if len(self.ids) < count:
             if self.client.config.verbose:
@@ -275,7 +275,7 @@ class EndpointCollector:
 class RawEndpointCollector(EndpointCollector):
     """Collector for endpoints that return raw data."""
 
-    def fetch_raw(self, item_id: int, params: Optional[Dict[str, Any]] = None) -> None:
+    def fetch_raw(self, item_id: int, params: dict[str, Any] | None = None) -> None:
         """Fetch raw data from the endpoint."""
         item_url = f"{self.url.rstrip('/')}/{item_id}/"
 
@@ -298,13 +298,13 @@ class RawEndpointCollector(EndpointCollector):
 class DocumentRelatedCollector(EndpointCollector):
     """Collector for document-related endpoints."""
 
-    BINARY_ENDPOINTS: ClassVar[List[str]] = [
+    BINARY_ENDPOINTS: ClassVar[list[str]] = [
         "document_download",
         "document_preview",
         "document_thumbnail"
     ]
 
-    JSON_ENDPOINTS: ClassVar[List[str]] = [
+    JSON_ENDPOINTS: ClassVar[list[str]] = [
         "document_metadata",
         "document_notes",
         "document_suggestions"
@@ -356,7 +356,7 @@ class DocumentRelatedCollector(EndpointCollector):
 class SampleDataCollector:
     """Main class for collecting sample data from Paperless-ngx API."""
 
-    EXTRA_ENDPOINTS: ClassVar[Dict[str, str]] = {
+    EXTRA_ENDPOINTS: ClassVar[dict[str, str]] = {
         "profile": "profile/",
         "saved_views": "saved_views/",
         "share_links": "share_links/",
@@ -373,10 +373,10 @@ class SampleDataCollector:
         self.config = ApiConfig()
         self.config.initialize()
         self.client = ApiClient(self.config)
-        self.api_root: Dict[str, Any] = {}
-        self.document_id: Optional[int] = None
+        self.api_root: dict[str, Any] = {}
+        self.document_id: int | None = None
 
-    def fetch_api_root(self) -> Dict[str, Any]:
+    def fetch_api_root(self) -> dict[str, Any]:
         """Fetch the API root to discover available endpoints."""
         try:
             response = self.client.get(self.config.base_url)

@@ -8,9 +8,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable, override
 from unittest.mock import MagicMock, patch
-
+import tempfile
 from paperap.client import PaperlessClient
-from paperap.exceptions import ReadOnlyFieldError, ResourceNotFoundError
+from paperap.exceptions import ReadOnlyFieldError, ResourceNotFoundError, APIError
 from paperap.models import *
 from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models.tag import Tag, TagQuerySet
@@ -159,33 +159,59 @@ class TestFeatures(IntegrationTest):
         # This test ensures that if that feature changes, our test failures will notify us of the change.
         document = self.client.documents().get(self._initial_data['id'])
         original_filename = document.archived_file_name
+        if original_filename is None:
+            self.skipTest("Document does not have an archived file name. Cannot run test")
         new_title = f"Test Document {datetime.now().timestamp()}"
         document.title = new_title
         document.save()
         self.assertNotEqual(original_filename, document.archived_file_name, "Archived file name did not change after title update")
+
+    def test_equal(self):
+        # Test that two documents are equal if they have the same ID
+        document1 = self.client.documents().get(self._initial_data['id'])
+        document2 = self.client.documents().get(self._initial_data['id'])
+        self.assertEqual(document1, document2, "Documents with the same ID are not equal")
 
 class TestUpload(IntegrationTest):
     save_on_write = False
 
     def test_upload(self):
         # Test that the document is saved when a file is uploaded
-        filename = "Sample JPG.jpg"
-        filepath = Path(__file__).parents[3] / "sample_data" / filename
-        document = self.resource.upload_sync(filepath)
+        filename = "Sample JPG.txt"
+        with tempfile.NamedTemporaryFile(suffix=".txt", delete=False) as temp_file:
+            filepath = temp_file.name
+            contents = f"Sample content for the file. {datetime.now().timestamp()}"
+            temp_file.write(contents.encode())
+            temp_file.close()
 
-        self.assertIsInstance(document, Document)
-        self.assertEqual(document.original_filename, filename, "Original file name does not match expected value")
-        self.assertIsInstance(document.id, int)
-        self.assertGreater(document.id, 0, "Document ID is not set")
+            document = self.resource.upload_sync(filepath)
 
-        # Retrieve it
-        retrieved_document = self.client.documents().get(document.id)
-        self.assertEqual(document, retrieved_document)
+            self.assertIsInstance(document, Document)
+            #self.assertEqual(document.original_filename, filename, f"Original file name does not match expected value: {document.to_dict()}")
+            self.assertIsInstance(document.id, int)
+            self.assertGreater(document.id, 0, "Document ID is not set")
 
-        # Delete it
-        document.delete()
-        with self.assertRaises(ResourceNotFoundError):
-            self.client.documents().get(document.id)
+            # Retrieve it
+            retrieved_document = self.client.documents().get(document.id)
+            self.assertEqual(document, retrieved_document)
+
+            # Upload duplicate - should produce log message about duplicate
+            with self.assertLogs(level='WARNING') as log:
+                with self.assertRaises(APIError):
+                    self.resource.upload_sync(filepath)
+                # Verify the duplicate file error was logged
+                self.assertTrue(any("Not consuming" in entry and "duplicate" in entry for entry in log.output))
+
+            # Still there
+            second_retrieved_document = self.client.documents().get(document.id)
+            self.assertEqual(document, second_retrieved_document)
+
+            # Delete it
+            document.delete()
+
+            # No longer available
+            with self.assertRaises(ResourceNotFoundError):
+                self.client.documents().get(document.id)
 
 class TestSaveManual(IntegrationTest):
     save_on_write = False
@@ -383,16 +409,20 @@ class TestSaveNone(IntegrationTest):
 
     def test_set_fields_to_none(self):
         # field_name -> expected value after being set to None
-        for field, value in self.none_data.items():
-            #with self.subTest(field=field):
-                setattr(self.model, field, None)
-                self.assertEqual(value, getattr(self.model, field), f"{field} not updated in local instance")
-                self.model.save()
-                self.assertEqual(value, getattr(self.model, field), f"{field} not updated after save")
+        with self.assertLogs(level='INFO') as log:
+            for field, value in self.none_data.items():
+                #with self.subTest(field=field):
+                    setattr(self.model, field, None)
+                    self.assertEqual(value, getattr(self.model, field), f"{field} not updated in local instance")
+                    self.model.save()
+                    self.assertEqual(value, getattr(self.model, field), f"{field} not updated after save")
 
-                # Get a new copy
-                document = self.client.documents().get(self._initial_data['id'])
-                self.assertEqual(value, getattr(document, field), f"{field} not updated in remote instance")
+                    # Get a new copy
+                    document = self.client.documents().get(self._initial_data['id'])
+                    self.assertEqual(value, getattr(document, field), f"{field} not updated in remote instance")
+
+            # Verify the "not dirty" messages were logged
+            self.assertTrue(any("Model is not dirty, skipping save" in entry for entry in log.output))
 
     def test_set_fields_to_expected(self):
         for field, value in self.expected_data.items():

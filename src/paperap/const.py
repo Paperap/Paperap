@@ -865,3 +865,31 @@ class TaskNameType(StrEnumWithUnknown):
     CHECK_SANITY = "check_sanity"
     INDEX_OPTIMIZE = "index_optimize"
     UNKNOWN = "unknown"
+
+
+class EnrichmentConfig(pydantic.BaseModel):
+    """
+    Configuration for document enrichment services.
+
+    Attributes:
+        template_name: Name of the template to use
+        template_dir: Optional custom directory for templates
+        model: Model name for LLM services
+        api_key: API key for LLM services
+        api_url: Base URL for LLM services
+        vision: Whether to use vision capabilities
+        extract_images: Whether to extract images from documents
+        max_images: Maximum number of images to extract
+        max_tokens: Maximum tokens to generate in the response
+
+    """
+
+    template_name: str | None = None
+    template_dir: str | None = None
+    model: str = "gpt-4o-mini"
+    api_key: str | None = None
+    api_url: str | None = None
+    vision: bool = True
+    extract_images: bool = True
+    max_images: int = 2
+    max_tokens: int = 500

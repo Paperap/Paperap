@@ -100,6 +100,11 @@ class Settings(BaseSettings):
     openai_key: str | None = Field(default=None, alias="openai_api_key")
     openai_model: str | None = Field(default=None, alias="openai_model_name")
     openai_url: str | None = Field(default=None, alias="openai_base_url")
+    template_dir: str | None = Field(default=None, alias="template_directory")
+
+    # Default settings for document enrichment services
+    enrichment_batch_size: int = Field(default=10, alias="enrichment_batch_size")
+    enrichment_max_images: int = Field(default=2, alias="enrichment_max_images")
 
     model_config = SettingsConfigDict(env_prefix="PAPERLESS_", extra="ignore")
 

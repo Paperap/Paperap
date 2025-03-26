@@ -11,7 +11,7 @@ from unittest.mock import MagicMock, Mock, patch
 from paperap.client import PaperlessClient
 from paperap.exceptions import APIError, ResourceNotFoundError
 from paperap.models.document import Document, DocumentNote, DocumentNoteQuerySet, DocumentQuerySet
-from paperap.resources.documents import DocumentNoteResource, DocumentResource
+from paperap.resources import DocumentNoteResource, DocumentResource
 
 
 class TestDocumentResource(unittest.TestCase):
@@ -376,7 +376,7 @@ class TestDocumentNoteResource(unittest.TestCase):
         """
         self.assertEqual(self.resource.model_class, DocumentNote)
         self.assertEqual(self.resource.queryset_class, DocumentNoteQuerySet)
-        self.assertEqual(self.resource.name, "notes")
+        self.assertEqual(self.resource.name, "document_notes")
         self.assertIn("list", self.resource.endpoints)
 
         # Set the mock endpoint value
