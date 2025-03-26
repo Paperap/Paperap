@@ -3,6 +3,9 @@ Document enrichment service using LLMs.
 
 This module provides the core functionality for enriching documents with
 descriptions, summaries, and other metadata using LLMs.
+
+Services in this module can be used directly or through DocumentQuerySet methods
+like `describe()`, `summarize()`, and `analyze()`.
 """
 
 from __future__ import annotations
@@ -33,6 +36,7 @@ logger = logging.getLogger(__name__)
 
 # Environment variable for template directory
 TEMPLATE_DIR_ENV = "PAPERAP_TEMPLATE_DIR"
+DEFAULT_TEMPLATES_PATH = str(Path(__file__).parent / "templates")
 
 # File formats accepted by the enrichment services
 ACCEPTED_IMAGE_FORMATS = ["png", "jpg", "jpeg", "gif", "tif", "tiff", "bmp", "webp", "pdf"]
@@ -119,7 +123,7 @@ class TemplateLoader:
 
         if not template_dir:
             # Use the default embedded templates
-            template_dir = str(Path(__file__).parent / "templates")
+            template_dir = DEFAULT_TEMPLATES_PATH
 
         if template_dir not in self._environments:
             self._environments[template_dir] = Environment(
@@ -177,7 +181,43 @@ class DocumentEnrichmentService:
         self._openai_client: OpenAI | None = None
         self._api_key = api_key
         self._api_url = api_url
+        self._ensure_default_templates()
         super().__init__()
+    
+    def _ensure_default_templates(self) -> None:
+        """
+        Ensure default templates are available.
+        
+        This method checks for the existence of default templates and creates them if necessary.
+        """
+        import pkgutil
+        from pathlib import Path
+        
+        # Directory where templates should be stored
+        template_dir = Path(__file__).parent / "templates"
+        template_dir.mkdir(parents=True, exist_ok=True)
+        
+        # List of default templates
+        default_templates = [
+            "document_description.jinja",
+            "document_summary.jinja",
+            "document_analysis.jinja",
+        ]
+        
+        # Check if templates exist, if not create them from package resources
+        for template_name in default_templates:
+            template_path = template_dir / template_name
+            if not template_path.exists():
+                # Try to load from package resources
+                template_content = pkgutil.get_data(
+                    "paperap.services.enrichment", f"templates/{template_name}"
+                )
+                
+                if template_content:
+                    # Write template to file
+                    template_path.write_bytes(template_content)
+                else:
+                    logger.warning(f"Default template {template_name} not found in package resources")
 
     def get_openai_client(self, config: EnrichmentConfig) -> OpenAI:
         """
