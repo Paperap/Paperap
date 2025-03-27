@@ -2,6 +2,7 @@
 Integration tests for document queryset bulk operations.
 """
 import time
+from pathlib import Path
 from typing import Any, List, Optional
 import tempfile
 import pytest
@@ -94,9 +95,7 @@ class TestDocumentQuerysetBulkOperations(DocumentUnitTest):
 
     def _create_test_document(self) -> Document:
         """
-        Create a test document by copying an existing one.
-
-        This approach avoids requiring actual file uploads in the test.
+        Create a test document by creating a temporary file and uploading it.
         """
         source_doc = self.all_documents[0]
 
@@ -111,13 +110,23 @@ class TestDocumentQuerysetBulkOperations(DocumentUnitTest):
         if 'document_type' in doc_data:
             doc_data.pop('document_type', None)  # Let server handle relationship
 
-        # Create a txt file to upload as a new document
-        new_doc = factories.DocumentFactory.upload_sync(self.client, **doc_data)
-
-        # Keep track for cleanup
-        self.__class__.test_docs.append(new_doc)
-
-        return new_doc
+        # Create a temporary file to upload
+        with tempfile.NamedTemporaryFile(suffix='.txt', delete=False) as temp_file:
+            temp_file.write(b"Test content for document upload")
+            temp_path = Path(temp_file.name)
+        
+        try:
+            # Upload the document with the temporary file
+            new_doc = factories.DocumentFactory.upload_sync(self.client, file_path=temp_path, **doc_data)
+            
+            # Keep track for cleanup
+            self.__class__.test_docs.append(new_doc)
+            
+            return new_doc
+        finally:
+            # Clean up the temporary file
+            if temp_path.exists():
+                temp_path.unlink()
 
     def _create_multiple_test_documents(self, count: int = 3) -> list[Document]:
         """Create multiple test documents."""
@@ -142,7 +151,7 @@ class TestDocumentQuerysetBulkOperations(DocumentUnitTest):
                 has_tag = any(tag.id == self.tag_id for tag in doc.tags)
             elif hasattr(doc, 'tag_ids') and doc.tag_ids:
                 has_tag = self.tag_id in doc.tag_ids
-            self.skipTest("Test document should not have the tag initially")
+            self.assertFalse(has_tag, "Test document should not have the tag initially")
 
         # Apply the bulk operation using queryset
         queryset = self.client.documents().filter(id__in=doc_ids)
