@@ -73,10 +73,13 @@ class IntegrationTest(DocumentUnitTest):
 
     @override
     def tearDown(self):
-        # Request that paperless ngx reverts to the previous data
-        self.model.update_locally(from_db=True, **self._initial_data)
-        # Must be called manually in case subclasses turn off autosave and mocks self.is_new()
-        self.model.save(force=True)
+        try:
+            # Request that paperless ngx reverts to the previous data
+            self.model.update_locally(from_db=True, **self._initial_data)
+            # Must be called manually in case subclasses turn off autosave and mocks self.is_new()
+            self.model.save(force=True)
+        except Exception as e:
+            logger.error(f"Error saving model during tearDown: {e}")
 
         # TODO: confirm without another query
         return super().tearDown()
