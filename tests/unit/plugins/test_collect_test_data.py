@@ -16,8 +16,8 @@ from unittest.mock import MagicMock, Mock, call, patch
 
 from paperap.client import PaperlessClient
 from paperap.models import StandardModel
-from paperap.plugins.collect_test_data import SANITIZE_KEYS, SampleDataCollector
 from paperap.plugins.manager import PluginManager
+from paperap.plugins.collect_test_data import SANITIZE_KEYS, SampleDataCollector
 from paperap.signals import SignalRegistry
 from tests.lib import UnitTestCase
 
@@ -38,6 +38,7 @@ class TestDataCollectorUnitTest(UnitTestCase):
         self.test_dir.mkdir(parents=True, exist_ok=True)
 
         # Create the plugin instance
+        PluginManager.model_rebuild()
         self.manager = PluginManager(client=self.client)
         self.plugin = SampleDataCollector(manager=self.manager, test_dir=self.test_dir)
 

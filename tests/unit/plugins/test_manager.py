@@ -80,6 +80,7 @@ class TestPluginManager(unittest.TestCase):
         Creates a mock client and initializes a PluginManager instance.
         """
         self.mock_client = mock.MagicMock(spec=PaperlessClient)
+        PluginManager.model_rebuild()
         self.manager = PluginManager(client=self.mock_client)
 
     def test_init(self) -> None:
