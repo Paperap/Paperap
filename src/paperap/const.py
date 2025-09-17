@@ -127,7 +127,7 @@ class ConstModel(pydantic.BaseModel):
         """
         if isinstance(other, dict):
             # Ensure the dictionary keys match the model fields
-            expected_keys = set(self.model_fields.keys())
+            expected_keys = set(self.__class__.model_fields.keys())
             if set(other.keys()) != expected_keys:
                 return False
             return all(getattr(self, key) == other.get(key) for key in expected_keys)

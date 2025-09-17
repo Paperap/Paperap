@@ -1061,7 +1061,7 @@ class Document(StandardModel):
                 self.tag_ids.remove(instance.id)
                 return
         except ValueError as e:
-            logger.warning('Tag %s was not removed: %s', tag, e)
+            logger.warning("Tag %s was not removed: %s", tag, e)
             return
 
         raise TypeError(f"Invalid type for tag: {type(tag)}")

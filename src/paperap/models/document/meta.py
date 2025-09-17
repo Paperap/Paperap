@@ -82,8 +82,8 @@ SUPPORTED_FILTERING_PARAMS = {
     "document_type__name__iendswith",  # Document type name ends with
     "document_type__name__icontains",  # Document type name contains
     "document_type__name__iexact",  # Document type name exactly matches
-    "document_type__iexact",         # Document type exactly matches
-    "document_type__id__none",       # Documents with no document type
+    "document_type__iexact",  # Document type exactly matches
+    "document_type__id__none",  # Documents with no document type
     # Storage path filters
     "storage_path__isnull",  # Storage path is null or not
     "storage_path__id__in",  # Storage path ID is in the given list
@@ -92,8 +92,8 @@ SUPPORTED_FILTERING_PARAMS = {
     "storage_path__name__iendswith",  # Storage path name ends with
     "storage_path__name__icontains",  # Storage path name contains
     "storage_path__name__iexact",  # Storage path name exactly matches
-    "storage_path__iexact",         # Storage path exactly matches
-    "storage_path__id__none",       # Documents with no storage path
+    "storage_path__iexact",  # Storage path exactly matches
+    "storage_path__id__none",  # Documents with no storage path
     # Owner filters
     "owner__isnull",  # Owner is null or not
     "owner__id__in",  # Owner ID is in the given list
