@@ -851,7 +851,9 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
             >>> updated_tag = client.tags.update(tag)
 
         """
-        data = model.to_dict()
+        data = model.to_dict(
+             include_read_only=False, exclude_unset=True, exclude_none=False
+        )
         data = self.transform_data_output(**data)
 
         # Save the model ID
