@@ -481,8 +481,7 @@ class PaperlessClient:
         if response.status_code == 401:
             raise AuthenticationError(
                 (
-                    f"Authentication failed: {error_message}. Url: {self.base_url}, "
-                    f"Token: {self.settings.token[:3]}...{self.settings.token[-3:]}" # type: ignore
+                    f"Authentication failed: {error_message}. Url: {self.base_url}, Token: {self.settings.token[:3]}...{self.settings.token[-3:]}"  # type: ignore
                 )
             )
         if response.status_code == 403:
@@ -502,7 +501,7 @@ class PaperlessClient:
             response.status_code,
             error_message,
         )
-        raise BadResponseError(error_message, response.status_code)
+        raise BadResponseError(f"Bad Response from {url=}, {params=}, {data=}, {error_message=}", response.status_code)
 
     @overload
     def _handle_response(
