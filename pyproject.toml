@@ -943,6 +943,12 @@ show_missing = true
 [tool.uv.workspace]
 members = ["tmp"]
 
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"
+
 [dependency-groups]
 dev = [
   "bandit>=1.8.3",
