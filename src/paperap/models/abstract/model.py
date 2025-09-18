@@ -474,7 +474,9 @@ class BaseModel(pydantic.BaseModel, ABC):
         super().model_post_init(__context)
 
         # Save original_data to support dirty fields
-        self._original_data = self.model_dump()
+        current_state = self.model_dump()
+        self._original_data = current_state
+        self._saved_data = {**current_state}
 
         # Allow updating attributes to trigger save() automatically
         self._status = ModelStatus.READY
@@ -1066,18 +1068,20 @@ class StandardModel(BaseModel, ABC):
 
         with StatusContext(self, ModelStatus.SAVING):
             # Prepare and send the update to the server
-            current_data = self.to_dict(
-                include_read_only=False, exclude_none=False, exclude_unset=True
-            )
-            self._saved_data = {**current_data}
+            update_payload = self._prepare_update_payload()
+            if not update_payload:
+                logger.warning("No changes detected for %s, skipping save", self)
+                return False
 
             registry.emit(
                 "model.save:before",
                 "Fired before the model data is sent to paperless ngx to be saved.",
-                kwargs={"model": self, "current_data": current_data},
+                kwargs={"model": self, "current_data": update_payload},
             )
 
-            new_model = self._resource.update(self)  # type: ignore # basedmypy complaining about self
+            new_model = self._resource.update(
+                self, data=update_payload
+            )  # type: ignore # basedmypy complaining about self
 
             if not new_model:
                 logger.warning(f"Result of save was none for model id {self.id}")
@@ -1092,6 +1096,7 @@ class StandardModel(BaseModel, ABC):
                 # Update the model with the server response
                 new_data = new_model.to_dict()
                 self.update_locally(from_db=True, **new_data)
+                self._saved_data = {**self.model_dump()}
 
                 registry.emit(
                     "model.save:after",
@@ -1188,18 +1193,18 @@ class StandardModel(BaseModel, ABC):
 
         """
         # Prepare and send the update to the server
-        current_data = self.to_dict(
-            include_read_only=False, exclude_none=False, exclude_unset=True
-        )
-        self._saved_data = {**current_data}
+        update_payload = self._prepare_update_payload()
+        if not update_payload:
+            logger.warning("No changes detected for %s, skipping save", self)
+            return None
 
         registry.emit(
             "model.save:before",
             "Fired before the model data is sent to paperless ngx to be saved.",
-            kwargs={"model": self, "current_data": current_data},
+            kwargs={"model": self, "current_data": update_payload},
         )
 
-        return self._resource.update(self)
+        return self._resource.update(self, data=update_payload)
 
     def _handle_save_result_async(self, future: concurrent.futures.Future[Any]) -> bool:
         """
@@ -1245,6 +1250,7 @@ class StandardModel(BaseModel, ABC):
                 "Fired after the model data is saved in paperless ngx.",
                 kwargs={"model": self, "updated_data": new_data},
             )
+            self._saved_data = {**self.model_dump()}
 
         except concurrent.futures.TimeoutError:
             logger.error(f"Save operation timed out for {self}")
@@ -1290,6 +1296,17 @@ class StandardModel(BaseModel, ABC):
                 self.save()
 
         return True
+
+    def _prepare_update_payload(self) -> dict[str, Any]:
+        """Build the payload of changed, writable fields for the next save."""
+
+        payload = {
+            field: current
+            for field, (_previous, current) in self.dirty_fields("saved").items()
+            if field not in self._meta.read_only_fields
+        }
+
+        return payload
 
     @override
     def is_new(self) -> bool:

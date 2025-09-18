@@ -4,7 +4,7 @@ import threading
 import time
 import unittest
 from datetime import datetime
-from typing import override
+from typing import Any, override
 from unittest.mock import MagicMock, Mock, PropertyMock, call, patch
 
 from pydantic import field_serializer
@@ -63,7 +63,9 @@ class BaseTest(UnitTestCase[ExampleModel, ExampleResource]):
         ExampleModel._meta.save_on_write = True
 
         # Create update method that returns a new instance
-        def mock_update(model : ExampleModel):
+        def mock_update(
+            model: ExampleModel, *, data: dict[str, Any] | None = None
+        ) -> ExampleModel:
             return model
 
         self.resource.update = mock_update
@@ -103,7 +105,7 @@ class AsyncSaveTest(BaseTest):
 
     def test_saved_data(self):
         """Test that saved_data is set correctly"""
-        self.assertEqual(self.model._saved_data, {})
+        self.assertEqual(self.model._saved_data, self.model_data_unparsed)
 
     def test_save_updates_saved_data(self):
         """Test that save updates saved_data with current model state"""
@@ -125,10 +127,11 @@ class AsyncSaveTest(BaseTest):
             self.model.name = "Signal Test"
             self.model._perform_save_async()
             # Verify before signal
+            expected_payload = {'name': 'Signal Test'}
             self.assertIn(call(
                 "model.save:before",
                 "Fired before the model data is sent to paperless ngx to be saved.",
-                kwargs={'model': self.model, 'current_data': self.model.to_dict(include_read_only=False, exclude_none=False, exclude_unset=True)}
+                kwargs={'model': self.model, 'current_data': expected_payload}
             ), mock_emit.call_args_list)
 
     def __disabled_test_handle_save_result_async_updates_model(self):
@@ -176,13 +179,15 @@ class AsyncSaveTest(BaseTest):
         save_started_event = threading.Event()
 
         # Replace update with a function that waits for a signal
-        def delayed_update(model):
+        def delayed_update(
+            model, *, data: dict[str, Any] | None = None
+        ) -> ExampleModel:
             # Signal that save has started
             save_started_event.set()
             # Wait for the test to signal it should proceed
             update_event.wait(timeout=5.0)
             # Then do the normal update
-            return original_update(model)
+            return original_update(model, data=data)
 
         self.resource.update = delayed_update
 
@@ -214,7 +219,9 @@ class AsyncSaveTest(BaseTest):
     def test_error_handling_in_save(self):
         """Test error handling during save operation"""
         # Replace update with a function that raises an exception
-        def failing_update(model):
+        def failing_update(
+            model, *, data: dict[str, Any] | None = None
+        ) -> ExampleModel:
             raise APIError("Test error")
 
         self.resource.update = failing_update
