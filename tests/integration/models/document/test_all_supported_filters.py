@@ -12,6 +12,10 @@ from paperap.models.document.meta import SUPPORTED_FILTERING_PARAMS
 
 
 class TestAllSupportedDocumentFilters(unittest.TestCase):
+    """Integration coverage for every supported document filter."""
+
+    # Avoid overwhelming the API when asserting tag combinations.
+    _MAX_TAGS_FOR_ALL_FILTER = 5
     @classmethod
     def setUpClass(cls) -> None:
         client = PaperlessClient()
@@ -250,21 +254,34 @@ class TestAllSupportedDocumentFilters(unittest.TestCase):
     def _test_more_tag_filters(self, doc) -> List[Tuple[str, Any, Callable]]:
         """Generate test cases for additional tag filters."""
         test_cases = []
-        
+
         if hasattr(doc, "tag_ids") and doc.tag_ids:
             tag_ids = doc.tag_ids
             tag_id = tag_ids[0]
-            
+            limited_tag_ids = tag_ids[: self._MAX_TAGS_FOR_ALL_FILTER]
+
             # Test tag ID in list
             if "tags__id__in" in SUPPORTED_FILTERING_PARAMS:
-                test_cases.append(("tags__id__in", tag_ids, 
-                               lambda d: hasattr(d, "tag_ids") and any(t in d.tag_ids for t in tag_ids)))
-            
+                test_cases.append(
+                    (
+                        "tags__id__in",
+                        limited_tag_ids,
+                        lambda d: hasattr(d, "tag_ids")
+                        and any(t in d.tag_ids for t in limited_tag_ids),
+                    )
+                )
+
             # Test document has all specified tags
             if "tags__id__all" in SUPPORTED_FILTERING_PARAMS:
-                test_cases.append(("tags__id__all", tag_ids, 
-                               lambda d: hasattr(d, "tag_ids") and all(t in d.tag_ids for t in tag_ids)))
-            
+                test_cases.append(
+                    (
+                        "tags__id__all",
+                        limited_tag_ids,
+                        lambda d: hasattr(d, "tag_ids")
+                        and all(t in d.tag_ids for t in limited_tag_ids),
+                    )
+                )
+
             # Test document has none of specified tags
             if "tags__id__none" in SUPPORTED_FILTERING_PARAMS:
                 # Use a tag ID that's not in our doc, or the doc's tag ID negated
@@ -498,6 +515,7 @@ class TestAllSupportedDocumentFilters(unittest.TestCase):
                         #print(f"INFO: Server-side filter {key} with value {value} returned {len(filtered)} results")
                     except Exception as e:
                         print(f"WARNING: Filter {key} with value {value} raised exception: {str(e)}")
+                        print(f"{key=}, {value=}")
                 else:
                     self._assert_filter_result(key, value, predicate)
         
