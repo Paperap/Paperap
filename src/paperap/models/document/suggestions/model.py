@@ -63,4 +63,10 @@ class DocumentSuggestions(StandardModel):
         which fields are read-only.
         """
 
-        read_only_fields = {"correspondents", "tags", "document_types", "storage_paths", "dates"}
+        read_only_fields = {
+            "correspondents",
+            "tags",
+            "document_types",
+            "storage_paths",
+            "dates",
+        }

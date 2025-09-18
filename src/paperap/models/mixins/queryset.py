@@ -53,7 +53,14 @@ class QuerySetProtocol(Protocol):
         """
         ...
 
-    def filter_field_by_str(self, field: str, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def filter_field_by_str(
+        self,
+        field: str,
+        value: str,
+        *,
+        exact: bool = True,
+        case_insensitive: bool = True,
+    ) -> Self:
         """
         Filter the queryset by comparing a field to a string value.
 
@@ -234,7 +241,9 @@ class HasStandard(HasOwner, HasDocumentCount, Protocol):
 
     """
 
-    def name(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def name(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter models by name field.
 
@@ -252,9 +261,13 @@ class HasStandard(HasOwner, HasDocumentCount, Protocol):
             >>> client.tags().name("TAX", case_insensitive=True)  # Case-insensitive match
 
         """
-        return self.filter_field_by_str("name", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "name", value, exact=exact, case_insensitive=case_insensitive
+        )
 
-    def slug(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def slug(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter models by slug field.
 
@@ -271,4 +284,6 @@ class HasStandard(HasOwner, HasDocumentCount, Protocol):
             >>> client.tags().slug("tax", exact=False)  # Tags with "tax" in their slug
 
         """
-        return self.filter_field_by_str("slug", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "slug", value, exact=exact, case_insensitive=case_insensitive
+        )

@@ -43,7 +43,17 @@ TEMPLATE_DIR_ENV = "PAPERAP_TEMPLATE_DIR"
 DEFAULT_TEMPLATES_PATH = str(Path(__file__).parent / "templates")
 
 # File formats accepted by the enrichment services
-ACCEPTED_IMAGE_FORMATS = ["png", "jpg", "jpeg", "gif", "tif", "tiff", "bmp", "webp", "pdf"]
+ACCEPTED_IMAGE_FORMATS = [
+    "png",
+    "jpg",
+    "jpeg",
+    "gif",
+    "tif",
+    "tiff",
+    "bmp",
+    "webp",
+    "pdf",
+]
 # File formats accepted by OpenAI's vision models
 OPENAI_ACCEPTED_FORMATS = ["png", "jpg", "jpeg", "gif", "webp"]
 
@@ -89,7 +99,9 @@ class TemplateLoader:
 
         return self._environments[template_dir]
 
-    def render_template(self, template_name: str, template_dir: str | None = None, **context: Any) -> str:
+    def render_template(
+        self, template_name: str, template_dir: str | None = None, **context: Any
+    ) -> str:
         """
         Render a template with the provided context.
 
@@ -163,13 +175,17 @@ class DocumentEnrichmentService:
             template_path = template_dir / template_name
             if not template_path.exists():
                 # Try to load from package resources
-                template_content = pkgutil.get_data("paperap.services.enrichment", f"templates/{template_name}")
+                template_content = pkgutil.get_data(
+                    "paperap.services.enrichment", f"templates/{template_name}"
+                )
 
                 if template_content:
                     # Write template to file
                     template_path.write_bytes(template_content)
                 else:
-                    logger.warning(f"Default template {template_name} not found in package resources")
+                    logger.warning(
+                        f"Default template {template_name} not found in package resources"
+                    )
 
     def get_openai_client(self, config: EnrichmentConfig) -> OpenAI:
         """
@@ -214,8 +230,12 @@ class DocumentEnrichmentService:
         context: dict[str, Any] = {
             "document": document,
             "tag_names": document.tag_names,
-            "correspondent": document.correspondent.name if document.correspondent else None,
-            "document_type": document.document_type.name if document.document_type else None,
+            "correspondent": (
+                document.correspondent.name if document.correspondent else None
+            ),
+            "document_type": (
+                document.document_type.name if document.document_type else None
+            ),
         }
 
         # Add custom fields if available
@@ -225,7 +245,9 @@ class DocumentEnrichmentService:
         context["custom_fields"] = custom_fields
 
         # Allow context modification through signals
-        modified_context = self.signals.emit("enrichment.prepare_context", args=context, return_type=dict)
+        modified_context = self.signals.emit(
+            "enrichment.prepare_context", args=context, return_type=dict
+        )
 
         return modified_context or context
 
@@ -243,8 +265,12 @@ class DocumentEnrichmentService:
         """
         context = self.prepare_context(document)
         if not config.template_name:
-            raise ValueError("Template name is required in the enrichment configuration.")
-        prompt = template_loader.render_template(config.template_name, config.template_dir, **context)
+            raise ValueError(
+                "Template name is required in the enrichment configuration."
+            )
+        prompt = template_loader.render_template(
+            config.template_name, config.template_dir, **context
+        )
 
         # Allow prompt modification through signals
         modified_prompt = self.signals.emit(
@@ -256,7 +282,9 @@ class DocumentEnrichmentService:
 
         return modified_prompt or prompt
 
-    def extract_images_from_pdf(self, pdf_bytes: bytes, max_images: int = 2) -> list[bytes]:
+    def extract_images_from_pdf(
+        self, pdf_bytes: bytes, max_images: int = 2
+    ) -> list[bytes]:
         """
         Extract images from a PDF file.
 
@@ -299,10 +327,14 @@ class DocumentEnrichmentService:
                         base_image = pdf_document.extract_image(xref)
                         image_bytes = base_image["image"]
                         results.append(image_bytes)
-                        logger.debug(f"Extracted image from page {page_number + 1} of the PDF.")
+                        logger.debug(
+                            f"Extracted image from page {page_number + 1} of the PDF."
+                        )
                     except Exception as e:
                         count = len(results)
-                        logger.error(f"Failed to extract image from page {page_number + 1} of PDF: {e}")
+                        logger.error(
+                            f"Failed to extract image from page {page_number + 1} of PDF: {e}"
+                        )
                         if count < 1:
                             raise
 
@@ -345,7 +377,9 @@ class DocumentEnrichmentService:
         # Convert to base64
         return base64.b64encode(buf.read()).decode("utf-8")
 
-    def standardize_image_contents(self, content: bytes, max_images: int = 2) -> list[str]:
+    def standardize_image_contents(
+        self, content: bytes, max_images: int = 2
+    ) -> list[str]:
         """
         Standardize image contents to base64-encoded PNG format.
 
@@ -361,7 +395,9 @@ class DocumentEnrichmentService:
             # First try to convert directly
             return [self.convert_to_base64_png(content)]
         except Exception as e:
-            logger.debug(f"Failed to convert contents to PNG, trying other methods: {e}")
+            logger.debug(
+                f"Failed to convert contents to PNG, trying other methods: {e}"
+            )
 
         # Try to extract images from PDF
         try:
@@ -403,16 +439,22 @@ class DocumentEnrichmentService:
             # Check if the document format is supported for vision
             if config.vision:
                 original_filename = (document.original_filename or "").lower()
-                if not any(original_filename.endswith(ext) for ext in ACCEPTED_IMAGE_FORMATS):
+                if not any(
+                    original_filename.endswith(ext) for ext in ACCEPTED_IMAGE_FORMATS
+                ):
                     result.success = False
-                    result.error = f"Unsupported file format for vision: {original_filename}"
+                    result.error = (
+                        f"Unsupported file format for vision: {original_filename}"
+                    )
                     return result
 
             # Render the prompt
             prompt = self.render_prompt(document, config)
 
             # Convert content to bytes if it's a string
-            content_bytes = content if isinstance(content, bytes) else content.encode("utf-8")
+            content_bytes = (
+                content if isinstance(content, bytes) else content.encode("utf-8")
+            )
 
             # Process with OpenAI
             openai_client = self.get_openai_client(config)
@@ -428,7 +470,9 @@ class DocumentEnrichmentService:
             # Add images if using vision
             if config.vision and config.extract_images:
                 try:
-                    images = self.standardize_image_contents(content_bytes, config.max_images)
+                    images = self.standardize_image_contents(
+                        content_bytes, config.max_images
+                    )
 
                     if not images:
                         logger.warning(f"No images found in document {document.id}")
@@ -503,11 +547,19 @@ class DocumentEnrichmentService:
         date_str = str(date_str).strip()
 
         # "Date unknown" or "Unknown date" or "No date"
-        if re.match(r"(date unknown|unknown date|no date|none|unknown|n/?a)$", date_str, re.IGNORECASE):
+        if re.match(
+            r"(date unknown|unknown date|no date|none|unknown|n/?a)$",
+            date_str,
+            re.IGNORECASE,
+        ):
             return None
 
         # Handle "circa 1950"
-        if matches := re.match(r"((around|circa|mid|early|late|before|after) *)?(\d{4})s?$", date_str, re.IGNORECASE):
+        if matches := re.match(
+            r"((around|circa|mid|early|late|before|after) *)?(\d{4})s?$",
+            date_str,
+            re.IGNORECASE,
+        ):
             date_str = f"{matches.group(3)}-01-01"
 
         return dateparser.parse(date_str)
@@ -545,7 +597,9 @@ ORIGINAL DESCRIPTION:
 """
 
             # Get the OpenAI client (using a simpler model for synonyms)
-            openai_client = self.get_openai_client(EnrichmentConfig(model="gpt-4o-mini"))
+            openai_client = self.get_openai_client(
+                EnrichmentConfig(model="gpt-4o-mini")
+            )
 
             # Call OpenAI API
             response = openai_client.chat.completions.create(
@@ -565,7 +619,9 @@ ORIGINAL DESCRIPTION:
             logger.error(f"Error expanding description with synonyms: {e}")
             return description  # Return original description on error
 
-    def apply_enrichment(self, result: EnrichmentResult, expand_descriptions: bool = False) -> "Document":
+    def apply_enrichment(
+        self, result: EnrichmentResult, expand_descriptions: bool = False
+    ) -> "Document":
         """
         Apply the enrichment result to the document.
 
@@ -639,7 +695,9 @@ ORIGINAL DESCRIPTION:
 
             # If expand_descriptions is enabled, generate synonym expansions
             if expand_descriptions:
-                expanded_description = self.expand_description_with_synonyms(description)
+                expanded_description = self.expand_description_with_synonyms(
+                    description
+                )
                 description_parts.append(f"\n{expanded_description}")
             else:
                 description_parts.append(f"\nDescription:\n{description}")
@@ -649,6 +707,8 @@ ORIGINAL DESCRIPTION:
 
         # Handle summaries specifically
         if summary := response.get("summary"):
-            document.content = f"SUMMARY:\n\n{summary}\n\nORIGINAL CONTENT:\n\n{document.content}"
+            document.content = (
+                f"SUMMARY:\n\n{summary}\n\nORIGINAL CONTENT:\n\n{document.content}"
+            )
 
         return document

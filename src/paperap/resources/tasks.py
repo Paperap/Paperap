@@ -207,7 +207,9 @@ class TaskResource(StandardResource[Task, TaskQuerySet]):
 
         raise APIError(f"Timed out waiting for task {task_id} to complete")
 
-    def wait_for_tasks(self, task_ids: list[str], max_wait: int = 300, poll_interval: float = 1.0) -> dict[str, Task]:
+    def wait_for_tasks(
+        self, task_ids: list[str], max_wait: int = 300, poll_interval: float = 1.0
+    ) -> dict[str, Task]:
         """
         Wait for multiple tasks to complete and return their results.
 
@@ -247,7 +249,9 @@ class TaskResource(StandardResource[Task, TaskQuerySet]):
         pending_tasks = list(task_ids)
 
         while pending_tasks and time.monotonic() < end_time:
-            for task_id in list(pending_tasks):  # Create a copy to safely modify during iteration
+            for task_id in list(
+                pending_tasks
+            ):  # Create a copy to safely modify during iteration
                 try:
                     task = self(task_id=task_id).first()
                     if task is None:
@@ -277,7 +281,9 @@ class TaskResource(StandardResource[Task, TaskQuerySet]):
 
         return completed_tasks
 
-    def get_task_result(self, task_id: str, wait: bool = True, max_wait: int = 300) -> str | None:
+    def get_task_result(
+        self, task_id: str, wait: bool = True, max_wait: int = 300
+    ) -> str | None:
         """
         Get the result data of a completed task.
 
@@ -318,7 +324,13 @@ class TaskResource(StandardResource[Task, TaskQuerySet]):
 
         return task.result
 
-    def execute_task(self, method: str, endpoint: str, data: dict[str, Any] | None = None, max_wait: int = 300) -> Task:
+    def execute_task(
+        self,
+        method: str,
+        endpoint: str,
+        data: dict[str, Any] | None = None,
+        max_wait: int = 300,
+    ) -> Task:
         """
         Execute a task and wait for its completion.
 

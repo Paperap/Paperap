@@ -83,4 +83,9 @@ class DownloadedDocument(StandardModel):
         Defines which fields are read-only and should not be modified by the client.
         """
 
-        read_only_fields = {"content", "content_type", "disposition_filename", "disposition_type"}
+        read_only_fields = {
+            "content",
+            "content_type",
+            "disposition_filename",
+            "disposition_type",
+        }

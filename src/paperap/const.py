@@ -56,7 +56,10 @@ class StrEnumWithUnknown(StrEnum):
     @override
     @classmethod
     def _missing_(cls, value: object) -> str:
-        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
+        logger.debug(
+            "Handling unknown enum value",
+            extra={"enum_class": cls.__name__, "value": value},
+        )
         return cls.UNKNOWN  # type: ignore # subclasses will define unknown
 
 
@@ -84,7 +87,10 @@ class IntEnumWithUnknown(IntEnum):
     @override
     @classmethod
     def _missing_(cls, value: object) -> int:
-        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
+        logger.debug(
+            "Handling unknown enum value",
+            extra={"enum_class": cls.__name__, "value": value},
+        )
         return cls.UNKNOWN  # type: ignore # subclasses will define unknown
 
 
@@ -382,7 +388,10 @@ class MatchingAlgorithmType(IntEnumWithUnknown):
     @override
     @classmethod
     def _missing_(cls, value: object) -> "Literal[MatchingAlgorithmType.UNKNOWN]":
-        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
+        logger.debug(
+            "Handling unknown enum value",
+            extra={"enum_class": cls.__name__, "value": value},
+        )
         return cls.UNKNOWN
 
 
@@ -477,7 +486,10 @@ class ShareLinkFileVersionType(StrEnumWithUnknown):
     @override
     @classmethod
     def _missing_(cls, value: object) -> "Literal[ShareLinkFileVersionType.UNKNOWN]":
-        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
+        logger.debug(
+            "Handling unknown enum value",
+            extra={"enum_class": cls.__name__, "value": value},
+        )
         return cls.UNKNOWN
 
 
@@ -501,7 +513,10 @@ class StatusType(StrEnumWithUnknown):
     @override
     @classmethod
     def _missing_(cls, value: object) -> "Literal[StatusType.UNKNOWN]":
-        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
+        logger.debug(
+            "Handling unknown enum value",
+            extra={"enum_class": cls.__name__, "value": value},
+        )
         return cls.UNKNOWN
 
 

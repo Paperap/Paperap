@@ -26,7 +26,11 @@ from paperap.const import (
 )
 from paperap.models.abstract.model import StandardModel
 from paperap.models.mixins.models import MatcherMixin
-from paperap.models.workflow.queryset import WorkflowActionQuerySet, WorkflowQuerySet, WorkflowTriggerQuerySet
+from paperap.models.workflow.queryset import (
+    WorkflowActionQuerySet,
+    WorkflowQuerySet,
+    WorkflowTriggerQuerySet,
+)
 
 
 class WorkflowTrigger(StandardModel, MatcherMixin):

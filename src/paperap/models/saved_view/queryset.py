@@ -41,7 +41,9 @@ class SavedViewQuerySet(StandardQuerySet["SavedView"], HasOwner):
 
     """
 
-    def name(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def name(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter saved views by name.
 
@@ -61,7 +63,9 @@ class SavedViewQuerySet(StandardQuerySet["SavedView"], HasOwner):
             >>> invoice_views = client.saved_views.filter().name("invoice", exact=False)
 
         """
-        return self.filter_field_by_str("name", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "name", value, exact=exact, case_insensitive=case_insensitive
+        )
 
     def show_in_sidebar(self, show: bool = True) -> Self:
         """
@@ -103,7 +107,9 @@ class SavedViewQuerySet(StandardQuerySet["SavedView"], HasOwner):
         """
         return self.filter(show_on_dashboard=show)
 
-    def sort_field(self, field: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def sort_field(
+        self, field: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter saved views by sort field.
 
@@ -123,7 +129,9 @@ class SavedViewQuerySet(StandardQuerySet["SavedView"], HasOwner):
             >>> date_fields = client.saved_views.filter().sort_field("date", exact=False)
 
         """
-        return self.filter_field_by_str("sort_field", field, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "sort_field", field, exact=exact, case_insensitive=case_insensitive
+        )
 
     def sort_reverse(self, reverse: bool = True) -> Self:
         """

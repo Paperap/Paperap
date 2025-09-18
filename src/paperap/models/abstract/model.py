@@ -26,14 +26,30 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from decimal import Decimal
 from enum import StrEnum
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, Literal, Self, TypedDict, cast, override
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ClassVar,
+    Generic,
+    Literal,
+    Self,
+    TypedDict,
+    cast,
+    override,
+)
 
 import pydantic
 from pydantic import Field, PrivateAttr
 from typing_extensions import TypeVar
 
 from paperap.const import ClientResponse, FilteringStrategies, ModelStatus
-from paperap.exceptions import APIError, ConfigurationError, ReadOnlyFieldError, RequestError, ResourceNotFoundError
+from paperap.exceptions import (
+    APIError,
+    ConfigurationError,
+    ReadOnlyFieldError,
+    RequestError,
+    ResourceNotFoundError,
+)
 from paperap.models.abstract.meta import StatusContext
 from paperap.signals import registry
 
@@ -117,7 +133,9 @@ class BaseModel(pydantic.BaseModel, ABC):
     _pending_save: concurrent.futures.Future[Any] | None = PrivateAttr(default=None)
     _save_executor: concurrent.futures.ThreadPoolExecutor | None = None
     # Updating attributes will not trigger save()
-    _status: ModelStatus = ModelStatus.INITIALIZING  # The last data we retrieved from the db
+    _status: ModelStatus = (
+        ModelStatus.INITIALIZING
+    )  # The last data we retrieved from the db
     # this is used to calculate if the model is dirty
     _original_data: dict[str, Any] = {}
     # The last data we sent to the db to save
@@ -183,7 +201,9 @@ class BaseModel(pydantic.BaseModel, ABC):
         blacklist_filtering_params: ClassVar[set[str]] = set()
         # Strategies for filtering.
         # This determines which of the above lists will be used to allow or deny filters to QuerySets.
-        filtering_strategies: ClassVar[set[FilteringStrategies]] = {FilteringStrategies.BLACKLIST}
+        filtering_strategies: ClassVar[set[FilteringStrategies]] = {
+            FilteringStrategies.BLACKLIST
+        }
         # A map of field names to their attribute names.
         # Parser uses this to transform input and output data.
         # This will be populated from all parent classes.
@@ -200,8 +220,13 @@ class BaseModel(pydantic.BaseModel, ABC):
             self.model = model
 
             # Validate filtering strategies
-            if all(x in self.filtering_strategies for x in (FilteringStrategies.ALLOW_ALL, FilteringStrategies.ALLOW_NONE)):
-                raise ValueError(f"Cannot have ALLOW_ALL and ALLOW_NONE filtering strategies in {self.model.__name__}")
+            if all(
+                x in self.filtering_strategies
+                for x in (FilteringStrategies.ALLOW_ALL, FilteringStrategies.ALLOW_NONE)
+            ):
+                raise ValueError(
+                    f"Cannot have ALLOW_ALL and ALLOW_NONE filtering strategies in {self.model.__name__}"
+                )
 
             super().__init__()
 
@@ -234,13 +259,19 @@ class BaseModel(pydantic.BaseModel, ABC):
 
             # If we have a whitelist, check if the filter_param is in it
             if FilteringStrategies.WHITELIST in self.filtering_strategies:
-                if self.supported_filtering_params and filter_param not in self.supported_filtering_params:
+                if (
+                    self.supported_filtering_params
+                    and filter_param not in self.supported_filtering_params
+                ):
                     return False
                 # Allow other rules to fire
 
             # If we have a blacklist, check if the filter_param is in it
             if FilteringStrategies.BLACKLIST in self.filtering_strategies:
-                if self.blacklist_filtering_params and filter_param in self.blacklist_filtering_params:
+                if (
+                    self.blacklist_filtering_params
+                    and filter_param in self.blacklist_filtering_params
+                ):
                     return False
                 # Allow other rules to fire
 
@@ -293,7 +324,9 @@ class BaseModel(pydantic.BaseModel, ABC):
                     break
             if top_meta is None:
                 # This should never happen.
-                raise ConfigurationError(f"Meta class not found in {cls.__name__} or its bases")
+                raise ConfigurationError(
+                    f"Meta class not found in {cls.__name__} or its bases"
+                )
 
             # Create a new Meta class that inherits from the top-most Meta.
             meta_attrs = {
@@ -373,7 +406,9 @@ class BaseModel(pydantic.BaseModel, ABC):
         super().__init__(**data)
 
         if not hasattr(self, "_resource"):
-            raise ValueError(f"Resource required. Initialize resource for {self.__class__.__name__} before instantiating models.")
+            raise ValueError(
+                f"Resource required. Initialize resource for {self.__class__.__name__} before instantiating models."
+            )
 
     @property
     def _client(self) -> "PaperlessClient":
@@ -418,7 +453,9 @@ class BaseModel(pydantic.BaseModel, ABC):
 
         """
         if not self._save_executor:
-            self._save_executor = concurrent.futures.ThreadPoolExecutor(max_workers=5, thread_name_prefix="model_save_worker")
+            self._save_executor = concurrent.futures.ThreadPoolExecutor(
+                max_workers=5, thread_name_prefix="model_save_worker"
+            )
         return self._save_executor
 
     def cleanup(self) -> None:
@@ -502,7 +539,9 @@ class BaseModel(pydantic.BaseModel, ABC):
             >>> partial_data = doc.to_dict(exclude_unset=True)
 
         """
-        exclude: set[str] = set() if include_read_only else set(self._meta.read_only_fields)
+        exclude: set[str] = (
+            set() if include_read_only else set(self._meta.read_only_fields)
+        )
 
         return self.model_dump(
             exclude=exclude,
@@ -510,7 +549,9 @@ class BaseModel(pydantic.BaseModel, ABC):
             exclude_unset=exclude_unset,
         )
 
-    def dirty_fields(self, comparison: Literal["saved", "db", "both"] = "both") -> dict[str, tuple[Any, Any]]:
+    def dirty_fields(
+        self, comparison: Literal["saved", "db", "both"] = "both"
+    ) -> dict[str, tuple[Any, Any]]:
         """
         Show which fields have changed since last update from the Paperless NGX database.
 
@@ -546,13 +587,17 @@ class BaseModel(pydantic.BaseModel, ABC):
             # For 'both', we want to compare against both original and saved data
             # A field is dirty if it differs from either original or saved data
             compare_dict = {}
-            for field in set(list(self._original_data.keys()) + list(self._saved_data.keys())):
+            for field in set(
+                list(self._original_data.keys()) + list(self._saved_data.keys())
+            ):
                 # ID cannot change, and is not set before first save sometimes
                 if field == "id":
                     continue
 
                 # Prefer original data (from DB) over saved data when both exist
-                compare_dict[field] = self._original_data.get(field, self._saved_data.get(field))
+                compare_dict[field] = self._original_data.get(
+                    field, self._saved_data.get(field)
+                )
 
         return {
             field: (compare_dict.get(field, None), current_data.get(field, None))
@@ -627,7 +672,13 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         return self._resource.delete(self)
 
-    def update_locally(self, *, from_db: bool | None = None, skip_changed_fields: bool = False, **kwargs: Any) -> None:
+    def update_locally(
+        self,
+        *,
+        from_db: bool | None = None,
+        skip_changed_fields: bool = False,
+        **kwargs: Any,
+    ) -> None:
         """
         Update model attributes without triggering automatic save.
 
@@ -661,8 +712,12 @@ class BaseModel(pydantic.BaseModel, ABC):
             # Ensure read-only fields were not changed
             if not from_db:
                 for field in self._meta.read_only_fields:
-                    if field in kwargs and kwargs[field] != self._original_data.get(field, None):
-                        raise ReadOnlyFieldError(f"Cannot change read-only field {field}")
+                    if field in kwargs and kwargs[field] != self._original_data.get(
+                        field, None
+                    ):
+                        raise ReadOnlyFieldError(
+                            f"Cannot change read-only field {field}"
+                        )
 
             # If the field contains unsaved changes, skip updating it
             # Determine unsaved changes based on the dirty fields before we last called save
@@ -928,7 +983,9 @@ class StandardModel(BaseModel, ABC):
 
         """
         if self.is_new():
-            raise ResourceNotFoundError("Model does not have an id, so cannot be refreshed. Save first.")
+            raise ResourceNotFoundError(
+                "Model does not have an id, so cannot be refreshed. Save first."
+            )
 
         new_model = self._resource.get(self.id)
 
@@ -1009,7 +1066,9 @@ class StandardModel(BaseModel, ABC):
 
         with StatusContext(self, ModelStatus.SAVING):
             # Prepare and send the update to the server
-            current_data = self.to_dict(include_read_only=False, exclude_none=False, exclude_unset=True)
+            current_data = self.to_dict(
+                include_read_only=False, exclude_none=False, exclude_unset=True
+            )
             self._saved_data = {**current_data}
 
             registry.emit(
@@ -1129,7 +1188,9 @@ class StandardModel(BaseModel, ABC):
 
         """
         # Prepare and send the update to the server
-        current_data = self.to_dict(include_read_only=False, exclude_none=False, exclude_unset=True)
+        current_data = self.to_dict(
+            include_read_only=False, exclude_none=False, exclude_unset=True
+        )
         self._saved_data = {**current_data}
 
         registry.emit(

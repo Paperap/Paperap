@@ -44,7 +44,9 @@ class TagQuerySet(BulkQuerySet["Tag"], HasStandard):
 
     """
 
-    def colour(self, value: str | int, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def colour(
+        self, value: str | int, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter tags by color.
 
@@ -71,9 +73,13 @@ class TagQuerySet(BulkQuerySet["Tag"], HasStandard):
         """
         if isinstance(value, int):
             return self.filter(colour=value)
-        return self.filter_field_by_str("colour", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "colour", value, exact=exact, case_insensitive=case_insensitive
+        )
 
-    def match(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def match(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter tags by match value.
 
@@ -97,7 +103,9 @@ class TagQuerySet(BulkQuerySet["Tag"], HasStandard):
                 >>> tax_tags = client.tags.all().match("tax", exact=False)
 
         """
-        return self.filter_field_by_str("match", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "match", value, exact=exact, case_insensitive=case_insensitive
+        )
 
     def matching_algorithm(self, value: int) -> Self:
         """

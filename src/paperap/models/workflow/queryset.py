@@ -39,7 +39,9 @@ class WorkflowQuerySet(StandardQuerySet["Workflow"]):
 
     """
 
-    def name(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def name(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter workflows by name.
 
@@ -59,7 +61,9 @@ class WorkflowQuerySet(StandardQuerySet["Workflow"]):
                 >>> invoice_workflows = client.workflows.name("invoice", exact=False)
 
         """
-        return self.filter_field_by_str("name", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "name", value, exact=exact, case_insensitive=case_insensitive
+        )
 
     def order(self, value: int) -> Self:
         """
@@ -116,7 +120,9 @@ class WorkflowActionQuerySet(StandardQuerySet["WorkflowAction"]):
 
     """
 
-    def type(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def type(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter workflow actions by their type.
 
@@ -136,9 +142,13 @@ class WorkflowActionQuerySet(StandardQuerySet["WorkflowAction"]):
                 >>> assign_actions = client.workflow_actions.type("assign")
 
         """
-        return self.filter_field_by_str("type", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "type", value, exact=exact, case_insensitive=case_insensitive
+        )
 
-    def assign_title(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def assign_title(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter workflow actions by the title they assign to documents.
 
@@ -157,7 +167,9 @@ class WorkflowActionQuerySet(StandardQuerySet["WorkflowAction"]):
                 >>> invoice_actions = client.workflow_actions.assign_title("Invoice", exact=False)
 
         """
-        return self.filter_field_by_str("assign_title", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "assign_title", value, exact=exact, case_insensitive=case_insensitive
+        )
 
     def assign_tags(self, value: int | list[int]) -> Self:
         """
@@ -299,7 +311,9 @@ class WorkflowTriggerQuerySet(StandardQuerySet["WorkflowTrigger"]):
         """
         return self.filter(type=value)
 
-    def filter_path(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def filter_path(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter workflow triggers by their path filter condition.
 
@@ -322,9 +336,13 @@ class WorkflowTriggerQuerySet(StandardQuerySet["WorkflowTrigger"]):
                 >>> invoice_triggers = client.workflow_triggers.filter_path("invoices", exact=False)
 
         """
-        return self.filter_field_by_str("filter_path", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "filter_path", value, exact=exact, case_insensitive=case_insensitive
+        )
 
-    def filter_filename(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def filter_filename(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter workflow triggers by their filename filter condition.
 
@@ -347,9 +365,13 @@ class WorkflowTriggerQuerySet(StandardQuerySet["WorkflowTrigger"]):
                 >>> pdf_triggers = client.workflow_triggers.filter_filename(".pdf", exact=False)
 
         """
-        return self.filter_field_by_str("filter_filename", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "filter_filename", value, exact=exact, case_insensitive=case_insensitive
+        )
 
-    def filter_mailrule(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def filter_mailrule(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter workflow triggers by their mail rule filter condition.
 
@@ -372,7 +394,9 @@ class WorkflowTriggerQuerySet(StandardQuerySet["WorkflowTrigger"]):
                 >>> invoice_mail_triggers = client.workflow_triggers.filter_mailrule("invoice", exact=False)
 
         """
-        return self.filter_field_by_str("filter_mailrule", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "filter_mailrule", value, exact=exact, case_insensitive=case_insensitive
+        )
 
     def has_tags(self, value: int | list[int]) -> Self:
         """

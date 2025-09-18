@@ -13,7 +13,11 @@ import logging
 from typing import TYPE_CHECKING, Any, Self, Union
 
 from paperap.models.mixins.queryset import HasDocumentCount, HasOwner
-from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet, BulkQuerySet
+from paperap.models.abstract.queryset import (
+    BaseQuerySet,
+    StandardQuerySet,
+    BulkQuerySet,
+)
 
 if TYPE_CHECKING:
     from paperap.models.correspondent.model import Correspondent
@@ -44,7 +48,9 @@ class CorrespondentQuerySet(BulkQuerySet["Correspondent"], HasOwner, HasDocument
 
     """
 
-    def name(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def name(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter correspondents by name.
 
@@ -64,7 +70,9 @@ class CorrespondentQuerySet(BulkQuerySet["Correspondent"], HasOwner, HasDocument
                 >>> contains = client.correspondents().name("electric", exact=False)
 
         """
-        return self.filter_field_by_str("name", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "name", value, exact=exact, case_insensitive=case_insensitive
+        )
 
     def matching_algorithm(self, value: int) -> Self:
         """
@@ -89,7 +97,9 @@ class CorrespondentQuerySet(BulkQuerySet["Correspondent"], HasOwner, HasDocument
         """
         return self.filter(matching_algorithm=value)
 
-    def match(self, match: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def match(
+        self, match: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter correspondents by their match pattern.
 
@@ -109,7 +119,9 @@ class CorrespondentQuerySet(BulkQuerySet["Correspondent"], HasOwner, HasDocument
                 >>> invoice_matchers = client.correspondents().match("invoice", exact=False)
 
         """
-        return self.filter_field_by_str("match", match, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "match", match, exact=exact, case_insensitive=case_insensitive
+        )
 
     def case_insensitive(self, insensitive: bool = True) -> Self:
         """
@@ -146,7 +158,9 @@ class CorrespondentQuerySet(BulkQuerySet["Correspondent"], HasOwner, HasDocument
         """
         return self.filter(user_can_change=value)
 
-    def slug(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def slug(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter correspondents by slug.
 
@@ -167,4 +181,6 @@ class CorrespondentQuerySet(BulkQuerySet["Correspondent"], HasOwner, HasDocument
                 >>> electric = client.correspondents().slug("electric-company")
 
         """
-        return self.filter_field_by_str("slug", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "slug", value, exact=exact, case_insensitive=case_insensitive
+        )

@@ -158,7 +158,9 @@ class Settings(BaseSettings):
             if not isinstance(value, int):
                 raise TypeError("Unknown type for timeout")
         except ValueError as ve:
-            raise TypeError(f"Timeout must be an integer. Provided {value=} of type {type(value)}") from ve
+            raise TypeError(
+                f"Timeout must be an integer. Provided {value=} of type {type(value)}"
+            ) from ve
 
         if value < 0:
             raise ConfigurationError("Timeout must be a positive integer")
@@ -188,6 +190,8 @@ class Settings(BaseSettings):
             raise ConfigurationError("Base URL is required")
 
         if self.require_ssl and self.base_url.scheme != "https":
-            raise ConfigurationError(f"URL must use HTTPS. Url: {self.base_url}. Scheme: {self.base_url.scheme}")
+            raise ConfigurationError(
+                f"URL must use HTTPS. Url: {self.base_url}. Scheme: {self.base_url.scheme}"
+            )
 
         return super().model_post_init(__context)

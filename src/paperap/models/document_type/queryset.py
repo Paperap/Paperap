@@ -12,7 +12,11 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any, Self
 
-from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet, BulkQuerySet
+from paperap.models.abstract.queryset import (
+    BaseQuerySet,
+    StandardQuerySet,
+    BulkQuerySet,
+)
 from paperap.models.mixins.queryset import HasDocumentCount, HasOwner
 
 if TYPE_CHECKING:
@@ -49,7 +53,9 @@ class DocumentTypeQuerySet(BulkQuerySet["DocumentType"], HasOwner, HasDocumentCo
 
     """
 
-    def name(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def name(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter document types by name.
 
@@ -74,9 +80,13 @@ class DocumentTypeQuerySet(BulkQuerySet["DocumentType"], HasOwner, HasDocumentCo
                 >>> types = client.document_types.name("TAX", case_insensitive=False)
 
         """
-        return self.filter_field_by_str("name", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "name", value, exact=exact, case_insensitive=case_insensitive
+        )
 
-    def slug(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def slug(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter document types by slug.
 
@@ -101,9 +111,13 @@ class DocumentTypeQuerySet(BulkQuerySet["DocumentType"], HasOwner, HasDocumentCo
                 >>> types = client.document_types.slug("invoice", exact=False)
 
         """
-        return self.filter_field_by_str("slug", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "slug", value, exact=exact, case_insensitive=case_insensitive
+        )
 
-    def match(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def match(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter document types by match pattern.
 
@@ -128,7 +142,9 @@ class DocumentTypeQuerySet(BulkQuerySet["DocumentType"], HasOwner, HasDocumentCo
                 >>> tax_types = client.document_types.match("tax", exact=False)
 
         """
-        return self.filter_field_by_str("match", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "match", value, exact=exact, case_insensitive=case_insensitive
+        )
 
     def matching_algorithm(self, value: int) -> Self:
         """

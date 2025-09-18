@@ -41,7 +41,9 @@ class StoragePathQuerySet(StandardQuerySet["StoragePath"], HasStandard):
 
     """
 
-    def path(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def path(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter storage paths by their actual path value.
 
@@ -62,7 +64,9 @@ class StoragePathQuerySet(StandardQuerySet["StoragePath"], HasStandard):
                 >>> invoice_paths = client.storage_paths.path("invoice", exact=False)
 
         """
-        return self.filter_field_by_str("path", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "path", value, exact=exact, case_insensitive=case_insensitive
+        )
 
     def match(self, value: str, *, exact: bool = True) -> Self:
         """

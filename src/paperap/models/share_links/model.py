@@ -59,7 +59,9 @@ class ShareLinks(StandardModel):
     expiration: datetime | None = None
     slug: str | None = None
     document: int | None = None
-    created: datetime | None = Field(description="Creation timestamp", default=None, alias="created_on")
+    created: datetime | None = Field(
+        description="Creation timestamp", default=None, alias="created_on"
+    )
     file_version: ShareLinkFileVersionType | None = None
     owner: int | None = None
 

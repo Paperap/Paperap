@@ -87,7 +87,12 @@ class Tag(StandardModel, MatcherMixin):
             dict[str, Any]: The modified data dictionary with normalized color field.
 
         """
-        if isinstance(data, dict) and "text_color" in data and data.get("colour") is None and data.get("color") is None:
+        if (
+            isinstance(data, dict)
+            and "text_color" in data
+            and data.get("colour") is None
+            and data.get("color") is None
+        ):
             data["colour"] = data.pop("text_color")
         return data
 

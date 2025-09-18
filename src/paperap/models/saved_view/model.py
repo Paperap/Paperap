@@ -12,7 +12,11 @@ from typing import Any
 
 from pydantic import Field
 
-from paperap.const import SavedViewDisplayFieldType, SavedViewDisplayModeType, SavedViewFilterRuleType
+from paperap.const import (
+    SavedViewDisplayFieldType,
+    SavedViewDisplayModeType,
+    SavedViewFilterRuleType,
+)
 from paperap.models.abstract.model import StandardModel
 from paperap.models.saved_view.queryset import SavedViewQuerySet
 

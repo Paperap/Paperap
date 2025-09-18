@@ -124,9 +124,17 @@ class SampleDataCollector(Plugin):
         This method connects the plugin's handler methods to the appropriate signals
         in the client, allowing it to capture and save API responses.
         """
-        registry.connect("resource._handle_response:after", self.save_list_response, SignalPriority.LOW)
-        registry.connect("resource._handle_results:before", self.save_first_item, SignalPriority.LOW)
-        registry.connect("client.request:after", self.save_parsed_response, SignalPriority.LOW)
+        registry.connect(
+            "resource._handle_response:after",
+            self.save_list_response,
+            SignalPriority.LOW,
+        )
+        registry.connect(
+            "resource._handle_results:before", self.save_first_item, SignalPriority.LOW
+        )
+        registry.connect(
+            "client.request:after", self.save_parsed_response, SignalPriority.LOW
+        )
 
     @override
     def teardown(self) -> None:
@@ -220,7 +228,9 @@ class SampleDataCollector(Plugin):
 
         # Replace "next" domain using regex
         if (next_page := response.get("next", None)) and isinstance(next_page, str):
-            sanitized["next"] = re.sub(r"https?://.*?/", "https://example.com/", next_page)
+            sanitized["next"] = re.sub(
+                r"https?://.*?/", "https://example.com/", next_page
+            )
 
         return sanitized  # type: ignore
 
@@ -257,7 +267,9 @@ class SampleDataCollector(Plugin):
 
         return value
 
-    def save_response(self, filepath: Path, response: ClientResponse | None, **kwargs: Any) -> None:
+    def save_response(
+        self, filepath: Path, response: ClientResponse | None, **kwargs: Any
+    ) -> None:
         """
         Save an API response to a JSON file.
 
@@ -283,12 +295,23 @@ class SampleDataCollector(Plugin):
                 response = self._sanitize_dict_response(**response)
             filepath.parent.mkdir(parents=True, exist_ok=True)
             with filepath.open("w") as f:
-                json.dump(response, f, indent=4, sort_keys=True, ensure_ascii=False, default=self._json_serializer)
+                json.dump(
+                    response,
+                    f,
+                    indent=4,
+                    sort_keys=True,
+                    ensure_ascii=False,
+                    default=self._json_serializer,
+                )
         except (TypeError, OverflowError, OSError) as e:
             # Don't allow the plugin to interfere with normal operations in the event of failure
-            logger.error("Error saving response to file (%s): %s", filepath.absolute(), e)
+            logger.error(
+                "Error saving response to file (%s): %s", filepath.absolute(), e
+            )
 
-    def save_list_response[R: ClientResponse | None](self, sender: Any, response: R, **kwargs: Any) -> R:
+    def save_list_response[R: ClientResponse | None](
+        self, sender: Any, response: R, **kwargs: Any
+    ) -> R:
         """
         Save a list response from a resource to a JSON file.
 
@@ -312,7 +335,9 @@ class SampleDataCollector(Plugin):
 
         return response
 
-    def save_first_item[R: dict[str, Any]](self, sender: Any, item: R, **kwargs: Any) -> R:
+    def save_first_item[R: dict[str, Any]](
+        self, sender: Any, item: R, **kwargs: Any
+    ) -> R:
         """
         Save the first item from a resource result to a JSON file.
 

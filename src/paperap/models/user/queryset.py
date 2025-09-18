@@ -44,7 +44,9 @@ class UserQuerySet(StandardQuerySet["User"]):
 
     """
 
-    def username(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def username(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter users by username.
 
@@ -64,9 +66,13 @@ class UserQuerySet(StandardQuerySet["User"]):
                 >>> admin_users = client.users.filter().username("admin", exact=False)
 
         """
-        return self.filter_field_by_str("username", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "username", value, exact=exact, case_insensitive=case_insensitive
+        )
 
-    def email(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def email(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter users by email address.
 
@@ -83,9 +89,13 @@ class UserQuerySet(StandardQuerySet["User"]):
                 >>> gmail_users = client.users.filter().email("@gmail.com", exact=False)
 
         """
-        return self.filter_field_by_str("email", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "email", value, exact=exact, case_insensitive=case_insensitive
+        )
 
-    def first_name(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def first_name(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter users by first name.
 
@@ -98,9 +108,13 @@ class UserQuerySet(StandardQuerySet["User"]):
             A filtered UserQuerySet containing only users matching the first name criteria.
 
         """
-        return self.filter_field_by_str("first_name", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "first_name", value, exact=exact, case_insensitive=case_insensitive
+        )
 
-    def last_name(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def last_name(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter users by last name.
 
@@ -113,7 +127,9 @@ class UserQuerySet(StandardQuerySet["User"]):
             A filtered UserQuerySet containing only users matching the last name criteria.
 
         """
-        return self.filter_field_by_str("last_name", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "last_name", value, exact=exact, case_insensitive=case_insensitive
+        )
 
     def staff(self, value: bool = True) -> Self:
         """
@@ -260,7 +276,9 @@ class GroupQuerySet(StandardQuerySet["Group"]):
 
     """
 
-    def name(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def name(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter groups by name.
 
@@ -280,7 +298,9 @@ class GroupQuerySet(StandardQuerySet["Group"]):
                 >>> admin_groups = client.groups.filter().name("admin", exact=False)
 
         """
-        return self.filter_field_by_str("name", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "name", value, exact=exact, case_insensitive=case_insensitive
+        )
 
     def has_permission(self, value: str) -> Self:
         """

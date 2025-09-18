@@ -85,7 +85,9 @@ class ShareLinksQuerySet(StandardQuerySet["ShareLinks"]):
         """
         return self.filter(expiration__gt=value)
 
-    def slug(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def slug(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter ShareLinks by their slug value.
 
@@ -108,7 +110,9 @@ class ShareLinksQuerySet(StandardQuerySet["ShareLinks"]):
                 >>> links = client.share_links.slug("invoice", exact=False)
 
         """
-        return self.filter_field_by_str("slug", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "slug", value, exact=exact, case_insensitive=case_insensitive
+        )
 
     def document(self, value: int | list[int]) -> Self:
         """

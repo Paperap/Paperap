@@ -15,11 +15,17 @@ from typing_extensions import TypeVar
 from paperap.const import URLS
 from paperap.exceptions import APIError, BadResponseError, ResourceNotFoundError
 from paperap.models.document import Document
-from paperap.models.document.download import DownloadedDocument, DownloadedDocumentQuerySet, RetrieveFileMode
+from paperap.models.document.download import (
+    DownloadedDocument,
+    DownloadedDocumentQuerySet,
+    RetrieveFileMode,
+)
 from paperap.resources.base import BaseResource, StandardResource
 
 
-class DownloadedDocumentResource(StandardResource[DownloadedDocument, DownloadedDocumentQuerySet]):
+class DownloadedDocumentResource(
+    StandardResource[DownloadedDocument, DownloadedDocumentQuerySet]
+):
     """
     Resource for managing downloaded document content from Paperless-NgX.
 
@@ -44,7 +50,9 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
         RetrieveFileMode.DOWNLOAD: URLS.download,
     }
 
-    def download_document(self, document: int | Document, original: bool = True) -> DownloadedDocument:
+    def download_document(
+        self, document: int | Document, original: bool = True
+    ) -> DownloadedDocument:
         """
         Download a document file from the Paperless-NgX API.
 
@@ -82,7 +90,9 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
         self.load(download)
         return download
 
-    def download_thumbnail(self, document: int | Document, original: bool = True) -> DownloadedDocument:
+    def download_thumbnail(
+        self, document: int | Document, original: bool = True
+    ) -> DownloadedDocument:
         """
         Download a document thumbnail from the Paperless-NgX API.
 
@@ -120,7 +130,9 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
         self.load(download)
         return download
 
-    def download_preview(self, document: int | Document, original: bool = True) -> DownloadedDocument:
+    def download_preview(
+        self, document: int | Document, original: bool = True
+    ) -> DownloadedDocument:
         """
         Download a document preview from the Paperless-NgX API.
 
@@ -200,8 +212,14 @@ class DownloadedDocumentResource(StandardResource[DownloadedDocument, Downloaded
             "original": "true" if downloaded_document.original else "false",
         }
 
-        if not (response := self.client.request_raw("GET", endpoint, params=params, data=None)):
-            raise ResourceNotFoundError(f"Unable to retrieve downloaded document {downloaded_document.id}")
+        if not (
+            response := self.client.request_raw(
+                "GET", endpoint, params=params, data=None
+            )
+        ):
+            raise ResourceNotFoundError(
+                f"Unable to retrieve downloaded document {downloaded_document.id}"
+            )
 
         content = response.content
         content_type = response.headers.get("Content-Type")

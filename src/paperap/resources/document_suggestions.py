@@ -22,11 +22,16 @@ from typing import Any
 
 from paperap.const import URLS
 from paperap.exceptions import ResourceNotFoundError
-from paperap.models.document.suggestions import DocumentSuggestions, DocumentSuggestionsQuerySet
+from paperap.models.document.suggestions import (
+    DocumentSuggestions,
+    DocumentSuggestionsQuerySet,
+)
 from paperap.resources.base import StandardResource
 
 
-class DocumentSuggestionsResource(StandardResource[DocumentSuggestions, DocumentSuggestionsQuerySet]):
+class DocumentSuggestionsResource(
+    StandardResource[DocumentSuggestions, DocumentSuggestionsQuerySet]
+):
     """
     Resource class for managing document suggestions in Paperless-NgX.
 
@@ -102,5 +107,7 @@ class DocumentSuggestionsResource(StandardResource[DocumentSuggestions, Document
         url = self.get_endpoint("detail", pk=document_id)
         response = self.client.request("GET", url)
         if not response:
-            raise ResourceNotFoundError(f"Suggestions for document {document_id} not found", self.name)
+            raise ResourceNotFoundError(
+                f"Suggestions for document {document_id} not found", self.name
+            )
         return self.parse_to_model(response)

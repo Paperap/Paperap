@@ -1,7 +1,9 @@
-
-
-
-from paperap.exceptions import APIError, AuthenticationError, PaperapError, ResourceNotFoundError
+from paperap.exceptions import (
+    APIError,
+    AuthenticationError,
+    PaperapError,
+    ResourceNotFoundError,
+)
 from paperap import models
 from paperap.client import PaperlessClient
 from paperap.plugins.manager import PluginManager

@@ -26,7 +26,9 @@ from paperap.models.document.metadata import DocumentMetadata, DocumentMetadataQ
 from paperap.resources.base import BaseResource, StandardResource
 
 
-class DocumentMetadataResource(StandardResource[DocumentMetadata, DocumentMetadataQuerySet]):
+class DocumentMetadataResource(
+    StandardResource[DocumentMetadata, DocumentMetadataQuerySet]
+):
     """
     Manage document metadata in Paperless-NgX.
 
@@ -89,5 +91,7 @@ class DocumentMetadataResource(StandardResource[DocumentMetadata, DocumentMetada
         url = self.get_endpoint("detail", pk=document_id)
         response = self.client.request("GET", url)
         if not response:
-            raise ResourceNotFoundError(f"Metadata for document {document_id} not found", self.name)
+            raise ResourceNotFoundError(
+                f"Metadata for document {document_id} not found", self.name
+            )
         return self.parse_to_model(response)

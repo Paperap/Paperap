@@ -31,7 +31,9 @@ from paperap.models.workflow import WorkflowTrigger, WorkflowTriggerQuerySet
 from paperap.resources.base import StandardResource
 
 
-class WorkflowTriggerResource(StandardResource[WorkflowTrigger, WorkflowTriggerQuerySet]):
+class WorkflowTriggerResource(
+    StandardResource[WorkflowTrigger, WorkflowTriggerQuerySet]
+):
     """
     Manage workflow triggers in Paperless-NgX.
 

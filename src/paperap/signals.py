@@ -136,7 +136,9 @@ class Signal[_ReturnType]:
         self._disabled_handlers = set()
         super().__init__()
 
-    def connect(self, handler: Callable[..., _ReturnType], priority: int = SignalPriority.NORMAL) -> None:
+    def connect(
+        self, handler: Callable[..., _ReturnType], priority: int = SignalPriority.NORMAL
+    ) -> None:
         """
         Connect a handler to this signal.
 
@@ -177,7 +179,9 @@ class Signal[_ReturnType]:
                 self._handlers[priority].remove(handler)
 
     @overload
-    def emit(self, value: _ReturnType | None, *args: Any, **kwargs: Any) -> _ReturnType | None: ...
+    def emit(
+        self, value: _ReturnType | None, *args: Any, **kwargs: Any
+    ) -> _ReturnType | None: ...
 
     @overload
     def emit(self, **kwargs: Any) -> _ReturnType | None: ...
@@ -437,7 +441,9 @@ class SignalRegistry:
         """
         return list(self._signals.keys())
 
-    def create[R](self, name: str, description: str = "", return_type: type[R] | None = None) -> Signal[R]:
+    def create[R](
+        self, name: str, description: str = "", return_type: type[R] | None = None
+    ) -> Signal[R]:
         """
         Create and register a new signal.
 
@@ -539,7 +545,12 @@ class SignalRegistry:
         kwargs = kwargs or {}
         return signal.emit(*arg_tuple, **kwargs)
 
-    def connect(self, name: str, handler: Callable[..., Any], priority: int = SignalPriority.NORMAL) -> None:
+    def connect(
+        self,
+        name: str,
+        handler: Callable[..., Any],
+        priority: int = SignalPriority.NORMAL,
+    ) -> None:
         """
         Connect a handler to a signal, or queue it if the signal is not yet registered.
 
@@ -629,7 +640,9 @@ class SignalRegistry:
         else:
             self.queue_action("enable", name, handler)
 
-    def is_queued(self, action: ActionType, name: str, handler: Callable[..., Any]) -> bool:
+    def is_queued(
+        self, action: ActionType, name: str, handler: Callable[..., Any]
+    ) -> bool:
         """
         Check if a handler is queued for a signal action.
 

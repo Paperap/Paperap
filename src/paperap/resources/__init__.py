@@ -1,5 +1,3 @@
-
-
 from paperap.resources.base import BaseResource, StandardResource
 from paperap.resources.correspondents import CorrespondentResource
 from paperap.resources.custom_fields import CustomFieldResource
@@ -17,7 +15,11 @@ from paperap.resources.tags import TagResource
 from paperap.resources.tasks import TaskResource
 from paperap.resources.ui_settings import UISettingsResource
 from paperap.resources.users import GroupResource, UserResource
-from paperap.resources.workflows import WorkflowActionResource, WorkflowResource, WorkflowTriggerResource
+from paperap.resources.workflows import (
+    WorkflowActionResource,
+    WorkflowResource,
+    WorkflowTriggerResource,
+)
 
 __all__ = [
     "DocumentNoteResource",

@@ -11,13 +11,26 @@ from __future__ import annotations
 import copy
 import logging
 from string import Template
-from typing import TYPE_CHECKING, Any, Generic, Iterable, Iterator, Protocol, Self, override
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Generic,
+    Iterable,
+    Iterator,
+    Protocol,
+    Self,
+    override,
+)
 
 from pydantic import HttpUrl
 from typing_extensions import TypeVar
 
 from paperap.const import ClientResponse
-from paperap.exceptions import FilterDisabledError, MultipleObjectsFoundError, ObjectNotFoundError
+from paperap.exceptions import (
+    FilterDisabledError,
+    MultipleObjectsFoundError,
+    ObjectNotFoundError,
+)
 
 if TYPE_CHECKING:
     from paperap.models.abstract.model import BaseModel, StandardModel
@@ -131,7 +144,9 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
             {'id', 'added', 'modified'}
 
         """
-        return self._model._meta  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
+        return (
+            self._model._meta
+        )  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
 
     def _reset(self) -> None:
         """
@@ -168,7 +183,9 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         for key, _value in values.items():
             if not self._meta.filter_allowed(key):
-                raise FilterDisabledError(f"Filtering by {key} for {self.resource.name} does not appear to be supported by the API.")
+                raise FilterDisabledError(
+                    f"Filtering by {key} for {self.resource.name} does not appear to be supported by the API."
+                )
 
         if values:
             # Reset the cache if filters change
@@ -274,7 +291,9 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
             >>> doc = client.documents().get(123)
 
         """
-        raise NotImplementedError("Getting a single resource is not defined by BaseModels without an id.")
+        raise NotImplementedError(
+            "Getting a single resource is not defined by BaseModels without an id."
+        )
 
     def _get_last_count(self) -> int | None:
         """
@@ -333,7 +352,11 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
             return count
 
         # If we have a last_response and it has 'results', count them
-        if self._last_response and isinstance(self._last_response, dict) and "results" in self._last_response:
+        if (
+            self._last_response
+            and isinstance(self._last_response, dict)
+            and "results" in self._last_response
+        ):
             return len(self._last_response["results"])
 
         # Fall back to counting the results we have already
@@ -568,7 +591,14 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         """
         return self._chain(filters={"limit": 0})
 
-    def filter_field_by_str(self, field: str, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def filter_field_by_str(
+        self,
+        field: str,
+        value: str,
+        *,
+        exact: bool = True,
+        case_insensitive: bool = True,
+    ) -> Self:
         """
         Filter a queryset based on a given string field.
 
@@ -1176,7 +1206,9 @@ class BulkQuerySet[_Model: StandardModel](StandardQuerySet[_Model]):
 
         """
         if not (fn := getattr(self.resource, "_bulk_operation", None)):
-            raise NotImplementedError(f"Resource {self.resource.name} does not support bulk actions")
+            raise NotImplementedError(
+                f"Resource {self.resource.name} does not support bulk actions"
+            )
 
         # Fetch all IDs in the queryset
         # We only need IDs, so optimize by requesting just the ID field if possible
@@ -1277,7 +1309,9 @@ class BulkQuerySet[_Model: StandardModel](StandardQuerySet[_Model]):
 
         """
         if not (fn := getattr(self.resource, "assign_owner", None)):
-            raise NotImplementedError(f"Resource {self.resource.name} does not support bulk owner assignment")
+            raise NotImplementedError(
+                f"Resource {self.resource.name} does not support bulk owner assignment"
+            )
 
         # Fetch all IDs in the queryset
         ids = [obj.id for obj in self]

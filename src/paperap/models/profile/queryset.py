@@ -43,7 +43,9 @@ class ProfileQuerySet(StandardQuerySet["Profile"]):
 
     """
 
-    def email(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> ProfileQuerySet:
+    def email(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> ProfileQuerySet:
         """
         Filter profiles by email address.
 
@@ -68,9 +70,13 @@ class ProfileQuerySet(StandardQuerySet["Profile"]):
                 >>> profiles = client.profiles().email("John.Doe@gmail.com", case_insensitive=False)
 
         """
-        return self.filter_field_by_str("email", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "email", value, exact=exact, case_insensitive=case_insensitive
+        )
 
-    def first_name(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> ProfileQuerySet:
+    def first_name(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> ProfileQuerySet:
         """
         Filter profiles by first name.
 
@@ -95,9 +101,13 @@ class ProfileQuerySet(StandardQuerySet["Profile"]):
                 >>> profiles = client.profiles().first_name("John", case_insensitive=False)
 
         """
-        return self.filter_field_by_str("first_name", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "first_name", value, exact=exact, case_insensitive=case_insensitive
+        )
 
-    def last_name(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> ProfileQuerySet:
+    def last_name(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> ProfileQuerySet:
         """
         Filter profiles by last name.
 
@@ -122,7 +132,9 @@ class ProfileQuerySet(StandardQuerySet["Profile"]):
                 >>> profiles = client.profiles().last_name("Doe", case_insensitive=False)
 
         """
-        return self.filter_field_by_str("last_name", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "last_name", value, exact=exact, case_insensitive=case_insensitive
+        )
 
     def has_usable_password(self, value: bool = True) -> ProfileQuerySet:
         """

@@ -17,7 +17,13 @@ from paperap.models.mixins.queryset import HasOwner
 from paperap.const import ClientResponse, EnrichmentConfig
 
 if TYPE_CHECKING:
-    from paperap.models import Correspondent, Document, DocumentNote, DocumentType, StoragePath
+    from paperap.models import (
+        Correspondent,
+        Document,
+        DocumentNote,
+        DocumentType,
+        StoragePath,
+    )
     from paperap.resources.documents import DocumentResource
     from paperap.services.enrichment import DocumentEnrichmentService
 
@@ -117,7 +123,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             return self.filter(tags__id__in=tag_id)
         return self.filter(tags__id=tag_id)
 
-    def tag_name(self, tag_name: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def tag_name(
+        self, tag_name: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter documents that have a tag with the specified name.
 
@@ -140,9 +148,13 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             >>> docs = client.documents().tag_name("Receipt", case_insensitive=False)
 
         """
-        return self.filter_field_by_str("tags__name", tag_name, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "tags__name", tag_name, exact=exact, case_insensitive=case_insensitive
+        )
 
-    def title(self, title: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def title(
+        self, title: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter documents by title.
 
@@ -162,7 +174,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             >>> docs = client.documents().title("invoice", exact=False)
 
         """
-        return self.filter_field_by_str("title", title, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "title", title, exact=exact, case_insensitive=case_insensitive
+        )
 
     def search(self, query: str) -> "DocumentQuerySet":
         """
@@ -271,19 +285,25 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
                 result = self.correspondent_id(value)
                 filters_applied = True
             elif isinstance(value, str):
-                result = self.correspondent_name(value, exact=exact, case_insensitive=case_insensitive)
+                result = self.correspondent_name(
+                    value, exact=exact, case_insensitive=case_insensitive
+                )
                 filters_applied = True
             else:
                 raise TypeError("Invalid value type for correspondent filter")
 
         if (slug := kwargs.get("slug")) is not None:
-            result = result.correspondent_slug(slug, exact=exact, case_insensitive=case_insensitive)
+            result = result.correspondent_slug(
+                slug, exact=exact, case_insensitive=case_insensitive
+            )
             filters_applied = True
         if (pk := kwargs.get("id")) is not None:
             result = result.correspondent_id(pk)
             filters_applied = True
         if (name := kwargs.get("name")) is not None:
-            result = result.correspondent_name(name, exact=exact, case_insensitive=case_insensitive)
+            result = result.correspondent_name(
+                name, exact=exact, case_insensitive=case_insensitive
+            )
             filters_applied = True
 
         # If no filters have been applied, raise an error
@@ -309,7 +329,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter(correspondent__id=correspondent_id)
 
-    def correspondent_name(self, name: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def correspondent_name(
+        self, name: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter documents by correspondent name.
 
@@ -329,9 +351,13 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             >>> docs = client.documents().correspondent_name("Electric", exact=False)
 
         """
-        return self.filter_field_by_str("correspondent__name", name, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "correspondent__name", name, exact=exact, case_insensitive=case_insensitive
+        )
 
-    def correspondent_slug(self, slug: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def correspondent_slug(
+        self, slug: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter documents by correspondent slug.
 
@@ -351,7 +377,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             >>> docs = client.documents().correspondent_slug("electric", exact=False)
 
         """
-        return self.filter_field_by_str("correspondent__slug", slug, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "correspondent__slug", slug, exact=exact, case_insensitive=case_insensitive
+        )
 
     def document_type(
         self,
@@ -407,7 +435,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
                 result = self.document_type_id(value)
                 filters_applied = True
             elif isinstance(value, str):
-                result = self.document_type_name(value, exact=exact, case_insensitive=case_insensitive)
+                result = self.document_type_name(
+                    value, exact=exact, case_insensitive=case_insensitive
+                )
                 filters_applied = True
             else:
                 raise TypeError("Invalid value type for document type filter")
@@ -416,7 +446,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             result = result.document_type_id(pk)
             filters_applied = True
         if (name := kwargs.get("name")) is not None:
-            result = result.document_type_name(name, exact=exact, case_insensitive=case_insensitive)
+            result = result.document_type_name(
+                name, exact=exact, case_insensitive=case_insensitive
+            )
             filters_applied = True
 
         # If no filters have been applied, raise an error
@@ -442,7 +474,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter(document_type__id=document_type_id)
 
-    def document_type_name(self, name: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def document_type_name(
+        self, name: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter documents by document type name.
 
@@ -462,7 +496,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             >>> docs = client.documents().document_type_name("bill", exact=False)
 
         """
-        return self.filter_field_by_str("document_type__name", name, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "document_type__name", name, exact=exact, case_insensitive=case_insensitive
+        )
 
     def storage_path(
         self,
@@ -518,7 +554,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
                 result = self.storage_path_id(value)
                 filters_applied = True
             elif isinstance(value, str):
-                result = self.storage_path_name(value, exact=exact, case_insensitive=case_insensitive)
+                result = self.storage_path_name(
+                    value, exact=exact, case_insensitive=case_insensitive
+                )
                 filters_applied = True
             else:
                 raise TypeError("Invalid value type for storage path filter")
@@ -527,7 +565,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             result = result.storage_path_id(pk)
             filters_applied = True
         if (name := kwargs.get("name")) is not None:
-            result = result.storage_path_name(name, exact=exact, case_insensitive=case_insensitive)
+            result = result.storage_path_name(
+                name, exact=exact, case_insensitive=case_insensitive
+            )
             filters_applied = True
 
         # If no filters have been applied, raise an error
@@ -553,7 +593,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter(storage_path__id=storage_path_id)
 
-    def storage_path_name(self, name: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def storage_path_name(
+        self, name: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter documents by storage path name.
 
@@ -573,7 +615,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             >>> docs = client.documents().storage_path_name("Tax", exact=False)
 
         """
-        return self.filter_field_by_str("storage_path__name", name, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "storage_path__name", name, exact=exact, case_insensitive=case_insensitive
+        )
 
     def content(self, text: str) -> Self:
         """
@@ -631,7 +675,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter(added__lt=date_str)
 
-    def asn(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def asn(
+        self, value: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter documents by archive serial number (ASN).
 
@@ -654,9 +700,13 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             >>> docs = client.documents().asn("2023", exact=False)
 
         """
-        return self.filter_field_by_str("asn", value, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "asn", value, exact=exact, case_insensitive=case_insensitive
+        )
 
-    def original_filename(self, name: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def original_filename(
+        self, name: str, *, exact: bool = True, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter documents by original file name.
 
@@ -678,7 +728,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             >>> docs = client.documents().original_filename("invoice", exact=False)
 
         """
-        return self.filter_field_by_str("original_filename", name, exact=exact, case_insensitive=case_insensitive)
+        return self.filter_field_by_str(
+            "original_filename", name, exact=exact, case_insensitive=case_insensitive
+        )
 
     def user_can_change(self, value: bool) -> Self:
         """
@@ -703,7 +755,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         return self.filter(user_can_change=value)
 
-    def custom_field_fullsearch(self, value: str, *, case_insensitive: bool = True) -> Self:
+    def custom_field_fullsearch(
+        self, value: str, *, case_insensitive: bool = True
+    ) -> Self:
         """
         Filter documents by searching through both custom field name and value.
 
@@ -728,9 +782,18 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         if case_insensitive:
             return self.filter(custom_fields__icontains=value)
-        raise NotImplementedError("Case-sensitive custom field search is not supported by Paperless NGX")
+        raise NotImplementedError(
+            "Case-sensitive custom field search is not supported by Paperless NGX"
+        )
 
-    def custom_field(self, field: str, value: Any, *, exact: bool = False, case_insensitive: bool = True) -> Self:
+    def custom_field(
+        self,
+        field: str,
+        value: Any,
+        *,
+        exact: bool = False,
+        case_insensitive: bool = True,
+    ) -> Self:
         """
         Filter documents by custom field.
 
@@ -842,7 +905,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         ...
 
     @overload
-    def custom_field_query(self, field: str, operation: _OperationType, value: Any) -> Self:
+    def custom_field_query(
+        self, field: str, operation: _OperationType, value: Any
+    ) -> Self:
         """
         Filter documents by custom field query.
 
@@ -884,7 +949,12 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         return self.filter(custom_field_query=query_str)
 
     @custom_field_query.register  # type: ignore # mypy does not handle singledispatchmethod with overloads correctly
-    def _(self, field: str, operation: str | CustomFieldQuery | tuple[str, Any, Any], value: Any) -> Self:
+    def _(
+        self,
+        field: str,
+        operation: str | CustomFieldQuery | tuple[str, Any, Any],
+        value: Any,
+    ) -> Self:
         query = CustomFieldQuery(field, operation, value)
         query_str = self._normalize_custom_field_query(query)
         return self.filter(custom_field_query=query_str)
@@ -980,7 +1050,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             >>> recent_missing_field = client.documents().custom_field_isnull("Priority").created_after("2023-01-01")
 
         """
-        return self.custom_field_query("OR", (field, "isnull", True), [field, "exact", ""])
+        return self.custom_field_query(
+            "OR", (field, "isnull", True), [field, "exact", ""]
+        )
 
     def custom_field_exists(self, field: str, exists: bool = True) -> Self:
         """
@@ -1226,7 +1298,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             return self.resource.reprocess(ids)
         return None
 
-    def merge(self, metadata_document_id: int | None = None, delete_originals: bool = False) -> bool:
+    def merge(
+        self, metadata_document_id: int | None = None, delete_originals: bool = False
+    ) -> bool:
         """
         Merge all documents in the current queryset into a single document.
 
@@ -1371,10 +1445,14 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         """
         ids = self._get_ids()
         if ids:
-            self.resource.modify_custom_fields(ids, add_custom_fields, remove_custom_fields)
+            self.resource.modify_custom_fields(
+                ids, add_custom_fields, remove_custom_fields
+            )
         return self
 
-    def modify_tags(self, add_tags: list[int] | None = None, remove_tags: list[int] | None = None) -> Self:
+    def modify_tags(
+        self, add_tags: list[int] | None = None, remove_tags: list[int] | None = None
+    ) -> Self:
         """
         Modify tags on all documents in the current queryset.
 
@@ -1542,7 +1620,9 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
                 if result.success:
                     results.append(result.document)
                 else:
-                    logger.error(f"Failed to summarize document {doc.id}: {result.error}")
+                    logger.error(
+                        f"Failed to summarize document {doc.id}: {result.error}"
+                    )
 
         return self._chain()
 
@@ -1591,10 +1671,14 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         for i in range(0, len(documents), batch_size):
             batch = documents[i : i + batch_size]
             for doc in batch:
-                result = self.enrichment_service.process_document(doc, config, expand_descriptions=expanded_description)
+                result = self.enrichment_service.process_document(
+                    doc, config, expand_descriptions=expanded_description
+                )
                 if result.success:
                     results.append(result.document)
                 else:
-                    logger.error(f"Failed to describe document {doc.id}: {result.error}")
+                    logger.error(
+                        f"Failed to describe document {doc.id}: {result.error}"
+                    )
 
         return self._chain()

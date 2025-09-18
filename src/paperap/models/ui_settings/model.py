@@ -65,9 +65,16 @@ class UISettings(StandardModel):
 
     """
 
-    user: dict[str, Any] = Field(default_factory=dict, description="Dictionary containing user information")
-    settings: dict[str, Any] = Field(..., description="Dictionary containing all UI settings")
-    permissions: list[str] = Field(default_factory=list, description="List of permission strings for the current user")
+    user: dict[str, Any] = Field(
+        default_factory=dict, description="Dictionary containing user information"
+    )
+    settings: dict[str, Any] = Field(
+        ..., description="Dictionary containing all UI settings"
+    )
+    permissions: list[str] = Field(
+        default_factory=list,
+        description="List of permission strings for the current user",
+    )
 
     class Meta(StandardModel.Meta):
         """

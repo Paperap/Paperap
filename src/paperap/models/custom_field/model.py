@@ -81,7 +81,9 @@ class CustomField(StandardModel):
                 # Try to convert string to enum
                 return CustomFieldTypes(v)
             except (ValueError, TypeError):
-                raise ValueError(f"data_type must be a valid CustomFieldTypes: {', '.join(CustomFieldTypes.__members__)}")
+                raise ValueError(
+                    f"data_type must be a valid CustomFieldTypes: {', '.join(CustomFieldTypes.__members__)}"
+                )
 
         return v
 
