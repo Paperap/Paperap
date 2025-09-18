@@ -412,7 +412,7 @@ class PaperlessClient:
                 # For regular JSON requests
                 request_params["json"] = data  # Use json for regular requests
 
-            response = self.session.request(**request_params)
+            response = self.session.request(**request_params)  # type: ignore
 
             # Handle HTTP errors
             if response.status_code >= 400:
@@ -486,22 +486,50 @@ class PaperlessClient:
             raise ResourceNotFoundError(f"Paperless returned 404 for {url}")
 
         # All else...
-        logger.error('Paperless API error: URL %s, Params %s, Data %s, Files %s, Status %s, Error: %s', url, params, data, files, response.status_code, error_message)
+        logger.error(
+            "Paperless API error: URL %s, Params %s, Data %s, Files %s, Status %s, Error: %s",
+            url,
+            params,
+            data,
+            files,
+            response.status_code,
+            error_message,
+        )
         raise BadResponseError(error_message, response.status_code)
 
     @overload
-    def _handle_response(self, response: requests.Response, *, json_response: Literal[True] = True) -> dict[str, Any]: ...
+    def _handle_response(
+        self,
+        response: requests.Response,
+        *,
+        json_response: Literal[True] = True,
+    ) -> dict[str, Any]: ...
 
     @overload
     def _handle_response(self, response: None, *, json_response: bool = True) -> None: ...
 
     @overload
-    def _handle_response(self, response: requests.Response | None, *, json_response: Literal[False]) -> bytes | None: ...
+    def _handle_response(
+        self,
+        response: requests.Response | None,
+        *,
+        json_response: Literal[False],
+    ) -> bytes | None: ...
 
     @overload
-    def _handle_response(self, response: requests.Response | None, *, json_response: bool = True) -> dict[str, Any] | bytes | None: ...
+    def _handle_response(
+        self,
+        response: requests.Response | None,
+        *,
+        json_response: bool = True,
+    ) -> dict[str, Any] | bytes | None: ...
 
-    def _handle_response(self, response: requests.Response | None, *, json_response: bool = True) -> dict[str, Any] | bytes | None:
+    def _handle_response(
+        self,
+        response: requests.Response | None,
+        *,
+        json_response: bool = True,
+    ) -> dict[str, Any] | bytes | None:
         """Handle the response based on the content type."""
         if response is None:
             return None
