@@ -1052,7 +1052,7 @@ class StandardModel(BaseModel, ABC):
 
         """
         if self.is_new():
-            model = self.create(**self.to_dict())
+            model = self.create(**self.to_dict(include_read_only=False))
             self.update_locally(from_db=True, **model.to_dict())
             return True
 
