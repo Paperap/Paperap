@@ -23,9 +23,7 @@ from paperap.models.document.download import (
 from paperap.resources.base import BaseResource, StandardResource
 
 
-class DownloadedDocumentResource(
-    StandardResource[DownloadedDocument, DownloadedDocumentQuerySet]
-):
+class DownloadedDocumentResource(StandardResource[DownloadedDocument, DownloadedDocumentQuerySet]):
     """
     Resource for managing downloaded document content from Paperless-NgX.
 
@@ -50,9 +48,7 @@ class DownloadedDocumentResource(
         RetrieveFileMode.DOWNLOAD: URLS.download,
     }
 
-    def download_document(
-        self, document: int | Document, original: bool = True
-    ) -> DownloadedDocument:
+    def download_document(self, document: int | Document, original: bool = True) -> DownloadedDocument:
         """
         Download a document file from the Paperless-NgX API.
 
@@ -90,9 +86,7 @@ class DownloadedDocumentResource(
         self.load(download)
         return download
 
-    def download_thumbnail(
-        self, document: int | Document, original: bool = True
-    ) -> DownloadedDocument:
+    def download_thumbnail(self, document: int | Document, original: bool = True) -> DownloadedDocument:
         """
         Download a document thumbnail from the Paperless-NgX API.
 
@@ -130,9 +124,7 @@ class DownloadedDocumentResource(
         self.load(download)
         return download
 
-    def download_preview(
-        self, document: int | Document, original: bool = True
-    ) -> DownloadedDocument:
+    def download_preview(self, document: int | Document, original: bool = True) -> DownloadedDocument:
         """
         Download a document preview from the Paperless-NgX API.
 
@@ -212,14 +204,8 @@ class DownloadedDocumentResource(
             "original": "true" if downloaded_document.original else "false",
         }
 
-        if not (
-            response := self.client.request_raw(
-                "GET", endpoint, params=params, data=None
-            )
-        ):
-            raise ResourceNotFoundError(
-                f"Unable to retrieve downloaded document {downloaded_document.id}"
-            )
+        if not (response := self.client.request_raw("GET", endpoint, params=params, data=None)):
+            raise ResourceNotFoundError(f"Unable to retrieve downloaded document {downloaded_document.id}")
 
         content = response.content
         content_type = response.headers.get("Content-Type")

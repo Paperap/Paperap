@@ -151,9 +151,7 @@ class PaperlessClient:
     workflow_triggers: WorkflowTriggerResource
     workflows: WorkflowResource
 
-    def __init__(
-        self, settings: Settings | None = None, **kwargs: Unpack[SettingsArgs]
-    ) -> None:
+    def __init__(self, settings: Settings | None = None, **kwargs: Unpack[SettingsArgs]) -> None:
         if not settings:
             # Any params not provided in kwargs will be loaded from env vars
             settings = Settings(**kwargs)
@@ -161,9 +159,7 @@ class PaperlessClient:
         self.settings = settings
         # Prioritize username/password over token if both are provided
         if self.settings.username and self.settings.password:
-            self.auth = BasicAuth(
-                username=self.settings.username, password=self.settings.password
-            )
+            self.auth = BasicAuth(username=self.settings.username, password=self.settings.password)
         elif self.settings.token:
             self.auth = TokenAuth(token=self.settings.token)
         else:
@@ -278,9 +274,7 @@ class PaperlessClient:
                 "enabled_plugins": ["SampleDataCollector"],
                 "settings": {
                     "SampleDataCollector": {
-                        "test_dir": str(
-                            Path(__file__).parents[3] / "tests/sample_data"
-                        ),
+                        "test_dir": str(Path(__file__).parents[3] / "tests/sample_data"),
                     },
                 },
             }
@@ -424,9 +418,7 @@ class PaperlessClient:
 
             # Handle HTTP errors
             if response.status_code >= 400:
-                return self._handle_request_errors(
-                    response, url, params=params, data=data, files=files
-                )
+                return self._handle_request_errors(response, url, params=params, data=data, files=files)
 
             # No content
             if response.status_code == 204:
@@ -485,16 +477,14 @@ class PaperlessClient:
             if "This field is required" in error_message:
                 raise ValueError(f"Required field missing: {error_message}")
             if matches := re.match(r"([a-zA-Z_-]+): Invalid pk", error_message):
-                raise RelationshipNotFoundError(
-                    f"Invalid relationship {matches.group(1)}: {error_message}"
-                )
+                raise RelationshipNotFoundError(f"Invalid relationship {matches.group(1)}: {error_message}")
         if response.status_code == 401:
-            raise AuthenticationError(f"Authentication failed: {error_message}")
+            raise AuthenticationError(
+                f"Authentication failed: {error_message}. Url: {self.base_url}, Token: {self.settings.token[:3]}...{self.settings.token[-3:]}"
+            )
         if response.status_code == 403:
             if "this site requires a CSRF" in error_message:
-                raise ConfigurationError(
-                    f"Response claims CSRF token required. Is the url correct? {url}"
-                )
+                raise ConfigurationError(f"Response claims CSRF token required. Is the url correct? {url}")
             raise InsufficientPermissionError(f"Permission denied: {error_message}")
         if response.status_code == 404:
             raise ResourceNotFoundError(f"Paperless returned 404 for {url}")
@@ -520,9 +510,7 @@ class PaperlessClient:
     ) -> dict[str, Any]: ...
 
     @overload
-    def _handle_response(
-        self, response: None, *, json_response: bool = True
-    ) -> None: ...
+    def _handle_response(self, response: None, *, json_response: bool = True) -> None: ...
 
     @overload
     def _handle_response(
@@ -562,9 +550,7 @@ class PaperlessClient:
                     url,
                     response.content,
                 )
-                raise ResponseParsingError(
-                    f"Failed to parse JSON response: {str(e)} -> url {url}"
-                ) from e
+                raise ResponseParsingError(f"Failed to parse JSON response: {str(e)} -> url {url}") from e
 
         return response.content
 
@@ -670,9 +656,7 @@ class PaperlessClient:
         )
 
         # Get the response from request_raw
-        response = self.request_raw(
-            method, endpoint, params=params, data=data, files=files
-        )
+        response = self.request_raw(method, endpoint, params=params, data=data, files=files)
 
         # Only return None if response is exactly None (not just falsey)
         if response is None:
@@ -818,9 +802,7 @@ class PaperlessClient:
         except requests.exceptions.RequestException as re:
             raise RequestError(f"Error while requesting a new token: {str(re)}") from re
         except (ValueError, KeyError) as ve:
-            raise ResponseParsingError(
-                f"Failed to parse response when generating token: {str(ve)}"
-            ) from ve
+            raise ResponseParsingError(f"Failed to parse response when generating token: {str(ve)}") from ve
 
     def get_statistics(self) -> dict[str, Any]:
         """

@@ -95,9 +95,7 @@ class DescribePhotos(BaseModel):
     @property
     def progress_bar(self) -> ProgressBar:
         if not self._progress_bar:
-            self._progress_bar = alive_bar(
-                title="Running", unknown="waves"
-            )  # pyright: ignore[reportAttributeAccessIssue]
+            self._progress_bar = alive_bar(title="Running", unknown="waves")  # pyright: ignore[reportAttributeAccessIssue]
         return self._progress_bar  # type: ignore # pyright not handling the protocol correctly, not sure why
 
     @property
@@ -133,9 +131,7 @@ class DescribePhotos(BaseModel):
             else:
                 # Otherwise use the default path
                 templates_path = Path(__file__).parent / "templates"
-            self._jinja_env = Environment(
-                loader=FileSystemLoader(str(templates_path)), autoescape=True
-            )
+            self._jinja_env = Environment(loader=FileSystemLoader(str(templates_path)), autoescape=True)
         return self._jinja_env
 
     def choose_template(self, document: Document) -> str:
@@ -178,9 +174,7 @@ class DescribePhotos(BaseModel):
 
         return description
 
-    def extract_images_from_pdf(
-        self, pdf_bytes: bytes, max_images: int = 2
-    ) -> list[bytes]:
+    def extract_images_from_pdf(self, pdf_bytes: bytes, max_images: int = 2) -> list[bytes]:
         """
         Extract images from a PDF file.
 
@@ -227,9 +221,7 @@ class DescribePhotos(BaseModel):
                         base_image = pdf_document.extract_image(xref)
                         image_bytes = base_image["image"]
                         results.append(image_bytes)
-                        logger.debug(
-                            f"Extracted image from page {page_number + 1} of the PDF."
-                        )
+                        logger.debug(f"Extracted image from page {page_number + 1} of the PDF.")
                     except Exception as e:
                         count = len(results)
                         logger.error(
@@ -242,9 +234,7 @@ class DescribePhotos(BaseModel):
                             raise
 
         except Exception as e:
-            logger.error(
-                f"extract_images_from_pdf: Error extracting image from PDF: {e}"
-            )
+            logger.error(f"extract_images_from_pdf: Error extracting image from PDF: {e}")
             raise DocumentParsingError("Error extracting image from PDF.") from e
 
         if not results:
@@ -294,9 +284,7 @@ class DescribePhotos(BaseModel):
         try:
             return [self._convert_to_png(content)]
         except Exception as e:
-            logger.debug(
-                f"Failed to convert contents to png, will try other methods: {e}"
-            )
+            logger.debug(f"Failed to convert contents to png, will try other methods: {e}")
 
         # Interpret it as a pdf
         if image_contents_list := self.extract_images_from_pdf(content):
@@ -319,9 +307,7 @@ class DescribePhotos(BaseModel):
         # Convert to base64
         return base64.b64encode(buf.read()).decode("utf-8")
 
-    def _send_describe_request(
-        self, content: bytes | list[bytes], document: Document
-    ) -> str | None:
+    def _send_describe_request(self, content: bytes | list[bytes], document: Document) -> str | None:
         """
         Send an image description request to OpenAI.
 
@@ -482,9 +468,7 @@ class DescribePhotos(BaseModel):
 
                 # Handle the result
                 if not result.success:
-                    logger.error(
-                        f"Failed to describe document {document.id}: {result.error}"
-                    )
+                    logger.error(f"Failed to describe document {document.id}: {result.error}")
                     return False
             except (NoImagesError, DocumentParsingError) as e:
                 logger.error(f"Failed to describe document {document.id}: {e}")
@@ -601,9 +585,7 @@ class DescribePhotos(BaseModel):
         logger.debug(f"Successfully described document {document.id}")
         return document
 
-    def describe_documents(
-        self, documents: list[Document] | None = None
-    ) -> list[Document]:
+    def describe_documents(self, documents: list[Document] | None = None) -> list[Document]:
         """
         Describe a list of documents using the document enrichment service.
 
@@ -622,17 +604,13 @@ class DescribePhotos(BaseModel):
         """
         logger.info("Fetching documents to describe...")
         if documents is None:
-            documents = list(
-                self.client.documents().filter(tag_name=self.paperless_tag)
-            )
+            documents = list(self.client.documents().filter(tag_name=self.paperless_tag))
 
         total = len(documents)
         logger.info(f"Found {total} documents to describe")
 
         results = []
-        with alive_bar(
-            total=total, title="Describing documents", bar="classic"
-        ) as self._progress_bar:
+        with alive_bar(total=total, title="Describing documents", bar="classic") as self._progress_bar:
             for document in documents:
                 if self.describe_document(document):
                     results.append(document)
@@ -683,9 +661,7 @@ def main() -> None:
     try:
         load_dotenv()
 
-        parser = argparse.ArgumentParser(
-            description="Describe documents with AI in Paperless-ngx"
-        )
+        parser = argparse.ArgumentParser(description="Describe documents with AI in Paperless-ngx")
         parser.add_argument(
             "--url",
             type=str,
@@ -698,9 +674,7 @@ def main() -> None:
             default=None,
             help="The API token for the Paperless NGX instance",
         )
-        parser.add_argument(
-            "--model", type=str, default=None, help="The OpenAI model to use"
-        )
+        parser.add_argument("--model", type=str, default=None, help="The OpenAI model to use")
         parser.add_argument(
             "--openai-url",
             type=str,
@@ -719,9 +693,7 @@ def main() -> None:
             default="photo",
             help="Template name to use for description",
         )
-        parser.add_argument(
-            "--verbose", "-v", action="store_true", help="Verbose output"
-        )
+        parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
 
         args = parser.parse_args(namespace=ArgNamespace())
 
@@ -753,9 +725,7 @@ def main() -> None:
 
         paperless = DescribePhotos(client=client, template_name=args.template)
 
-        logger.info(
-            f"Starting document description process with model: {paperless.client.settings.openai_model}"
-        )
+        logger.info(f"Starting document description process with model: {paperless.client.settings.openai_model}")
         results = paperless.describe_documents()
 
         if results:

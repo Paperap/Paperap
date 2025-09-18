@@ -105,14 +105,14 @@ class AsyncSaveTest(BaseTest):
 
     def test_saved_data(self):
         """Test that saved_data is set correctly"""
-        self.assertEqual(self.model._saved_data, self.model_data_unparsed)
+        self.assertEqual(self.model._last_data_sent_to_save, self.model_data_unparsed)
 
     def test_save_updates_saved_data(self):
         """Test that save updates saved_data with current model state"""
         self.model.name = "New Name"
         self.model._perform_save_async()
         # Verify saved_data contains the new name
-        self.assertEqual(self.model._saved_data.get('name'), "New Name")
+        self.assertEqual(self.model._last_data_sent_to_save.get('name'), "New Name")
 
     def test_no_save_when_not_dirty(self):
         """Test that save doesn't do anything when model isn't dirty"""
@@ -303,22 +303,22 @@ class AsyncSaveTest(BaseTest):
 
     def __disabled_test_dirty_fields_saved(self):
         # Initialize saved_data to make the test consistent
-        self.model._saved_data = {}
+        self.model._last_data_sent_to_save = {}
 
         # Update the model
         self.model.update_locally(name='Current', value=100)
 
         dirty = self.model.dirty_fields(comparison='saved')
         self.assertEqual(dirty, {})
-        self.model._saved_data = {**self.model_data_unparsed}
-        self.model._saved_data.update(name='BeforeSave', value=100)
+        self.model._last_data_sent_to_save = {**self.model_data_unparsed}
+        self.model._last_data_sent_to_save.update(name='BeforeSave', value=100)
 
         dirty = self.model.dirty_fields(comparison='saved')
         self.assertIn('name', dirty)
         self.assertNotIn('value', dirty)
         self.assertEqual(dirty['name'], ('BeforeSave', 'Current'))
 
-        self.model._saved_data.update(name='UpdatedName', value=200)
+        self.model._last_data_sent_to_save.update(name='UpdatedName', value=200)
 
         dirty = self.model.dirty_fields(comparison='saved')
         self.assertIn('name', dirty)
@@ -336,8 +336,8 @@ class AsyncSaveTest(BaseTest):
         self.assertEqual(dirty['name'], (self.model_data_unparsed['name'], 'Current'))
         self.assertEqual(dirty['value'], (self.model_data_unparsed['value'], 100))
 
-        self.model._saved_data = {**self.model_data_unparsed}
-        self.model._saved_data.update(name='BeforeSave', value=100)
+        self.model._last_data_sent_to_save = {**self.model_data_unparsed}
+        self.model._last_data_sent_to_save.update(name='BeforeSave', value=100)
 
         dirty = self.model.dirty_fields(comparison='both')
         self.assertIn('name', dirty)
@@ -367,8 +367,8 @@ class AsyncSaveTest(BaseTest):
         self.assertEqual(dirty['name'], (self.model_data_unparsed['name'], 'Current'))
         self.assertEqual(dirty['value'], (self.model_data_unparsed['value'], 100))
 
-        self.model._saved_data = {**self.model_data_unparsed}
-        self.model._saved_data.update(name='BeforeSave', value=100)
+        self.model._last_data_sent_to_save = {**self.model_data_unparsed}
+        self.model._last_data_sent_to_save.update(name='BeforeSave', value=100)
 
         dirty = self.model.dirty_fields()
         self.assertIn('name', dirty)

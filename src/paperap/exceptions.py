@@ -49,9 +49,7 @@ class ModelValidationError(PaperapError, ValueError):
 
     """
 
-    def __init__(
-        self, message: str | None = None, model: pydantic.BaseModel | None = None
-    ) -> None:
+    def __init__(self, message: str | None = None, model: pydantic.BaseModel | None = None) -> None:
         if not message:
             message = f"Model failed validation for {model.__class__.__name__}."
         super().__init__(message)
@@ -130,9 +128,7 @@ class APIError(PaperlessError):
 
     status_code: int | None = None
 
-    def __init__(
-        self, message: str | None = None, status_code: int | None = None
-    ) -> None:
+    def __init__(self, message: str | None = None, status_code: int | None = None) -> None:
         self.status_code = status_code
         if not message:
             message = "An error occurred."
@@ -282,9 +278,7 @@ class ResourceNotFoundError(APIError):
 
     resource_name: str | None = None
 
-    def __init__(
-        self, message: str | None = None, resource_name: str | None = None
-    ) -> None:
+    def __init__(self, message: str | None = None, resource_name: str | None = None) -> None:
         self.resource_name = resource_name
         if not message:
             message = "Resource ${resource} not found."

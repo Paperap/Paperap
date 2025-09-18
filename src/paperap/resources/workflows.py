@@ -73,9 +73,7 @@ class WorkflowResource(StandardResource[Workflow, WorkflowQuerySet]):
     name: str = "workflows"
 
 
-class WorkflowTriggerResource(
-    StandardResource[WorkflowTrigger, WorkflowTriggerQuerySet]
-):
+class WorkflowTriggerResource(StandardResource[WorkflowTrigger, WorkflowTriggerQuerySet]):
     """
     Manage conditions that activate Paperless-ngx workflows.
 
