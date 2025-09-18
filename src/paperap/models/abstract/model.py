@@ -1198,6 +1198,8 @@ class StandardModel(BaseModel, ABC):
             logger.warning("No changes detected for %s, skipping save", self)
             return None
 
+        self._saved_data = {**update_payload}
+
         registry.emit(
             "model.save:before",
             "Fired before the model data is sent to paperless ngx to be saved.",
