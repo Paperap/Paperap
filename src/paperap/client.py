@@ -391,31 +391,28 @@ class PaperlessClient:
                 files,
                 headers,
             )
+
+            # Common request parameters
+            request_params = {
+                "method": method,
+                "url": url,
+                "headers": headers,
+                "params": params,
+                "timeout": self.settings.timeout,
+                **self._get_auth_params(),
+            }
+
             # When uploading files, we need to pass data as form data, not JSON
             # The key difference is that with files, we MUST use data parameter, not json
+            # to ensure proper multipart/form-data encoding
             if files:
-                # For file uploads, use data parameter (not json) to ensure proper multipart/form-data encoding
-                response = self.session.request(
-                    method=method,
-                    url=url,
-                    headers=headers,
-                    params=params,
-                    data=data,  # Use data for form fields with files
-                    files=files,
-                    timeout=self.settings.timeout,
-                    **self._get_auth_params(),
-                )
+                request_params["data"] = data  # Use data for form fields with files
+                request_params["files"] = files
             else:
                 # For regular JSON requests
-                response = self.session.request(
-                    method=method,
-                    url=url,
-                    headers=headers,
-                    params=params,
-                    json=data,  # Use json for regular requests
-                    timeout=self.settings.timeout,
-                    **self._get_auth_params(),
-                )
+                request_params["json"] = data  # Use json for regular requests
+
+            response = self.session.request(**request_params)
 
             # Handle HTTP errors
             if response.status_code >= 400:

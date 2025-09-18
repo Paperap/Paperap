@@ -10,7 +10,7 @@ from typing import Iterable, override
 from unittest.mock import MagicMock, patch
 import tempfile
 from paperap.client import PaperlessClient
-from paperap.exceptions import ReadOnlyFieldError, ResourceNotFoundError, APIError
+from paperap.exceptions import ReadOnlyFieldError, ResourceNotFoundError, APIError, PaperapError
 from paperap.models import *
 from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet
 from paperap.models.tag import Tag, TagQuerySet
@@ -78,8 +78,9 @@ class IntegrationTest(DocumentUnitTest):
             self.model.update_locally(from_db=True, **self._initial_data)
             # Must be called manually in case subclasses turn off autosave and mocks self.is_new()
             self.model.save(force=True)
-        except Exception as e:
-            logger.error(f"Error saving model during tearDown: {e}")
+        except PaperapError as e:
+            logger.error("Error saving model during tearDown: %s", e)
+            logger.error("Model data was: %s", self.model.to_dict())
 
         # TODO: confirm without another query
         return super().tearDown()
@@ -109,10 +110,12 @@ class TestIntegrationTest(IntegrationTest):
             # Skip read-only fields
             if field in self.model._meta.read_only_fields:
                 continue
+            
             # Test notes individually
             # Temporarily skip dates (TODO)
             if field in ['added', 'created', 'notes']:
                 continue
+
             paperless_value = getattr(document, field)
             self.assertEqual(paperless_value, initial_value, f"Field {field} did not revert to initial value on teardown. Integration tests will fail")
 
@@ -120,7 +123,7 @@ class TestIntegrationTest(IntegrationTest):
         for note in self._initial_data['notes']:
             self.assertTrue(self._has_note(document, note), "Note did not revert to initial value on teardown. Integration tests will fail")
 
-    def _has_note(self, document : Document, note : dict):
+    def _has_note(self, document : Document, note : dict) -> bool:
         for doc_note in document.notes:
             if doc_note.matches_dict(note):
                 return True
