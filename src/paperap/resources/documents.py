@@ -638,6 +638,8 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             params["add_tags"] = add_tags
         if remove_tags:
             params["remove_tags"] = remove_tags
+        else:
+            params["remove_tags"] = []
 
         if isinstance(document_ids, int):
             document_ids = [document_ids]

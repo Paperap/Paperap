@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 import os
 import unittest
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable, override
@@ -185,7 +186,7 @@ class TestUpload(IntegrationTest):
 
     def test_upload(self):
         # Test that the document is saved when a file is uploaded
-        filename = "Sample JPG.txt"
+        filename = f"Sample JPG {time.time()}.txt"
         with tempfile.NamedTemporaryFile(suffix=".txt", delete=False) as temp_file:
             filepath = temp_file.name
             contents = f"Sample content for the file. {datetime.now().timestamp()}"
