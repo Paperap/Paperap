@@ -480,7 +480,10 @@ class PaperlessClient:
                 raise RelationshipNotFoundError(f"Invalid relationship {matches.group(1)}: {error_message}")
         if response.status_code == 401:
             raise AuthenticationError(
-                f"Authentication failed: {error_message}. Url: {self.base_url}, Token: {self.settings.token[:3]}...{self.settings.token[-3:]}"
+                (
+                    f"Authentication failed: {error_message}. Url: {self.base_url}, "
+                    f"Token: {self.settings.token[:3]}...{self.settings.token[-3:]}" # type: ignore
+                )
             )
         if response.status_code == 403:
             if "this site requires a CSRF" in error_message:
