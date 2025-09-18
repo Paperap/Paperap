@@ -489,6 +489,7 @@ class PaperlessClient:
             raise ResourceNotFoundError(f"Paperless returned 404 for {url}")
 
         # All else...
+        logger.error('Paperless API error: URL %s, Params %s, Data %s, Files %s, Status %s, Error: %s', url, params, data, files, response.status_code, error_message)
         raise BadResponseError(error_message, response.status_code)
 
     @overload

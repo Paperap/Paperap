@@ -495,7 +495,7 @@ class TestAllSupportedDocumentFilters(unittest.TestCase):
                             filtered = list(self.client.documents().filter(**{key: value, "limit": 5}))
                         else:
                             filtered = list(self.client.documents().filter(**{key: value}))
-                        print(f"INFO: Server-side filter {key} with value {value} returned {len(filtered)} results")
+                        #print(f"INFO: Server-side filter {key} with value {value} returned {len(filtered)} results")
                     except Exception as e:
                         print(f"WARNING: Filter {key} with value {value} raised exception: {str(e)}")
                 else:
