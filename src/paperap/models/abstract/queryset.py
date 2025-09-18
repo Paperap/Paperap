@@ -325,7 +325,7 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         for _ in _iter:
             break
 
-        if not self._last_response:
+        if self._last_response is None:
             # I don't think this should ever occur, but just in case.
             raise NotImplementedError("Requested iter, but no last response")
 
@@ -379,7 +379,7 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
         for _ in _iter:
             break
 
-        if not self._last_response:
+        if self._last_response is None:
             # I don't think this should ever occur, but just in case.
             raise NotImplementedError("Requested iter, but no last response")
 
@@ -659,7 +659,7 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
             This is an internal method that should not be called directly by users.
 
         """
-        if not (response := self.resource.request_raw(url=url, params=params)):
+        if (response := self.resource.request_raw(url=url, params=params)) is None:
             logger.debug("No response from request.")
             return
 
