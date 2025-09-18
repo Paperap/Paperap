@@ -145,8 +145,8 @@ class BaseQuerySet[_Model: BaseModel](Iterable[_Model]):
 
         """
         return (
-            self._model._meta
-        )  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
+            self._model._meta # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
+        )
 
     def _reset(self) -> None:
         """

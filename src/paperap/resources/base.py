@@ -178,8 +178,8 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
 
         """
         return (
-            self.model_class._meta
-        )  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
+            self.model_class._meta # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
+        )
 
     @classmethod
     def _validate_endpoints(cls, value: Any) -> Endpoints:
