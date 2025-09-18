@@ -1198,7 +1198,7 @@ class StandardModel(BaseModel, ABC):
             logger.warning("No changes detected for %s, skipping save", self)
             return None
 
-        self._saved_data = {**update_payload}
+        self._saved_data = {**self.model_dump()}
 
         registry.emit(
             "model.save:before",
