@@ -1080,8 +1080,8 @@ class StandardModel(BaseModel, ABC):
             )
 
             new_model = self._resource.update(
-                self, data=update_payload
-            )  # type: ignore # basedmypy complaining about self
+                self, data=update_payload # type: ignore # basedmypy complaining about self
+            )
 
             if not new_model:
                 logger.warning(f"Result of save was none for model id {self.id}")
@@ -1299,7 +1299,6 @@ class StandardModel(BaseModel, ABC):
 
     def _prepare_update_payload(self) -> dict[str, Any]:
         """Build the payload of changed, writable fields for the next save."""
-
         payload = {
             field: current
             for field, (_previous, current) in self.dirty_fields("saved").items()
