@@ -497,7 +497,7 @@ class TestDocumentFiltering(UnitTestCase):
 
         # Calculate expected results locally
         expected = [doc for doc in self.all_documents
-                   if hasattr(doc, 'created') and doc.created and doc.created > created_date]
+                   if hasattr(doc, 'created') and doc.created and doc.created.date() > created_date]
 
         # Assert
         self.assertEqual(len(filtered), len(expected))
@@ -528,7 +528,7 @@ class TestDocumentFiltering(UnitTestCase):
 
         # Calculate expected results locally
         expected = [doc for doc in self.all_documents
-                   if hasattr(doc, 'created') and doc.created and doc.created < created_date]
+                   if hasattr(doc, 'created') and doc.created and doc.created.date() < created_date]
 
         # Assert
         self.assertEqual(len(filtered), len(expected))
