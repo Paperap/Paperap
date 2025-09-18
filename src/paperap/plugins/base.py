@@ -20,6 +20,8 @@ from paperap.exceptions import ModelValidationError
 if TYPE_CHECKING:
     from paperap.client import PaperlessClient
     from paperap.plugins.manager import PluginManager
+else:  # pragma: no cover - used to avoid circular import issues at runtime
+    PluginManager = Any  # type: ignore[assignment]
 
 
 class ConfigType(TypedDict, total=False):
