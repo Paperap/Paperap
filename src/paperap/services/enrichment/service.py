@@ -415,7 +415,7 @@ class DocumentEnrichmentService:
                 original_filename = (document.original_filename or "").lower()
                 if not any(original_filename.endswith(ext) for ext in ACCEPTED_IMAGE_FORMATS):
                     result.success = False
-                    result.error = f"Unsupported file format for vision: {original_filename}"
+                    result.error = f"Unsupported file format for vision: {original_filename} (id: {document.id}, title: {document.title})"
                     return result
 
             # Render the prompt

@@ -86,6 +86,7 @@ class DescribePhotos(BaseModel):
     template_name: str = Field(default="photo")
     client: PaperlessClient
     prompt: str | None = Field(default=None)
+    limit: int = 0
     _enrichment_service: DocumentEnrichmentService | None = PrivateAttr(default=None)
     _progress_bar: ProgressBar | None = PrivateAttr(default=None)
     _jinja_env: Environment | None = PrivateAttr(default=None)
@@ -607,14 +608,22 @@ class DescribePhotos(BaseModel):
             documents = list(self.client.documents().filter(tag_name=self.paperless_tag))
 
         total = len(documents)
+        count = 0
         logger.info("Found %s documents to describe", total)
 
         results = []
         with alive_bar(total=total, title="Describing documents", bar="classic") as self._progress_bar:
             for document in documents:
-                if self.describe_document(document):
-                    results.append(document)
-                self._progress_bar()  # type: ignore
+                try:
+                    if self.describe_document(document):
+                        results.append(document)
+                        count += 1
+                finally:
+                    self._progress_bar()  # type: ignore
+
+                if self.limit and count >= self.limit:
+                    logger.info("Reached limit of %s documents, stopping.", self.limit)
+                    break
         return results
 
 
@@ -641,6 +650,7 @@ class ArgNamespace(argparse.Namespace):
     prompt: str | None = None
     verbose: bool = False
     template: str = "photo"
+    limit: int = 0
 
 
 def main() -> None:
@@ -694,6 +704,7 @@ def main() -> None:
             default="photo",
             help="Template name to use for description",
         )
+        parser.add_argument("--limit", type=int, default=0, help="Limit the number of documents to process")
         parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
 
         args = parser.parse_args(namespace=ArgNamespace())
@@ -724,7 +735,7 @@ def main() -> None:
         settings = Settings(**cast(Any, config))
         client = PaperlessClient(settings)
 
-        paperless = DescribePhotos(client=client, template_name=args.template)
+        paperless = DescribePhotos(client=client, template_name=args.template, limit=args.limit)
 
         logger.info("Starting document description process with model: %s", paperless.client.settings.openai_model)
         results = paperless.describe_documents()
