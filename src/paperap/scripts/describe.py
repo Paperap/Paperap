@@ -48,7 +48,7 @@ class ScriptDefaults(StrEnum):
     DESCRIBED = "described"
     NEEDS_TITLE = "needs-title"
     NEEDS_DATE = "needs-date"
-    MODEL = "gpt-4o-mini"
+    MODEL = "gpt-5"
 
 
 # Current version of the describe script
@@ -607,7 +607,7 @@ class DescribePhotos(BaseModel):
             documents = list(self.client.documents().filter(tag_name=self.paperless_tag))
 
         total = len(documents)
-        logger.info(f"Found {total} documents to describe")
+        logger.info("Found %s documents to describe", total)
 
         results = []
         with alive_bar(total=total, title="Describing documents", bar="classic") as self._progress_bar:
@@ -640,6 +640,7 @@ class ArgNamespace(argparse.Namespace):
     tag: str
     prompt: str | None = None
     verbose: bool = False
+    template: str = "photo"
 
 
 def main() -> None:
@@ -661,20 +662,20 @@ def main() -> None:
     try:
         load_dotenv()
 
-        parser = argparse.ArgumentParser(description="Describe documents with AI in Paperless-ngx")
+        parser = argparse.ArgumentParser(description="Describe documents using AI in Paperless-ngx")
         parser.add_argument(
             "--url",
             type=str,
-            default=None,
-            help="The base URL of the Paperless NGX instance",
+            default=os.getenv("PAPERLESS_URL", None),
+            help="The URL of the Paperless NGX instance",
         )
         parser.add_argument(
             "--key",
             type=str,
-            default=None,
+            default=os.getenv("PAPERLESS_TOKEN", None),
             help="The API token for the Paperless NGX instance",
         )
-        parser.add_argument("--model", type=str, default=None, help="The OpenAI model to use")
+        parser.add_argument("--model", type=str, default=ScriptDefaults.MODEL.value, help="The OpenAI model to use")
         parser.add_argument(
             "--openai-url",
             type=str,
@@ -705,7 +706,7 @@ def main() -> None:
             sys.exit(1)
 
         if not args.key:
-            logger.error("PAPERLESS_KEY environment variable is not set.")
+            logger.error("PAPERLESS_TOKEN environment variable is not set.")
             sys.exit(1)
 
         # Exclude None, so pydantic settings loads from defaults for an unset param
@@ -725,11 +726,11 @@ def main() -> None:
 
         paperless = DescribePhotos(client=client, template_name=args.template)
 
-        logger.info(f"Starting document description process with model: {paperless.client.settings.openai_model}")
+        logger.info("Starting document description process with model: %s", paperless.client.settings.openai_model)
         results = paperless.describe_documents()
 
         if results:
-            logger.info(f"Successfully described {len(results)} documents")
+            logger.info("Successfully described %s documents", len(results))
         else:
             logger.info("No documents described.")
 

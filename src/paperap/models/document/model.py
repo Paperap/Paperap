@@ -258,6 +258,15 @@ class Document(StandardModel):
         }
         supported_filtering_params = SUPPORTED_FILTERING_PARAMS
 
+    @field_validator("created", mode="before")
+    @classmethod
+    def normalize_created(cls, value: str | datetime | None) -> str | datetime | None:
+        """Ensure datetime strings with ±HH:MM:SS offsets are normalized to ±HH:MM."""
+        if isinstance(value, str):
+            # Replace a trailing timezone offset with seconds (±HH:MM:SS → ±HH:MM)
+            value = re.sub(r"([+-]\d{2}:\d{2}):\d{2}$", r"\1", value)
+        return value
+
     @field_serializer("added", "created", "deleted_at")
     def serialize_datetime(self, value: datetime | None) -> str | None:
         """

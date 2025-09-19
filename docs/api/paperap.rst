@@ -16,6 +16,7 @@ Subpackages
    paperap.plugins
    paperap.resources
    paperap.scripts
+   paperap.services
 
 Submodules
 ----------
