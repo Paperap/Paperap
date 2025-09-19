@@ -1,12 +1,8 @@
-name: CI - Features Branches
+name: CI - Pull Requests
 
 on:
-  push:
-    branches-ignore:
-      - main
   pull_request:
-    branches-ignore:
-      - main
+    types: [opened, synchronize, reopened]
 
 jobs:
   lint-and-test:
