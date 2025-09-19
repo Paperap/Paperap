@@ -34,7 +34,7 @@ from dotenv import load_dotenv
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, field_validator
 from paperap.const import EnrichmentConfig
 from paperap.client import PaperlessClient
-from paperap.exceptions import DocumentParsingError, NoImagesError, PaperapException
+from paperap.exceptions import DocumentParsingError, NoImagesError, PaperapError
 from paperap.models import Document, EnrichmentResult
 from paperap.scripts.utils import ProgressBar, setup_logging
 from paperap.services.enrichment import DocumentEnrichmentService
