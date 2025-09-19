@@ -34,7 +34,7 @@ from dotenv import load_dotenv
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, field_validator
 from paperap.const import EnrichmentConfig
 from paperap.client import PaperlessClient
-from paperap.exceptions import DocumentParsingError, NoImagesError
+from paperap.exceptions import DocumentParsingError, NoImagesError, PaperapException
 from paperap.models import Document, EnrichmentResult
 from paperap.scripts.utils import ProgressBar, setup_logging
 from paperap.services.enrichment import DocumentEnrichmentService
@@ -566,10 +566,10 @@ class DescribePhotos(BaseModel):
                     e,
                 )
 
-        if date and "ScriptDefaults.NEEDS_DATE" in document.tag_names:
+        if date and ScriptDefaults.NEEDS_DATE in document.tag_names:
             try:
                 document.created = date  # type: ignore # pydantic will handle casting
-                document.remove_tag("ScriptDefaults.NEEDS_DATE")
+                document.remove_tag(ScriptDefaults.NEEDS_DATE)
             except Exception as e:
                 logger.error(
                     "Failed to update document date. Document #%s: %s -> %s",
@@ -580,8 +580,8 @@ class DescribePhotos(BaseModel):
 
         # Append the description to the document
         document.content = full_description
-        document.remove_tag("ScriptDefaults.NEEDS_DESCRIPTION")
-        document.add_tag("described")
+        document.remove_tag(ScriptDefaults.NEEDS_DESCRIPTION)
+        document.add_tag(ScriptDefaults.DESCRIBED)
 
         logger.debug(f"Successfully described document {document.id}")
         return document
