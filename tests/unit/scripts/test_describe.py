@@ -48,7 +48,7 @@ class TestDescribePhotos(DocumentUnitTest):
         super().setUp()
         self.client.settings.openai_url = None
         self.client.settings.openai_key = "test-key"
-        self.client.settings.openai_model = "gpt-4o-mini"
+        self.client.settings.openai_model = "gpt-5"
 
         # Setup model data
         self.model_data_unparsed = {
@@ -508,7 +508,7 @@ class TestDescribePhotos(DocumentUnitTest):
         """Test describe_document with successful description."""
         # Mock the client to prevent actual API calls
         self.describe.client = MagicMock()
-        self.describe.client.settings.openai_model = "gpt-4o"  # Use a string value
+        self.describe.client.settings.openai_model = "gpt-5"  # Use a string value
 
         # Mock the document
         document = MagicMock()
@@ -701,7 +701,7 @@ class TestArgNamespace(DocumentUnitTest):
         self.assertFalse(hasattr(namespace, "key"))
         self.assertIsNone(getattr(namespace, "model", None))
         self.assertIsNone(getattr(namespace, "openai_url", None))
-        self.assertIsNone(getattr(namespace, "template", None))
+        self.assertEqual(getattr(namespace, "template"), 'photo')
         self.assertFalse(getattr(namespace, "verbose", False))
 
 
@@ -724,7 +724,7 @@ class TestMain(DocumentUnitTest):
         mock_args = ArgNamespace()
         mock_args.url = "http://example.com"
         mock_args.key = "test-key"
-        mock_args.model = "gpt-4o"
+        mock_args.model = "gpt-5"
         mock_args.openai_url = "http://openai.example.com"
         mock_args.tag = "test-tag"
         mock_args.prompt = "test prompt"
@@ -756,16 +756,17 @@ class TestMain(DocumentUnitTest):
             base_url="http://example.com",
             token="test-key",
             openai_url="http://openai.example.com",
-            openai_model="gpt-4o"
+            openai_model="gpt-5"
         )
         mock_client_class.assert_called_once_with(mock_settings)
         # The params should match what's actually called in the main function
         mock_describe_class.assert_called_once_with(
             client=mock_client,
-            template_name="test-template"
+            template_name="test-template",
+            limit=0
         )
         mock_describe.describe_documents.assert_called_once()
-        mock_logger.info.assert_called_with("Successfully described 2 documents")
+        mock_logger.info.assert_called_with("Successfully described %s documents", 2)
 
     def test_main_no_url(
         self, mock_describe_class, mock_client_class, mock_settings_class,
@@ -829,7 +830,7 @@ class TestMain(DocumentUnitTest):
             mock_exit.assert_any_call(1)
 
         # Verify error logged
-        mock_logger.error.assert_called_with("PAPERLESS_KEY environment variable is not set.")
+        mock_logger.error.assert_called_with("PAPERLESS_TOKEN environment variable is not set.")
 
     def test_main_verbose(
         self, mock_describe_class, mock_client_class, mock_settings_class,

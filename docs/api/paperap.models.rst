@@ -18,6 +18,7 @@ Subpackages
    paperap.models.custom_field
    paperap.models.document
    paperap.models.document_type
+   paperap.models.enrichment
    paperap.models.mixins
    paperap.models.profile
    paperap.models.responses

@@ -43,7 +43,17 @@ TEMPLATE_DIR_ENV = "PAPERAP_TEMPLATE_DIR"
 DEFAULT_TEMPLATES_PATH = str(Path(__file__).parent / "templates")
 
 # File formats accepted by the enrichment services
-ACCEPTED_IMAGE_FORMATS = ["png", "jpg", "jpeg", "gif", "tif", "tiff", "bmp", "webp", "pdf"]
+ACCEPTED_IMAGE_FORMATS = [
+    "png",
+    "jpg",
+    "jpeg",
+    "gif",
+    "tif",
+    "tiff",
+    "bmp",
+    "webp",
+    "pdf",
+]
 # File formats accepted by OpenAI's vision models
 OPENAI_ACCEPTED_FORMATS = ["png", "jpg", "jpeg", "gif", "webp"]
 
@@ -214,8 +224,8 @@ class DocumentEnrichmentService:
         context: dict[str, Any] = {
             "document": document,
             "tag_names": document.tag_names,
-            "correspondent": document.correspondent.name if document.correspondent else None,
-            "document_type": document.document_type.name if document.document_type else None,
+            "correspondent": (document.correspondent.name if document.correspondent else None),
+            "document_type": (document.document_type.name if document.document_type else None),
         }
 
         # Add custom fields if available
@@ -405,7 +415,7 @@ class DocumentEnrichmentService:
                 original_filename = (document.original_filename or "").lower()
                 if not any(original_filename.endswith(ext) for ext in ACCEPTED_IMAGE_FORMATS):
                     result.success = False
-                    result.error = f"Unsupported file format for vision: {original_filename}"
+                    result.error = f"Unsupported file format for vision: {original_filename} (id: {document.id}, title: {document.title})"
                     return result
 
             # Render the prompt
@@ -503,11 +513,19 @@ class DocumentEnrichmentService:
         date_str = str(date_str).strip()
 
         # "Date unknown" or "Unknown date" or "No date"
-        if re.match(r"(date unknown|unknown date|no date|none|unknown|n/?a)$", date_str, re.IGNORECASE):
+        if re.match(
+            r"(date unknown|unknown date|no date|none|unknown|n/?a)$",
+            date_str,
+            re.IGNORECASE,
+        ):
             return None
 
         # Handle "circa 1950"
-        if matches := re.match(r"((around|circa|mid|early|late|before|after) *)?(\d{4})s?$", date_str, re.IGNORECASE):
+        if matches := re.match(
+            r"((around|circa|mid|early|late|before|after) *)?(\d{4})s?$",
+            date_str,
+            re.IGNORECASE,
+        ):
             date_str = f"{matches.group(3)}-01-01"
 
         return dateparser.parse(date_str)
@@ -545,11 +563,11 @@ ORIGINAL DESCRIPTION:
 """
 
             # Get the OpenAI client (using a simpler model for synonyms)
-            openai_client = self.get_openai_client(EnrichmentConfig(model="gpt-4o-mini"))
+            openai_client = self.get_openai_client(EnrichmentConfig(model="gpt-5"))
 
             # Call OpenAI API
             response = openai_client.chat.completions.create(
-                model="gpt-4o-mini",
+                model="gpt-5",
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=1500,  # Allow for longer output to fit multiple versions
             )

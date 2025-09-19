@@ -15,7 +15,11 @@ from typing_extensions import TypeVar
 from paperap.const import URLS
 from paperap.exceptions import APIError, BadResponseError, ResourceNotFoundError
 from paperap.models.document import Document
-from paperap.models.document.download import DownloadedDocument, DownloadedDocumentQuerySet, RetrieveFileMode
+from paperap.models.document.download import (
+    DownloadedDocument,
+    DownloadedDocumentQuerySet,
+    RetrieveFileMode,
+)
 from paperap.resources.base import BaseResource, StandardResource
 
 

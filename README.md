@@ -108,7 +108,7 @@ Paperap raises exceptions for API errors:
 - `MultipleObjectsFoundError` - Error when a single object is requested but multiple objects are found
 
 ```python
-from paperap.exceptions import APIError
+from paperap.exceptions import ObjectNotFoundError
 
 try:
     doc = client.documents.get(9999)  # Nonexistent document

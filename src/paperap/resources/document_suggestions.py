@@ -22,7 +22,10 @@ from typing import Any
 
 from paperap.const import URLS
 from paperap.exceptions import ResourceNotFoundError
-from paperap.models.document.suggestions import DocumentSuggestions, DocumentSuggestionsQuerySet
+from paperap.models.document.suggestions import (
+    DocumentSuggestions,
+    DocumentSuggestionsQuerySet,
+)
 from paperap.resources.base import StandardResource
 
 

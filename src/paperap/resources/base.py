@@ -15,7 +15,17 @@ import copy
 import logging
 from abc import ABC, ABCMeta
 from string import Template
-from typing import TYPE_CHECKING, Any, ClassVar, Final, Generic, Iterator, Protocol, overload, override
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ClassVar,
+    Final,
+    Generic,
+    Iterator,
+    Protocol,
+    overload,
+    override,
+)
 
 from pydantic import HttpUrl, field_validator
 from typing_extensions import TypeVar
@@ -161,7 +171,9 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             Meta class instance from the model_class.
 
         """
-        return self.model_class._meta  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
+        return (
+            self.model_class._meta  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
+        )
 
     @classmethod
     def _validate_endpoints(cls, value: Any) -> Endpoints:
@@ -321,7 +333,11 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
         """
         # Signal before creating resource
         signal_params = {"resource": self.name, "data": kwargs}
-        registry.emit("resource.create:before", "Emitted before creating a resource", kwargs=signal_params)
+        registry.emit(
+            "resource.create:before",
+            "Emitted before creating a resource",
+            kwargs=signal_params,
+        )
 
         if not (url := self.get_endpoint("create", resource=self.name)):
             raise ConfigurationError(f"Create endpoint not defined for resource {self.name}")
@@ -350,6 +366,8 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
 
         Args:
             model: Model instance to update.
+            data: Optional pre-serialised payload to send to the API.
+                When omitted, the payload is generated from ``model``.
 
         Returns:
             Updated model instance.
@@ -613,7 +631,11 @@ class BaseResource(ABC, Generic[_BaseModel, _BaseQuerySet]):
             "resource._handle_response:after",
             "Emitted after list response, before processing",
             args=[self],
-            kwargs={"response": {**response}, "resource": self.name, "results": results},
+            kwargs={
+                "response": {**response},
+                "resource": self.name,
+                "results": results,
+            },
         )
 
         # If this is a single-item response (not a list), handle it differently
@@ -738,7 +760,12 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         """
         # Signal before getting resource
         signal_params = {"resource": self.name, "model_id": model_id}
-        registry.emit("resource.get:before", "Emitted before getting a resource", args=[self], kwargs=signal_params)
+        registry.emit(
+            "resource.get:before",
+            "Emitted before getting a resource",
+            args=[self],
+            kwargs=signal_params,
+        )
 
         if not (url := self.get_endpoint("detail", resource=self.name, pk=model_id)):
             raise ConfigurationError(f"Get detail endpoint not defined for resource {self.name}")
@@ -764,7 +791,7 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         return model
 
     @override
-    def update(self, model: _StandardModel) -> _StandardModel:
+    def update(self, model: _StandardModel, *, data: dict[str, Any] | None = None) -> _StandardModel:
         """
         Update a model in the API.
 
@@ -772,6 +799,8 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
 
         Args:
             model: Model instance to update.
+            data: Optional pre-serialised payload to send to the API.
+                When omitted, the payload is generated from ``model``.
 
         Returns:
             Updated model instance.
@@ -782,7 +811,20 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
             >>> updated_tag = client.tags.update(tag)
 
         """
-        data = model.to_dict()
+        # Ensure we only send writable fields back to Paperless.
+        #
+        # StandardModel.save() already prepares a dictionary that excludes
+        # read-only fields before invoking the resource. However, this method
+        # re-serialises the model which meant we were including read-only
+        # fields again. Paperless rejects updates that contain immutable
+        # fields (like ``is_shared_by_requester``), returning the 500 errors
+        # observed in the integration tests. Serialising with
+        # ``include_read_only=False`` keeps the payload consistent with what
+        # ``StandardModel`` calculated and avoids sending immutable data.
+        if data is None:
+            data = model.to_dict(include_read_only=False, exclude_unset=True, exclude_none=False)
+        else:
+            data = {**data}
         data = self.transform_data_output(**data)
 
         # Save the model ID
@@ -835,7 +877,12 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
 
         # Signal before deleting resource
         signal_params = {"resource": self.name, "model_id": model}
-        registry.emit("resource.delete:before", "Emitted before deleting a resource", args=[self], kwargs=signal_params)
+        registry.emit(
+            "resource.delete:before",
+            "Emitted before deleting a resource",
+            args=[self],
+            kwargs=signal_params,
+        )
 
         if not (url := self.get_endpoint("delete", resource=self.name, pk=model)):
             raise ConfigurationError(f"Delete endpoint not defined for resource {self.name}")
@@ -843,7 +890,12 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         result = self.client.request("DELETE", url)
 
         # Signal after deleting resource
-        registry.emit("resource.delete:after", "Emitted after deleting a resource", args=[self], kwargs=signal_params)
+        registry.emit(
+            "resource.delete:after",
+            "Emitted after deleting a resource",
+            args=[self],
+            kwargs=signal_params,
+        )
 
         return result
 
@@ -876,7 +928,11 @@ class StandardResource(BaseResource[_StandardModel, _StandardQuerySet]):
         """
         # Signal before updating resource
         signal_params = {"resource": self.name, "model_id": model_id, "data": data}
-        registry.emit("resource.update:before", "Emitted before updating a resource", kwargs=signal_params)
+        registry.emit(
+            "resource.update:before",
+            "Emitted before updating a resource",
+            kwargs=signal_params,
+        )
 
         if not (url := self.get_endpoint("update", resource=self.name, pk=model_id)):
             raise ConfigurationError(f"Update endpoint not defined for resource {self.name}")

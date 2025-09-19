@@ -100,7 +100,9 @@ class StatusContext:
             BaseModel.Meta[Any]: The metadata associated with the model.
 
         """
-        return self.model._meta  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
+        return (
+            self.model._meta  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
+        )
 
     @property
     def new_status(self) -> ModelStatus:
@@ -196,7 +198,12 @@ class StatusContext:
         # Do NOT return context manager, because we want to guarantee that the status is reverted
         # so we do not want to allow access to the context manager object
 
-    def __exit__(self, exc_type: type[BaseException] | None, exc_value: BaseException | None, traceback: Iterable[Any]) -> None:
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: Iterable[Any],
+    ) -> None:
         """
         Exit the context, restoring the model's previous status.
 

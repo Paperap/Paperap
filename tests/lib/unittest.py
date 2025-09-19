@@ -114,6 +114,19 @@ class UnitTestCase(
         """
         self._reset_attributes()
 
+    def tearDown(self) -> None:
+        """
+        Tear down the test case by cleaning up any created resources.
+        """
+        """
+        if hasattr(self, 'model') and self.model:        
+            self.model = None
+        if hasattr(self, 'client') and self.client:
+            self.client = None
+        if hasattr(self, 'resource') and self.resource:
+            self.resource = None
+        """
+
     @override
     def setup_client(self, **kwargs) -> None:
         """

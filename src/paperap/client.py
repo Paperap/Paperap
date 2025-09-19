@@ -256,7 +256,9 @@ class PaperlessClient:
                 a default configuration will be used.
 
         """
-        from paperap.plugins.manager import PluginManager  # pylint: disable=import-outside-toplevel
+        from paperap.plugins.manager import (
+            PluginManager,
+        )  # pylint: disable=import-outside-toplevel
 
         PluginManager.model_rebuild()
 
@@ -391,31 +393,28 @@ class PaperlessClient:
                 files,
                 headers,
             )
+
+            # Common request parameters
+            request_params = {
+                "method": method,
+                "url": url,
+                "headers": headers,
+                "params": params,
+                "timeout": self.settings.timeout,
+                **self._get_auth_params(),
+            }
+
             # When uploading files, we need to pass data as form data, not JSON
             # The key difference is that with files, we MUST use data parameter, not json
+            # to ensure proper multipart/form-data encoding
             if files:
-                # For file uploads, use data parameter (not json) to ensure proper multipart/form-data encoding
-                response = self.session.request(
-                    method=method,
-                    url=url,
-                    headers=headers,
-                    params=params,
-                    data=data,  # Use data for form fields with files
-                    files=files,
-                    timeout=self.settings.timeout,
-                    **self._get_auth_params(),
-                )
+                request_params["data"] = data  # Use data for form fields with files
+                request_params["files"] = files
             else:
                 # For regular JSON requests
-                response = self.session.request(
-                    method=method,
-                    url=url,
-                    headers=headers,
-                    params=params,
-                    json=data,  # Use json for regular requests
-                    timeout=self.settings.timeout,
-                    **self._get_auth_params(),
-                )
+                request_params["json"] = data  # Use json for regular requests
+
+            response = self.session.request(**request_params)  # type: ignore
 
             # Handle HTTP errors
             if response.status_code >= 400:
@@ -480,7 +479,11 @@ class PaperlessClient:
             if matches := re.match(r"([a-zA-Z_-]+): Invalid pk", error_message):
                 raise RelationshipNotFoundError(f"Invalid relationship {matches.group(1)}: {error_message}")
         if response.status_code == 401:
-            raise AuthenticationError(f"Authentication failed: {error_message}")
+            raise AuthenticationError(
+                (
+                    f"Authentication failed: {error_message}. Url: {self.base_url}, Token: {self.settings.token[:3]}...{self.settings.token[-3:]}"  # type: ignore
+                )
+            )
         if response.status_code == 403:
             if "this site requires a CSRF" in error_message:
                 raise ConfigurationError(f"Response claims CSRF token required. Is the url correct? {url}")
@@ -489,21 +492,50 @@ class PaperlessClient:
             raise ResourceNotFoundError(f"Paperless returned 404 for {url}")
 
         # All else...
-        raise BadResponseError(error_message, response.status_code)
+        logger.error(
+            "Paperless API error: URL %s, Params %s, Data %s, Files %s, Status %s, Error: %s",
+            url,
+            params,
+            data,
+            files,
+            response.status_code,
+            error_message,
+        )
+        raise BadResponseError(f"Bad Response from {url=}, {params=}, {data=}, {error_message=}", response.status_code)
 
     @overload
-    def _handle_response(self, response: requests.Response, *, json_response: Literal[True] = True) -> dict[str, Any]: ...
+    def _handle_response(
+        self,
+        response: requests.Response,
+        *,
+        json_response: Literal[True] = True,
+    ) -> dict[str, Any]: ...
 
     @overload
     def _handle_response(self, response: None, *, json_response: bool = True) -> None: ...
 
     @overload
-    def _handle_response(self, response: requests.Response | None, *, json_response: Literal[False]) -> bytes | None: ...
+    def _handle_response(
+        self,
+        response: requests.Response | None,
+        *,
+        json_response: Literal[False],
+    ) -> bytes | None: ...
 
     @overload
-    def _handle_response(self, response: requests.Response | None, *, json_response: bool = True) -> dict[str, Any] | bytes | None: ...
+    def _handle_response(
+        self,
+        response: requests.Response | None,
+        *,
+        json_response: bool = True,
+    ) -> dict[str, Any] | bytes | None: ...
 
-    def _handle_response(self, response: requests.Response | None, *, json_response: bool = True) -> dict[str, Any] | bytes | None:
+    def _handle_response(
+        self,
+        response: requests.Response | None,
+        *,
+        json_response: bool = True,
+    ) -> dict[str, Any] | bytes | None:
         """Handle the response based on the content type."""
         if response is None:
             return None
@@ -514,7 +546,12 @@ class PaperlessClient:
                 return response.json()  # type: ignore # mypy can't infer the return type correctly
             except ValueError as e:
                 url = getattr(response, "url", "unknown URL")
-                logger.error("Failed to parse JSON response: %s -> url %s -> content: %s", e, url, response.content)
+                logger.error(
+                    "Failed to parse JSON response: %s -> url %s -> content: %s",
+                    e,
+                    url,
+                    response.content,
+                )
                 raise ResponseParsingError(f"Failed to parse JSON response: {str(e)} -> url {url}") from e
 
         return response.content
@@ -613,7 +650,12 @@ class PaperlessClient:
             "json_response": json_response,
         }
 
-        registry.emit("client.request:before", "Before a request is sent to the Paperless server", args=[self], kwargs=kwargs)
+        registry.emit(
+            "client.request:before",
+            "Before a request is sent to the Paperless server",
+            args=[self],
+            kwargs=kwargs,
+        )
 
         # Get the response from request_raw
         response = self.request_raw(method, endpoint, params=params, data=data, files=files)

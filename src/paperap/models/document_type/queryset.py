@@ -12,7 +12,11 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any, Self
 
-from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet, BulkQuerySet
+from paperap.models.abstract.queryset import (
+    BaseQuerySet,
+    StandardQuerySet,
+    BulkQuerySet,
+)
 from paperap.models.mixins.queryset import HasDocumentCount, HasOwner
 
 if TYPE_CHECKING:

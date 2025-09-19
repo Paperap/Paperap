@@ -94,7 +94,7 @@ class Settings(BaseSettings):
     username: str | None = None
     password: str | None = None
     base_url: HttpUrl
-    timeout: int = 60
+    timeout: int = 180
     require_ssl: bool = False
     save_on_write: bool = True
     openai_key: str | None = Field(default=None, alias="openai_api_key")

@@ -56,7 +56,10 @@ class StrEnumWithUnknown(StrEnum):
     @override
     @classmethod
     def _missing_(cls, value: object) -> str:
-        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
+        logger.debug(
+            "Handling unknown enum value",
+            extra={"enum_class": cls.__name__, "value": value},
+        )
         return cls.UNKNOWN  # type: ignore # subclasses will define unknown
 
 
@@ -84,7 +87,10 @@ class IntEnumWithUnknown(IntEnum):
     @override
     @classmethod
     def _missing_(cls, value: object) -> int:
-        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
+        logger.debug(
+            "Handling unknown enum value",
+            extra={"enum_class": cls.__name__, "value": value},
+        )
         return cls.UNKNOWN  # type: ignore # subclasses will define unknown
 
 
@@ -127,7 +133,7 @@ class ConstModel(pydantic.BaseModel):
         """
         if isinstance(other, dict):
             # Ensure the dictionary keys match the model fields
-            expected_keys = set(self.model_fields.keys())
+            expected_keys = set(self.__class__.model_fields.keys())
             if set(other.keys()) != expected_keys:
                 return False
             return all(getattr(self, key) == other.get(key) for key in expected_keys)
@@ -382,7 +388,10 @@ class MatchingAlgorithmType(IntEnumWithUnknown):
     @override
     @classmethod
     def _missing_(cls, value: object) -> "Literal[MatchingAlgorithmType.UNKNOWN]":
-        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
+        logger.debug(
+            "Handling unknown enum value",
+            extra={"enum_class": cls.__name__, "value": value},
+        )
         return cls.UNKNOWN
 
 
@@ -477,7 +486,10 @@ class ShareLinkFileVersionType(StrEnumWithUnknown):
     @override
     @classmethod
     def _missing_(cls, value: object) -> "Literal[ShareLinkFileVersionType.UNKNOWN]":
-        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
+        logger.debug(
+            "Handling unknown enum value",
+            extra={"enum_class": cls.__name__, "value": value},
+        )
         return cls.UNKNOWN
 
 
@@ -501,7 +513,10 @@ class StatusType(StrEnumWithUnknown):
     @override
     @classmethod
     def _missing_(cls, value: object) -> "Literal[StatusType.UNKNOWN]":
-        logger.debug("Handling unknown enum value", extra={"enum_class": cls.__name__, "value": value})
+        logger.debug(
+            "Handling unknown enum value",
+            extra={"enum_class": cls.__name__, "value": value},
+        )
         return cls.UNKNOWN
 
 
@@ -886,7 +901,7 @@ class EnrichmentConfig(pydantic.BaseModel):
 
     template_name: str | None = None
     template_dir: str | None = None
-    model: str = "gpt-4o-mini"
+    model: str = "gpt-5"
     api_key: str | None = None
     api_url: str | None = None
     vision: bool = True

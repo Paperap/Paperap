@@ -50,7 +50,7 @@ class TestSettingsTimeout(UnitTestCase):
         params = TOKEN_DATA.copy()
         del params['timeout']
         settings = Settings(**params)
-        self.assertEqual(settings.timeout, 60, "Timeout was not set to default value")
+        self.assertEqual(settings.timeout, 180, "Timeout was not set to default value")
 
     @patch.dict('os.environ', {}, clear=True)
     def test_positive_timeouts(self):

@@ -17,7 +17,13 @@ from paperap.models.mixins.queryset import HasOwner
 from paperap.const import ClientResponse, EnrichmentConfig
 
 if TYPE_CHECKING:
-    from paperap.models import Correspondent, Document, DocumentNote, DocumentType, StoragePath
+    from paperap.models import (
+        Correspondent,
+        Document,
+        DocumentNote,
+        DocumentType,
+        StoragePath,
+    )
     from paperap.resources.documents import DocumentResource
     from paperap.services.enrichment import DocumentEnrichmentService
 
@@ -730,7 +736,14 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             return self.filter(custom_fields__icontains=value)
         raise NotImplementedError("Case-sensitive custom field search is not supported by Paperless NGX")
 
-    def custom_field(self, field: str, value: Any, *, exact: bool = False, case_insensitive: bool = True) -> Self:
+    def custom_field(
+        self,
+        field: str,
+        value: Any,
+        *,
+        exact: bool = False,
+        case_insensitive: bool = True,
+    ) -> Self:
         """
         Filter documents by custom field.
 
@@ -884,7 +897,12 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         return self.filter(custom_field_query=query_str)
 
     @custom_field_query.register  # type: ignore # mypy does not handle singledispatchmethod with overloads correctly
-    def _(self, field: str, operation: str | CustomFieldQuery | tuple[str, Any, Any], value: Any) -> Self:
+    def _(
+        self,
+        field: str,
+        operation: str | CustomFieldQuery | tuple[str, Any, Any],
+        value: Any,
+    ) -> Self:
         query = CustomFieldQuery(field, operation, value)
         query_str = self._normalize_custom_field_query(query)
         return self.filter(custom_field_query=query_str)
@@ -1500,7 +1518,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
     def summarize(
         self,
-        model: str = "gpt-4o-mini",
+        model: str = "gpt-5",
         template_name: str = "summarize",
         template_dir: str | None = None,
         batch_size: int = 10,
@@ -1548,7 +1566,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
     def describe(
         self,
-        model: str = "gpt-4o-mini",
+        model: str = "gpt-5",
         template_name: str = "describe",
         template_dir: str | None = None,
         batch_size: int = 10,

@@ -99,7 +99,7 @@ class TestEnrichmentConfig(TestCase):
         config = EnrichmentConfig(template_name="test")
         self.assertEqual(config.template_name, "test")
         self.assertIsNone(config.template_dir)
-        self.assertEqual(config.model, "gpt-4o-mini")
+        self.assertEqual(config.model, "gpt-5")
         self.assertIsNone(config.api_key)
         self.assertIsNone(config.api_url)
         self.assertTrue(config.vision)

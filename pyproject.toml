@@ -1,6 +1,6 @@
 [project]
 name = "paperap"
-version = "0.0.11"
+version = "0.0.12"
 description = "Python library for interacting with the Paperless NGX REST API"
 readme = "README.md"
 authors = [{ name = "Jess Mann", email = "jess@jmann.me" }]
@@ -21,6 +21,7 @@ license = "MIT"
 
 [project.scripts]
 paperap = "paperap:main"
+describe_docs = "paperap.scripts.describe:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -942,6 +943,12 @@ show_missing = true
 [tool.uv.workspace]
 members = ["tmp"]
 
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"
+
 [dependency-groups]
 dev = [
   "bandit>=1.8.3",
@@ -956,7 +963,7 @@ dev = [
   "prospector>=1.15.2",
   "pydoctor>=24.11.2",
   "pylint>=3.3.4",
-  "pyright>=1.1.396",
+  "pyright>=1.1.405",
   "pytest>=8.3.5",
   "pytest-cov>=6.0.0",
   "ruff>=0.9.9",

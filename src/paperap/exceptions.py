@@ -327,7 +327,12 @@ class ObjectNotFoundError(ResourceNotFoundError):
 
     model_id: int | None = None
 
-    def __init__(self, message: str | None = None, resource_name: str | None = None, model_id: int | None = None) -> None:
+    def __init__(
+        self,
+        message: str | None = None,
+        resource_name: str | None = None,
+        model_id: int | None = None,
+    ) -> None:
         self.model_id = model_id
         if not message:
             message = "Resource ${resource} (#${pk}) not found."

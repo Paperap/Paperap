@@ -48,7 +48,7 @@ class ScriptDefaults(StrEnum):
     DESCRIBED = "described"
     NEEDS_TITLE = "needs-title"
     NEEDS_DATE = "needs-date"
-    MODEL = "gpt-4o-mini"
+    MODEL = "gpt-5"
 
 
 # Current version of the describe script
@@ -86,6 +86,7 @@ class DescribePhotos(BaseModel):
     template_name: str = Field(default="photo")
     client: PaperlessClient
     prompt: str | None = Field(default=None)
+    limit: int = 0
     _enrichment_service: DocumentEnrichmentService | None = PrivateAttr(default=None)
     _progress_bar: ProgressBar | None = PrivateAttr(default=None)
     _jinja_env: Environment | None = PrivateAttr(default=None)
@@ -102,7 +103,10 @@ class DescribePhotos(BaseModel):
     def enrichment_service(self) -> DocumentEnrichmentService:
         """Get or create the document enrichment service."""
         if not self._enrichment_service:
-            self._enrichment_service = DocumentEnrichmentService(api_key=self.client.settings.openai_key, api_url=self.client.settings.openai_url)
+            self._enrichment_service = DocumentEnrichmentService(
+                api_key=self.client.settings.openai_key,
+                api_url=self.client.settings.openai_url,
+            )
         return self._enrichment_service
 
     @field_validator("max_threads", mode="before")
@@ -346,7 +350,10 @@ class DescribePhotos(BaseModel):
 
             # Get OpenAI client from the enrichment service
             openai_client = self.enrichment_service.get_openai_client(
-                EnrichmentConfig(template_name=self.template_name, model=self.client.settings.openai_model or ScriptDefaults.MODEL)
+                EnrichmentConfig(
+                    template_name=self.template_name,
+                    model=self.client.settings.openai_model or ScriptDefaults.MODEL,
+                )
             )
 
             response = openai_client.chat.completions.create(
@@ -601,14 +608,22 @@ class DescribePhotos(BaseModel):
             documents = list(self.client.documents().filter(tag_name=self.paperless_tag))
 
         total = len(documents)
-        logger.info(f"Found {total} documents to describe")
+        count = 0
+        logger.info("Found %s documents to describe", total)
 
         results = []
         with alive_bar(total=total, title="Describing documents", bar="classic") as self._progress_bar:
             for document in documents:
-                if self.describe_document(document):
-                    results.append(document)
-                self._progress_bar()  # type: ignore
+                try:
+                    if self.describe_document(document):
+                        results.append(document)
+                        count += 1
+                finally:
+                    self._progress_bar()  # type: ignore
+
+                if self.limit and count >= self.limit:
+                    logger.info("Reached limit of %s documents, stopping.", self.limit)
+                    break
         return results
 
 
@@ -634,6 +649,8 @@ class ArgNamespace(argparse.Namespace):
     tag: str
     prompt: str | None = None
     verbose: bool = False
+    template: str = "photo"
+    limit: int = 0
 
 
 def main() -> None:
@@ -655,13 +672,39 @@ def main() -> None:
     try:
         load_dotenv()
 
-        parser = argparse.ArgumentParser(description="Describe documents with AI in Paperless-ngx")
-        parser.add_argument("--url", type=str, default=None, help="The base URL of the Paperless NGX instance")
-        parser.add_argument("--key", type=str, default=None, help="The API token for the Paperless NGX instance")
+        parser = argparse.ArgumentParser(description="Describe documents using AI in Paperless-ngx")
+        parser.add_argument(
+            "--url",
+            type=str,
+            default=os.getenv("PAPERLESS_URL", None),
+            help="The URL of the Paperless NGX instance",
+        )
+        parser.add_argument(
+            "--key",
+            type=str,
+            default=os.getenv("PAPERLESS_TOKEN", None),
+            help="The API token for the Paperless NGX instance",
+        )
         parser.add_argument("--model", type=str, default=None, help="The OpenAI model to use")
-        parser.add_argument("--openai-url", type=str, default=None, help="The base URL for the OpenAI API")
-        parser.add_argument("--tag", type=str, default=ScriptDefaults.NEEDS_DESCRIPTION, help="Tag to filter documents")
-        parser.add_argument("--template", type=str, default="photo", help="Template name to use for description")
+        parser.add_argument(
+            "--openai-url",
+            type=str,
+            default=None,
+            help="The base URL for the OpenAI API",
+        )
+        parser.add_argument(
+            "--tag",
+            type=str,
+            default=ScriptDefaults.NEEDS_DESCRIPTION,
+            help="Tag to filter documents",
+        )
+        parser.add_argument(
+            "--template",
+            type=str,
+            default="photo",
+            help="Template name to use for description",
+        )
+        parser.add_argument("--limit", type=int, default=0, help="Limit the number of documents to process")
         parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
 
         args = parser.parse_args(namespace=ArgNamespace())
@@ -674,7 +717,7 @@ def main() -> None:
             sys.exit(1)
 
         if not args.key:
-            logger.error("PAPERLESS_KEY environment variable is not set.")
+            logger.error("PAPERLESS_TOKEN environment variable is not set.")
             sys.exit(1)
 
         # Exclude None, so pydantic settings loads from defaults for an unset param
@@ -692,13 +735,13 @@ def main() -> None:
         settings = Settings(**cast(Any, config))
         client = PaperlessClient(settings)
 
-        paperless = DescribePhotos(client=client, template_name=args.template)
+        paperless = DescribePhotos(client=client, template_name=args.template, limit=args.limit)
 
-        logger.info(f"Starting document description process with model: {paperless.client.settings.openai_model}")
+        logger.info("Starting document description process with model: %s", paperless.client.settings.openai_model)
         results = paperless.describe_documents()
 
         if results:
-            logger.info(f"Successfully described {len(results)} documents")
+            logger.info("Successfully described %s documents", len(results))
         else:
             logger.info("No documents described.")
 

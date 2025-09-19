@@ -13,7 +13,17 @@ from __future__ import annotations
 import logging
 from datetime import datetime
 import re
-from typing import TYPE_CHECKING, Annotated, Any, Iterable, Iterator, Self, TypedDict, cast, override
+from typing import (
+    TYPE_CHECKING,
+    Annotated,
+    Any,
+    Iterable,
+    Iterator,
+    Self,
+    TypedDict,
+    cast,
+    override,
+)
 
 import pydantic
 from pydantic import Field, field_serializer, field_validator, model_serializer
@@ -231,9 +241,14 @@ class Document(StandardModel):
 
     class Meta(StandardModel.Meta):
         # NOTE: Filtering appears to be disabled by paperless on page_count
-        read_only_fields = {"page_count", "deleted_at", "is_shared_by_requester", "archived_file_name"}
+        read_only_fields = {
+            "page_count",
+            "deleted_at",
+            "is_shared_by_requester",
+            "archived_file_name",
+        }
         filtering_disabled = {"page_count", "deleted_at", "is_shared_by_requester"}
-        filtering_strategies = {FilteringStrategies.WHITELIST}
+        filtering_strategies = {FilteringStrategies.BLACKLIST}
         field_map = {
             "tags": "tag_ids",
             "custom_fields": "custom_field_dicts",
@@ -242,6 +257,15 @@ class Document(StandardModel):
             "storage_path": "storage_path_id",
         }
         supported_filtering_params = SUPPORTED_FILTERING_PARAMS
+
+    @field_validator("created", mode="before")
+    @classmethod
+    def normalize_created(cls, value: str | datetime | None) -> str | datetime | None:
+        """Ensure datetime strings with ±HH:MM:SS offsets are normalized to ±HH:MM."""
+        if isinstance(value, str):
+            # Replace a trailing timezone offset with seconds (±HH:MM:SS → ±HH:MM)
+            value = re.sub(r"([+-]\d{2}:\d{2}):\d{2}$", r"\1", value)
+        return value
 
     @field_serializer("added", "created", "deleted_at")
     def serialize_datetime(self, value: datetime | None) -> str | None:
@@ -845,7 +869,10 @@ class Document(StandardModel):
         return self._client.custom_fields().id(self.custom_field_ids)
 
     @custom_fields.setter
-    def custom_fields(self, value: "Iterable[CustomField | CustomFieldValues | CustomFieldTypedDict] | None") -> None:
+    def custom_fields(
+        self,
+        value: "Iterable[CustomField | CustomFieldValues | CustomFieldTypedDict] | None",
+    ) -> None:
         """
         Set the custom fields for this document.
 
@@ -1043,21 +1070,25 @@ class Document(StandardModel):
             >>> document.remove_tag("Invoice")
 
         """
-        if isinstance(tag, int):
-            # TODO: Handle removal with consideration of "tags can't be empty" rule in paperless
-            self.tag_ids.remove(tag)
-            return
+        try:
+            if isinstance(tag, int):
+                # TODO: Handle removal with consideration of "tags can't be empty" rule in paperless
+                self.tag_ids.remove(tag)
+                return
 
-        if isinstance(tag, StandardModel):
-            # TODO: Handle removal with consideration of "tags can't be empty" rule in paperless
-            self.tag_ids.remove(tag.id)
-            return
+            if isinstance(tag, StandardModel):
+                # TODO: Handle removal with consideration of "tags can't be empty" rule in paperless
+                self.tag_ids.remove(tag.id)
+                return
 
-        if isinstance(tag, str):
-            # TODO: Handle removal with consideration of "tags can't be empty" rule in paperless
-            if not (instance := self._client.tags().filter(name=tag).first()):
-                raise ResourceNotFoundError(f"Tag '{tag}' not found")
-            self.tag_ids.remove(instance.id)
+            if isinstance(tag, str):
+                # TODO: Handle removal with consideration of "tags can't be empty" rule in paperless
+                if not (instance := self._client.tags().filter(name=tag).first()):
+                    raise ResourceNotFoundError(f"Tag '{tag}' not found")
+                self.tag_ids.remove(instance.id)
+                return
+        except ValueError as e:
+            logger.warning("Tag %s was not removed: %s", tag, e)
             return
 
         raise TypeError(f"Invalid type for tag: {type(tag)}")

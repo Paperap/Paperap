@@ -318,7 +318,13 @@ class TaskResource(StandardResource[Task, TaskQuerySet]):
 
         return task.result
 
-    def execute_task(self, method: str, endpoint: str, data: dict[str, Any] | None = None, max_wait: int = 300) -> Task:
+    def execute_task(
+        self,
+        method: str,
+        endpoint: str,
+        data: dict[str, Any] | None = None,
+        max_wait: int = 300,
+    ) -> Task:
         """
         Execute a task and wait for its completion.
 

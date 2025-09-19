@@ -13,7 +13,11 @@ import logging
 from typing import TYPE_CHECKING, Any, Self, Union
 
 from paperap.models.mixins.queryset import HasDocumentCount, HasOwner
-from paperap.models.abstract.queryset import BaseQuerySet, StandardQuerySet, BulkQuerySet
+from paperap.models.abstract.queryset import (
+    BaseQuerySet,
+    StandardQuerySet,
+    BulkQuerySet,
+)
 
 if TYPE_CHECKING:
     from paperap.models.correspondent.model import Correspondent

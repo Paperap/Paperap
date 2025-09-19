@@ -53,7 +53,14 @@ class QuerySetProtocol(Protocol):
         """
         ...
 
-    def filter_field_by_str(self, field: str, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
+    def filter_field_by_str(
+        self,
+        field: str,
+        value: str,
+        *,
+        exact: bool = True,
+        case_insensitive: bool = True,
+    ) -> Self:
         """
         Filter the queryset by comparing a field to a string value.
 

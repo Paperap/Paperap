@@ -15,6 +15,7 @@ class TestPluginManager(UnitTestCase):
     @override
     def setUp(self):
         super().setUp()
+        PluginManager.model_rebuild()
         self.manager = PluginManager(client=self.client)
 
     def test_configure_with_kwargs(self):

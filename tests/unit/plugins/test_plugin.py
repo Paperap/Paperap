@@ -52,6 +52,7 @@ class TestPlugin(UnitTestCase):
     @override
     def setUp(self):
         super().setUp()
+        PluginManager.model_rebuild()
         self.manager = PluginManager(client=self.client)
 
     def test_plugin_initialization(self):

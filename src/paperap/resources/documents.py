@@ -19,7 +19,12 @@ from typing_extensions import TypeVar
 
 from paperap.const import URLS, ClientResponse
 from paperap.exceptions import APIError, BadResponseError, ResourceNotFoundError
-from paperap.models.document import Document, DocumentNote, DocumentNoteQuerySet, DocumentQuerySet
+from paperap.models.document import (
+    Document,
+    DocumentNote,
+    DocumentNoteQuerySet,
+    DocumentQuerySet,
+)
 from paperap.models.task import Task
 from paperap.resources.base import BaseResource, StandardResource
 from paperap.signals import registry
@@ -325,7 +330,12 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         """
         # Signal before bulk action
-        signal_params = {"resource": self.name, "operation": operation, "ids": ids, "kwargs": kwargs}
+        signal_params = {
+            "resource": self.name,
+            "operation": operation,
+            "ids": ids,
+            "kwargs": kwargs,
+        }
         registry.emit(
             "resource.bulk_operation:before",
             "Emitted before bulk operation",
@@ -628,6 +638,8 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             params["add_tags"] = add_tags
         if remove_tags:
             params["remove_tags"] = remove_tags
+        else:
+            params["remove_tags"] = []
 
         if isinstance(document_ids, int):
             document_ids = [document_ids]

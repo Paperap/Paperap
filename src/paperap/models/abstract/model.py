@@ -26,14 +26,30 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from decimal import Decimal
 from enum import StrEnum
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, Literal, Self, TypedDict, cast, override
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ClassVar,
+    Generic,
+    Literal,
+    Self,
+    TypedDict,
+    cast,
+    override,
+)
 
 import pydantic
 from pydantic import Field, PrivateAttr
 from typing_extensions import TypeVar
 
 from paperap.const import ClientResponse, FilteringStrategies, ModelStatus
-from paperap.exceptions import APIError, ConfigurationError, ReadOnlyFieldError, RequestError, ResourceNotFoundError
+from paperap.exceptions import (
+    APIError,
+    ConfigurationError,
+    ReadOnlyFieldError,
+    RequestError,
+    ResourceNotFoundError,
+)
 from paperap.models.abstract.meta import StatusContext
 from paperap.signals import registry
 
@@ -96,7 +112,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         _save_executor: Executor for asynchronous save operations.
         _status: Current status of the model (INITIALIZING, READY, UPDATING, SAVING).
         _original_data: Original data from the server for dirty checking.
-        _saved_data: Data last sent to the database during save operations.
+        _last_data_sent_to_save: Data last sent to the database during save operations.
         _resource: Associated resource for API interactions.
 
     Raises:
@@ -122,7 +138,7 @@ class BaseModel(pydantic.BaseModel, ABC):
     _original_data: dict[str, Any] = {}
     # The last data we sent to the db to save
     # This is used to determine if the model has been changed in the time it took to perform a save
-    _saved_data: dict[str, Any] = {}
+    _last_data_sent_to_save: dict[str, Any] = {}
     _resource: "BaseResource[Self]"
 
     class Meta[_Self: "BaseModel"]:
@@ -437,7 +453,9 @@ class BaseModel(pydantic.BaseModel, ABC):
         super().model_post_init(__context)
 
         # Save original_data to support dirty fields
-        self._original_data = self.model_dump()
+        current_state = self.model_dump()
+        self._original_data = current_state
+        self._last_data_sent_to_save = {**current_state}
 
         # Allow updating attributes to trigger save() automatically
         self._status = ModelStatus.READY
@@ -539,20 +557,20 @@ class BaseModel(pydantic.BaseModel, ABC):
         current_data.pop("id", None)
 
         if comparison == "saved":
-            compare_dict = self._saved_data
+            compare_dict = self._last_data_sent_to_save
         elif comparison == "db":
             compare_dict = self._original_data
         else:
             # For 'both', we want to compare against both original and saved data
             # A field is dirty if it differs from either original or saved data
             compare_dict = {}
-            for field in set(list(self._original_data.keys()) + list(self._saved_data.keys())):
+            for field in set(list(self._original_data.keys()) + list(self._last_data_sent_to_save.keys())):
                 # ID cannot change, and is not set before first save sometimes
                 if field == "id":
                     continue
 
                 # Prefer original data (from DB) over saved data when both exist
-                compare_dict[field] = self._original_data.get(field, self._saved_data.get(field))
+                compare_dict[field] = self._original_data.get(field, self._last_data_sent_to_save.get(field))
 
         return {
             field: (compare_dict.get(field, None), current_data.get(field, None))
@@ -627,7 +645,13 @@ class BaseModel(pydantic.BaseModel, ABC):
         """
         return self._resource.delete(self)
 
-    def update_locally(self, *, from_db: bool | None = None, skip_changed_fields: bool = False, **kwargs: Any) -> None:
+    def update_locally(
+        self,
+        *,
+        from_db: bool | None = None,
+        skip_changed_fields: bool = False,
+        **kwargs: Any,
+    ) -> None:
         """
         Update model attributes without triggering automatic save.
 
@@ -993,7 +1017,7 @@ class StandardModel(BaseModel, ABC):
 
         """
         if self.is_new():
-            model = self.create(**self.to_dict())
+            model = self.create(**self.to_dict(include_read_only=False))
             self.update_locally(from_db=True, **model.to_dict())
             return True
 
@@ -1010,7 +1034,7 @@ class StandardModel(BaseModel, ABC):
         with StatusContext(self, ModelStatus.SAVING):
             # Prepare and send the update to the server
             current_data = self.to_dict(include_read_only=False, exclude_none=False, exclude_unset=True)
-            self._saved_data = {**current_data}
+            self._last_data_sent_to_save = {**current_data}
 
             registry.emit(
                 "model.save:before",
@@ -1130,7 +1154,7 @@ class StandardModel(BaseModel, ABC):
         """
         # Prepare and send the update to the server
         current_data = self.to_dict(include_read_only=False, exclude_none=False, exclude_unset=True)
-        self._saved_data = {**current_data}
+        self._last_data_sent_to_save = {**current_data}
 
         registry.emit(
             "model.save:before",
@@ -1184,6 +1208,7 @@ class StandardModel(BaseModel, ABC):
                 "Fired after the model data is saved in paperless ngx.",
                 kwargs={"model": self, "updated_data": new_data},
             )
+            self._last_data_sent_to_save = {**self.model_dump()}
 
         except concurrent.futures.TimeoutError:
             logger.error(f"Save operation timed out for {self}")
@@ -1229,6 +1254,12 @@ class StandardModel(BaseModel, ABC):
                 self.save()
 
         return True
+
+    def _prepare_update_payload(self) -> dict[str, Any]:
+        """Build the payload of changed, writable fields for the next save."""
+        payload = {field: current for field, (_previous, current) in self.dirty_fields("saved").items() if field not in self._meta.read_only_fields}
+
+        return payload
 
     @override
     def is_new(self) -> bool:

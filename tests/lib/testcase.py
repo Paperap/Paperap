@@ -177,15 +177,15 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
 
     def setup_references(self) -> None:
         # Check if we have each attrib, and set all the others we can
-        if hasattr(self, "modal_type"):
-            self.resource = getattr(self, "resource", self.model_type._meta.resource) # type: ignore
-            self.resource_class = getattr(self, "resource_class", self.resource.__class__) # type: ignore
-            self.queryset_type = getattr(self, "queryset_type", self.model_type.resource.queryset_class) # type: ignore
+        if hasattr(self, "model_type"):
+            self.resource = getattr(self, "resource", getattr(self.model_type._meta, "resource", None) if self.model_type else None) # type: ignore
+            self.resource_class = getattr(self, "resource_class", self.resource.__class__ if self.resource else None) # type: ignore
+            self.queryset_type = getattr(self, "queryset_type", getattr(self.model_type.resource, "queryset_class", None) if self.model_type else None) # type: ignore
         if hasattr(self, "model"):
-            self.model_type = getattr(self, "model_type", self.model.__class__) # type: ignore
-            self.resource = getattr(self, "resource", self.model.resource) # type: ignore
-            self.resource_class = getattr(self, "resource_class", self.resource.__class__) # type: ignore
-            self.queryset_type = getattr(self, "queryset_type", self.resource.queryset_class) # type: ignore
+            self.model_type = getattr(self, "model_type", self.model.__class__ if self.model else None) # type: ignore
+            self.resource = getattr(self, "resource", self.model.resource if self.model else None) # type: ignore
+            self.resource_class = getattr(self, "resource_class", self.resource.__class__ if self.resource else None) # type: ignore
+            self.queryset_type = getattr(self, "queryset_type", self.resource.queryset_class if self.resource else None) # type: ignore
         '''
         if hasattr(self, "factory"):
             self.model_type = getattr(self, "model_type", self.factory._meta.model) # type: ignore
@@ -194,9 +194,9 @@ class TestMixin(ABC, Generic[_StandardModel, _StandardResource, _StandardQuerySe
             self.queryset_type = getattr(self, "queryset_type", self.model_type.resource.queryset_class) # type: ignore
         '''
         if hasattr(self, "resource"):
-            self.resource_class = getattr(self, "resource_class", self.resource.__class__) # type: ignore
-            self.model_type = getattr(self, "model_type", self.resource.model_class) # type: ignore
-            self.queryset_type = getattr(self, "queryset_type", self.model_type.resource.queryset_class) # type: ignore
+            self.resource_class = getattr(self, "resource_class", self.resource.__class__ if self.resource else None) # type: ignore
+            self.model_type = getattr(self, "model_type", self.resource.model_class if self.resource else None) # type: ignore
+            self.queryset_type = getattr(self, "queryset_type", getattr(self.model_type.resource, "queryset_class", None) if self.model_type else None) # type: ignore
 
     def setup_resource(self) -> None:
         """
