@@ -1518,7 +1518,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
     def summarize(
         self,
-        model: str = "gpt-4o-mini",
+        model: str = "gpt-5",
         template_name: str = "summarize",
         template_dir: str | None = None,
         batch_size: int = 10,
@@ -1566,7 +1566,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
     def describe(
         self,
-        model: str = "gpt-4o-mini",
+        model: str = "gpt-5",
         template_name: str = "describe",
         template_dir: str | None = None,
         batch_size: int = 10,

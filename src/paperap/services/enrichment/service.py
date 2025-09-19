@@ -563,11 +563,11 @@ ORIGINAL DESCRIPTION:
 """
 
             # Get the OpenAI client (using a simpler model for synonyms)
-            openai_client = self.get_openai_client(EnrichmentConfig(model="gpt-4o-mini"))
+            openai_client = self.get_openai_client(EnrichmentConfig(model="gpt-5"))
 
             # Call OpenAI API
             response = openai_client.chat.completions.create(
-                model="gpt-4o-mini",
+                model="gpt-5",
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=1500,  # Allow for longer output to fit multiple versions
             )

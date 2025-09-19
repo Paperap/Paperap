@@ -901,7 +901,7 @@ class EnrichmentConfig(pydantic.BaseModel):
 
     template_name: str | None = None
     template_dir: str | None = None
-    model: str = "gpt-4o-mini"
+    model: str = "gpt-5"
     api_key: str | None = None
     api_url: str | None = None
     vision: bool = True
