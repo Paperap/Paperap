@@ -30,7 +30,7 @@ build-backend = "hatchling.build"
 [tool.pydoctor]
 add-package = ["src/paperap"]
 project-name = "paperap"
-project-version = "0.0.4"
+project-version = "0.0.13"
 project-url = "https://github.com/Paperap/Paperap"
 html-output = "docs/API"
 project-base-dir = "./"
