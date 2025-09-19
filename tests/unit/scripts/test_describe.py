@@ -699,7 +699,7 @@ class TestArgNamespace(DocumentUnitTest):
         namespace = ArgNamespace()
         self.assertFalse(hasattr(namespace, "url"))
         self.assertFalse(hasattr(namespace, "key"))
-        self.assertEqual(getattr(namespace, "model"), 'gpt-5')
+        self.assertIsNone(getattr(namespace, "model", None))
         self.assertIsNone(getattr(namespace, "openai_url", None))
         self.assertEqual(getattr(namespace, "template"), 'photo')
         self.assertFalse(getattr(namespace, "verbose", False))

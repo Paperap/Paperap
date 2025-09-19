@@ -685,7 +685,7 @@ def main() -> None:
             default=os.getenv("PAPERLESS_TOKEN", None),
             help="The API token for the Paperless NGX instance",
         )
-        parser.add_argument("--model", type=str, default=ScriptDefaults.MODEL.value, help="The OpenAI model to use")
+        parser.add_argument("--model", type=str, default=None, help="The OpenAI model to use")
         parser.add_argument(
             "--openai-url",
             type=str,
