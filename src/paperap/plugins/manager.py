@@ -125,9 +125,7 @@ class PluginManager(pydantic.BaseModel):
             return
 
         # Find all modules in the package
-        for _, module_name, is_pkg in pkgutil.iter_modules(
-            package.__path__, package.__name__ + "."
-        ):
+        for _, module_name, is_pkg in pkgutil.iter_modules(package.__path__, package.__name__ + "."):
             if is_pkg:
                 # Recursively discover plugins in subpackages
                 self.discover_plugins(module_name)
@@ -138,11 +136,7 @@ class PluginManager(pydantic.BaseModel):
 
                 # Find plugin classes in the module
                 for _name, obj in inspect.getmembers(module, inspect.isclass):
-                    if (
-                        issubclass(obj, Plugin)
-                        and obj is not Plugin
-                        and obj.__module__ == module_name
-                    ):
+                    if issubclass(obj, Plugin) and obj is not Plugin and obj.__module__ == module_name:
                         plugin_name = obj.__name__
                         self.plugins[plugin_name] = obj
                         logger.debug("Discovered plugin: %s", plugin_name)

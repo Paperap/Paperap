@@ -112,7 +112,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         _save_executor: Executor for asynchronous save operations.
         _status: Current status of the model (INITIALIZING, READY, UPDATING, SAVING).
         _original_data: Original data from the server for dirty checking.
-        _saved_data: Data last sent to the database during save operations.
+        _last_data_sent_to_save: Data last sent to the database during save operations.
         _resource: Associated resource for API interactions.
 
     Raises:
@@ -133,14 +133,12 @@ class BaseModel(pydantic.BaseModel, ABC):
     _pending_save: concurrent.futures.Future[Any] | None = PrivateAttr(default=None)
     _save_executor: concurrent.futures.ThreadPoolExecutor | None = None
     # Updating attributes will not trigger save()
-    _status: ModelStatus = (
-        ModelStatus.INITIALIZING
-    )  # The last data we retrieved from the db
+    _status: ModelStatus = ModelStatus.INITIALIZING  # The last data we retrieved from the db
     # this is used to calculate if the model is dirty
     _original_data: dict[str, Any] = {}
     # The last data we sent to the db to save
     # This is used to determine if the model has been changed in the time it took to perform a save
-    _saved_data: dict[str, Any] = {}
+    _last_data_sent_to_save: dict[str, Any] = {}
     _resource: "BaseResource[Self]"
 
     class Meta[_Self: "BaseModel"]:
@@ -201,9 +199,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         blacklist_filtering_params: ClassVar[set[str]] = set()
         # Strategies for filtering.
         # This determines which of the above lists will be used to allow or deny filters to QuerySets.
-        filtering_strategies: ClassVar[set[FilteringStrategies]] = {
-            FilteringStrategies.BLACKLIST
-        }
+        filtering_strategies: ClassVar[set[FilteringStrategies]] = {FilteringStrategies.BLACKLIST}
         # A map of field names to their attribute names.
         # Parser uses this to transform input and output data.
         # This will be populated from all parent classes.
@@ -220,13 +216,8 @@ class BaseModel(pydantic.BaseModel, ABC):
             self.model = model
 
             # Validate filtering strategies
-            if all(
-                x in self.filtering_strategies
-                for x in (FilteringStrategies.ALLOW_ALL, FilteringStrategies.ALLOW_NONE)
-            ):
-                raise ValueError(
-                    f"Cannot have ALLOW_ALL and ALLOW_NONE filtering strategies in {self.model.__name__}"
-                )
+            if all(x in self.filtering_strategies for x in (FilteringStrategies.ALLOW_ALL, FilteringStrategies.ALLOW_NONE)):
+                raise ValueError(f"Cannot have ALLOW_ALL and ALLOW_NONE filtering strategies in {self.model.__name__}")
 
             super().__init__()
 
@@ -259,19 +250,13 @@ class BaseModel(pydantic.BaseModel, ABC):
 
             # If we have a whitelist, check if the filter_param is in it
             if FilteringStrategies.WHITELIST in self.filtering_strategies:
-                if (
-                    self.supported_filtering_params
-                    and filter_param not in self.supported_filtering_params
-                ):
+                if self.supported_filtering_params and filter_param not in self.supported_filtering_params:
                     return False
                 # Allow other rules to fire
 
             # If we have a blacklist, check if the filter_param is in it
             if FilteringStrategies.BLACKLIST in self.filtering_strategies:
-                if (
-                    self.blacklist_filtering_params
-                    and filter_param in self.blacklist_filtering_params
-                ):
+                if self.blacklist_filtering_params and filter_param in self.blacklist_filtering_params:
                     return False
                 # Allow other rules to fire
 
@@ -324,9 +309,7 @@ class BaseModel(pydantic.BaseModel, ABC):
                     break
             if top_meta is None:
                 # This should never happen.
-                raise ConfigurationError(
-                    f"Meta class not found in {cls.__name__} or its bases"
-                )
+                raise ConfigurationError(f"Meta class not found in {cls.__name__} or its bases")
 
             # Create a new Meta class that inherits from the top-most Meta.
             meta_attrs = {
@@ -406,9 +389,7 @@ class BaseModel(pydantic.BaseModel, ABC):
         super().__init__(**data)
 
         if not hasattr(self, "_resource"):
-            raise ValueError(
-                f"Resource required. Initialize resource for {self.__class__.__name__} before instantiating models."
-            )
+            raise ValueError(f"Resource required. Initialize resource for {self.__class__.__name__} before instantiating models.")
 
     @property
     def _client(self) -> "PaperlessClient":
@@ -453,9 +434,7 @@ class BaseModel(pydantic.BaseModel, ABC):
 
         """
         if not self._save_executor:
-            self._save_executor = concurrent.futures.ThreadPoolExecutor(
-                max_workers=5, thread_name_prefix="model_save_worker"
-            )
+            self._save_executor = concurrent.futures.ThreadPoolExecutor(max_workers=5, thread_name_prefix="model_save_worker")
         return self._save_executor
 
     def cleanup(self) -> None:
@@ -474,7 +453,9 @@ class BaseModel(pydantic.BaseModel, ABC):
         super().model_post_init(__context)
 
         # Save original_data to support dirty fields
-        self._original_data = self.model_dump()
+        current_state = self.model_dump()
+        self._original_data = current_state
+        self._last_data_sent_to_save = {**current_state}
 
         # Allow updating attributes to trigger save() automatically
         self._status = ModelStatus.READY
@@ -539,9 +520,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             >>> partial_data = doc.to_dict(exclude_unset=True)
 
         """
-        exclude: set[str] = (
-            set() if include_read_only else set(self._meta.read_only_fields)
-        )
+        exclude: set[str] = set() if include_read_only else set(self._meta.read_only_fields)
 
         return self.model_dump(
             exclude=exclude,
@@ -549,9 +528,7 @@ class BaseModel(pydantic.BaseModel, ABC):
             exclude_unset=exclude_unset,
         )
 
-    def dirty_fields(
-        self, comparison: Literal["saved", "db", "both"] = "both"
-    ) -> dict[str, tuple[Any, Any]]:
+    def dirty_fields(self, comparison: Literal["saved", "db", "both"] = "both") -> dict[str, tuple[Any, Any]]:
         """
         Show which fields have changed since last update from the Paperless NGX database.
 
@@ -580,24 +557,20 @@ class BaseModel(pydantic.BaseModel, ABC):
         current_data.pop("id", None)
 
         if comparison == "saved":
-            compare_dict = self._saved_data
+            compare_dict = self._last_data_sent_to_save
         elif comparison == "db":
             compare_dict = self._original_data
         else:
             # For 'both', we want to compare against both original and saved data
             # A field is dirty if it differs from either original or saved data
             compare_dict = {}
-            for field in set(
-                list(self._original_data.keys()) + list(self._saved_data.keys())
-            ):
+            for field in set(list(self._original_data.keys()) + list(self._last_data_sent_to_save.keys())):
                 # ID cannot change, and is not set before first save sometimes
                 if field == "id":
                     continue
 
                 # Prefer original data (from DB) over saved data when both exist
-                compare_dict[field] = self._original_data.get(
-                    field, self._saved_data.get(field)
-                )
+                compare_dict[field] = self._original_data.get(field, self._last_data_sent_to_save.get(field))
 
         return {
             field: (compare_dict.get(field, None), current_data.get(field, None))
@@ -712,12 +685,8 @@ class BaseModel(pydantic.BaseModel, ABC):
             # Ensure read-only fields were not changed
             if not from_db:
                 for field in self._meta.read_only_fields:
-                    if field in kwargs and kwargs[field] != self._original_data.get(
-                        field, None
-                    ):
-                        raise ReadOnlyFieldError(
-                            f"Cannot change read-only field {field}"
-                        )
+                    if field in kwargs and kwargs[field] != self._original_data.get(field, None):
+                        raise ReadOnlyFieldError(f"Cannot change read-only field {field}")
 
             # If the field contains unsaved changes, skip updating it
             # Determine unsaved changes based on the dirty fields before we last called save
@@ -983,9 +952,7 @@ class StandardModel(BaseModel, ABC):
 
         """
         if self.is_new():
-            raise ResourceNotFoundError(
-                "Model does not have an id, so cannot be refreshed. Save first."
-            )
+            raise ResourceNotFoundError("Model does not have an id, so cannot be refreshed. Save first.")
 
         new_model = self._resource.get(self.id)
 
@@ -1066,10 +1033,8 @@ class StandardModel(BaseModel, ABC):
 
         with StatusContext(self, ModelStatus.SAVING):
             # Prepare and send the update to the server
-            current_data = self.to_dict(
-                include_read_only=False, exclude_none=False, exclude_unset=True
-            )
-            self._saved_data = {**current_data}
+            current_data = self.to_dict(include_read_only=False, exclude_none=False, exclude_unset=True)
+            self._last_data_sent_to_save = {**current_data}
 
             registry.emit(
                 "model.save:before",
@@ -1188,10 +1153,8 @@ class StandardModel(BaseModel, ABC):
 
         """
         # Prepare and send the update to the server
-        current_data = self.to_dict(
-            include_read_only=False, exclude_none=False, exclude_unset=True
-        )
-        self._saved_data = {**current_data}
+        current_data = self.to_dict(include_read_only=False, exclude_none=False, exclude_unset=True)
+        self._last_data_sent_to_save = {**current_data}
 
         registry.emit(
             "model.save:before",
@@ -1245,6 +1208,7 @@ class StandardModel(BaseModel, ABC):
                 "Fired after the model data is saved in paperless ngx.",
                 kwargs={"model": self, "updated_data": new_data},
             )
+            self._last_data_sent_to_save = {**self.model_dump()}
 
         except concurrent.futures.TimeoutError:
             logger.error(f"Save operation timed out for {self}")
@@ -1290,6 +1254,12 @@ class StandardModel(BaseModel, ABC):
                 self.save()
 
         return True
+
+    def _prepare_update_payload(self) -> dict[str, Any]:
+        """Build the payload of changed, writable fields for the next save."""
+        payload = {field: current for field, (_previous, current) in self.dirty_fields("saved").items() if field not in self._meta.read_only_fields}
+
+        return payload
 
     @override
     def is_new(self) -> bool:

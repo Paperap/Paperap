@@ -95,9 +95,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         # Request raw bytes by setting json_response to False
         response = self.client.request("GET", url, params=params, json_response=False)
         if not response:
-            raise ResourceNotFoundError(
-                f"Document {document_id} download failed", self.name
-            )
+            raise ResourceNotFoundError(f"Document {document_id} download failed", self.name)
         return response
 
     def preview(self, document_id: int) -> bytes:
@@ -122,9 +120,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         url = self.get_endpoint("preview", pk=document_id)
         response = self.client.request("GET", url, json_response=False)
         if response is None:
-            raise ResourceNotFoundError(
-                f"Document {document_id} preview failed", self.name
-            )
+            raise ResourceNotFoundError(f"Document {document_id} preview failed", self.name)
         return response
 
     def thumbnail(self, document_id: int) -> bytes:
@@ -149,9 +145,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         url = self.get_endpoint("thumbnail", pk=document_id)
         response = self.client.request("GET", url, json_response=False)
         if response is None:
-            raise ResourceNotFoundError(
-                f"Document {document_id} thumbnail failed", self.name
-            )
+            raise ResourceNotFoundError(f"Document {document_id} thumbnail failed", self.name)
         return response
 
     def upload_async(self, filepath: Path | str, **metadata) -> str:
@@ -240,9 +234,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         # Define a success callback to handle document retrieval
         def on_success(task: Task) -> None:
             if not task.related_document:
-                raise BadResponseError(
-                    "Document processing succeeded but no document ID was returned"
-                )
+                raise BadResponseError("Document processing succeeded but no document ID was returned")
 
         # Wait for the task to complete
         task = self.client.tasks.wait_for_task(
@@ -253,9 +245,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         )
 
         if not task.related_document:
-            raise BadResponseError(
-                "Document processing succeeded but no document ID was returned"
-            )
+            raise BadResponseError("Document processing succeeded but no document ID was returned")
 
         return self.get(task.related_document)
 
@@ -291,9 +281,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         """
         files = {"document": (filename, file_content)}
         endpoint = self.get_endpoint("upload")
-        response = self.client.request(
-            "POST", endpoint, files=files, data=metadata, json_response=True
-        )
+        response = self.client.request("POST", endpoint, files=files, data=metadata, json_response=True)
         if not response:
             raise ResourceNotFoundError("Document upload failed", self.name)
         return str(response)
@@ -321,9 +309,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         return response["next_asn"]
 
     @override
-    def _bulk_operation(
-        self, operation: str, ids: list[int], **kwargs: Any
-    ) -> ClientResponse:
+    def _bulk_operation(self, operation: str, ids: list[int], **kwargs: Any) -> ClientResponse:
         """
         Perform a bulk operation on multiple documents.
 
@@ -475,17 +461,13 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         result = self._bulk_operation("merge", document_ids, **params)
         # Expect {'result': 'OK'}
         if not result or "result" not in result:
-            raise BadResponseError(
-                f"Merge operation returned unexpected response: {result}"
-            )
+            raise BadResponseError(f"Merge operation returned unexpected response: {result}")
 
         if not isinstance(result, dict) or result.get("result", None) != "OK":
             raise APIError(f"Merge operation failed: {result}")
         return True
 
-    def split(
-        self, document_id: int, pages: list, delete_originals: bool = False
-    ) -> ClientResponse:
+    def split(self, document_id: int, pages: list, delete_originals: bool = False) -> ClientResponse:
         """
         Split a document into multiple documents based on page ranges.
 
@@ -656,6 +638,8 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
             params["add_tags"] = add_tags
         if remove_tags:
             params["remove_tags"] = remove_tags
+        else:
+            params["remove_tags"] = []
 
         if isinstance(document_ids, int):
             document_ids = [document_ids]
@@ -716,9 +700,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
 
         return self._bulk_operation("remove_tag", document_ids, tag=tag_id)
 
-    def set_correspondent(
-        self, document_ids: int | list[int], correspondent: "Correspondent | int"
-    ) -> ClientResponse:
+    def set_correspondent(self, document_ids: int | list[int], correspondent: "Correspondent | int") -> ClientResponse:
         """
         Set the correspondent for one or multiple documents.
 
@@ -750,13 +732,9 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if isinstance(document_ids, int):
             document_ids = [document_ids]
 
-        return self._bulk_operation(
-            "set_correspondent", document_ids, correspondent=correspondent
-        )
+        return self._bulk_operation("set_correspondent", document_ids, correspondent=correspondent)
 
-    def set_document_type(
-        self, document_ids: int | list[int], document_type: "DocumentType | int"
-    ) -> ClientResponse:
+    def set_document_type(self, document_ids: int | list[int], document_type: "DocumentType | int") -> ClientResponse:
         """
         Set the document type for one or multiple documents.
 
@@ -788,13 +766,9 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if isinstance(document_ids, int):
             document_ids = [document_ids]
 
-        return self._bulk_operation(
-            "set_document_type", document_ids, document_type=document_type
-        )
+        return self._bulk_operation("set_document_type", document_ids, document_type=document_type)
 
-    def set_storage_path(
-        self, document_ids: int | list[int], storage_path: "StoragePath | int"
-    ) -> ClientResponse:
+    def set_storage_path(self, document_ids: int | list[int], storage_path: "StoragePath | int") -> ClientResponse:
         """
         Set the storage path for one or multiple documents.
 
@@ -826,9 +800,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         if isinstance(document_ids, int):
             document_ids = [document_ids]
 
-        return self._bulk_operation(
-            "set_storage_path", document_ids, storage_path=storage_path
-        )
+        return self._bulk_operation("set_storage_path", document_ids, storage_path=storage_path)
 
     def set_permissions(
         self,
@@ -899,9 +871,7 @@ class DocumentResource(StandardResource[Document, DocumentQuerySet]):
         endpoint = self.get_endpoint("empty_trash")
         logger.debug("Emptying trash")
         payload = {"action": "empty"}
-        response = self.client.request(
-            "POST", endpoint, data=payload, json_response=True
-        )
+        response = self.client.request("POST", endpoint, data=payload, json_response=True)
         if not response:
             raise APIError("Empty trash failed")
         return response  # type: ignore # request should have returned correct response TODO

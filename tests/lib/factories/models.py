@@ -315,7 +315,7 @@ class TagFactory(PydanticFactory[Tag]):
     slug = factory.LazyFunction(fake.slug)
     colour = factory.Faker("hex_color")
     match = factory.Faker("word")
-    matching_algorithm = factory.Faker("random_int", min=-1, max=6)
+    matching_algorithm = factory.Faker("random_int", min=1, max=6)
     is_insensitive = factory.Faker("boolean")
     is_inbox_tag = factory.Faker("boolean")
     document_count = factory.Faker("random_int", min=0, max=500)

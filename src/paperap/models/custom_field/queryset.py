@@ -43,9 +43,7 @@ class CustomFieldQuerySet(StandardQuerySet["CustomField"], HasDocumentCount):
 
     """
 
-    def name(
-        self, value: str, *, exact: bool = True, case_insensitive: bool = True
-    ) -> Self:
+    def name(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
         Filter custom fields by name.
 
@@ -69,13 +67,9 @@ class CustomFieldQuerySet(StandardQuerySet["CustomField"], HasDocumentCount):
                 >>> date_fields = client.custom_fields().name("date", exact=False)
 
         """
-        return self.filter_field_by_str(
-            "name", value, exact=exact, case_insensitive=case_insensitive
-        )
+        return self.filter_field_by_str("name", value, exact=exact, case_insensitive=case_insensitive)
 
-    def data_type(
-        self, value: str, *, exact: bool = True, case_insensitive: bool = True
-    ) -> Self:
+    def data_type(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
         Filter custom fields by data type.
 
@@ -100,9 +94,7 @@ class CustomFieldQuerySet(StandardQuerySet["CustomField"], HasDocumentCount):
                 >>> numeric_fields = client.custom_fields().data_type("int", exact=False)
 
         """
-        return self.filter_field_by_str(
-            "data_type", value, exact=exact, case_insensitive=case_insensitive
-        )
+        return self.filter_field_by_str("data_type", value, exact=exact, case_insensitive=case_insensitive)
 
     def extra_data(self, key: str, value: Any) -> Self:
         """

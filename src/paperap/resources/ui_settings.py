@@ -103,6 +103,4 @@ class UISettingsResource(StandardResource[UISettings, UISettingsQuerySet]):
             NotImplementedError: Always raised as deletion is not supported.
 
         """
-        raise NotImplementedError(
-            "Cannot delete UI settings, per Paperless NGX REST Api"
-        )
+        raise NotImplementedError("Cannot delete UI settings, per Paperless NGX REST Api")

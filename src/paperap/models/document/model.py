@@ -904,9 +904,7 @@ class Document(StandardModel):
                 # Check against StandardModel (instead of CustomField) to avoid circular imports
                 # If it is the wrong type of standard model (e.g. a User), pydantic validators will complain
                 if isinstance(field, StandardModel):
-                    new_list.append(
-                        CustomFieldValues(field=field.id, value=getattr(field, "value"))
-                    )
+                    new_list.append(CustomFieldValues(field=field.id, value=getattr(field, "value")))
                     continue
 
                 if isinstance(field, dict):
@@ -947,9 +945,7 @@ class Document(StandardModel):
         """
         return self.__search_hit__
 
-    def custom_field_value(
-        self, field_id: int, default: Any = None, *, raise_errors: bool = False
-    ) -> Any:
+    def custom_field_value(self, field_id: int, default: Any = None, *, raise_errors: bool = False) -> Any:
         """
         Get the value of a custom field by ID.
 
@@ -1135,9 +1131,7 @@ class Document(StandardModel):
                     custom_field.value = value
                     return
 
-            self.custom_field_dicts.append(
-                CustomFieldValues(field=instance.id, value=value)
-            )
+            self.custom_field_dicts.append(CustomFieldValues(field=instance.id, value=value))
             return
 
         raise TypeError(f"Invalid type for custom field: {type(field)}")
@@ -1310,18 +1304,10 @@ class Document(StandardModel):
             for field in fields:
                 original = self._original_data[field]
                 if original and field in kwargs and not kwargs.get(field):
-                    raise NotImplementedError(
-                        f"Cannot set {field} to None. {field} currently: {original}"
-                    )
+                    raise NotImplementedError(f"Cannot set {field} to None. {field} currently: {original}")
 
             # Handle aliases
-            if (
-                self._original_data["tag_ids"]
-                and "tags" in kwargs
-                and not kwargs.get("tags")
-            ):
-                raise NotImplementedError(
-                    f"Cannot set tags to None. Tags currently: {self._original_data['tag_ids']}"
-                )
+            if self._original_data["tag_ids"] and "tags" in kwargs and not kwargs.get("tags"):
+                raise NotImplementedError(f"Cannot set tags to None. Tags currently: {self._original_data['tag_ids']}")
 
         return super().update_locally(from_db=from_db, **kwargs)

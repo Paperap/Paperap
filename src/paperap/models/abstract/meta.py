@@ -101,7 +101,7 @@ class StatusContext:
 
         """
         return (
-            self.model._meta # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
+            self.model._meta  # pyright: ignore[reportPrivateUsage] # pylint: disable=protected-access
         )
 
     @property

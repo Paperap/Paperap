@@ -20,9 +20,7 @@ from paperap.models.document_type import DocumentType, DocumentTypeQuerySet
 from paperap.resources.base import BulkEditingMixin, StandardResource
 
 
-class DocumentTypeResource(
-    StandardResource[DocumentType, DocumentTypeQuerySet], BulkEditingMixin[DocumentType]
-):
+class DocumentTypeResource(StandardResource[DocumentType, DocumentTypeQuerySet], BulkEditingMixin[DocumentType]):
     """
     Resource for managing document types in Paperless-NgX.
 

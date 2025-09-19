@@ -63,9 +63,7 @@ class TaskQuerySet(StandardQuerySet["Task"]):
         """
         return self.filter(task_id=value)
 
-    def task_file_name(
-        self, value: str, *, exact: bool = True, case_insensitive: bool = True
-    ) -> Self:
+    def task_file_name(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
         Filter tasks by task_file_name.
 
@@ -86,9 +84,7 @@ class TaskQuerySet(StandardQuerySet["Task"]):
                 >>> pdf_tasks = client.tasks.all().task_file_name("pdf", exact=False, case_insensitive=False)
 
         """
-        return self.filter_field_by_str(
-            "task_file_name", value, exact=exact, case_insensitive=case_insensitive
-        )
+        return self.filter_field_by_str("task_file_name", value, exact=exact, case_insensitive=case_insensitive)
 
     def date_done(self, value: str | None) -> Self:
         """
@@ -111,9 +107,7 @@ class TaskQuerySet(StandardQuerySet["Task"]):
         """
         return self.filter(date_done=value)
 
-    def type(
-        self, value: str, *, exact: bool = True, case_insensitive: bool = True
-    ) -> Self:
+    def type(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
         Filter tasks by type.
 
@@ -136,13 +130,9 @@ class TaskQuerySet(StandardQuerySet["Task"]):
                 >>> mail_tasks = client.tasks.all().type("mail", exact=False)
 
         """
-        return self.filter_field_by_str(
-            "type", value, exact=exact, case_insensitive=case_insensitive
-        )
+        return self.filter_field_by_str("type", value, exact=exact, case_insensitive=case_insensitive)
 
-    def status(
-        self, value: str, *, exact: bool = True, case_insensitive: bool = True
-    ) -> Self:
+    def status(self, value: str, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
         Filter tasks by status.
 
@@ -168,13 +158,9 @@ class TaskQuerySet(StandardQuerySet["Task"]):
                 >>> in_progress = client.tasks.all().status("STARTED")
 
         """
-        return self.filter_field_by_str(
-            "status", value, exact=exact, case_insensitive=case_insensitive
-        )
+        return self.filter_field_by_str("status", value, exact=exact, case_insensitive=case_insensitive)
 
-    def result(
-        self, value: str | None, *, exact: bool = True, case_insensitive: bool = True
-    ) -> Self:
+    def result(self, value: str | None, *, exact: bool = True, case_insensitive: bool = True) -> Self:
         """
         Filter tasks by result.
 
@@ -203,9 +189,7 @@ class TaskQuerySet(StandardQuerySet["Task"]):
         """
         if value is None:
             return self.filter(result__isnull=True)
-        return self.filter_field_by_str(
-            "result", value, exact=exact, case_insensitive=case_insensitive
-        )
+        return self.filter_field_by_str("result", value, exact=exact, case_insensitive=case_insensitive)
 
     def acknowledged(self, value: bool) -> Self:
         """

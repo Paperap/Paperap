@@ -18,9 +18,7 @@ from paperap.models.document import DownloadedDocument, DownloadedDocumentQueryS
 from paperap.resources.base import StandardResource
 
 
-class DownloadedDocumentResource(
-    StandardResource[DownloadedDocument, DownloadedDocumentQuerySet]
-):
+class DownloadedDocumentResource(StandardResource[DownloadedDocument, DownloadedDocumentQuerySet]):
     """
     Resource for managing downloaded documents in Paperless-NgX.
 

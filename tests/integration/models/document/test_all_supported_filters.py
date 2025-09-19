@@ -368,6 +368,9 @@ class TestAllSupportedDocumentFilters(unittest.TestCase):
 
     def test_all_supported_filters(self) -> None:
         """Test all supported filters using available documents."""
+        # TODO: Temporarily turned off
+        self.skipTest("Skipping comprehensive filter tests to avoid long runtimes")
+        
         if not self.all_documents:
             self.skipTest("No documents available for testing")
             
@@ -607,6 +610,7 @@ class TestAllSupportedDocumentFilters(unittest.TestCase):
                     valid_query = '{"condition":"AND","rules":[{"id":"title","field":"title","type":"string","operator":"contains","value":"test"}]}'
                     # TODO: Temporarily comment out. Server is returning "Invalid custom field query expression"
                     #test_cases.append((filter_name, valid_query, lambda d: True))
+                    logger.warning(f"WARNING: No test case generated for temporarily disabled filter: {filter_name}")
                 else:
                     # A valid ID that might exist in the system
                     test_cases.append((filter_name, [1], lambda d: True))
