@@ -24,7 +24,7 @@ from pathlib import Path
 from typing import Any, cast
 
 import fitz  # type: ignore
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 from PIL import Image, UnidentifiedImageError
 import openai
 
@@ -43,12 +43,33 @@ from paperap.settings import Settings
 logger = logging.getLogger(__name__)
 
 
+def first_non_empty_env(*names: str) -> str | None:
+    """Return the first non-empty environment variable from the provided names."""
+
+    for name in names:
+        value = os.getenv(name)
+        if value:
+            return value
+    return None
+
+
 class ScriptDefaults(StrEnum):
     NEEDS_DESCRIPTION = "needs-description"
     DESCRIBED = "described"
     NEEDS_TITLE = "needs-title"
     NEEDS_DATE = "needs-date"
     MODEL = "gpt-5"
+
+
+class TagConfig(BaseModel):
+    """Runtime configuration for tag names used by the script."""
+
+    needs_description: str = Field(default=ScriptDefaults.NEEDS_DESCRIPTION.value)
+    described: str = Field(default=ScriptDefaults.DESCRIBED.value)
+    needs_title: str = Field(default=ScriptDefaults.NEEDS_TITLE.value)
+    needs_date: str = Field(default=ScriptDefaults.NEEDS_DATE.value)
+
+    model_config = ConfigDict(frozen=True)
 
 
 # Current version of the describe script
@@ -82,11 +103,12 @@ class DescribePhotos(BaseModel):
     """
 
     max_threads: int = 0
-    paperless_tag: str | None = Field(default=ScriptDefaults.NEEDS_DESCRIPTION)
+    paperless_tag: str | None = Field(default=ScriptDefaults.NEEDS_DESCRIPTION.value)
     template_name: str = Field(default="photo")
     client: PaperlessClient
     prompt: str | None = Field(default=None)
     limit: int = 0
+    tag_config: TagConfig = Field(default_factory=TagConfig)
     _enrichment_service: DocumentEnrichmentService | None = PrivateAttr(default=None)
     _progress_bar: ProgressBar | None = PrivateAttr(default=None)
     _jinja_env: Environment | None = PrivateAttr(default=None)
@@ -135,6 +157,12 @@ class DescribePhotos(BaseModel):
             self._jinja_env = Environment(loader=FileSystemLoader(str(templates_path)), autoescape=True)
         return self._jinja_env
 
+    @property
+    def filter_tag(self) -> str:
+        """Return the tag used to filter documents for processing."""
+
+        return self.paperless_tag or self.tag_config.needs_description
+
     def choose_template(self, document: Document) -> str:
         """
         Choose a Jinja template for a document.
@@ -146,7 +174,10 @@ class DescribePhotos(BaseModel):
             str: The name of the Jinja template to use.
 
         """
-        return "photo.jinja"
+        template_name = self.template_name
+        if not template_name.endswith(".jinja"):
+            template_name = f"{template_name}.jinja"
+        return template_name
 
     def get_prompt(self, document: Document) -> str:
         """
@@ -166,11 +197,13 @@ class DescribePhotos(BaseModel):
             return self.prompt
 
         template_name = self.choose_template(document)
-        template_path = f"templates/{template_name}"
-        logger.debug("Using template: %s", template_path)
-        template = self.jinja_env.get_template(template_path)
+        logger.debug("Using template: %s", template_name)
+        try:
+            template = self.jinja_env.get_template(template_name)
+        except TemplateNotFound as tnf:
+            raise ValueError(f"Template '{template_name}' not found") from tnf
 
-        if not (description := template.render(document=document)):
+        if not (description := template.render(document=document).strip()):
             raise ValueError("Failed to generate prompt.")
 
         return description
@@ -223,7 +256,7 @@ class DescribePhotos(BaseModel):
                         image_bytes = base_image["image"]
                         results.append(image_bytes)
                         logger.debug(f"Extracted image from page {page_number + 1} of the PDF.")
-                    except Exception as e:
+                    except (fitz.FileDataError, KeyError, RuntimeError, ValueError) as e:
                         count = len(results)
                         logger.error(
                             "Failed to extract one image from page %s of PDF. Result count %s: %s",
@@ -232,9 +265,32 @@ class DescribePhotos(BaseModel):
                             e,
                         )
                         if count < 1:
-                            raise
+                            logger.error(
+                                "extract_images_from_pdf: Error extracting image from PDF: %s",
+                                e,
+                            )
+                            raise DocumentParsingError("Error extracting image from PDF.") from e
+                    except Exception as e:  # noqa: BLE001 - unexpected errors should surface context
+                        count = len(results)
+                        logger.error(
+                            "Failed to extract one image from page %s of PDF. Result count %s: %s",
+                            page_number + 1,
+                            count,
+                            e,
+                        )
+                        if count < 1:
+                            logger.error(
+                                "extract_images_from_pdf: Error extracting image from PDF: %s",
+                                e,
+                            )
+                            raise DocumentParsingError("Error extracting image from PDF.") from e
 
-        except Exception as e:
+        except DocumentParsingError:
+            raise
+        except (fitz.FileDataError, RuntimeError, ValueError) as e:
+            logger.error(f"extract_images_from_pdf: Error extracting image from PDF: {e}")
+            raise DocumentParsingError("Error extracting image from PDF.") from e
+        except Exception as e:  # noqa: BLE001 - capture unexpected issues to provide context
             logger.error(f"extract_images_from_pdf: Error extracting image from PDF: {e}")
             raise DocumentParsingError("Error extracting image from PDF.") from e
 
@@ -284,8 +340,13 @@ class DescribePhotos(BaseModel):
         """
         try:
             return [self._convert_to_png(content)]
-        except Exception as e:
+        except (UnidentifiedImageError, OSError, ValueError) as e:
             logger.debug(f"Failed to convert contents to png, will try other methods: {e}")
+        except Exception as e:  # noqa: BLE001 - surface unexpected issues with context
+            logger.debug(
+                "Failed to convert contents to png due to unexpected error, will try other methods: %s",
+                e,
+            )
 
         # Interpret it as a pdf
         if image_contents_list := self.extract_images_from_pdf(content):
@@ -426,7 +487,10 @@ class DescribePhotos(BaseModel):
             img.save(buf, format="JPEG")
             buf.seek(0)
             return buf.read()
-        except Exception as e:
+        except (UnidentifiedImageError, OSError, ValueError) as e:
+            logger.error(f"Failed to convert image to JPEG: {e}")
+            raise
+        except Exception as e:  # noqa: BLE001 - unexpected issues should still be logged
             logger.error(f"Failed to convert image to JPEG: {e}")
             raise
 
@@ -477,8 +541,8 @@ class DescribePhotos(BaseModel):
 
             # Add appropriate tags
             if result.success:
-                document.remove_tag(ScriptDefaults.NEEDS_DESCRIPTION)
-                document.add_tag(ScriptDefaults.DESCRIBED)
+                document.remove_tag(self.tag_config.needs_description)
+                document.add_tag(self.tag_config.described)
 
                 # Save the document
                 document.save()
@@ -554,11 +618,11 @@ class DescribePhotos(BaseModel):
         if not any([description, summary, content]):
             full_description += f"\n\nFull AI Response: {parsed_response}"
 
-        if title and ScriptDefaults.NEEDS_TITLE in document.tag_names:
+        if title and self.tag_config.needs_title in document.tag_names:
             try:
                 document.title = str(title)
-                document.remove_tag(ScriptDefaults.NEEDS_TITLE)
-            except Exception as e:
+                document.remove_tag(self.tag_config.needs_title)
+            except (PaperapError, TypeError, ValueError) as e:
                 logger.error(
                     "Failed to update document title. Document #%s: %s -> %s",
                     document.id,
@@ -566,11 +630,11 @@ class DescribePhotos(BaseModel):
                     e,
                 )
 
-        if date and ScriptDefaults.NEEDS_DATE in document.tag_names:
+        if date and self.tag_config.needs_date in document.tag_names:
             try:
                 document.created = date  # type: ignore # pydantic will handle casting
-                document.remove_tag(ScriptDefaults.NEEDS_DATE)
-            except Exception as e:
+                document.remove_tag(self.tag_config.needs_date)
+            except (PaperapError, TypeError, ValueError) as e:
                 logger.error(
                     "Failed to update document date. Document #%s: %s -> %s",
                     document.id,
@@ -580,8 +644,8 @@ class DescribePhotos(BaseModel):
 
         # Append the description to the document
         document.content = full_description
-        document.remove_tag(ScriptDefaults.NEEDS_DESCRIPTION)
-        document.add_tag(ScriptDefaults.DESCRIBED)
+        document.remove_tag(self.tag_config.needs_description)
+        document.add_tag(self.tag_config.described)
 
         logger.debug(f"Successfully described document {document.id}")
         return document
@@ -603,11 +667,13 @@ class DescribePhotos(BaseModel):
             >>> print(f"Described {len(described_documents)} documents")
 
         """
-        logger.info("Fetching documents to describe...")
+        logger.info("Fetching documents to describe with tag '%s'...", self.filter_tag)
         if documents is None:
-            documents = list(self.client.documents().filter(tag_name=self.paperless_tag))
+            documents = list(self.client.documents().filter(tag_name=self.filter_tag))
 
         total = len(documents)
+        if self.limit:
+            total = min(total, self.limit)
         count = 0
         logger.info("Found %s documents to describe", total)
 
@@ -642,15 +708,22 @@ class ArgNamespace(argparse.Namespace):
 
     """
 
-    url: str
-    key: str
+    url: str | None
+    key: str | None
     model: str | None = None
     openai_url: str | None = None
-    tag: str
+    tag: str | None
     prompt: str | None = None
     verbose: bool = False
     template: str = "photo"
     limit: int = 0
+    template_dir: str | None = None
+    print_template: bool = False
+    list_documents: bool = False
+    tag_needs_description: str | None = None
+    tag_described: str | None = None
+    tag_needs_title: str | None = None
+    tag_needs_date: str | None = None
 
 
 def main() -> None:
@@ -676,13 +749,13 @@ def main() -> None:
         parser.add_argument(
             "--url",
             type=str,
-            default=os.getenv("PAPERLESS_URL", None),
+            default=first_non_empty_env("PAPERAP_URL", "PAPERLESS_URL"),
             help="The URL of the Paperless NGX instance",
         )
         parser.add_argument(
             "--key",
             type=str,
-            default=os.getenv("PAPERLESS_TOKEN", None),
+            default=first_non_empty_env("PAPERAP_TOKEN", "PAPERLESS_TOKEN"),
             help="The API token for the Paperless NGX instance",
         )
         parser.add_argument("--model", type=str, default=None, help="The OpenAI model to use")
@@ -695,8 +768,32 @@ def main() -> None:
         parser.add_argument(
             "--tag",
             type=str,
-            default=ScriptDefaults.NEEDS_DESCRIPTION,
-            help="Tag to filter documents",
+            default=first_non_empty_env("PAPERAP_TAG_FILTER"),
+            help="Tag to filter documents (defaults to the needs-description tag)",
+        )
+        parser.add_argument(
+            "--tag-needs-description",
+            type=str,
+            default=first_non_empty_env("PAPERAP_TAG_NEEDS_DESCRIPTION"),
+            help="Override the tag that marks documents needing a description",
+        )
+        parser.add_argument(
+            "--tag-described",
+            type=str,
+            default=first_non_empty_env("PAPERAP_TAG_DESCRIBED"),
+            help="Override the tag applied after describing documents",
+        )
+        parser.add_argument(
+            "--tag-needs-title",
+            type=str,
+            default=first_non_empty_env("PAPERAP_TAG_NEEDS_TITLE"),
+            help="Override the tag that marks documents needing a title",
+        )
+        parser.add_argument(
+            "--tag-needs-date",
+            type=str,
+            default=first_non_empty_env("PAPERAP_TAG_NEEDS_DATE"),
+            help="Override the tag that marks documents needing a date",
         )
         parser.add_argument(
             "--template",
@@ -704,13 +801,53 @@ def main() -> None:
             default="photo",
             help="Template name to use for description",
         )
+        parser.add_argument(
+            "--template-dir",
+            type=str,
+            default=first_non_empty_env("PAPERAP_TEMPLATE_DIR"),
+            help="Directory containing custom description templates",
+        )
         parser.add_argument("--limit", type=int, default=0, help="Limit the number of documents to process")
         parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
+        parser.add_argument("--print-template", action="store_true", help="Print the resolved template and exit")
+        parser.add_argument(
+            "--list-documents",
+            action="store_true",
+            help="List documents that would be described and exit",
+        )
 
         args = parser.parse_args(namespace=ArgNamespace())
 
         if args.verbose:
             logger.setLevel(logging.DEBUG)
+
+        tag_config = TagConfig(
+            needs_description=args.tag_needs_description or ScriptDefaults.NEEDS_DESCRIPTION.value,
+            described=args.tag_described or ScriptDefaults.DESCRIBED.value,
+            needs_title=args.tag_needs_title or ScriptDefaults.NEEDS_TITLE.value,
+            needs_date=args.tag_needs_date or ScriptDefaults.NEEDS_DATE.value,
+        )
+
+        if args.print_template:
+            template_dir = Path(args.template_dir) if args.template_dir else Path(__file__).parent / "templates"
+            template_name = args.template
+            if not template_name.endswith(".jinja"):
+                template_name = f"{template_name}.jinja"
+            template_path = template_dir / template_name
+            try:
+                content = template_path.read_text(encoding="utf-8")
+            except FileNotFoundError:
+                logger.error("Template '%s' not found in %s", template_name, template_dir)
+                sys.exit(1)
+            except OSError as err:
+                logger.error("Failed to read template '%s': %s", template_path, err)
+                sys.exit(1)
+            else:
+                sys.stdout.write(content)
+                if not content.endswith("\n"):
+                    sys.stdout.write("\n")
+                sys.stdout.flush()
+                return
 
         if not args.url:
             logger.error("PAPERLESS_URL environment variable is not set.")
@@ -728,6 +865,7 @@ def main() -> None:
                 "token": args.key,
                 "openai_url": args.openai_url,
                 "openai_model": args.model,
+                "template_dir": args.template_dir,
             }.items()
             if v is not None
         }
@@ -735,9 +873,33 @@ def main() -> None:
         settings = Settings(**cast(Any, config))
         client = PaperlessClient(settings)
 
-        paperless = DescribePhotos(client=client, template_name=args.template, limit=args.limit)
+        filter_tag = args.tag or tag_config.needs_description
+        paperless = DescribePhotos(
+            client=client,
+            template_name=args.template,
+            limit=args.limit,
+            paperless_tag=filter_tag,
+        )
+        paperless.tag_config = tag_config
 
         logger.info("Starting document description process with model: %s", paperless.client.settings.openai_model)
+
+        if args.list_documents:
+            documents = list(paperless.client.documents().filter(tag_name=paperless.filter_tag))
+            if not documents:
+                logger.info("No documents found for tag '%s'.", paperless.filter_tag)
+                return
+
+            logger.info("Listing documents tagged with '%s'", paperless.filter_tag)
+            count = 0
+            for document in documents:
+                title = document.title or document.original_filename or "(untitled document)"
+                print(f"{document.id}: {title}")
+                count += 1
+                if paperless.limit and count >= paperless.limit:
+                    break
+            return
+
         results = paperless.describe_documents()
 
         if results:
@@ -748,7 +910,10 @@ def main() -> None:
     except KeyboardInterrupt:
         logger.info("Script cancelled by user.")
         sys.exit(0)
-    except Exception as e:
+    except (PaperapError, requests.RequestException, OSError, ValueError) as e:
+        logger.error(f"An error occurred: {e}", exc_info=True)
+        sys.exit(1)
+    except Exception as e:  # noqa: BLE001 - capture unexpected errors for observability
         logger.error(f"An error occurred: {e}", exc_info=True)
         sys.exit(1)
 

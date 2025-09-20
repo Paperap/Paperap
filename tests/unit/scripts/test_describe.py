@@ -763,7 +763,8 @@ class TestMain(DocumentUnitTest):
         mock_describe_class.assert_called_once_with(
             client=mock_client,
             template_name="test-template",
-            limit=0
+            limit=0,
+            paperless_tag='test-tag'
         )
         mock_describe.describe_documents.assert_called_once()
         mock_logger.info.assert_called_with("Successfully described %s documents", 2)
