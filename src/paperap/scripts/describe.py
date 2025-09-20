@@ -103,7 +103,7 @@ class DescribePhotos(BaseModel):
     """
 
     max_threads: int = 0
-    paperless_tag: str | None = Field(default=None)
+    paperless_tag: str | None = Field(default=ScriptDefaults.NEEDS_DESCRIPTION.value)
     template_name: str = Field(default="photo")
     client: PaperlessClient
     prompt: str | None = Field(default=None)
@@ -265,9 +265,32 @@ class DescribePhotos(BaseModel):
                             e,
                         )
                         if count < 1:
-                            raise
+                            logger.error(
+                                "extract_images_from_pdf: Error extracting image from PDF: %s",
+                                e,
+                            )
+                            raise DocumentParsingError("Error extracting image from PDF.") from e
+                    except Exception as e:  # noqa: BLE001 - unexpected errors should surface context
+                        count = len(results)
+                        logger.error(
+                            "Failed to extract one image from page %s of PDF. Result count %s: %s",
+                            page_number + 1,
+                            count,
+                            e,
+                        )
+                        if count < 1:
+                            logger.error(
+                                "extract_images_from_pdf: Error extracting image from PDF: %s",
+                                e,
+                            )
+                            raise DocumentParsingError("Error extracting image from PDF.") from e
 
+        except DocumentParsingError:
+            raise
         except (fitz.FileDataError, RuntimeError, ValueError) as e:
+            logger.error(f"extract_images_from_pdf: Error extracting image from PDF: {e}")
+            raise DocumentParsingError("Error extracting image from PDF.") from e
+        except Exception as e:  # noqa: BLE001 - capture unexpected issues to provide context
             logger.error(f"extract_images_from_pdf: Error extracting image from PDF: {e}")
             raise DocumentParsingError("Error extracting image from PDF.") from e
 
@@ -317,8 +340,13 @@ class DescribePhotos(BaseModel):
         """
         try:
             return [self._convert_to_png(content)]
-        except (UnidentifiedImageError, OSError) as e:
+        except (UnidentifiedImageError, OSError, ValueError) as e:
             logger.debug(f"Failed to convert contents to png, will try other methods: {e}")
+        except Exception as e:  # noqa: BLE001 - surface unexpected issues with context
+            logger.debug(
+                "Failed to convert contents to png due to unexpected error, will try other methods: %s",
+                e,
+            )
 
         # Interpret it as a pdf
         if image_contents_list := self.extract_images_from_pdf(content):
@@ -459,7 +487,10 @@ class DescribePhotos(BaseModel):
             img.save(buf, format="JPEG")
             buf.seek(0)
             return buf.read()
-        except (UnidentifiedImageError, OSError) as e:
+        except (UnidentifiedImageError, OSError, ValueError) as e:
+            logger.error(f"Failed to convert image to JPEG: {e}")
+            raise
+        except Exception as e:  # noqa: BLE001 - unexpected issues should still be logged
             logger.error(f"Failed to convert image to JPEG: {e}")
             raise
 
@@ -819,11 +850,11 @@ def main() -> None:
                 return
 
         if not args.url:
-            logger.error("Paperless URL is not configured. Set --url or PAPERAP_URL/PAPERLESS_URL.")
+            logger.error("PAPERLESS_URL environment variable is not set.")
             sys.exit(1)
 
         if not args.key:
-            logger.error("Paperless token is not configured. Set --key or PAPERAP_TOKEN/PAPERLESS_TOKEN.")
+            logger.error("PAPERLESS_TOKEN environment variable is not set.")
             sys.exit(1)
 
         # Exclude None, so pydantic settings loads from defaults for an unset param
@@ -848,8 +879,8 @@ def main() -> None:
             template_name=args.template,
             limit=args.limit,
             paperless_tag=filter_tag,
-            tag_config=tag_config,
         )
+        paperless.tag_config = tag_config
 
         logger.info("Starting document description process with model: %s", paperless.client.settings.openai_model)
 
@@ -880,6 +911,9 @@ def main() -> None:
         logger.info("Script cancelled by user.")
         sys.exit(0)
     except (PaperapError, requests.RequestException, OSError, ValueError) as e:
+        logger.error(f"An error occurred: {e}", exc_info=True)
+        sys.exit(1)
+    except Exception as e:  # noqa: BLE001 - capture unexpected errors for observability
         logger.error(f"An error occurred: {e}", exc_info=True)
         sys.exit(1)
 
