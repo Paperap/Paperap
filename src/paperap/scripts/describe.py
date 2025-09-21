@@ -123,12 +123,21 @@ class DescribePhotos(BaseModel):
     @property
     def enrichment_service(self) -> DocumentEnrichmentService:
         """Get or create the document enrichment service."""
-        if not self._enrichment_service:
+        if self._enrichment_service is None:
             self._enrichment_service = DocumentEnrichmentService(
                 api_key=self.client.settings.openai_key,
                 api_url=self.client.settings.openai_url,
+                settings_model=self.client.settings.openai_model,
             )
+        else:
+            self._enrichment_service.update_settings_model(self.client.settings.openai_model)
         return self._enrichment_service
+
+    @property
+    def openai_model(self) -> str:
+        """Return the resolved OpenAI model for enrichment operations."""
+        service = self.enrichment_service
+        return service.resolve_model(None)
 
     @field_validator("max_threads", mode="before")
     @classmethod
@@ -386,10 +395,12 @@ class DescribePhotos(BaseModel):
                 )
 
             # Get OpenAI client from the enrichment service
-            openai_client = self.enrichment_service.get_openai_client(
+            service = self.enrichment_service
+            model_name = service.resolve_model(None)
+            openai_client = service.get_openai_client(
                 EnrichmentConfig(
                     template_name=self.template_name,
-                    model=self.client.settings.openai_model or ScriptDefaults.MODEL,
+                    model=model_name,
                 )
             )
 
@@ -492,9 +503,11 @@ class DescribePhotos(BaseModel):
             logger.debug(f"Describing document {document.id}...")
 
             # Create enrichment config
+            service = self.enrichment_service
+            model_name = service.resolve_model(None)
             config = EnrichmentConfig(
                 template_name=self.template_name,
-                model=self.client.settings.openai_model or ScriptDefaults.MODEL,
+                model=model_name,
                 vision=True,
                 extract_images=True,
                 max_images=2,
