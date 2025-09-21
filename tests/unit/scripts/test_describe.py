@@ -738,7 +738,7 @@ class TestMain(DocumentUnitTest):
         mock_args = ArgNamespace()
         mock_args.url = "http://example.com"
         mock_args.key = "test-key"
-        mock_args.model = "gpt-5"
+        mock_args.model = "gpt-5-mini"
         mock_args.openai_url = "http://openai.example.com"
         mock_args.tag = "test-tag"
         mock_args.prompt = "test prompt"
