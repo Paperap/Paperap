@@ -100,7 +100,7 @@ class Settings(BaseSettings):
     require_ssl: bool = False
     save_on_write: bool = True
     openai_key: str | None = Field(default=None, alias="openai_api_key")
-    openai_model: str | None = Field(default=None, alias="openai_model_name")
+    openai_model: str | None = Field(default=None, alias="paperap_enrichment_model")
     openai_url: str | None = Field(default=None, alias="openai_base_url")
     template_dir: str | None = Field(default=None, alias="template_directory")
 

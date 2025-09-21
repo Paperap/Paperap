@@ -42,6 +42,7 @@ from paperap.settings import Settings
 
 logger = logging.getLogger(__name__)
 
+
 def first_non_empty_env(*names: str) -> str | None:
     """Return the first non-empty environment variable from the provided names."""
     for name in names:

@@ -38,16 +38,9 @@ ENRICHMENT_MODEL_ENV_VAR = "PAPERAP_ENRICHMENT_MODEL"
 DEFAULT_ENRICHMENT_MODEL = "gpt-5-mini"
 
 
-def resolve_enrichment_model(
-    *, param_model: str | None = None, settings_model: str | None = None
-) -> str:
+def resolve_enrichment_model(*, param_model: str | None = None, settings_model: str | None = None) -> str:
     """Determine the model name to use for enrichment operations."""
-    return (
-        param_model
-        or settings_model
-        or os.getenv(ENRICHMENT_MODEL_ENV_VAR)
-        or DEFAULT_ENRICHMENT_MODEL
-    )
+    return param_model or settings_model or os.getenv(ENRICHMENT_MODEL_ENV_VAR) or DEFAULT_ENRICHMENT_MODEL
 
 
 class StrEnumWithUnknown(StrEnum):
