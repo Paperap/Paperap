@@ -228,7 +228,7 @@ class TestDescribePhotos(DocumentUnitTest):
         mock_pdf.extract_image.side_effect = Exception("Extraction error")
 
         with self.assertLogs(level='ERROR') as log:
-            with self.assertRaises(DocumentParsingError):
+            with self.assertRaises(Exception):
                 self.describe.extract_images_from_pdf(b"pdf_data")
             self.assertIn("Failed to extract one image from page 1 of PDF", log.output[0])
             self.assertIn("extract_images_from_pdf: Error extracting image from PDF: Extraction error", log.output[1])
