@@ -10,6 +10,7 @@ a foundation for the API client.
 from __future__ import annotations
 
 import logging
+import os
 from datetime import datetime
 from enum import Enum, IntEnum, StrEnum
 from string import Template
@@ -31,6 +32,23 @@ import pydantic
 from pydantic import ConfigDict, Field
 
 logger = logging.getLogger(__name__)
+
+
+ENRICHMENT_MODEL_ENV_VAR = "PAPERAP_ENRICHMENT_MODEL"
+DEFAULT_ENRICHMENT_MODEL = "gpt-5-mini"
+
+
+def resolve_enrichment_model(
+    *, param_model: str | None = None, settings_model: str | None = None
+) -> str:
+    """Determine the model name to use for enrichment operations."""
+
+    return (
+        param_model
+        or settings_model
+        or os.getenv(ENRICHMENT_MODEL_ENV_VAR)
+        or DEFAULT_ENRICHMENT_MODEL
+    )
 
 
 class StrEnumWithUnknown(StrEnum):
@@ -901,7 +919,7 @@ class EnrichmentConfig(pydantic.BaseModel):
 
     template_name: str | None = None
     template_dir: str | None = None
-    model: str = "gpt-5"
+    model: str = Field(default=DEFAULT_ENRICHMENT_MODEL)
     api_key: str | None = None
     api_url: str | None = None
     vision: bool = True

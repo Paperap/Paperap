@@ -22,6 +22,7 @@ import openai
 from jinja2 import Environment
 from PIL import Image, UnidentifiedImageError
 
+from paperap.const import DEFAULT_ENRICHMENT_MODEL
 from paperap.exceptions import DocumentParsingError, NoImagesError
 from paperap.models.document import Document
 from paperap.services.enrichment.service import (
@@ -99,7 +100,7 @@ class TestEnrichmentConfig(TestCase):
         config = EnrichmentConfig(template_name="test")
         self.assertEqual(config.template_name, "test")
         self.assertIsNone(config.template_dir)
-        self.assertEqual(config.model, "gpt-5")
+        self.assertEqual(config.model, DEFAULT_ENRICHMENT_MODEL)
         self.assertIsNone(config.api_key)
         self.assertIsNone(config.api_url)
         self.assertTrue(config.vision)

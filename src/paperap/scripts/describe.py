@@ -32,7 +32,11 @@ import requests
 from alive_progress import alive_bar  # type: ignore
 from dotenv import load_dotenv
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, field_validator
-from paperap.const import EnrichmentConfig
+from paperap.const import (
+    DEFAULT_ENRICHMENT_MODEL,
+    ENRICHMENT_MODEL_ENV_VAR,
+    EnrichmentConfig,
+)
 from paperap.client import PaperlessClient
 from paperap.exceptions import DocumentParsingError, NoImagesError, PaperapError
 from paperap.models import Document, EnrichmentResult
@@ -58,7 +62,7 @@ class ScriptDefaults(StrEnum):
     DESCRIBED = "described"
     NEEDS_TITLE = "needs-title"
     NEEDS_DATE = "needs-date"
-    MODEL = "gpt-5"
+    MODEL = DEFAULT_ENRICHMENT_MODEL
 
 
 class TagConfig(BaseModel):
@@ -128,8 +132,17 @@ class DescribePhotos(BaseModel):
             self._enrichment_service = DocumentEnrichmentService(
                 api_key=self.client.settings.openai_key,
                 api_url=self.client.settings.openai_url,
+                settings_model=self.client.settings.openai_model,
             )
+        else:
+            self._enrichment_service.update_settings_model(self.client.settings.openai_model)
         return self._enrichment_service
+
+    @property
+    def openai_model(self) -> str:
+        """Return the resolved OpenAI model for enrichment operations."""
+
+        return self.enrichment_service.resolve_model(None)
 
     @field_validator("max_threads", mode="before")
     @classmethod
@@ -410,15 +423,16 @@ class DescribePhotos(BaseModel):
                 )
 
             # Get OpenAI client from the enrichment service
+            model_name = self.openai_model
             openai_client = self.enrichment_service.get_openai_client(
                 EnrichmentConfig(
                     template_name=self.template_name,
-                    model=self.client.settings.openai_model or ScriptDefaults.MODEL,
+                    model=model_name,
                 )
             )
 
             response = openai_client.chat.completions.create(
-                model=self.client.settings.openai_model or ScriptDefaults.MODEL,
+                model=model_name,
                 messages=[
                     {"role": "user", "content": message_contents}  # type: ignore
                 ],
@@ -455,7 +469,7 @@ class DescribePhotos(BaseModel):
             logger.error(
                 "API Connection Error. Is the OpenAI API URL correct? URL: %s, model: %s -> %s",
                 self.client.settings.openai_url,
-                self.client.settings.openai_model or ScriptDefaults.MODEL,
+                model_name,
                 ace,
             )
             raise
@@ -519,9 +533,10 @@ class DescribePhotos(BaseModel):
             logger.debug(f"Describing document {document.id}...")
 
             # Create enrichment config
+            model_name = self.openai_model
             config = EnrichmentConfig(
                 template_name=self.template_name,
-                model=self.client.settings.openai_model or ScriptDefaults.MODEL,
+                model=model_name,
                 vision=True,
                 extract_images=True,
                 max_images=2,
@@ -758,7 +773,12 @@ def main() -> None:
             default=first_non_empty_env("PAPERAP_TOKEN", "PAPERLESS_TOKEN"),
             help="The API token for the Paperless NGX instance",
         )
-        parser.add_argument("--model", type=str, default=None, help="The OpenAI model to use")
+        parser.add_argument(
+            "--model",
+            type=str,
+            default=first_non_empty_env(ENRICHMENT_MODEL_ENV_VAR),
+            help="The OpenAI model to use",
+        )
         parser.add_argument(
             "--openai-url",
             type=str,
@@ -882,7 +902,7 @@ def main() -> None:
         )
         paperless.tag_config = tag_config
 
-        logger.info("Starting document description process with model: %s", paperless.client.settings.openai_model)
+        logger.info("Starting document description process with model: %s", paperless.openai_model)
 
         if args.list_documents:
             documents = list(paperless.client.documents().filter(tag_name=paperless.filter_tag))

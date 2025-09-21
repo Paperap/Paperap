@@ -24,7 +24,7 @@ from paperap.exceptions import DocumentParsingError, NoImagesError
 from paperap.models.document import Document
 from paperap.models.tag import Tag
 from paperap.services.enrichment import ACCEPTED_IMAGE_FORMATS, OPENAI_ACCEPTED_FORMATS
-from paperap.const import EnrichmentConfig
+from paperap.const import DEFAULT_ENRICHMENT_MODEL, EnrichmentConfig
 from paperap.scripts.describe import (
     SCRIPT_VERSION,
     ArgNamespace,
@@ -48,7 +48,7 @@ class TestDescribePhotos(DocumentUnitTest):
         super().setUp()
         self.client.settings.openai_url = None
         self.client.settings.openai_key = "test-key"
-        self.client.settings.openai_model = "gpt-5"
+        self.client.settings.openai_model = DEFAULT_ENRICHMENT_MODEL
 
         # Setup model data
         self.model_data_unparsed = {
@@ -100,6 +100,16 @@ class TestDescribePhotos(DocumentUnitTest):
         """Test validation of zero max_threads."""
         describe = DescribePhotos(client=self.client, max_threads=0)
         self.assertGreaterEqual(describe.max_threads, 1)
+
+    def test_openai_model_property(self):
+        """Test that openai_model resolves using the enrichment service."""
+
+        mock_service = MagicMock()
+        mock_service.resolve_model.return_value = "resolved-model"
+        self.describe._enrichment_service = mock_service
+
+        self.assertEqual(self.describe.openai_model, "resolved-model")
+        mock_service.resolve_model.assert_called_once_with(None)
 
     @patch("paperap.services.enrichment.service.OpenAI")
     def test_openai_property_default_url(self, mock_openai):
@@ -457,6 +467,7 @@ class TestDescribePhotos(DocumentUnitTest):
 
         # Create a mock enrichment service
         mock_service = MagicMock()
+        mock_service.resolve_model.return_value = "test-model"
 
         # Configure the mock OpenAI client to raise an error
         mock_openai = MagicMock()
@@ -474,6 +485,7 @@ class TestDescribePhotos(DocumentUnitTest):
         with self.assertLogs(level='INFO'):
             result = self.describe._send_describe_request(b"image_data", self.model)
             self.assertIsNone(result)
+        mock_service.resolve_model.assert_called_once_with(None)
 
     @patch("paperap.scripts.describe.Image.open")
     def test_convert_image_to_jpg_success(self, mock_image_open):
@@ -508,7 +520,7 @@ class TestDescribePhotos(DocumentUnitTest):
         """Test describe_document with successful description."""
         # Mock the client to prevent actual API calls
         self.describe.client = MagicMock()
-        self.describe.client.settings.openai_model = "gpt-5"  # Use a string value
+        self.describe.client.settings.openai_model = DEFAULT_ENRICHMENT_MODEL  # Use a string value
 
         # Mock the document
         document = MagicMock()
@@ -518,6 +530,7 @@ class TestDescribePhotos(DocumentUnitTest):
 
         # Mock the enrichment service
         mock_service = MagicMock()
+        mock_service.resolve_model.return_value = "test-model"
         mock_result = MagicMock()
         mock_result.success = True
         mock_result.document = document
@@ -532,6 +545,7 @@ class TestDescribePhotos(DocumentUnitTest):
         # Check the result
         self.assertTrue(result)
         mock_service.process_document.assert_called_once()
+        mock_service.resolve_model.assert_called_once_with(None)
 
     def test_describe_document_empty_content(self):
         """Test describe_document with empty content."""
@@ -744,6 +758,7 @@ class TestMain(DocumentUnitTest):
 
         # Mock DescribePhotos
         mock_describe = MagicMock()
+        mock_describe.openai_model = "test-model"
         mock_describe_class.return_value = mock_describe
         mock_describe.describe_documents.return_value = ["doc1", "doc2"]
 

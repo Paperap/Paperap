@@ -29,7 +29,7 @@ from PIL import Image, UnidentifiedImageError
 from pydantic import BaseModel, ConfigDict, Field
 
 from paperap.exceptions import DocumentParsingError, NoImagesError
-from paperap.const import EnrichmentConfig
+from paperap.const import EnrichmentConfig, resolve_enrichment_model
 from paperap.signals import SignalRegistry
 from paperap.models.enrichment.result import EnrichmentResult
 
@@ -133,7 +133,13 @@ class DocumentEnrichmentService:
     signals = SignalRegistry()
 
     @override
-    def __init__(self, api_key: str | None = None, api_url: str | None = None) -> None:
+    def __init__(
+        self,
+        api_key: str | None = None,
+        api_url: str | None = None,
+        *,
+        settings_model: str | None = None,
+    ) -> None:
         """
         Initialize the document enrichment service.
 
@@ -145,8 +151,19 @@ class DocumentEnrichmentService:
         self._openai_client: OpenAI | None = None
         self._api_key = api_key
         self._api_url = api_url
+        self._settings_model = settings_model
         self._ensure_default_templates()
         super().__init__()
+
+    def resolve_model(self, model: str | None = None) -> str:
+        """Resolve the model to use based on parameters, settings, and environment."""
+
+        return resolve_enrichment_model(param_model=model, settings_model=self._settings_model)
+
+    def update_settings_model(self, model: str | None) -> None:
+        """Update the settings-provided model used for enrichment defaults."""
+
+        self._settings_model = model
 
     def _ensure_default_templates(self) -> None:
         """
@@ -562,12 +579,13 @@ ORIGINAL DESCRIPTION:
 {description}
 """
 
-            # Get the OpenAI client (using a simpler model for synonyms)
-            openai_client = self.get_openai_client(EnrichmentConfig(model="gpt-5"))
+            # Get the OpenAI client (using the resolved default model for synonyms)
+            model_name = self.resolve_model(None)
+            openai_client = self.get_openai_client(EnrichmentConfig(model=model_name))
 
             # Call OpenAI API
             response = openai_client.chat.completions.create(
-                model="gpt-5",
+                model=model_name,
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=1500,  # Allow for longer output to fit multiple versions
             )
