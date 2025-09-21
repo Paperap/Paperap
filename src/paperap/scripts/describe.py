@@ -32,11 +32,7 @@ import requests
 from alive_progress import alive_bar  # type: ignore
 from dotenv import load_dotenv
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, field_validator
-from paperap.const import (
-    DEFAULT_ENRICHMENT_MODEL,
-    ENRICHMENT_MODEL_ENV_VAR,
-    EnrichmentConfig,
-)
+from paperap.const import EnrichmentConfig
 from paperap.client import PaperlessClient
 from paperap.exceptions import DocumentParsingError, NoImagesError, PaperapError
 from paperap.models import Document, EnrichmentResult
@@ -46,10 +42,8 @@ from paperap.settings import Settings
 
 logger = logging.getLogger(__name__)
 
-
 def first_non_empty_env(*names: str) -> str | None:
     """Return the first non-empty environment variable from the provided names."""
-
     for name in names:
         value = os.getenv(name)
         if value:
@@ -62,7 +56,7 @@ class ScriptDefaults(StrEnum):
     DESCRIBED = "described"
     NEEDS_TITLE = "needs-title"
     NEEDS_DATE = "needs-date"
-    MODEL = DEFAULT_ENRICHMENT_MODEL
+    MODEL = "gpt-5-mini"
 
 
 class TagConfig(BaseModel):
@@ -132,17 +126,8 @@ class DescribePhotos(BaseModel):
             self._enrichment_service = DocumentEnrichmentService(
                 api_key=self.client.settings.openai_key,
                 api_url=self.client.settings.openai_url,
-                settings_model=self.client.settings.openai_model,
             )
-        else:
-            self._enrichment_service.update_settings_model(self.client.settings.openai_model)
         return self._enrichment_service
-
-    @property
-    def openai_model(self) -> str:
-        """Return the resolved OpenAI model for enrichment operations."""
-
-        return self.enrichment_service.resolve_model(None)
 
     @field_validator("max_threads", mode="before")
     @classmethod
@@ -173,7 +158,6 @@ class DescribePhotos(BaseModel):
     @property
     def filter_tag(self) -> str:
         """Return the tag used to filter documents for processing."""
-
         return self.paperless_tag or self.tag_config.needs_description
 
     def choose_template(self, document: Document) -> str:
@@ -283,27 +267,10 @@ class DescribePhotos(BaseModel):
                                 e,
                             )
                             raise DocumentParsingError("Error extracting image from PDF.") from e
-                    except Exception as e:  # noqa: BLE001 - unexpected errors should surface context
-                        count = len(results)
-                        logger.error(
-                            "Failed to extract one image from page %s of PDF. Result count %s: %s",
-                            page_number + 1,
-                            count,
-                            e,
-                        )
-                        if count < 1:
-                            logger.error(
-                                "extract_images_from_pdf: Error extracting image from PDF: %s",
-                                e,
-                            )
-                            raise DocumentParsingError("Error extracting image from PDF.") from e
 
         except DocumentParsingError:
             raise
         except (fitz.FileDataError, RuntimeError, ValueError) as e:
-            logger.error(f"extract_images_from_pdf: Error extracting image from PDF: {e}")
-            raise DocumentParsingError("Error extracting image from PDF.") from e
-        except Exception as e:  # noqa: BLE001 - capture unexpected issues to provide context
             logger.error(f"extract_images_from_pdf: Error extracting image from PDF: {e}")
             raise DocumentParsingError("Error extracting image from PDF.") from e
 
@@ -355,11 +322,6 @@ class DescribePhotos(BaseModel):
             return [self._convert_to_png(content)]
         except (UnidentifiedImageError, OSError, ValueError) as e:
             logger.debug(f"Failed to convert contents to png, will try other methods: {e}")
-        except Exception as e:  # noqa: BLE001 - surface unexpected issues with context
-            logger.debug(
-                "Failed to convert contents to png due to unexpected error, will try other methods: %s",
-                e,
-            )
 
         # Interpret it as a pdf
         if image_contents_list := self.extract_images_from_pdf(content):
@@ -423,16 +385,15 @@ class DescribePhotos(BaseModel):
                 )
 
             # Get OpenAI client from the enrichment service
-            model_name = self.openai_model
             openai_client = self.enrichment_service.get_openai_client(
                 EnrichmentConfig(
                     template_name=self.template_name,
-                    model=model_name,
+                    model=self.client.settings.openai_model or ScriptDefaults.MODEL,
                 )
             )
 
             response = openai_client.chat.completions.create(
-                model=model_name,
+                model=self.client.settings.openai_model or ScriptDefaults.MODEL,
                 messages=[
                     {"role": "user", "content": message_contents}  # type: ignore
                 ],
@@ -469,7 +430,7 @@ class DescribePhotos(BaseModel):
             logger.error(
                 "API Connection Error. Is the OpenAI API URL correct? URL: %s, model: %s -> %s",
                 self.client.settings.openai_url,
-                model_name,
+                self.client.settings.openai_model or ScriptDefaults.MODEL,
                 ace,
             )
             raise
@@ -504,9 +465,6 @@ class DescribePhotos(BaseModel):
         except (UnidentifiedImageError, OSError, ValueError) as e:
             logger.error(f"Failed to convert image to JPEG: {e}")
             raise
-        except Exception as e:  # noqa: BLE001 - unexpected issues should still be logged
-            logger.error(f"Failed to convert image to JPEG: {e}")
-            raise
 
     def describe_document(self, document: Document) -> bool:
         """
@@ -533,10 +491,9 @@ class DescribePhotos(BaseModel):
             logger.debug(f"Describing document {document.id}...")
 
             # Create enrichment config
-            model_name = self.openai_model
             config = EnrichmentConfig(
                 template_name=self.template_name,
-                model=model_name,
+                model=self.client.settings.openai_model or ScriptDefaults.MODEL,
                 vision=True,
                 extract_images=True,
                 max_images=2,
@@ -773,12 +730,7 @@ def main() -> None:
             default=first_non_empty_env("PAPERAP_TOKEN", "PAPERLESS_TOKEN"),
             help="The API token for the Paperless NGX instance",
         )
-        parser.add_argument(
-            "--model",
-            type=str,
-            default=first_non_empty_env(ENRICHMENT_MODEL_ENV_VAR),
-            help="The OpenAI model to use",
-        )
+        parser.add_argument("--model", type=str, default=None, help="The OpenAI model to use")
         parser.add_argument(
             "--openai-url",
             type=str,
@@ -899,10 +851,10 @@ def main() -> None:
             template_name=args.template,
             limit=args.limit,
             paperless_tag=filter_tag,
+            tag_config=tag_config,
         )
-        paperless.tag_config = tag_config
 
-        logger.info("Starting document description process with model: %s", paperless.openai_model)
+        logger.info("Starting document description process with model: %s", paperless.client.settings.openai_model)
 
         if args.list_documents:
             documents = list(paperless.client.documents().filter(tag_name=paperless.filter_tag))
@@ -931,9 +883,6 @@ def main() -> None:
         logger.info("Script cancelled by user.")
         sys.exit(0)
     except (PaperapError, requests.RequestException, OSError, ValueError) as e:
-        logger.error(f"An error occurred: {e}", exc_info=True)
-        sys.exit(1)
-    except Exception as e:  # noqa: BLE001 - capture unexpected errors for observability
         logger.error(f"An error occurred: {e}", exc_info=True)
         sys.exit(1)
 

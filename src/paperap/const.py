@@ -42,7 +42,6 @@ def resolve_enrichment_model(
     *, param_model: str | None = None, settings_model: str | None = None
 ) -> str:
     """Determine the model name to use for enrichment operations."""
-
     return (
         param_model
         or settings_model

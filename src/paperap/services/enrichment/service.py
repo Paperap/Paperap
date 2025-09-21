@@ -157,12 +157,10 @@ class DocumentEnrichmentService:
 
     def resolve_model(self, model: str | None = None) -> str:
         """Resolve the model to use based on parameters, settings, and environment."""
-
         return resolve_enrichment_model(param_model=model, settings_model=self._settings_model)
 
     def update_settings_model(self, model: str | None) -> None:
         """Update the settings-provided model used for enrichment defaults."""
-
         self._settings_model = model
 
     def _ensure_default_templates(self) -> None:
