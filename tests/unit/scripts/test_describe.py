@@ -108,7 +108,7 @@ class TestDescribePhotos(DocumentUnitTest):
         mock_service.resolve_model.return_value = "resolved-model"
         self.describe._enrichment_service = mock_service
 
-        self.assertEqual(self.describe.openai_model, "resolved-model")
+        self.assertEqual(self.describe.client.settings.openai_model, "resolved-model")
         mock_service.resolve_model.assert_called_once_with(None)
 
     @patch("paperap.services.enrichment.service.OpenAI")
@@ -758,7 +758,7 @@ class TestMain(DocumentUnitTest):
 
         # Mock DescribePhotos
         mock_describe = MagicMock()
-        mock_describe.openai_model = "test-model"
+        mock_describe.client.settings.openai_model = "test-model"
         mock_describe_class.return_value = mock_describe
         mock_describe.describe_documents.return_value = ["doc1", "doc2"]
 
@@ -771,7 +771,7 @@ class TestMain(DocumentUnitTest):
             base_url="http://example.com",
             token="test-key",
             openai_url="http://openai.example.com",
-            openai_model="gpt-5"
+            openai_model="gpt-5-mini"
         )
         mock_client_class.assert_called_once_with(mock_settings)
         # The params should match what's actually called in the main function
