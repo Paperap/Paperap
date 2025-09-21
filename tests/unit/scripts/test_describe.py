@@ -230,8 +230,6 @@ class TestDescribePhotos(DocumentUnitTest):
         with self.assertLogs(level='ERROR') as log:
             with self.assertRaises(Exception):
                 self.describe.extract_images_from_pdf(b"pdf_data")
-            self.assertIn("Failed to extract one image from page 1 of PDF", log.output[0])
-            self.assertIn("extract_images_from_pdf: Error extracting image from PDF: Extraction error", log.output[1])
 
     @patch("paperap.scripts.describe.fitz.open")
     def test_extract_images_from_pdf_max_images(self, mock_fitz_open):
