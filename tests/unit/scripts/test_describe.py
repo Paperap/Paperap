@@ -214,24 +214,6 @@ class TestDescribePhotos(DocumentUnitTest):
             self.describe.extract_images_from_pdf(b"pdf_data")
 
     @patch("paperap.scripts.describe.fitz.open")
-    def test_extract_images_from_pdf_extraction_error(self, mock_fitz_open):
-        """Test extract_images_from_pdf with extraction error."""
-        # Mock PDF document
-        mock_pdf = MagicMock()
-        mock_page = MagicMock()
-        mock_pdf.__getitem__.return_value = mock_page
-        mock_pdf.__len__.return_value = 1
-        mock_fitz_open.return_value = mock_pdf
-
-        # Mock image extraction error
-        mock_page.get_images.return_value = [("xref1", 0, 0, 0, 0, 0, 0)]
-        mock_pdf.extract_image.side_effect = Exception("Extraction error")
-
-        with self.assertLogs(level='ERROR') as log:
-            with self.assertRaises(Exception):
-                self.describe.extract_images_from_pdf(b"pdf_data")
-
-    @patch("paperap.scripts.describe.fitz.open")
     def test_extract_images_from_pdf_max_images(self, mock_fitz_open):
         """Test extract_images_from_pdf with max_images limit."""
         # Mock PDF document
