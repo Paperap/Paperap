@@ -94,11 +94,24 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
     @property
     def enrichment_service(self) -> "DocumentEnrichmentService":
+        client_settings = getattr(self.resource.client, "settings", None)
+
         if not self._enrichment_service:
             # Avoid circular ref. # TODO
             from paperap.services.enrichment import DocumentEnrichmentService  # type: ignore
 
-            self._enrichment_service = DocumentEnrichmentService()
+            api_key = getattr(client_settings, "openai_key", None) if client_settings else None
+            api_url = getattr(client_settings, "openai_url", None) if client_settings else None
+            settings_model = getattr(client_settings, "openai_model", None) if client_settings else None
+
+            self._enrichment_service = DocumentEnrichmentService(
+                api_key=api_key,
+                api_url=api_url,
+                settings_model=settings_model,
+            )
+        else:
+            settings_model = getattr(client_settings, "openai_model", None) if client_settings else None
+            self._enrichment_service.update_settings_model(settings_model)
         return self._enrichment_service
 
     def tag_id(self, tag_id: int | list[int]) -> Self:
@@ -1518,7 +1531,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
     def summarize(
         self,
-        model: str = "gpt-5",
+        model: str | None = None,
         template_name: str = "summarize",
         template_dir: str | None = None,
         batch_size: int = 10,
@@ -1529,7 +1542,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         Summarize documents in the queryset using an LLM.
 
         Args:
-            model: The model to use
+            model: Optional model override to use for enrichment
             template_name: The template to use
             template_dir: Optional custom directory for templates
             batch_size: Number of documents to process at once
@@ -1540,10 +1553,12 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             Itself, for chainability
 
         """
+        resolved_model = self.enrichment_service.resolve_model(model)
+
         config = EnrichmentConfig(
             template_name=template_name,
             template_dir=template_dir,
-            model=model,
+            model=resolved_model,
             api_key=api_key,
             api_url=api_url,
             vision=False,  # No need for vision for summarization
@@ -1566,7 +1581,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
 
     def describe(
         self,
-        model: str = "gpt-5",
+        model: str | None = None,
         template_name: str = "describe",
         template_dir: str | None = None,
         batch_size: int = 10,
@@ -1579,7 +1594,7 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
         Describe documents in the queryset using an LLM with vision capabilities.
 
         Args:
-            model: The model to use
+            model: Optional model override to use for enrichment
             template_name: The template to use
             template_dir: Optional custom directory for templates
             batch_size: Number of documents to process at once
@@ -1591,10 +1606,12 @@ class DocumentQuerySet(StandardQuerySet["Document"], HasOwner):
             Itself, for chainability
 
         """
+        resolved_model = self.enrichment_service.resolve_model(model)
+
         config = EnrichmentConfig(
             template_name=template_name,
             template_dir=template_dir,
-            model=model,
+            model=resolved_model,
             api_key=api_key,
             api_url=api_url,
             vision=True,

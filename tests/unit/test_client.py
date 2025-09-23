@@ -12,6 +12,7 @@ from unittest.mock import MagicMock, Mock, PropertyMock, patch
 
 import requests
 from pydantic import HttpUrl
+import logging
 
 from paperap.auth import AuthBase, BasicAuth, TokenAuth
 from paperap.client import PaperlessClient
@@ -38,6 +39,19 @@ from paperap.resources.tags import TagResource
 from paperap.resources.tasks import TaskResource
 from paperap.settings import Settings
 from tests.lib import UnitTestCase, load_sample_data
+from contextlib import contextmanager
+
+logger = logging.getLogger(__name__)
+
+@contextmanager
+def suppress_logging(level: int = logging.CRITICAL):
+    prev = logging.root.manager.disable
+    logging.disable(level)
+    try:
+        yield
+    finally:
+        logging.disable(prev)
+
 
 # Load sample response from tests/sample_data/documents_list.json
 sample_data = load_sample_data('documents_list.json')
@@ -154,11 +168,11 @@ class DisableTestClientRequests(UnitTestCase):
         mock_response.content = b'{"key": "value"}'
 
         mock_session_request.return_value = mock_response
-        result = self.client.request("GET", "api/documents/")
+        result = self.client.request("GET", "api/documents/test_request_with_relative_endpoint")
         mock_session_request.assert_called_once()
         call_args = mock_session_request.call_args[1]
         self.assertEqual(call_args["method"], "GET")
-        self.assertEqual(call_args["url"], "http://example.com/api/documents/")
+        self.assertEqual(call_args["url"], "http://example.com/api/documents/test_request_with_relative_endpoint/")
         self.assertEqual(result, {"key": "value"})
 
     @patch('requests.Session.request')
@@ -198,7 +212,7 @@ class TestClientRequests(UnitTestCase):
 
         mock_session_request.return_value = mock_response
         data = {"title": "Test Document"}
-        self.client.request("POST", "api/documents/", data=data)
+        self.client.request("POST", "api/documents/test_request_with_data", data=data)
         call_args = mock_session_request.call_args[1]
         self.assertEqual(call_args["json"], data)
 
@@ -227,10 +241,10 @@ class TestClientRequests(UnitTestCase):
         mock_response.json.return_value = {"key": "value"}
 
         mock_session_request.return_value = mock_response
-        url = HttpUrl("http://example.com/api/documents/")
+        url = HttpUrl("http://example.com/api/documents/test_request_with_url_object")
         self.client.request("GET", url)
         call_args = mock_session_request.call_args[1]
-        self.assertEqual(call_args["url"], "http://example.com/api/documents/")
+        self.assertEqual(call_args["url"], "http://example.com/api/documents/test_request_with_url_object")
 
     @patch('requests.Session.request')
     def test_request_no_content_response(self, mock_session_request):
@@ -253,7 +267,7 @@ class TestClientRequests(UnitTestCase):
         mock_session_request.return_value = mock_response
         methods = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]
         for method in methods:
-            self.client.request(method, "api/documents/")
+            self.client.request(method, "api/documents/test_http_methods")
             call_args = mock_session_request.call_args[1]
             self.assertEqual(call_args["method"], method)
 
@@ -266,9 +280,9 @@ class TestClientRequests(UnitTestCase):
 
         mock_session_request.return_value = mock_response
         # With double slashes
-        self.client.request("GET", "//api/documents/")
+        self.client.request("GET", "//api/documents/test_request_with_unusual_url_formats")
         call_args = mock_session_request.call_args[1]
-        self.assertEqual(call_args["url"], "http://example.com/api/documents/")
+        self.assertEqual(call_args["url"], "http://example.com/api/documents/test_request_with_unusual_url_formats")
 
         # With query parameters in the endpoint
         self.client.request("GET", "api/documents/?query=test")
@@ -287,7 +301,7 @@ class TestClientRequests(UnitTestCase):
         mock_session_request.return_value = mock_response
         with self.assertLogs(level="WARNING"):
             with self.assertRaises(ResponseParsingError):
-                self.client.request("GET", "api/documents/")
+                self.client.request("GET", "api/documents/test_request_non_json_response")
 
     @patch('requests.Session.request')
     def test_request_connection_error(self, mock_session_request):
@@ -295,14 +309,14 @@ class TestClientRequests(UnitTestCase):
         mock_session_request.side_effect = requests.exceptions.ConnectionError("Connection refused")
         with self.assertLogs(level='WARNING'):
             with self.assertRaises(RequestError):
-                self.client.request("GET", "api/documents/")
+                self.client.request("GET", "api/documents/test_request_connection_error")
 
     @patch('requests.Session.request')
     def test_request_timeout(self, mock_session_request):
         """Test handling a request timeout."""
         mock_session_request.side_effect = requests.exceptions.Timeout("Request timed out")
         with self.assertRaises(RequestError):
-            self.client.request("GET", "api/documents/")
+            self.client.request("GET", "api/documents/test_request_timeout")
 
     @patch('requests.Session.request')
     def test_request_other_exceptions(self, mock_session_request):
@@ -316,7 +330,7 @@ class TestClientRequests(UnitTestCase):
         for exception in exceptions:
             mock_session_request.side_effect = exception
             with self.assertRaises(RequestError):
-                self.client.request("GET", "api/documents/")
+                self.client.request("GET", "api/documents/test_request_other_exceptions")
 
 
 class TestClientErrorHandling(UnitTestCase):
@@ -333,7 +347,7 @@ class TestClientErrorHandling(UnitTestCase):
         mock_session_request.return_value = mock_response
 
         with self.assertRaises(ValueError):
-            self.client.request("POST", "api/documents/")
+            self.client.request("POST", "api/documents/test_handle_400_error")
 
     @patch('requests.Session.request')
     def test_handle_401_error(self, mock_session_request):
@@ -346,7 +360,7 @@ class TestClientErrorHandling(UnitTestCase):
         mock_session_request.return_value = mock_response
 
         with self.assertRaises(AuthenticationError):
-            self.client.request("GET", "api/documents/")
+            self.client.request("GET", "api/documents/test_handle_401_error")
 
     @patch('requests.Session.request')
     def test_handle_403_error_csrf(self, mock_session_request):
@@ -359,7 +373,7 @@ class TestClientErrorHandling(UnitTestCase):
         mock_session_request.return_value = mock_response
 
         with self.assertRaises(ConfigurationError):
-            self.client.request("POST", "api/documents/")
+            self.client.request("POST", "api/documents/test_handle_403_error")
 
     @patch('requests.Session.request')
     def test_handle_403_error_permission(self, mock_session_request):
@@ -372,7 +386,7 @@ class TestClientErrorHandling(UnitTestCase):
         mock_session_request.return_value = mock_response
 
         with self.assertRaises(InsufficientPermissionError):
-            self.client.request("POST", "api/documents/")
+            self.client.request("POST", "api/documents/test_handle_403_error_permission")
 
     @patch('requests.Session.request')
     def test_handle_404_error(self, mock_session_request):
@@ -385,7 +399,7 @@ class TestClientErrorHandling(UnitTestCase):
         mock_session_request.return_value = mock_response
 
         with self.assertRaises(ResourceNotFoundError):
-            self.client.request("GET", "api/documents/999/")
+            self.client.request("GET", "api/documents/999/test_handle_404_error")
 
     @patch('requests.Session.request')
     def test_handle_500_error(self, mock_session_request):
@@ -398,7 +412,8 @@ class TestClientErrorHandling(UnitTestCase):
         mock_session_request.return_value = mock_response
 
         with self.assertRaises(BadResponseError):
-            self.client.request("GET", "api/documents/")
+            with suppress_logging():
+                self.client.request("GET", "api/documents/test_handle_500_error")
 
     def test_extract_error_message_detail(self):
         """Test extracting error message with 'detail' field."""
@@ -466,7 +481,8 @@ class TestClientErrorHandling(UnitTestCase):
         mock_session_request.return_value = mock_response
 
         with self.assertRaises(RelationshipNotFoundError):
-            self.client.request("POST", "api/documents/")
+            with self.assertLogs(logger, level="ERROR") as output:
+                self.client.request("POST", "api/documents/test_handle_400_error_with_relationship")
 
 
 class TestClientUtilityMethods(UnitTestCase):

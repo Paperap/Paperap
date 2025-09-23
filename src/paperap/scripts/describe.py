@@ -45,7 +45,6 @@ logger = logging.getLogger(__name__)
 
 def first_non_empty_env(*names: str) -> str | None:
     """Return the first non-empty environment variable from the provided names."""
-
     for name in names:
         value = os.getenv(name)
         if value:
@@ -58,7 +57,7 @@ class ScriptDefaults(StrEnum):
     DESCRIBED = "described"
     NEEDS_TITLE = "needs-title"
     NEEDS_DATE = "needs-date"
-    MODEL = "gpt-5"
+    MODEL = "gpt-5-mini"
 
 
 class TagConfig(BaseModel):
@@ -124,12 +123,21 @@ class DescribePhotos(BaseModel):
     @property
     def enrichment_service(self) -> DocumentEnrichmentService:
         """Get or create the document enrichment service."""
-        if not self._enrichment_service:
+        if self._enrichment_service is None:
             self._enrichment_service = DocumentEnrichmentService(
                 api_key=self.client.settings.openai_key,
                 api_url=self.client.settings.openai_url,
+                settings_model=self.client.settings.openai_model,
             )
+        else:
+            self._enrichment_service.update_settings_model(self.client.settings.openai_model)
         return self._enrichment_service
+
+    @property
+    def openai_model(self) -> str:
+        """Return the resolved OpenAI model for enrichment operations."""
+        service = self.enrichment_service
+        return service.resolve_model(None)
 
     @field_validator("max_threads", mode="before")
     @classmethod
@@ -160,7 +168,6 @@ class DescribePhotos(BaseModel):
     @property
     def filter_tag(self) -> str:
         """Return the tag used to filter documents for processing."""
-
         return self.paperless_tag or self.tag_config.needs_description
 
     def choose_template(self, document: Document) -> str:
@@ -270,27 +277,10 @@ class DescribePhotos(BaseModel):
                                 e,
                             )
                             raise DocumentParsingError("Error extracting image from PDF.") from e
-                    except Exception as e:  # noqa: BLE001 - unexpected errors should surface context
-                        count = len(results)
-                        logger.error(
-                            "Failed to extract one image from page %s of PDF. Result count %s: %s",
-                            page_number + 1,
-                            count,
-                            e,
-                        )
-                        if count < 1:
-                            logger.error(
-                                "extract_images_from_pdf: Error extracting image from PDF: %s",
-                                e,
-                            )
-                            raise DocumentParsingError("Error extracting image from PDF.") from e
 
         except DocumentParsingError:
             raise
         except (fitz.FileDataError, RuntimeError, ValueError) as e:
-            logger.error(f"extract_images_from_pdf: Error extracting image from PDF: {e}")
-            raise DocumentParsingError("Error extracting image from PDF.") from e
-        except Exception as e:  # noqa: BLE001 - capture unexpected issues to provide context
             logger.error(f"extract_images_from_pdf: Error extracting image from PDF: {e}")
             raise DocumentParsingError("Error extracting image from PDF.") from e
 
@@ -342,11 +332,6 @@ class DescribePhotos(BaseModel):
             return [self._convert_to_png(content)]
         except (UnidentifiedImageError, OSError, ValueError) as e:
             logger.debug(f"Failed to convert contents to png, will try other methods: {e}")
-        except Exception as e:  # noqa: BLE001 - surface unexpected issues with context
-            logger.debug(
-                "Failed to convert contents to png due to unexpected error, will try other methods: %s",
-                e,
-            )
 
         # Interpret it as a pdf
         if image_contents_list := self.extract_images_from_pdf(content):
@@ -410,10 +395,12 @@ class DescribePhotos(BaseModel):
                 )
 
             # Get OpenAI client from the enrichment service
-            openai_client = self.enrichment_service.get_openai_client(
+            service = self.enrichment_service
+            model_name = service.resolve_model(None)
+            openai_client = service.get_openai_client(
                 EnrichmentConfig(
                     template_name=self.template_name,
-                    model=self.client.settings.openai_model or ScriptDefaults.MODEL,
+                    model=model_name,
                 )
             )
 
@@ -490,9 +477,6 @@ class DescribePhotos(BaseModel):
         except (UnidentifiedImageError, OSError, ValueError) as e:
             logger.error(f"Failed to convert image to JPEG: {e}")
             raise
-        except Exception as e:  # noqa: BLE001 - unexpected issues should still be logged
-            logger.error(f"Failed to convert image to JPEG: {e}")
-            raise
 
     def describe_document(self, document: Document) -> bool:
         """
@@ -519,9 +503,11 @@ class DescribePhotos(BaseModel):
             logger.debug(f"Describing document {document.id}...")
 
             # Create enrichment config
+            service = self.enrichment_service
+            model_name = service.resolve_model(None)
             config = EnrichmentConfig(
                 template_name=self.template_name,
-                model=self.client.settings.openai_model or ScriptDefaults.MODEL,
+                model=model_name,
                 vision=True,
                 extract_images=True,
                 max_images=2,
@@ -879,8 +865,8 @@ def main() -> None:
             template_name=args.template,
             limit=args.limit,
             paperless_tag=filter_tag,
+            tag_config=tag_config,
         )
-        paperless.tag_config = tag_config
 
         logger.info("Starting document description process with model: %s", paperless.client.settings.openai_model)
 
@@ -911,9 +897,6 @@ def main() -> None:
         logger.info("Script cancelled by user.")
         sys.exit(0)
     except (PaperapError, requests.RequestException, OSError, ValueError) as e:
-        logger.error(f"An error occurred: {e}", exc_info=True)
-        sys.exit(1)
-    except Exception as e:  # noqa: BLE001 - capture unexpected errors for observability
         logger.error(f"An error occurred: {e}", exc_info=True)
         sys.exit(1)
 

@@ -8,11 +8,13 @@ settings. Settings can be loaded from environment variables or provided directly
 
 from __future__ import annotations
 
+import os
 from typing import Annotated, Any, Self, TypedDict, override
 
 from pydantic import Field, HttpUrl, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from paperap.const import ENRICHMENT_MODEL_ENV_VAR
 from paperap.exceptions import ConfigurationError
 
 
@@ -98,7 +100,7 @@ class Settings(BaseSettings):
     require_ssl: bool = False
     save_on_write: bool = True
     openai_key: str | None = Field(default=None, alias="openai_api_key")
-    openai_model: str | None = Field(default=None, alias="openai_model_name")
+    openai_model: str | None = Field(default=None, alias="paperap_enrichment_model")
     openai_url: str | None = Field(default=None, alias="openai_base_url")
     template_dir: str | None = Field(default=None, alias="template_directory")
 
@@ -189,5 +191,10 @@ class Settings(BaseSettings):
 
         if self.require_ssl and self.base_url.scheme != "https":
             raise ConfigurationError(f"URL must use HTTPS. Url: {self.base_url}. Scheme: {self.base_url.scheme}")
+
+        if self.openai_model is None:
+            env_model = os.getenv(ENRICHMENT_MODEL_ENV_VAR)
+            if env_model:
+                self.openai_model = env_model
 
         return super().model_post_init(__context)
